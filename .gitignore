@@ -1,5 +1,5 @@
 **/__pycache__/
 **/node_modules/
-ui/app/build
 .idea
+kamenice_django/static
 venv
