@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Col, Modal } from 'antd'
+import { Button, Col, Modal } from 'antd'
 import Title from 'antd/lib/typography/Title'
 import DatePicker, { Calendar, DayRange, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
@@ -13,12 +13,13 @@ export const ReserveCalendar = ({ room }: Props) => {
     from: null,
     to: null
   })
-  const [ selectedDay, setSelectedDay ] = useState<DayValue>()
   const [ formVisible, setFormVisible ] = useState<boolean | undefined>(false)
 
   return (
     <>
-      <Col span={ 12 } key={ room.id } className="home__listing">
+      <Col
+        span={ 12 }
+        className="home__listing">
         <Title level={ 4 } className="home__listings-title"> { room.name }</Title>
         <div className="home__calendar">
           <Calendar
@@ -37,8 +38,23 @@ export const ReserveCalendar = ({ room }: Props) => {
       <Modal
         title="Rezervační formulář"
         visible={ formVisible }
-        onOk={ () => setFormVisible(false) }
-        onCancel={ () => setFormVisible(false) }>
+        footer={ [
+          <Button
+            key="cancel"
+            onClick={ () => {
+              setSelectedRange({ from: null, to: null })
+              setFormVisible(false)
+            } }>
+            Zrušit
+          </Button>,
+          <Button
+            key="ok"
+            onClick={ () => {
+              setFormVisible(false)
+            } }>
+            OK
+          </Button>
+        ] }>
         <DatePicker
           onChange={ (dayValue: DayValue) => {
             setSelectedRange({
@@ -46,7 +62,7 @@ export const ReserveCalendar = ({ room }: Props) => {
               to: selectedRange.to
             })
           } }
-          inputPlaceholder={ TransformDate.toLocaleString(selectedRange.from, "Select from date") }
+          inputPlaceholder={ TransformDate.toLocaleString(selectedRange.from, "Začátek rezervace") }
           shouldHighlightWeekends
           locale={ CsCalendarLocale }
         />
@@ -57,7 +73,7 @@ export const ReserveCalendar = ({ room }: Props) => {
               to: dayValue
             })
           } }
-          inputPlaceholder={ TransformDate.toLocaleString(selectedRange.to, "Select to date") }
+          inputPlaceholder={ TransformDate.toLocaleString(selectedRange.to, "Konec rezervace") }
           shouldHighlightWeekends
           locale={ CsCalendarLocale } />
       </Modal>

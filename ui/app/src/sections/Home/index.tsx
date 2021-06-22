@@ -32,9 +32,9 @@ export const Home = () => {
         </Title>
         <Row gutter={ 12 }>
           {
-            rooms.map((room) => {
+            rooms.map((room, index) => {
               return (
-                <ReserveCalendar room={ room } key={ room.id } />
+                <ReserveCalendar room={ room } key={ index } />
               )
             })
           }
