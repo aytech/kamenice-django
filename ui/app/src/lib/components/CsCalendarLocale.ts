@@ -1,4 +1,4 @@
-import { Locale } from "react-modern-calendar-datepicker";
+import { DayValue, Locale } from "react-modern-calendar-datepicker";
 
 export const CsCalendarLocale: Locale = {
   months: [
@@ -81,4 +81,13 @@ export const CsCalendarLocale: Locale = {
   yearLetterSkip: 0,
   // is your language rtl or ltr?
   isRtl: false
+}
+
+export const TransformDate = {
+  toLocaleString: (day: DayValue, defaultValue: string) => {
+    if (day === undefined || day === null) {
+      return defaultValue
+    }
+    return `${ day?.day } ${ CsCalendarLocale.months[ day.month ] } ${ day.year }`
+  }
 }
