@@ -88,6 +88,6 @@ export const TransformDate = {
     if (day === undefined || day === null) {
       return defaultValue
     }
-    return `${ day?.day } ${ CsCalendarLocale.months[ day.month ] } ${ day.year }`
+    return `${ day?.day } ${ CsCalendarLocale.months[ day.month - 1 ] } ${ day.year }`
   }
 }
