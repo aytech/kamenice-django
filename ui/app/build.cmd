@@ -1,0 +1,1 @@
+set PUBLIC_URL=/static&&npm run build
