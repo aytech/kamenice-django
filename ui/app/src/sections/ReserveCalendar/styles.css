@@ -1,0 +1,3 @@
+.purpleDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
+  border: 2px solid rgba(156, 136, 255, 0.7) !important;
+}

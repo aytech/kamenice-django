@@ -4,6 +4,7 @@ import { DownOutlined } from '@ant-design/icons'
 import Title from 'antd/lib/typography/Title'
 import DatePicker, { Calendar, DayRange, DayValue, utils } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
+import './styles.css'
 
 interface Props {
   room: { id: number, name: string }
@@ -92,6 +93,9 @@ export const ReserveCalendar = ({ room }: Props) => {
               setFormVisible(true)
             } }
             locale={ CsCalendarLocale }
+            customDaysClassName={[
+              {year: 2021, month: 6, day: 23, className: "purpleDay"}
+            ]}
             shouldHighlightWeekends />
         </div>
       </Col>
@@ -112,12 +116,12 @@ export const ReserveCalendar = ({ room }: Props) => {
             disabled={ selectedRange.from === null || selectedRange.to === null }
             key="ok"
             onClick={ () => {
-              const { isBeforeDate } = utils("en")
-              if (selectedRange.from !== undefined && selectedRange.from !== null && selectedRange.to !== undefined && selectedRange.to !== null) {
-                console.log(isBeforeDate(selectedRange.from, selectedRange.to))
-              }
-
-              setFormVisible(false)
+              console.log(TransformDate.getDaysFromRange(selectedRange))
+              // const { isBeforeDate } = utils("en")
+              // if (selectedRange.from !== undefined && selectedRange.from !== null && selectedRange.to !== undefined && selectedRange.to !== null) {
+              //   console.log(isBeforeDate(selectedRange.from, selectedRange.to))
+              // }
+              //setFormVisible(false)
             } }>
             OK
           </Button>
