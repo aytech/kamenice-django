@@ -22,7 +22,7 @@ export const AppHeader = withRouter(({ location, history }: RouteComponentProps)
           <Search
             placeholder=""
             enterButton
-            onChange={ event => () => { } }
+            onChange={ (event) => setSearch(event.target.value) }
             onSearch={ () => { } }
             value={ search }
           />

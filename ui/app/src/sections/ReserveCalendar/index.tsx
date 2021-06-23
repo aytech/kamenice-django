@@ -2,23 +2,23 @@ import React, { useState } from 'react'
 import { Button, Col, Dropdown, Form, Menu, message, Modal } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Title from 'antd/lib/typography/Title'
-import DatePicker, { Calendar, DayRange, DayValue, utils } from 'react-modern-calendar-datepicker'
+import DatePicker, { Calendar, Day, DayRange, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
 
 interface Props {
   room: { id: number, name: string }
 }
+type CustomDayClassNameItem = Day & { className: string };
 
 export const ReserveCalendar = ({ room }: Props) => {
   const [ selectedRange, setSelectedRange ] = useState<DayRange>({
     from: null,
     to: null
   })
-  const [ selectedDay, setSelectedDay ] = useState<DayValue>()
-  const [ selectedDays, setSelectedDays ] = useState<DayValue[]>([])
   const [ formVisible, setFormVisible ] = useState<boolean | undefined>(false)
   const [ reservationType, setReservationType ] = useState<string>("Závazná Rezervace")
+  const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
   const reservationTypeMenu = (
     <Menu>
       <Menu.Item key="Závazná Rezervace" onClick={ (it) => { setReservationType(it.key) } }>Závazná Rezervace</Menu.Item>
@@ -47,30 +47,18 @@ export const ReserveCalendar = ({ room }: Props) => {
       to: dayValue
     })
   }
-  const getRangeColor = (): string => {
+
+  const getDaysClassName = () => {
     switch (reservationType) {
       case "Závazná Rezervace":
-        return "#00b300"
+        return "greenDay"
       case "Nezávazná Rezervace":
-        return "#b3b300"
+        return "yellowDay"
       case "Aktuálně Ubytování":
-        return "#340034"
+        return "purpleDay"
       case "Obydlený Termín":
-        return "#681a1a"
-      default: return "#00b300"
-    }
-  }
-  const getRangeLightColor = (): string => {
-    switch (reservationType) {
-      case "Závazná Rezervace":
-        return "#00ff00"
-      case "Nezávazná Rezervace":
-        return "#ffff00"
-      case "Aktuálně Ubytování":
-        return "#800080"
-      case "Obydlený Termín":
-        return "#a52a2a"
-      default: return "#00ff00"
+        return "orangeDay"
+      default: return "greenDay"
     }
   }
 
@@ -83,8 +71,6 @@ export const ReserveCalendar = ({ room }: Props) => {
         <div className="home__calendar">
           <Calendar
             value={ selectedRange }
-            colorPrimary={ getRangeColor() }
-            colorPrimaryLight={ getRangeLightColor() }
             onChange={ (range: DayRange) => {
               setSelectedRange({
                 from: range.from,
@@ -93,9 +79,7 @@ export const ReserveCalendar = ({ room }: Props) => {
               setFormVisible(true)
             } }
             locale={ CsCalendarLocale }
-            customDaysClassName={[
-              {year: 2021, month: 6, day: 23, className: "purpleDay"}
-            ]}
+            customDaysClassName={ reservedDays }
             shouldHighlightWeekends />
         </div>
       </Col>
@@ -116,12 +100,12 @@ export const ReserveCalendar = ({ room }: Props) => {
             disabled={ selectedRange.from === null || selectedRange.to === null }
             key="ok"
             onClick={ () => {
-              console.log(TransformDate.getDaysFromRange(selectedRange))
-              // const { isBeforeDate } = utils("en")
-              // if (selectedRange.from !== undefined && selectedRange.from !== null && selectedRange.to !== undefined && selectedRange.to !== null) {
-              //   console.log(isBeforeDate(selectedRange.from, selectedRange.to))
-              // }
-              //setFormVisible(false)
+              const rangeDays: Day[] = TransformDate.getDaysFromRange(selectedRange)
+              setReservedDays(rangeDays.map((day: Day) => {
+                return { className: getDaysClassName(), ...day }
+              }))
+              setSelectedRange({ from: null, to: null })
+              setFormVisible(false)
             } }>
             OK
           </Button>
@@ -132,9 +116,9 @@ export const ReserveCalendar = ({ room }: Props) => {
             label="Začátek Rezervace"
             name="from">
             <DatePicker
-              onChange={ (dayValue: DayValue) => {
+              onChange={ (day: Day) => {
                 setSelectedRange({
-                  from: dayValue,
+                  from: day,
                   to: selectedRange.to
                 })
               } }
@@ -158,11 +142,9 @@ export const ReserveCalendar = ({ room }: Props) => {
             <Dropdown
               overlay={ reservationTypeMenu }
               trigger={ [ 'click' ] }>
-              <a
-                className="ant-dropdown-link"
-                onClick={ e => e.preventDefault() }>
+              <Button type="link">
                 { reservationType } <DownOutlined />
-              </a>
+              </Button>
             </Dropdown>
           </Form.Item>
         </Form>
