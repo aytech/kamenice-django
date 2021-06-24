@@ -8,7 +8,7 @@ import {
 import './index.css'
 import { Affix, Layout } from 'antd'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import { AppHeader, Home } from './sections'
+import { AppHeader, Home, Overview } from './sections'
 
 const client = new ApolloClient({
   uri: "/api",
@@ -24,6 +24,7 @@ ReactDOM.render(
         </Affix>
         <Switch>
           <Route exact path="/" component={ Home } />
+          <Route exact path="/prehled" component={ Overview } />
         </Switch>
       </Layout>
     </Router>

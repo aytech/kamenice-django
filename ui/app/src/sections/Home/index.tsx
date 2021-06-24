@@ -4,6 +4,7 @@ import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
+import { Link } from 'react-router-dom'
 
 export const Home = () => {
   const rooms = [
@@ -13,14 +14,6 @@ export const Home = () => {
     },
     {
       id: 2,
-      name: "Apartman 2 + 2"
-    },
-    {
-      id: 3,
-      name: "Apartman 2 + 2"
-    },
-    {
-      id: 4,
       name: "Apartman 2 + 4"
     }
   ]
@@ -40,6 +33,9 @@ export const Home = () => {
           }
         </Row>
       </div>
+      <Title level={ 3 }>
+        <Link to="/prehled">Přehled</Link>
+      </Title>
     </Content >
   );
 }

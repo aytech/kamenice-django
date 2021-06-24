@@ -3,7 +3,7 @@
 }
 
 .orangeDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
-  border: 2px solid rgba(2219, 145, 60, 0.7) !important;
+  border: 2px solid rgba(219, 145, 60, 0.7) !important;
 }
 
 .purpleDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
