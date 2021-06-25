@@ -1,13 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Col, Dropdown, Form, Menu, message, Modal } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Title from 'antd/lib/typography/Title'
 import DatePicker, { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
+import { Reservation, ReservationTypeKey } from '../../lib/components/Reservation'
+import { Room } from '../../lib/components/Room'
 
 interface Props {
-  room: { id: number, name: string }
+  room: Room
 }
 type CustomDayClassNameItem = Day & { className: string };
 
@@ -15,14 +17,22 @@ export const ReserveCalendar = ({ room }: Props) => {
   const [ selectedFromDay, setSelectedFromDay ] = useState<DayValue>(null)
   const [ selectedToDay, setSelectedToDay ] = useState<DayValue>(null)
   const [ formVisible, setFormVisible ] = useState<boolean | undefined>(false)
-  const [ reservationType, setReservationType ] = useState<string>("Závazná Rezervace")
+  const [ reservationType, setReservationType ] = useState<ReservationTypeKey>("binding")
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
   const reservationTypeMenu = (
     <Menu>
-      <Menu.Item key="Závazná Rezervace" onClick={ (it) => { setReservationType(it.key) } }>Závazná Rezervace</Menu.Item>
-      <Menu.Item key="Nezávazná Rezervace" onClick={ (it) => { setReservationType(it.key) } }>Nezávazná Rezervace</Menu.Item>
-      <Menu.Item key="Aktuálně Ubytování" onClick={ (it) => { setReservationType(it.key) } }>Aktuálně Ubytování</Menu.Item>
-      <Menu.Item key="Obydlený Termín" onClick={ (it) => { setReservationType(it.key) } }>Obydlený Termín</Menu.Item>
+      <Menu.Item key={ Reservation.getType("binding") } onClick={ (it) => { setReservationType("binding") } }>
+        { Reservation.getType("binding") }
+      </Menu.Item>
+      <Menu.Item key={ Reservation.getType("nonbinding") } onClick={ (it) => { setReservationType("nonbinding") } }>
+        { Reservation.getType("nonbinding") }
+      </Menu.Item>
+      <Menu.Item key={ Reservation.getType("accommodated") } onClick={ (it) => { setReservationType("accommodated") } }>
+        { Reservation.getType("accommodated") }
+      </Menu.Item>
+      <Menu.Item key={ Reservation.getType("inhabited") } onClick={ (it) => { setReservationType("inhabited") } }>
+        { Reservation.getType("inhabited") }
+      </Menu.Item>
     </Menu>
   )
   const selectReservationEndDate = (dayValue: DayValue) => {
@@ -45,17 +55,21 @@ export const ReserveCalendar = ({ room }: Props) => {
 
   const getDaysClassName = () => {
     switch (reservationType) {
-      case "Závazná Rezervace":
+      case "binding":
         return "greenDay"
-      case "Nezávazná Rezervace":
+      case "nonbinding":
         return "yellowDay"
-      case "Aktuálně Ubytování":
+      case "accommodated":
         return "purpleDay"
-      case "Obydlený Termín":
+      case "inhabited":
         return "orangeDay"
       default: return "greenDay"
     }
   }
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <>
@@ -75,6 +89,7 @@ export const ReserveCalendar = ({ room }: Props) => {
             shouldHighlightWeekends />
         </div>
       </Col>
+
       <Modal // TODO: selected day on calendars not working, probly move to a component
         title="Rezervační formulář"
         visible={ formVisible }
@@ -133,7 +148,7 @@ export const ReserveCalendar = ({ room }: Props) => {
               overlay={ reservationTypeMenu }
               trigger={ [ 'click' ] }>
               <Button type="link">
-                { reservationType } <DownOutlined />
+                { Reservation.getType(reservationType) } <DownOutlined />
               </Button>
             </Dropdown>
           </Form.Item>

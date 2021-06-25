@@ -5,16 +5,70 @@ import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
 import { Link } from 'react-router-dom'
+import { Room } from '../../lib/components/Room'
+
 
 export const Home = () => {
-  const rooms = [
+  const rooms: Room[] = [
     {
       id: 1,
-      name: "Apartman 2 + 2"
+      name: "Apartman 2 + 2",
+      reservedDays: [
+        {
+          year: 2021,
+          month: 6,
+          day: 21,
+          type: "binding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 22,
+          type: "binding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 23,
+          type: "binding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 24,
+          type: "binding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 25,
+          type: "binding"
+        }
+      ]
     },
     {
       id: 2,
-      name: "Apartman 2 + 4"
+      name: "Apartman 2 + 4",
+      reservedDays: [
+        {
+          year: 2021,
+          month: 6,
+          day: 23,
+          type: "nonbinding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 24,
+          type: "nonbinding"
+        },
+        {
+          year: 2021,
+          month: 6,
+          day: 25,
+          type: "nonbinding"
+        }
+      ]
     }
   ]
   return (

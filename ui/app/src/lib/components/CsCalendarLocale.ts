@@ -1,4 +1,4 @@
-import { Day, DayRange, DayValue, Locale, utils } from "react-modern-calendar-datepicker";
+import { Day, DayValue, Locale, utils } from "react-modern-calendar-datepicker";
 
 export const CsCalendarLocale: Locale = {
   months: [
