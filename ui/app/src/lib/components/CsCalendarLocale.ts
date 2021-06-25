@@ -135,30 +135,30 @@ const getDaysWithinOverlappingYears = (from: number, to: number, fromMonth: numb
 }
 
 export const TransformDate = {
-  getDaysFromRange: (range: DayRange): Day[] => {
-    if (range.from === undefined || range.from === null || range.to === undefined || range.to === null) {
+  getDaysFromRange: (from: DayValue, to: DayValue): Day[] => {
+    if (from === undefined || from === null || to === undefined || to === null) {
       return []
     }
-    if (range.to.year === range.from.year) {
+    if (to.year === from.year) {
       // processing within same year
-      if (range.to.month === range.from.month) {
+      if (to.month === from.month) {
         // processing within same month
-        return getDaysWithinMonth(range.from.day, range.to.day, range.from.month, range.from.year)
+        return getDaysWithinMonth(from.day, to.day, from.month, from.year)
       } else {
         // processing within overlapping months
         const months = []
-        for (let index = range.from.month; index <= range.to.month; index++) {
+        for (let index = from.month; index <= to.month; index++) {
           months.push(index)
         }
-        return getDaysWithinOverlappingMonths(range.from.day, range.to.day, months, range.from.year)
+        return getDaysWithinOverlappingMonths(from.day, to.day, months, from.year)
       }
     } else {
       // processing within overlapping years
       const years = []
-      for (let index = range.from.year; index <= range.to.year; index++) {
+      for (let index = from.year; index <= to.year; index++) {
         years.push(index)
       }
-      return getDaysWithinOverlappingYears(range.from.day, range.to.day, range.from.month, range.to.month, years)
+      return getDaysWithinOverlappingYears(from.day, to.day, from.month, to.month, years)
     }
   },
   toLocaleString: (day: DayValue, defaultValue: string) => {
