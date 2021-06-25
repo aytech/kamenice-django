@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Col, Dropdown, Form, Menu, message, Modal } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Title from 'antd/lib/typography/Title'
-import DatePicker, { Calendar, Day, DayRange, DayValue } from 'react-modern-calendar-datepicker'
+import DatePicker, { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
 
@@ -12,10 +12,8 @@ interface Props {
 type CustomDayClassNameItem = Day & { className: string };
 
 export const ReserveCalendar = ({ room }: Props) => {
-  const [ selectedRange, setSelectedRange ] = useState<DayRange>({
-    from: null,
-    to: null
-  })
+  const [ selectedFromDay, setSelectedFromDay ] = useState<DayValue>(null)
+  const [ selectedToDay, setSelectedToDay ] = useState<DayValue>(null)
   const [ formVisible, setFormVisible ] = useState<boolean | undefined>(false)
   const [ reservationType, setReservationType ] = useState<string>("Závazná Rezervace")
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
@@ -28,7 +26,7 @@ export const ReserveCalendar = ({ room }: Props) => {
     </Menu>
   )
   const selectReservationEndDate = (dayValue: DayValue) => {
-    if (selectedRange.from === undefined || selectedRange.from === null) {
+    if (selectedFromDay === undefined || selectedFromDay === null) {
       message.error("nejdřív vyberte začátek rezervace")
       return
     }
@@ -36,16 +34,13 @@ export const ReserveCalendar = ({ room }: Props) => {
       message.error("vyberte konec rezervace")
       return
     }
-    const from = CsCalendarLocale.toNativeDate(selectedRange.from)
+    const from = CsCalendarLocale.toNativeDate(selectedFromDay)
     const to = CsCalendarLocale.toNativeDate(dayValue)
     if (to < from) {
       message.error("konec rezervace nesmí být dříve než začátek")
       return
     }
-    setSelectedRange({
-      from: selectedRange.from,
-      to: dayValue
-    })
+    setSelectedToDay(dayValue)
   }
 
   const getDaysClassName = () => {
@@ -70,12 +65,9 @@ export const ReserveCalendar = ({ room }: Props) => {
         <Title level={ 4 } className="home__listings-title"> { room.name }</Title>
         <div className="home__calendar">
           <Calendar
-            value={ selectedRange }
-            onChange={ (range: DayRange) => {
-              setSelectedRange({
-                from: range.from,
-                to: null
-              })
+            value={ selectedFromDay }
+            onChange={ (dayValue: DayValue) => {
+              setSelectedFromDay(dayValue)
               setFormVisible(true)
             } }
             locale={ CsCalendarLocale }
@@ -83,7 +75,7 @@ export const ReserveCalendar = ({ room }: Props) => {
             shouldHighlightWeekends />
         </div>
       </Col>
-      <Modal
+      <Modal // TODO: selected day on calendars not working, probly move to a component
         title="Rezervační formulář"
         visible={ formVisible }
         width="80%"
@@ -91,20 +83,21 @@ export const ReserveCalendar = ({ room }: Props) => {
           <Button
             key="cancel"
             onClick={ () => {
-              setSelectedRange({ from: null, to: null })
+              setSelectedFromDay(null)
               setFormVisible(false)
             } }>
             Zrušit
           </Button>,
           <Button
-            disabled={ selectedRange.from === null || selectedRange.to === null }
+            disabled={ selectedFromDay === null || selectedToDay === null }
             key="ok"
             onClick={ () => {
-              const rangeDays: Day[] = TransformDate.getDaysFromRange(selectedRange)
+              const rangeDays: Day[] = TransformDate.getDaysFromRange(selectedFromDay, selectedToDay)
               setReservedDays(rangeDays.map((day: Day) => {
                 return { className: getDaysClassName(), ...day }
               }))
-              setSelectedRange({ from: null, to: null })
+              setSelectedFromDay(null)
+              setSelectedToDay(null)
               setFormVisible(false)
             } }>
             OK
@@ -116,13 +109,10 @@ export const ReserveCalendar = ({ room }: Props) => {
             label="Začátek Rezervace"
             name="from">
             <DatePicker
-              onChange={ (day: Day) => {
-                setSelectedRange({
-                  from: day,
-                  to: selectedRange.to
-                })
+              onChange={ (dayValue: DayValue) => {
+                setSelectedFromDay(dayValue)
               } }
-              inputPlaceholder={ TransformDate.toLocaleString(selectedRange.from, "vyberte datum") }
+              inputPlaceholder={ TransformDate.toLocaleString(selectedFromDay, "vyberte datum") }
               shouldHighlightWeekends
               locale={ CsCalendarLocale }
             />
@@ -132,7 +122,7 @@ export const ReserveCalendar = ({ room }: Props) => {
             name="to">
             <DatePicker
               onChange={ selectReservationEndDate }
-              inputPlaceholder={ TransformDate.toLocaleString(selectedRange.to, "vyberte datum") }
+              inputPlaceholder={ TransformDate.toLocaleString(selectedToDay, "vyberte datum") }
               shouldHighlightWeekends
               locale={ CsCalendarLocale } />
           </Form.Item>
