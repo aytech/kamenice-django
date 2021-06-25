@@ -63,7 +63,30 @@ export const Overview = () => {
       type: 'datetime' as const
     },
     legend: {
-      position: 'right' as const
+      customLegendItems: [
+        "Závazná Rezervace",
+        "Nezávazná Rezervace",
+        "Aktuálně Ubytování",
+        "Obydlený Termín"
+      ],
+      markers: {
+        width: 12,
+        height: 12,
+        strokeWidth: 0,
+        strokeColor: '#fff',
+        fillColors: [
+          "#0eca2d",
+          "#e4e724",
+          "#9c88ff",
+          "#db913c"
+        ],
+        radius: 12,
+        customHTML: undefined,
+        onClick: undefined,
+        offsetX: 0,
+        offsetY: 0
+      },
+      position: 'top' as const
     },
     tooltip: {
       custom: (options) => {
@@ -100,7 +123,7 @@ export const Overview = () => {
         ]
       },
       {
-        name: 'Nezávazná Rezervace',
+        name: 'Závazná Rezervace',
         data: [
           {
             x: 'Apartman 2 + 2',
