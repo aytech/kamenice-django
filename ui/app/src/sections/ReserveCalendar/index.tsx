@@ -1,60 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Col, Dropdown, Form, Menu, message, Modal } from 'antd'
-import { DownOutlined } from '@ant-design/icons'
+import { Col } from 'antd'
 import Title from 'antd/lib/typography/Title'
-import DatePicker, { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
+import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
-import { Reservation, ReservationTypeKey } from '../../lib/components/Reservation'
-import { Room } from '../../lib/components/Room'
+import { ReservationTypeKey } from '../../lib/components/Reservation'
+import { ReservedRange, Room } from '../../lib/components/Room'
+import { ReservationModal } from '../ReservationModal'
 
 interface Props {
   room: Room
 }
-type CustomDayClassNameItem = Day & { className: string };
+type CustomDayClassNameItem = Day & { className: string, rangeId: number };
 
 export const ReserveCalendar = ({ room }: Props) => {
-  const [ selectedFromDay, setSelectedFromDay ] = useState<DayValue>(null)
-  const [ selectedToDay, setSelectedToDay ] = useState<DayValue>(null)
-  const [ formVisible, setFormVisible ] = useState<boolean | undefined>(false)
-  const [ reservationType, setReservationType ] = useState<ReservationTypeKey>("binding")
+  const [ reservedRange, setReservedRange ] = useState<ReservedRange | undefined>()
+  const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
-  const reservationTypeMenu = (
-    <Menu>
-      <Menu.Item key={ Reservation.getType("binding") } onClick={ (it) => { setReservationType("binding") } }>
-        { Reservation.getType("binding") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("nonbinding") } onClick={ (it) => { setReservationType("nonbinding") } }>
-        { Reservation.getType("nonbinding") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("accommodated") } onClick={ (it) => { setReservationType("accommodated") } }>
-        { Reservation.getType("accommodated") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("inhabited") } onClick={ (it) => { setReservationType("inhabited") } }>
-        { Reservation.getType("inhabited") }
-      </Menu.Item>
-    </Menu>
-  )
-  const selectReservationEndDate = (dayValue: DayValue) => {
-    if (selectedFromDay === undefined || selectedFromDay === null) {
-      message.error("nejdřív vyberte začátek rezervace")
-      return
-    }
-    if (dayValue === undefined || dayValue === null) {
-      message.error("vyberte konec rezervace")
-      return
-    }
-    const from = CsCalendarLocale.toNativeDate(selectedFromDay)
-    const to = CsCalendarLocale.toNativeDate(dayValue)
-    if (to < from) {
-      message.error("konec rezervace nesmí být dříve než začátek")
-      return
-    }
-    setSelectedToDay(dayValue)
-  }
 
-  const getDaysClassName = () => {
-    switch (reservationType) {
+  const getDayClassName = (type: ReservationTypeKey) => {
+    switch (type) {
       case "binding":
         return "greenDay"
       case "nonbinding":
@@ -66,10 +31,24 @@ export const ReserveCalendar = ({ room }: Props) => {
       default: return "greenDay"
     }
   }
+  const updateReservedRange = (newRange: ReservedRange): void => {
+    // TODO:
+    // 1. Filter ranges that are not the input range
+    // 2. Update state with other + new range
+    // 3. Save room with new ranges into the data store (figure out the logic)
+    const otherRanges = room.reservedRanges.filter(range => range.id !== newRange.id)
+    console.log('Ranges not specified in input: ', otherRanges)
+  }
 
   useEffect(() => {
-
-  }, [])
+    const reservedDays: CustomDayClassNameItem[] = []
+    room.reservedRanges.forEach((range: ReservedRange) => {
+      TransformDate.getDaysFromRange(range.from, range.to).forEach((day: Day) => {
+        reservedDays.push({ className: getDayClassName(range.type), rangeId: range.id, ...day })
+      })
+    })
+    setReservedDays(reservedDays)
+  }, [ room.reservedRanges ])
 
   return (
     <>
@@ -79,81 +58,27 @@ export const ReserveCalendar = ({ room }: Props) => {
         <Title level={ 4 } className="home__listings-title"> { room.name }</Title>
         <div className="home__calendar">
           <Calendar
-            value={ selectedFromDay }
             onChange={ (dayValue: DayValue) => {
-              setSelectedFromDay(dayValue)
-              setFormVisible(true)
+              const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
+                return day.year === dayValue?.year
+                  && day.month === dayValue.month
+                  && day.day === dayValue.day
+              })
+              if (rangeDay !== undefined) {
+                setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
+              }
+              setModalOpen(true)
             } }
             locale={ CsCalendarLocale }
             customDaysClassName={ reservedDays }
             shouldHighlightWeekends />
         </div>
       </Col>
-
-      <Modal // TODO: selected day on calendars not working, probly move to a component
-        title="Rezervační formulář"
-        visible={ formVisible }
-        width="80%"
-        footer={ [
-          <Button
-            key="cancel"
-            onClick={ () => {
-              setSelectedFromDay(null)
-              setFormVisible(false)
-            } }>
-            Zrušit
-          </Button>,
-          <Button
-            disabled={ selectedFromDay === null || selectedToDay === null }
-            key="ok"
-            onClick={ () => {
-              const rangeDays: Day[] = TransformDate.getDaysFromRange(selectedFromDay, selectedToDay)
-              setReservedDays(rangeDays.map((day: Day) => {
-                return { className: getDaysClassName(), ...day }
-              }))
-              setSelectedFromDay(null)
-              setSelectedToDay(null)
-              setFormVisible(false)
-            } }>
-            OK
-          </Button>
-        ] }>
-        <Form
-          layout="inline">
-          <Form.Item
-            label="Začátek Rezervace"
-            name="from">
-            <DatePicker
-              onChange={ (dayValue: DayValue) => {
-                setSelectedFromDay(dayValue)
-              } }
-              inputPlaceholder={ TransformDate.toLocaleString(selectedFromDay, "vyberte datum") }
-              shouldHighlightWeekends
-              locale={ CsCalendarLocale }
-            />
-          </Form.Item>
-          <Form.Item
-            label="Konec Rezervace"
-            name="to">
-            <DatePicker
-              onChange={ selectReservationEndDate }
-              inputPlaceholder={ TransformDate.toLocaleString(selectedToDay, "vyberte datum") }
-              shouldHighlightWeekends
-              locale={ CsCalendarLocale } />
-          </Form.Item>
-          <Form.Item
-            label="Typ Rezervace"
-            name="type">
-            <Dropdown
-              overlay={ reservationTypeMenu }
-              trigger={ [ 'click' ] }>
-              <Button type="link">
-                { Reservation.getType(reservationType) } <DownOutlined />
-              </Button>
-            </Dropdown>
-          </Form.Item>
-        </Form>
-      </Modal>
+      <ReservationModal
+        close={ () => { setModalOpen(false) } }
+        isOpen={ modalOpen }
+        range={ reservedRange }
+        updateRange={ updateReservedRange } />
     </>
   )
 }

@@ -13,59 +13,81 @@ export const Home = () => {
     {
       id: 1,
       name: "Apartman 2 + 2",
-      reservedDays: [
+      reservedRanges: [
         {
-          year: 2021,
-          month: 6,
-          day: 21,
-          type: "binding"
+          id: 1,
+          from: {
+            year: 2021,
+            month: 6,
+            day: 1
+          },
+          to: {
+            year: 2021,
+            month: 6,
+            day: 5
+          },
+          type: "inhabited"
         },
         {
-          year: 2021,
-          month: 6,
-          day: 22,
-          type: "binding"
+          id: 2,
+          from: {
+            year: 2021,
+            month: 6,
+            day: 14
+          },
+          to: {
+            year: 2021,
+            month: 6,
+            day: 18
+          },
+          type: "accommodated"
         },
         {
-          year: 2021,
-          month: 6,
-          day: 23,
+          id: 3,
+          from: {
+            year: 2021,
+            month: 6,
+            day: 28,
+          },
+          to: {
+            year: 2021,
+            month: 6,
+            day: 30,
+          },
           type: "binding"
         },
-        {
-          year: 2021,
-          month: 6,
-          day: 24,
-          type: "binding"
-        },
-        {
-          year: 2021,
-          month: 6,
-          day: 25,
-          type: "binding"
-        }
       ]
     },
     {
       id: 2,
       name: "Apartman 2 + 4",
-      reservedDays: [
+      reservedRanges: [
         {
-          year: 2021,
-          month: 6,
-          day: 23,
-          type: "nonbinding"
+          id: 4,
+          from: {
+            year: 2021,
+            month: 6,
+            day: 7,
+          },
+          to: {
+            year: 2021,
+            month: 6,
+            day: 11,
+          },
+          type: "binding"
         },
         {
-          year: 2021,
-          month: 6,
-          day: 24,
-          type: "nonbinding"
-        },
-        {
-          year: 2021,
-          month: 6,
-          day: 25,
+          id: 5,
+          from: {
+            year: 2021,
+            month: 6,
+            day: 23,
+          },
+          to: {
+            year: 2021,
+            month: 6,
+            day: 25,
+          },
           type: "nonbinding"
         }
       ]
