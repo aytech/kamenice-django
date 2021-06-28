@@ -1,11 +1,14 @@
 import React, { useState } from "react"
-import { Button, Dropdown, Form, Menu, message, Modal } from "antd"
-import DatePicker, { Day, DayValue } from "react-modern-calendar-datepicker"
+import { Button, DatePicker, Dropdown, Form, Menu, message, Modal } from "antd"
+import locale from "antd/es/date-picker/locale/cs_CZ"
+import { Day, DayValue } from "react-modern-calendar-datepicker"
 import { CsCalendarLocale, TransformDate } from "../../lib/components/CsCalendarLocale"
 import { Reservation, ReservationTypeKey } from "../../lib/components/Reservation"
 import { DownOutlined } from "@ant-design/icons"
 import { useEffect } from "react"
 import { ReservedRange } from "../../lib/components/Room"
+import { Moment } from "moment"
+import { RangeValue } from "rc-picker/lib/interface"
 
 interface Props {
   close: () => void,
@@ -13,6 +16,7 @@ interface Props {
   range: ReservedRange | undefined,
   updateRange: (range: ReservedRange) => void
 }
+const { RangePicker } = DatePicker
 
 export const ReservationModal = ({
   close,
@@ -92,9 +96,19 @@ export const ReservationModal = ({
       <Form
         layout="inline">
         <Form.Item
-          label="Začátek Rezervace"
-          name="from">
-          <DatePicker
+          label="Začátek Rezervace">
+          <RangePicker
+            locale={ locale }
+            onChange={ (range: RangeValue<Moment>) => {
+              
+              if (range !== null) {
+                console.log('Range: ', range[0]?.toDate())
+                console.log('Year: ', range[ 0 ]?.year())
+                console.log('Month: ', range[ 0 ]?.month())
+                console.log('Day: ', range[ 0 ]?.date())
+              }
+            } } />
+          {/* <DatePicker
             value={ selectedFromDay }
             onChange={ (dayValue: DayValue) => {
               if (dayValue !== undefined && dayValue !== null) {
@@ -104,21 +118,19 @@ export const ReservationModal = ({
             inputPlaceholder={ TransformDate.toLocaleString(selectedFromDay, "vyberte datum") }
             shouldHighlightWeekends
             locale={ CsCalendarLocale }
-          />
+          /> */}
         </Form.Item>
         <Form.Item
-          label="Konec Rezervace"
-          name="to">
-          <DatePicker
+          label="Konec Rezervace">
+          {/* <DatePicker
             value={ selectedToDay }
             onChange={ (selectReservationEndDate) }
             inputPlaceholder={ TransformDate.toLocaleString(selectedToDay, "vyberte datum") }
             shouldHighlightWeekends
-            locale={ CsCalendarLocale } />
+            locale={ CsCalendarLocale } /> */}
         </Form.Item>
         <Form.Item
-          label="Typ Rezervace"
-          name="type">
+          label="Typ Rezervace">
           <Dropdown
             overlay={ reservationTypeMenu }
             trigger={ [ 'click' ] }>
