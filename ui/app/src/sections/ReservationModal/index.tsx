@@ -1,20 +1,18 @@
-import React, { useState } from "react"
-import { Button, DatePicker, Dropdown, Form, Menu, message, Modal } from "antd"
+import React, { useEffect, useState } from "react"
+import { Button, DatePicker, Dropdown, Form, Menu, Modal, TimePicker } from "antd"
 import locale from "antd/es/date-picker/locale/cs_CZ"
-import { Day, DayValue } from "react-modern-calendar-datepicker"
-import { CsCalendarLocale, TransformDate } from "../../lib/components/CsCalendarLocale"
 import { Reservation, ReservationTypeKey } from "../../lib/components/Reservation"
 import { DownOutlined } from "@ant-design/icons"
-import { useEffect } from "react"
-import { ReservedRange } from "../../lib/components/Room"
+import { ReserveDay, ReserveRange } from "../../lib/components/Room"
 import { Moment } from "moment"
 import { RangeValue } from "rc-picker/lib/interface"
+import moment from "moment"
 
 interface Props {
   close: () => void,
   isOpen: boolean,
-  range: ReservedRange | undefined,
-  updateRange: (range: ReservedRange) => void
+  range: ReserveRange | undefined,
+  updateRange: (range: ReserveRange) => void
 }
 const { RangePicker } = DatePicker
 
@@ -25,34 +23,52 @@ export const ReservationModal = ({
   updateRange
 }: Props) => {
 
-  const [ selectedFromDay, setSelectedFromDay ] = useState<Day>()
-  const [ selectedToDay, setSelectedToDay ] = useState<Day>()
+  const [ selectedFromDay, setSelectedFromDay ] = useState<ReserveDay>()
+  const [ selectedToDay, setSelectedToDay ] = useState<ReserveDay>()
   const [ selectedType, setSelectedType ] = useState<ReservationTypeKey>("binding")
+  const dateFormat = "YYYY-MM-DD"
 
   useEffect(() => {
     if (range !== undefined) {
       setSelectedFromDay(range.from)
       setSelectedToDay(range.to)
-      setSelectedType(range.type)
     }
   }, [ range ])
 
-  const selectReservationEndDate = (dayValue: DayValue) => {
-    if (dayValue === undefined || dayValue === null) {
-      message.error("vyberte datum")
-      return
+  const getRangePicker = () => {
+    let from: Moment, to: Moment
+    if (range !== undefined) {
+      from = moment([ range.from.year, range.from.month - 1, range.from.day ])
+      to = moment([ range.to.year, range.to.month - 1, range.to.day ])
+    } else {
+      from = moment()
+      to = moment()
     }
-    if (selectedFromDay === undefined || selectedFromDay === null) {
-      message.error("nejdřív vyberte začátek rezervace")
-      return
-    }
-    const fromDate = CsCalendarLocale.toNativeDate(selectedFromDay)
-    const toDate = CsCalendarLocale.toNativeDate(dayValue)
-    if (toDate < fromDate) {
-      message.error("konec rezervace nesmí být dříve než začátek")
-      return
-    }
-    setSelectedToDay(dayValue)
+    return (
+      <RangePicker
+        defaultValue={ [
+          moment(from, dateFormat),
+          moment(to, dateFormat) ]
+        }
+        format={ dateFormat }
+        locale={ locale }
+        onChange={ (newRange: RangeValue<Moment>) => {
+          if (newRange !== null
+            && newRange[ 0 ] !== null
+            && newRange[ 1 ] !== null) {
+            setSelectedFromDay({
+              year: newRange[ 0 ].year(),
+              month: newRange[ 0 ].month() + 1,
+              day: newRange[ 0 ].date()
+            })
+            setSelectedToDay({
+              year: newRange[ 1 ].year(),
+              month: newRange[ 1 ].month() + 1,
+              day: newRange[ 1 ].date()
+            })
+          }
+        } } />
+    )
   }
 
   const reservationTypeMenu = (
@@ -77,7 +93,6 @@ export const ReservationModal = ({
       onCancel={ close }
       title="Rezervační formulář"
       visible={ isOpen }
-      width="80%"
       footer={ [
         <Button
           key="cancel"
@@ -85,49 +100,59 @@ export const ReservationModal = ({
           Zrušit
         </Button>,
         <Button
-          disabled={ selectedFromDay === null || selectedToDay === null }
+          disabled={
+            selectedFromDay === undefined
+            || selectedToDay === undefined
+          }
           key="ok"
           onClick={ () => {
-            // Update range in parent, if the range is valid
+            // Update parent or send to data store
+            if (selectedFromDay !== undefined && selectedToDay !== undefined) {
+              const newRange: ReserveRange = {
+                from: selectedFromDay,
+                to: selectedToDay,
+                type: selectedType
+              }
+              if (range !== undefined) {
+                newRange.id = range.id
+              }
+              updateRange(newRange)
+            }
+
+            console.log("From: ", selectedFromDay)
+            console.log("To: ", selectedToDay)
           } }>
           OK
         </Button>
       ] }>
       <Form
-        layout="inline">
-        <Form.Item
-          label="Začátek Rezervace">
-          <RangePicker
-            locale={ locale }
-            onChange={ (range: RangeValue<Moment>) => {
-              
-              if (range !== null) {
-                console.log('Range: ', range[0]?.toDate())
-                console.log('Year: ', range[ 0 ]?.year())
-                console.log('Month: ', range[ 0 ]?.month())
-                console.log('Day: ', range[ 0 ]?.date())
+        layout="vertical">
+        <Form.Item label="Datum Rezervace">
+          { getRangePicker() }
+        </Form.Item>
+        <Form.Item label="Čas příjezdu">
+          <TimePicker
+            disabledSeconds={ () => Array.from(Array(60).keys()) }
+            onChange={ (value: Moment | null) => {
+              if (value !== null && selectedFromDay !== undefined) {
+                const from = selectedFromDay
+                from.hour = value.hour()
+                from.minute = value.minute()
+                setSelectedFromDay(from)
               }
             } } />
-          {/* <DatePicker
-            value={ selectedFromDay }
-            onChange={ (dayValue: DayValue) => {
-              if (dayValue !== undefined && dayValue !== null) {
-                setSelectedFromDay(dayValue)
-              }
-            } }
-            inputPlaceholder={ TransformDate.toLocaleString(selectedFromDay, "vyberte datum") }
-            shouldHighlightWeekends
-            locale={ CsCalendarLocale }
-          /> */}
         </Form.Item>
-        <Form.Item
-          label="Konec Rezervace">
-          {/* <DatePicker
-            value={ selectedToDay }
-            onChange={ (selectReservationEndDate) }
-            inputPlaceholder={ TransformDate.toLocaleString(selectedToDay, "vyberte datum") }
-            shouldHighlightWeekends
-            locale={ CsCalendarLocale } /> */}
+        <Form.Item label="Čas odjezdu">
+          <TimePicker
+            disabledSeconds={ () => Array.from(Array(60).keys()) }
+            onChange={ (value: Moment | null) => {
+              if (value !== null && selectedToDay !== undefined) {
+                const to = selectedToDay
+                to.hour = value.hour()
+                to.minute = value.minute()
+                setSelectedToDay(to)
+              }
+            } } />
         </Form.Item>
         <Form.Item
           label="Typ Rezervace">

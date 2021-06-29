@@ -5,94 +5,10 @@ import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
 import { Link } from 'react-router-dom'
-import { Room } from '../../lib/components/Room'
+import { rooms } from '../../seed'
 
 
 export const Home = () => {
-  const rooms: Room[] = [
-    {
-      id: 1,
-      name: "Apartman 2 + 2",
-      reservedRanges: [
-        {
-          id: 1,
-          from: {
-            year: 2021,
-            month: 6,
-            day: 1
-          },
-          to: {
-            year: 2021,
-            month: 6,
-            day: 5
-          },
-          type: "inhabited"
-        },
-        {
-          id: 2,
-          from: {
-            year: 2021,
-            month: 6,
-            day: 14
-          },
-          to: {
-            year: 2021,
-            month: 6,
-            day: 18
-          },
-          type: "accommodated"
-        },
-        {
-          id: 3,
-          from: {
-            year: 2021,
-            month: 6,
-            day: 28,
-          },
-          to: {
-            year: 2021,
-            month: 6,
-            day: 30,
-          },
-          type: "binding"
-        },
-      ]
-    },
-    {
-      id: 2,
-      name: "Apartman 2 + 4",
-      reservedRanges: [
-        {
-          id: 4,
-          from: {
-            year: 2021,
-            month: 6,
-            day: 7,
-          },
-          to: {
-            year: 2021,
-            month: 6,
-            day: 11,
-          },
-          type: "binding"
-        },
-        {
-          id: 5,
-          from: {
-            year: 2021,
-            month: 6,
-            day: 23,
-          },
-          to: {
-            year: 2021,
-            month: 6,
-            day: 25,
-          },
-          type: "nonbinding"
-        }
-      ]
-    }
-  ]
   return (
     <Content className="home">
       <div className="home__listings">

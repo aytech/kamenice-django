@@ -5,16 +5,16 @@ import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
 import { ReservationTypeKey } from '../../lib/components/Reservation'
-import { ReservedRange, Room } from '../../lib/components/Room'
+import { ReserveRange, Room } from '../../lib/components/Room'
 import { ReservationModal } from '../ReservationModal'
 
 interface Props {
   room: Room
 }
-type CustomDayClassNameItem = Day & { className: string, rangeId: number };
+type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
 
 export const ReserveCalendar = ({ room }: Props) => {
-  const [ reservedRange, setReservedRange ] = useState<ReservedRange | undefined>()
+  const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
 
@@ -31,18 +31,19 @@ export const ReserveCalendar = ({ room }: Props) => {
       default: return "greenDay"
     }
   }
-  const updateReservedRange = (newRange: ReservedRange): void => {
+  const updateReservedRange = (newRange: ReserveRange): void => {
     // TODO:
     // 1. Filter ranges that are not the input range
     // 2. Update state with other + new range
     // 3. Save room with new ranges into the data store (figure out the logic)
     const otherRanges = room.reservedRanges.filter(range => range.id !== newRange.id)
+    console.log("Range in input: ", newRange)
     console.log('Ranges not specified in input: ', otherRanges)
   }
 
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
-    room.reservedRanges.forEach((range: ReservedRange) => {
+    room.reservedRanges.forEach((range: ReserveRange) => {
       TransformDate.getDaysFromRange(range.from, range.to).forEach((day: Day) => {
         reservedDays.push({ className: getDayClassName(range.type), rangeId: range.id, ...day })
       })

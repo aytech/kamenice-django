@@ -9,6 +9,10 @@ import './index.css'
 import { Affix, Layout } from 'antd'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { AppHeader, Home, Overview } from './sections'
+import moment from 'moment'
+import 'moment/locale/cs'
+
+moment.locale("cs")
 
 const client = new ApolloClient({
   uri: "/api",
