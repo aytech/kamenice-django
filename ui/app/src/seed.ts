@@ -17,9 +17,7 @@ export const rooms: Room[] = [
         to: {
           year: 2021,
           month: 6,
-          day: 5,
-          hour: 14,
-          minute: 0
+          day: 5
         },
         type: "inhabited"
       },

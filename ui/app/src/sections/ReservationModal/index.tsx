@@ -27,6 +27,7 @@ export const ReservationModal = ({
   const [ selectedToDay, setSelectedToDay ] = useState<ReserveDay>()
   const [ selectedType, setSelectedType ] = useState<ReservationTypeKey>("binding")
   const dateFormat = "YYYY-MM-DD"
+  const timeFormat = "HH:mm"
 
   useEffect(() => {
     if (range !== undefined) {
@@ -71,6 +72,13 @@ export const ReservationModal = ({
     )
   }
 
+  const getDefaultTime = (day: ReserveDay | undefined): Moment | undefined => {
+    if (day !== undefined && day.hour !== undefined && day.minute !== undefined) {
+      return moment([ day.year, day.month, day.day, day.hour, day.minute ])
+    }
+    return undefined
+  }
+
   const reservationTypeMenu = (
     <Menu>
       <Menu.Item key={ Reservation.getType("binding") } onClick={ () => { setSelectedType("binding") } }>
@@ -106,7 +114,6 @@ export const ReservationModal = ({
           }
           key="ok"
           onClick={ () => {
-            // Update parent or send to data store
             if (selectedFromDay !== undefined && selectedToDay !== undefined) {
               const newRange: ReserveRange = {
                 from: selectedFromDay,
@@ -118,9 +125,6 @@ export const ReservationModal = ({
               }
               updateRange(newRange)
             }
-
-            console.log("From: ", selectedFromDay)
-            console.log("To: ", selectedToDay)
           } }>
           OK
         </Button>
@@ -132,7 +136,9 @@ export const ReservationModal = ({
         </Form.Item>
         <Form.Item label="Čas příjezdu">
           <TimePicker
-            disabledSeconds={ () => Array.from(Array(60).keys()) }
+            value={ getDefaultTime(selectedFromDay) }
+            format={ timeFormat }
+            locale={ locale }
             onChange={ (value: Moment | null) => {
               if (value !== null && selectedFromDay !== undefined) {
                 const from = selectedFromDay
@@ -140,11 +146,13 @@ export const ReservationModal = ({
                 from.minute = value.minute()
                 setSelectedFromDay(from)
               }
-            } } />
+            } }
+          />
         </Form.Item>
         <Form.Item label="Čas odjezdu">
           <TimePicker
-            disabledSeconds={ () => Array.from(Array(60).keys()) }
+            value={ getDefaultTime(selectedToDay) }
+            format={ timeFormat }
             onChange={ (value: Moment | null) => {
               if (value !== null && selectedToDay !== undefined) {
                 const to = selectedToDay
@@ -152,7 +160,8 @@ export const ReservationModal = ({
                 to.minute = value.minute()
                 setSelectedToDay(to)
               }
-            } } />
+            } }
+          />
         </Form.Item>
         <Form.Item
           label="Typ Rezervace">
