@@ -6,6 +6,7 @@ import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendar
 import './styles.css'
 import { ReservationTypeKey } from '../../lib/components/Reservation'
 import { ReserveRange, Room } from '../../lib/components/Room'
+import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
 
 interface Props {
@@ -32,13 +33,12 @@ export const ReserveCalendar = ({ room }: Props) => {
     }
   }
   const updateReservedRange = (newRange: ReserveRange): void => {
-    // TODO:
-    // 1. Filter ranges that are not the input range
-    // 2. Update state with other + new range
-    // 3. Save room with new ranges into the data store (figure out the logic)
-    const otherRanges = room.reservedRanges.filter(range => range.id !== newRange.id)
-    console.log("Range in input: ", newRange)
-    console.log('Ranges not specified in input: ', otherRanges)
+    room.reservedRanges = [
+      ...room.reservedRanges.filter((range: ReserveRange) => {
+        return range.id !== undefined && range.id !== newRange.id
+      }),
+      newRange
+    ]
   }
 
   useEffect(() => {
@@ -50,6 +50,16 @@ export const ReserveCalendar = ({ room }: Props) => {
     })
     setReservedDays(reservedDays)
   }, [ room.reservedRanges ])
+
+  const setNewReservationRange = (dayValue: DayValue): void => {
+    if (dayValue !== undefined && dayValue !== null) {
+      setReservedRange({
+        from: { ...dayValue, hour: defaultArrivalHour, minute: 0 },
+        to: { ...dayValue, day: dayValue.day + 1, hour: defaultDepartureHour, minute: 0 },
+        type: "binding"
+      })
+    }
+  }
 
   return (
     <>
@@ -65,7 +75,9 @@ export const ReserveCalendar = ({ room }: Props) => {
                   && day.month === dayValue.month
                   && day.day === dayValue.day
               })
-              if (rangeDay !== undefined) {
+              if (rangeDay === undefined) {
+                setNewReservationRange(dayValue)
+              } else {
                 setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
               }
               setModalOpen(true)

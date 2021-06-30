@@ -7,6 +7,7 @@ import { ReserveDay, ReserveRange } from "../../lib/components/Room"
 import { Moment } from "moment"
 import { RangeValue } from "rc-picker/lib/interface"
 import moment from "moment"
+import { defaultArrivalHour, defaultDepartureHour } from "../../lib/Constants"
 
 interface Props {
   close: () => void,
@@ -33,24 +34,30 @@ export const ReservationModal = ({
     if (range !== undefined) {
       setSelectedFromDay(range.from)
       setSelectedToDay(range.to)
+      setSelectedType(range.type)
     }
   }, [ range ])
 
   const getRangePicker = () => {
     let from: Moment, to: Moment
-    if (range !== undefined) {
-      from = moment([ range.from.year, range.from.month - 1, range.from.day ])
-      to = moment([ range.to.year, range.to.month - 1, range.to.day ])
+    if (selectedFromDay !== undefined) {
+      const { year, month, day } = selectedFromDay
+      from = moment([ year, month - 1, day ])
     } else {
       from = moment()
+    }
+    if (selectedToDay !== undefined) {
+      const { year, month, day } = selectedToDay
+      to = moment([ year, month - 1, day ])
+    } else {
       to = moment()
     }
     return (
       <RangePicker
-        defaultValue={ [
+        value={ [
           moment(from, dateFormat),
-          moment(to, dateFormat) ]
-        }
+          moment(to, dateFormat)
+        ] }
         format={ dateFormat }
         locale={ locale }
         onChange={ (newRange: RangeValue<Moment>) => {
@@ -60,12 +67,16 @@ export const ReservationModal = ({
             setSelectedFromDay({
               year: newRange[ 0 ].year(),
               month: newRange[ 0 ].month() + 1,
-              day: newRange[ 0 ].date()
+              day: newRange[ 0 ].date(),
+              hour: selectedFromDay?.hour === undefined ? defaultArrivalHour : selectedFromDay.hour,
+              minute: selectedFromDay?.minute === undefined ? 0 : selectedFromDay.minute
             })
             setSelectedToDay({
               year: newRange[ 1 ].year(),
               month: newRange[ 1 ].month() + 1,
-              day: newRange[ 1 ].date()
+              day: newRange[ 1 ].date(),
+              hour: selectedToDay?.hour === undefined ? defaultDepartureHour : selectedToDay.hour,
+              minute: selectedToDay?.minute === undefined ? 0 : selectedToDay.minute
             })
           }
         } } />
@@ -120,11 +131,12 @@ export const ReservationModal = ({
                 to: selectedToDay,
                 type: selectedType
               }
-              if (range !== undefined) {
+              if (range !== undefined && range.id !== undefined) {
                 newRange.id = range.id
               }
               updateRange(newRange)
             }
+            close()
           } }>
           OK
         </Button>
