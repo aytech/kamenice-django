@@ -8,13 +8,20 @@ import { ReservationTypeKey } from '../../lib/components/Reservation'
 import { ReserveRange, Room } from '../../lib/components/Room'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
+import { DrawerType } from '../../lib/Types'
 
 interface Props {
+  openDrawer: () => void,
   room: Room
+  setDrawerType: (type: DrawerType) => void
 }
 type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
 
-export const ReserveCalendar = ({ room }: Props) => {
+export const ReserveCalendar = ({
+  openDrawer,
+  room,
+  setDrawerType
+}: Props) => {
   const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
@@ -90,7 +97,9 @@ export const ReserveCalendar = ({ room }: Props) => {
       <ReservationModal
         close={ () => { setModalOpen(false) } }
         isOpen={ modalOpen }
+        openDrawer={ openDrawer }
         range={ reservedRange }
+        setDrawerType={ setDrawerType }
         updateRange={ updateReservedRange } />
     </>
   )

@@ -8,11 +8,14 @@ import { Moment } from "moment"
 import { RangeValue } from "rc-picker/lib/interface"
 import moment from "moment"
 import { defaultArrivalHour, defaultDepartureHour } from "../../lib/Constants"
+import { DrawerType } from "../../lib/Types"
 
 interface Props {
   close: () => void,
   isOpen: boolean,
+  openDrawer: () => void,
   range: ReserveRange | undefined,
+  setDrawerType: (type: DrawerType) => void,
   updateRange: (range: ReserveRange) => void
 }
 const { RangePicker } = DatePicker
@@ -20,7 +23,9 @@ const { RangePicker } = DatePicker
 export const ReservationModal = ({
   close,
   isOpen,
+  openDrawer,
   range,
+  setDrawerType,
   updateRange
 }: Props) => {
 
@@ -113,6 +118,14 @@ export const ReservationModal = ({
       title="Rezervační formulář"
       visible={ isOpen }
       footer={ [
+        <Button
+          key="create-user"
+          onClick={ () => {
+            setDrawerType("user")
+            openDrawer()
+          } }>
+          Vytvořit Uživatele
+        </Button>,
         <Button
           key="cancel"
           onClick={ close }>

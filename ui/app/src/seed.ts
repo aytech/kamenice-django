@@ -9,14 +9,14 @@ export const rooms: Room[] = [
         id: 1,
         from: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 1,
           hour: 14,
           minute: 0
         },
         to: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 5
         },
         type: "inhabited"
@@ -25,14 +25,14 @@ export const rooms: Room[] = [
         id: 2,
         from: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 14,
           hour: 15,
           minute: 30
         },
         to: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 18,
           hour: 14,
           minute: 15
@@ -43,14 +43,14 @@ export const rooms: Room[] = [
         id: 3,
         from: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 28,
           hour: 14,
           minute: 0
         },
         to: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 30,
           hour: 14,
           minute: 30
@@ -67,14 +67,14 @@ export const rooms: Room[] = [
         id: 4,
         from: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 7,
           hour: 18,
           minute: 15
         },
         to: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 11,
           hour: 14,
           minute: 0
@@ -85,14 +85,14 @@ export const rooms: Room[] = [
         id: 5,
         from: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 23,
           hour: 10,
           minute: 0
         },
         to: {
           year: 2021,
-          month: 6,
+          month: 7,
           day: 25,
           hour: 14,
           minute: 0
