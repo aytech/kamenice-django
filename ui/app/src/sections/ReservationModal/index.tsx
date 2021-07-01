@@ -123,6 +123,9 @@ export const ReservationModal = ({
           onClick={ () => {
             setDrawerType("user")
             openDrawer()
+          } }
+          style={ {
+            float: "left"
           } }>
           Vytvořit Uživatele
         </Button>,
