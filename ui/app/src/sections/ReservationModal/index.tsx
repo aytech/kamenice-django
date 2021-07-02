@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Button, DatePicker, Form, Modal, Select } from "antd"
+import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
 import locale from "antd/es/date-picker/locale/cs_CZ"
 import { Reservation } from "../../lib/components/Reservation"
 import { ReserveRange } from "../../lib/components/Room"
@@ -7,6 +7,8 @@ import { Moment } from "moment"
 import moment from "moment"
 import { DrawerType } from "../../lib/Types"
 import { Store } from "rc-field-form/lib/interface"
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import "./styles.css"
 
 interface Props {
   close: () => void,
@@ -124,8 +126,60 @@ export const ReservationModal = ({
             showTime />
         </Form.Item>
         <Form.Item
+          hasFeedback
+          label="Host"
+          name="guest"
+          required
+          rules={ [
+            {
+              required: true,
+              message: "vyberte hosta"
+            }
+          ] }>
+          <Select>
+            <Select.Option value="1">Some name</Select.Option>
+            <Select.Option value="2">Some other name</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.List name="users">
+          { (fields, { add, remove }) => (
+            <>
+              { fields.map(({ key, name, fieldKey, ...restField }) => (
+                <Space
+                  align="baseline"
+                  className="roommate-list">
+                  <Form.Item
+                    { ...restField }
+                    name={ [ name, 'first' ] }
+                    fieldKey={ [ fieldKey, 'first' ] }
+                  >
+                    <Select style={ { width: "100%" } }>
+                      <Select.Option value="s1">Some roommate</Select.Option>
+                      <Select.Option value="s2">Some other roommate</Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={ () => remove(name) } />
+                </Space>
+              )) }
+              <Form.Item>
+                <Button type="dashed" onClick={ () => add() } block icon={ <PlusOutlined /> }>
+                  Přidat spolubydlícího
+                </Button>
+              </Form.Item>
+            </>
+          ) }
+        </Form.List>
+        <Form.Item
+          hasFeedback
           label="Typ Rezervace"
-          name="type">
+          name="type"
+          required
+          rules={ [
+            {
+              required: true,
+              message: "vyberte typ rezervace"
+            }
+          ] }>
           <Select>
             <Select.Option value="binding">
               { Reservation.getType("binding") }
