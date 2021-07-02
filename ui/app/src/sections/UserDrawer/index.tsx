@@ -2,6 +2,7 @@ import React from "react"
 import { Button, Drawer, Form, Input, Select } from "antd"
 import { MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
+import { Rule, Store } from "rc-field-form/lib/interface"
 
 interface Props {
   setVisible: (visible: boolean) => void,
@@ -14,16 +15,19 @@ export const UserDrawer = ({
 }: Props) => {
 
   const [ form ] = Form.useForm()
-  const phonePrefixSelector = (
-    <Form.Item name="phone-prefix" noStyle>
-      <Select
-        defaultValue="420"
-        options={ [
-          { label: "+420", value: "420" }
-        ] }
-        style={ { width: 80 } } />
-    </Form.Item>
-  )
+  const removeWhiteSpace = (value: string) => value.trim()
+  const requiredRules: Rule[] = [
+    {
+      required: true,
+      message: "pole je povinné",
+      transform: removeWhiteSpace
+    }
+  ]
+  const initialValues: Store = {
+    phone: {
+      code: "+420"
+    }
+  }
   const emailPrefixIcon = (
     <Form.Item name="email-prefix" noStyle>
       <MailOutlined />
@@ -46,7 +50,7 @@ export const UserDrawer = ({
             onClick={ () => {
               form.validateFields()
                 .then(() => {
-                  console.log("Submit to data store")
+                  console.log("Submit to data store: ", form.getFieldsValue(true))
                 })
                 .catch((error) => {
                   console.log("Fix errors: ", error)
@@ -59,6 +63,7 @@ export const UserDrawer = ({
       }>
       <Form
         form={ form }
+        initialValues={ initialValues }
         layout="vertical"
         name="user">
         <Title level={ 5 }>Osobní údaje</Title>
@@ -67,12 +72,7 @@ export const UserDrawer = ({
           label="Jméno"
           name="name"
           required
-          rules={ [
-            {
-              required: true,
-              message: "pole je povinné"
-            }
-          ] }>
+          rules={ requiredRules }>
           <Input placeholder="Vaše Jméno" />
         </Form.Item>
         <Form.Item
@@ -80,25 +80,15 @@ export const UserDrawer = ({
           label="Příjmení"
           name="surname"
           required
-          rules={ [
-            {
-              required: true,
-              message: "pole je povinné"
-            }
-          ] }>
+          rules={ requiredRules }>
           <Input placeholder="Vaše Příjmení" />
         </Form.Item>
         <Form.Item
           hasFeedback
           label="Číslo OP"
-          name="id"
+          name="obcanka"
           required
-          rules={ [
-            {
-              required: true,
-              message: "pole je povinné"
-            }
-          ] }>
+          rules={ requiredRules }>
           <Input placeholder="číslo občanského průkazu" />
         </Form.Item>
         <Form.Item
@@ -110,29 +100,38 @@ export const UserDrawer = ({
         <Form.Item
           label="Telefonní Číslo"
           name="phone"
-          required
-          rules={ [
-            {
-              required: true,
-              message: "pole je povinné"
-            }
-          ] }>
-          <Input
-            addonBefore={ phonePrefixSelector }
-            placeholder="telefonní číslo"
-          />
+          required>
+          <Input.Group compact>
+            <Form.Item
+              hasFeedback
+              name={ [ "phone", "code" ] }
+              rules={ requiredRules }
+              style={ {
+                marginBottom: 0,
+                width: "20%"
+              } }
+              valuePropName="value">
+              <Input
+                placeholder="kód" />
+            </Form.Item>
+            <Form.Item
+              hasFeedback
+              name={ [ "phone", "number" ] }
+              rules={ requiredRules }
+              style={ {
+                marginBottom: 0,
+                width: "80%"
+              } }>
+              <Input placeholder="číslo" />
+            </Form.Item>
+          </Input.Group>
         </Form.Item>
         <Form.Item
           hasFeedback
           label="E-Mail"
           name="email"
           required
-          rules={ [
-            {
-              required: true,
-              message: "pole je povinné"
-            }
-          ] }>
+          rules={ requiredRules }>
           <Input
             addonBefore={ emailPrefixIcon }
             placeholder="e-mail" />
@@ -161,7 +160,7 @@ export const UserDrawer = ({
             </Form.Item>
             <Form.Item
               style={ { marginBottom: 0, width: "50%" } }
-              name={ [ "address", "province" ] }>
+              name={ [ "address", "obec" ] }>
               <Input placeholder="Obec" />
             </Form.Item>
           </Input.Group>
@@ -184,11 +183,6 @@ export const UserDrawer = ({
             </Form.Item>
           </Input.Group>
         </Form.Item>
-        {/* <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Vytvořit
-          </Button>
-        </Form.Item> */}
       </Form>
     </Drawer>
   )

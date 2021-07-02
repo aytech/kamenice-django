@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { Button, DatePicker, Dropdown, Form, Menu, Modal, TimePicker } from "antd"
+import { Button, DatePicker, Form, Modal, Select, TimePicker } from "antd"
 import locale from "antd/es/date-picker/locale/cs_CZ"
-import { Reservation, ReservationTypeKey } from "../../lib/components/Reservation"
-import { DownOutlined } from "@ant-design/icons"
+import { Reservation } from "../../lib/components/Reservation"
 import { ReserveDay, ReserveRange } from "../../lib/components/Room"
 import { Moment } from "moment"
 import { RangeValue } from "rc-picker/lib/interface"
 import moment from "moment"
 import { defaultArrivalHour, defaultDepartureHour } from "../../lib/Constants"
 import { DrawerType } from "../../lib/Types"
+import { Store } from "rc-field-form/lib/interface"
 
 interface Props {
   close: () => void,
@@ -31,17 +31,16 @@ export const ReservationModal = ({
 
   const [ selectedFromDay, setSelectedFromDay ] = useState<ReserveDay>()
   const [ selectedToDay, setSelectedToDay ] = useState<ReserveDay>()
-  const [ selectedType, setSelectedType ] = useState<ReservationTypeKey>("binding")
+  const [ form ] = Form.useForm()
+  const initialValues: Store = {
+    type: range === undefined ? "binding" : range.type
+  }
   const dateFormat = "YYYY-MM-DD"
   const timeFormat = "HH:mm"
 
   useEffect(() => {
-    if (range !== undefined) {
-      setSelectedFromDay(range.from)
-      setSelectedToDay(range.to)
-      setSelectedType(range.type)
-    }
-  }, [ range ])
+    form.resetFields()
+  })
 
   const getRangePicker = () => {
     let from: Moment, to: Moment
@@ -95,23 +94,6 @@ export const ReservationModal = ({
     return undefined
   }
 
-  const reservationTypeMenu = (
-    <Menu>
-      <Menu.Item key={ Reservation.getType("binding") } onClick={ () => { setSelectedType("binding") } }>
-        { Reservation.getType("binding") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("nonbinding") } onClick={ () => { setSelectedType("nonbinding") } }>
-        { Reservation.getType("nonbinding") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("accommodated") } onClick={ () => { setSelectedType("accommodated") } }>
-        { Reservation.getType("accommodated") }
-      </Menu.Item>
-      <Menu.Item key={ Reservation.getType("inhabited") } onClick={ () => { setSelectedType("inhabited") } }>
-        { Reservation.getType("inhabited") }
-      </Menu.Item>
-    </Menu>
-  )
-
   return (
     <Modal
       onCancel={ close }
@@ -145,24 +127,38 @@ export const ReservationModal = ({
               const newRange: ReserveRange = {
                 from: selectedFromDay,
                 to: selectedToDay,
-                type: selectedType
+                type: form.getFieldValue("type")
               }
               if (range !== undefined && range.id !== undefined) {
                 newRange.id = range.id
               }
               updateRange(newRange)
+              form.validateFields()
+                .then(() => {
+                  console.log('Submit form: ', form.getFieldsValue(true))
+                })
+                .catch((error: string) => {
+                  console.log('Oops: ', error)
+                })
             }
-            close()
+            // form.resetFields()
+            // close()
           } }>
           OK
         </Button>
       ] }>
       <Form
+        form={ form }
+        initialValues={ initialValues }
         layout="vertical">
-        <Form.Item label="Datum Rezervace">
+        <Form.Item
+          label="Datum Rezervace"
+          name="dates">
           { getRangePicker() }
         </Form.Item>
-        <Form.Item label="Čas příjezdu">
+        <Form.Item
+          label="Čas příjezdu"
+          name="arrival">
           <TimePicker
             value={ getDefaultTime(selectedFromDay) }
             format={ timeFormat }
@@ -177,7 +173,9 @@ export const ReservationModal = ({
             } }
           />
         </Form.Item>
-        <Form.Item label="Čas odjezdu">
+        <Form.Item
+          label="Čas odjezdu"
+          name="departure">
           <TimePicker
             value={ getDefaultTime(selectedToDay) }
             format={ timeFormat }
@@ -192,14 +190,22 @@ export const ReservationModal = ({
           />
         </Form.Item>
         <Form.Item
-          label="Typ Rezervace">
-          <Dropdown
-            overlay={ reservationTypeMenu }
-            trigger={ [ 'click' ] }>
-            <Button type="link">
-              { Reservation.getType(selectedType) } <DownOutlined />
-            </Button>
-          </Dropdown>
+          label="Typ Rezervace"
+          name="type">
+          <Select>
+            <Select.Option value="binding">
+              { Reservation.getType("binding") }
+            </Select.Option>
+            <Select.Option value="nonbinding">
+              { Reservation.getType("nonbinding") }
+            </Select.Option>
+            <Select.Option value="accommodated">
+              { Reservation.getType("accommodated") }
+            </Select.Option>
+            <Select.Option value="inhabited">
+              { Reservation.getType("inhabited") }
+            </Select.Option>
+          </Select>
         </Form.Item>
       </Form>
     </Modal>
