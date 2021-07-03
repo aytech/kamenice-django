@@ -4,11 +4,10 @@ import Title from 'antd/lib/typography/Title'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
-import { ReservationTypeKey } from '../../lib/components/Reservation'
-import { ReserveRange, Room } from '../../lib/components/Room'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { DrawerType } from '../../lib/Types'
+import { DrawerType, ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
+import { guests } from '../../seed'
 
 interface Props {
   openDrawer: () => void,
@@ -96,6 +95,7 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => { setModalOpen(false) } }
+        guests={ guests }
         isOpen={ modalOpen }
         openDrawer={ openDrawer }
         range={ reservedRange }

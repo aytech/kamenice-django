@@ -1,4 +1,4 @@
-import { Room } from "./lib/components/Room";
+import { Guest, Room } from "./lib/Types";
 
 export const rooms: Room[] = [
   {
@@ -100,5 +100,84 @@ export const rooms: Room[] = [
         type: "nonbinding"
       }
     ]
+  }
+]
+
+export const guests: Guest[] = [
+  {
+    address: {
+      obec: "Praha 8",
+      psc: 18200,
+      street: "Černého"
+    },
+    citizenship: "CZE",
+    email: "oyapparov@gmail.com",
+    gender: "male",
+    id: 1,
+    name: "Oleg",
+    obcanka: "12345/8927",
+    phone: {
+      code: 420,
+      number: 12346789
+    },
+    surname: "Yapparov",
+    visa: "123"
+  },
+  {
+    address: {
+      obec: "Praha 8",
+      psc: 18200,
+      street: "Černého"
+    },
+    citizenship: "CZE",
+    email: "ayapparov@gmail.com",
+    gender: "female",
+    id: 2,
+    name: "Alice",
+    obcanka: "12345/8927",
+    phone: {
+      code: 420,
+      number: 12346789
+    },
+    surname: "Ambrozova",
+    visa: "123"
+  },
+  {
+    address: {
+      obec: "Praha 8",
+      psc: 18200,
+      street: "Černého"
+    },
+    citizenship: "CZE",
+    email: "syapparov@gmail.com",
+    gender: "male",
+    id: 3,
+    name: "Štěpán",
+    obcanka: "12345/8927",
+    phone: {
+      code: 420,
+      number: 12346789
+    },
+    surname: "Yapparov",
+    visa: "123"
+  },
+  {
+    address: {
+      obec: "Praha 8",
+      psc: 18200,
+      street: "Černého"
+    },
+    citizenship: "CZE",
+    email: "a.yapik@gmail.com",
+    gender: "female",
+    id: 4,
+    name: "Adéla",
+    obcanka: "12345/8927",
+    phone: {
+      code: 420,
+      number: 12346789
+    },
+    surname: "Yapparov",
+    visa: "123"
   }
 ]

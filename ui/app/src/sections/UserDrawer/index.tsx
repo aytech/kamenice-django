@@ -137,7 +137,8 @@ export const UserDrawer = ({
             placeholder="e-mail" />
         </Form.Item>
         <Form.Item
-          label="Pohlaví">
+          label="Pohlaví"
+          name="gender">
           <Select
             onChange={ (value) => { console.log(value) } }
             placeholder="vyberte ze seznamu">
@@ -147,7 +148,8 @@ export const UserDrawer = ({
         </Form.Item>
         <Title level={ 5 }>Trvalé bydliště</Title>
         <Form.Item
-          label="Ulice">
+          label="Ulice"
+          name={ [ "address", "street" ] }>
           <Input placeholder="ulice" />
         </Form.Item>
         <Form.Item
