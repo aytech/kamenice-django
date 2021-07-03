@@ -1,4 +1,4 @@
-import { Guest, Room } from "./lib/Types";
+import { GuestForm, Room } from "./lib/Types";
 
 export const rooms: Room[] = [
   {
@@ -103,14 +103,14 @@ export const rooms: Room[] = [
   }
 ]
 
-export const guests: Guest[] = [
+export const guests: GuestForm[] = [
   {
     address: {
       obec: "Praha 8",
       psc: 18200,
       street: "Černého"
     },
-    citizenship: "CZE",
+    citizenship: { selected: "RU" },
     email: "oyapparov@gmail.com",
     gender: "male",
     id: 1,
@@ -123,32 +123,32 @@ export const guests: Guest[] = [
     surname: "Yapparov",
     visa: "123"
   },
+  // {
+  //   address: {
+  //     obec: "Praha 8",
+  //     psc: 18200,
+  //     street: "Černého"
+  //   },
+  //   citizenship: { selected: "CZE" },
+  //   email: "a.ambrozova@gmail.com",
+  //   gender: "female",
+  //   id: 2,
+  //   name: "Alice",
+  //   obcanka: "12345/8927",
+  //   phone: {
+  //     code: 420,
+  //     number: 12346789
+  //   },
+  //   surname: "Ambrozova",
+  //   visa: "123"
+  // },
   {
     address: {
       obec: "Praha 8",
       psc: 18200,
       street: "Černého"
     },
-    citizenship: "CZE",
-    email: "ayapparov@gmail.com",
-    gender: "female",
-    id: 2,
-    name: "Alice",
-    obcanka: "12345/8927",
-    phone: {
-      code: 420,
-      number: 12346789
-    },
-    surname: "Ambrozova",
-    visa: "123"
-  },
-  {
-    address: {
-      obec: "Praha 8",
-      psc: 18200,
-      street: "Černého"
-    },
-    citizenship: "CZE",
+    citizenship: { selected: "CZE" },
     email: "syapparov@gmail.com",
     gender: "male",
     id: 3,
@@ -167,7 +167,7 @@ export const guests: Guest[] = [
       psc: 18200,
       street: "Černého"
     },
-    citizenship: "CZE",
+    citizenship: { selected: "CZE" },
     email: "a.yapik@gmail.com",
     gender: "female",
     id: 4,

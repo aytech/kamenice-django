@@ -3,19 +3,24 @@ import { Button, Drawer, Form, Input, Select } from "antd"
 import { MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Rule, Store } from "rc-field-form/lib/interface"
+import { GuestForm } from "../../lib/Types"
 
 interface Props {
+  setGuest: (guest: GuestForm) => void,
   setVisible: (visible: boolean) => void,
   visible: boolean
 }
 
 export const UserDrawer = ({
+  setGuest,
   setVisible,
   visible
 }: Props) => {
 
   const [ form ] = Form.useForm()
-  const removeWhiteSpace = (value: string) => value.trim()
+  const removeWhiteSpace = (value: string | undefined): string | undefined => {
+    return value === undefined ? value : value.trim()
+  }
   const requiredRules: Rule[] = [
     {
       required: true,
@@ -51,6 +56,8 @@ export const UserDrawer = ({
               form.validateFields()
                 .then(() => {
                   console.log("Submit to data store: ", form.getFieldsValue(true))
+                  setGuest(form.getFieldsValue(true))
+                  setVisible(false)
                 })
                 .catch((error) => {
                   console.log("Fix errors: ", error)

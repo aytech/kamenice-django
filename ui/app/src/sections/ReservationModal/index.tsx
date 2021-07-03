@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { Button, DatePicker, Form, Modal, Select, Space } from "antd"
 import locale from "antd/es/date-picker/locale/cs_CZ"
 import { Moment } from "moment"
-import { DrawerType, Guest, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
+import { DrawerType, GuestForm, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
 import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
 import { Store } from "rc-field-form/lib/interface"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
@@ -12,7 +12,7 @@ import { ReservationFormHelper } from "../../lib/components/ReservationFormHelpe
 
 interface Props {
   close: () => void,
-  guests: Guest[],
+  guestList: GuestForm[],
   isOpen: boolean,
   openDrawer: () => void,
   range: ReserveRange | undefined,
@@ -23,7 +23,7 @@ const { RangePicker } = DatePicker
 
 export const ReservationModal = ({
   close,
-  guests,
+  guestList,
   isOpen,
   openDrawer,
   range,
@@ -32,7 +32,7 @@ export const ReservationModal = ({
 }: Props) => {
 
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>(
-    Array.from(guests, (guest: Guest): OptionsType => {
+    Array.from(guestList, (guest: GuestForm): OptionsType => {
       return {
         label: `${ guest.name } ${ guest.surname }`,
         value: guest.id === undefined ? guest.email : guest.id
@@ -104,6 +104,15 @@ export const ReservationModal = ({
     }
   }, [ form, isOpen ])
 
+  useEffect(() => {
+    setGuestOptions(Array.from(guestList, (guest: GuestForm): OptionsType => {
+      return {
+        label: `${ guest.name } ${ guest.surname }`,
+        value: guest.id === undefined ? guest.email : guest.id
+      }
+    }))
+  }, [ guestList ])
+
   return (
     <Modal
       onCancel={ close }
@@ -154,7 +163,7 @@ export const ReservationModal = ({
               )) }
               <Form.Item>
                 <Button
-                  disabled={ fields.length >= guests.length }
+                  disabled={ fields.length >= guestList.length }
                   type="dashed"
                   onClick={ () => add() }
                   block

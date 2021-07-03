@@ -43,8 +43,10 @@ export const ReservationFormHelper: IReservationFormHelper = {
           if (roommates === undefined || roommates.length === 0) {
             return Promise.resolve()
           }
-          const duplicate = roommates.filter((id: OID) => id.id === value)
-          if (duplicate === undefined) {
+          const duplicate = roommates.filter((id: OID | undefined) => {
+            return id !== undefined && id.id === value
+          })
+          if (duplicate === undefined || duplicate.length === 0) {
             return Promise.resolve()
           }
           return Promise.reject(new Error("Fail guest validation, equals to roommate"))
@@ -61,8 +63,10 @@ export const ReservationFormHelper: IReservationFormHelper = {
       {
         message: "spolubydlící je již vybrán",
         validator: (_rule, value: number): Promise<void | Error> => {
-          const values: Array<OID> = form.getFieldValue("roommates").filter((id: OID) => id.id === value)
-          if (values.length <= 1) {
+          const duplicates: Array<OID> = form.getFieldValue("roommates").filter((id: OID | undefined) => {
+            return id !== undefined && id.id === value
+          })
+          if (duplicates === undefined || duplicates.length <= 1) {
             return Promise.resolve()
           }
           return Promise.reject(new Error("Fail roommate validation, duplicate value"))

@@ -44,12 +44,17 @@ interface Address {
   street?: string
 }
 
-export interface Guest {
+interface Citizenship {
+  new?: string
+  selected?: string
+}
+
+export interface GuestForm {
   address?: Address
-  citizenship: string
+  citizenship?: Citizenship
   email: string
   gender?: string
-  id?: number,
+  id?: number
   name: string
   obcanka: string
   phone: Phone
