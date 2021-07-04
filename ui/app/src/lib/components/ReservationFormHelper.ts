@@ -8,11 +8,26 @@ interface OID {
 interface IReservationFormHelper {
   getRequiredRule: (message: string) => Rule
   guestValidators: (form: FormInstance) => Rule[]
+  purposeOptions: OptionsType[]
   reservationOptions: (OptionsType & { value: ReservationTypeKey })[]
   roommateValidators: (form: FormInstance) => Rule[]
 }
 
 export const ReservationFormHelper: IReservationFormHelper = {
+  purposeOptions: [
+    {
+      label: "Z administrace",
+      value: "1"
+    },
+    {
+      label: "Z administrace",
+      value: "2"
+    },
+    {
+      label: "Z administrace",
+      value: "3"
+    }
+  ],
   reservationOptions: [
     {
       label: Reservation.getType("binding"),

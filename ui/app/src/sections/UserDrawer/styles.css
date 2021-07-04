@@ -1,0 +1,10 @@
+.area-field {
+  width: 20%;
+}
+.phone-field {
+  width: 80%;
+}
+
+.area-field, .phone-field {
+  margin-bottom: 0;
+}

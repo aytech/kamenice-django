@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Button, DatePicker, Form, Modal, Select, Space } from "antd"
+import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
 import locale from "antd/es/date-picker/locale/cs_CZ"
 import { Moment } from "moment"
 import { DrawerType, GuestForm, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
@@ -182,6 +182,21 @@ export const ReservationModal = ({
           rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
           <Select
             options={ ReservationFormHelper.reservationOptions } />
+        </Form.Item>
+        <Form.Item
+          label="Účel pobytu"
+          name="purpose"
+          required
+          rules={ [ ReservationFormHelper.getRequiredRule("vyberte účel pobytu") ] }>
+          <Select
+            options={ ReservationFormHelper.purposeOptions } />
+        </Form.Item>
+        <Form.Item
+          label="Poznámky"
+          name="notes">
+          <Input.TextArea
+            placeholder="zadejte text"
+            allowClear />
         </Form.Item>
       </Form>
     </Modal>

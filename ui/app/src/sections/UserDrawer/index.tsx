@@ -2,8 +2,11 @@ import React from "react"
 import { Button, Drawer, Form, Input, Select } from "antd"
 import { MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
-import { Rule, Store } from "rc-field-form/lib/interface"
+import { Store } from "rc-field-form/lib/interface"
 import { GuestForm } from "../../lib/Types"
+import { UserFormHelper } from "../../lib/components/UserFormHelper"
+import { FormHelper } from "../../lib/components/FormHelper"
+import "./styles.css"
 
 interface Props {
   setGuest: (guest: GuestForm) => void,
@@ -18,16 +21,6 @@ export const UserDrawer = ({
 }: Props) => {
 
   const [ form ] = Form.useForm()
-  const removeWhiteSpace = (value: string | undefined): string | undefined => {
-    return value === undefined ? value : value.trim()
-  }
-  const requiredRules: Rule[] = [
-    {
-      required: true,
-      message: "pole je povinné",
-      transform: removeWhiteSpace
-    }
-  ]
   const initialValues: Store = {
     phone: {
       code: "+420"
@@ -79,7 +72,7 @@ export const UserDrawer = ({
           label="Jméno"
           name="name"
           required
-          rules={ requiredRules }>
+          rules={ UserFormHelper.requiredAlphaRules }>
           <Input placeholder="Vaše Jméno" />
         </Form.Item>
         <Form.Item
@@ -87,7 +80,7 @@ export const UserDrawer = ({
           label="Příjmení"
           name="surname"
           required
-          rules={ requiredRules }>
+          rules={ UserFormHelper.requiredAlphaRules }>
           <Input placeholder="Vaše Příjmení" />
         </Form.Item>
         <Form.Item
@@ -95,7 +88,7 @@ export const UserDrawer = ({
           label="Číslo OP"
           name="obcanka"
           required
-          rules={ requiredRules }>
+          rules={ [ FormHelper.requiredRule ] }>
           <Input placeholder="číslo občanského průkazu" />
         </Form.Item>
         <Form.Item
@@ -110,26 +103,23 @@ export const UserDrawer = ({
           required>
           <Input.Group compact>
             <Form.Item
+              className="area-field"
               hasFeedback
               name={ [ "phone", "code" ] }
-              rules={ requiredRules }
-              style={ {
-                marginBottom: 0,
-                width: "20%"
-              } }
+              rules={ UserFormHelper.phoneCodeRequiredRules }
               valuePropName="value">
               <Input
-                placeholder="kód" />
+                placeholder="kód"
+                type="tel" />
             </Form.Item>
             <Form.Item
+              className="phone-field"
               hasFeedback
               name={ [ "phone", "number" ] }
-              rules={ requiredRules }
-              style={ {
-                marginBottom: 0,
-                width: "80%"
-              } }>
-              <Input placeholder="číslo" />
+              rules={ UserFormHelper.requiredNumericRules }>
+              <Input
+                placeholder="číslo"
+                type="tel" />
             </Form.Item>
           </Input.Group>
         </Form.Item>
@@ -138,10 +128,12 @@ export const UserDrawer = ({
           label="E-Mail"
           name="email"
           required
-          rules={ requiredRules }>
+          rules={ [ FormHelper.requiredRule ] }
+        >
           <Input
             addonBefore={ emailPrefixIcon }
-            placeholder="e-mail" />
+            placeholder="e-mail"
+            type="email" />
         </Form.Item>
         <Form.Item
           label="Pohlaví"
