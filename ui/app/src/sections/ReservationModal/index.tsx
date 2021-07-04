@@ -9,6 +9,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { useState } from "react"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
+import { FormHelper } from "../../lib/components/FormHelper"
 
 interface Props {
   close: () => void,
@@ -95,7 +96,8 @@ export const ReservationModal = ({
     }
     if (range !== undefined) newRange.id = range.id
     updateRange(newRange)
-    close()
+    console.log("Form: ", form.getFieldsValue(true))
+    // close()
   }
 
   useEffect(() => {
@@ -125,7 +127,8 @@ export const ReservationModal = ({
         layout="vertical">
         <Form.Item
           label="Datum Rezervace"
-          name="dates">
+          name="dates"
+          required>
           <RangePicker
             format={ dateFormat }
             locale={ locale }
@@ -184,10 +187,17 @@ export const ReservationModal = ({
             options={ ReservationFormHelper.reservationOptions } />
         </Form.Item>
         <Form.Item
-          label="Účel pobytu"
-          name="purpose"
+          hasFeedback
+          label="Strava"
+          name="meal"
           required
-          rules={ [ ReservationFormHelper.getRequiredRule("vyberte účel pobytu") ] }>
+          rules={ [ FormHelper.requiredRule ] }>
+          <Select
+            options={ ReservationFormHelper.mealOptions } />
+        </Form.Item>
+        <Form.Item
+          label="Účel pobytu"
+          name="purpose">
           <Select
             options={ ReservationFormHelper.purposeOptions } />
         </Form.Item>
@@ -199,6 +209,6 @@ export const ReservationModal = ({
             allowClear />
         </Form.Item>
       </Form>
-    </Modal>
+    </Modal >
   )
 }
