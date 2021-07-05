@@ -1,0 +1,18 @@
+[
+  {
+    "model": "api.guest",
+    "pk": 1,
+    "fields": {
+      "name": "Oleg",
+      "surname": "Yapparov"
+    }
+  },
+  {
+    "model": "api.guest",
+    "pk": 2,
+    "fields": {
+      "name": "Alice",
+      "surname": "Ambrozova"
+    }
+  }
+]

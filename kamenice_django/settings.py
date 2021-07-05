@@ -25,12 +25,15 @@ SECRET_KEY = 'django-insecure-$1jf*%c)m9ob*j=f2i_=^q=1r%cv*i23icig)5p0(0b1=2ii28
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'kamenice.pythonanywhere.com'
+    'kamenice.pythonanywhere.com',
+    'localhost'
 ]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'api',
+    'graphene_django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -120,6 +123,10 @@ STATIC_ASSETS = APP_DIR / 'static' / 'static'
 STATICFILES_DIRS = (
     BASE_DIR / 'ui' / 'app' / 'build',
 )
+
+GRAPHENE = {
+    'SCHEMA': 'api.schema.schema'
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
