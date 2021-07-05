@@ -3,16 +3,17 @@
     "model": "api.guest",
     "pk": 1,
     "fields": {
+      "address_municipality": "Praha",
+      "address_psc": 18200,
+      "address_street": "Černého",
+      "citizenship": "RU",
+      "email": "oyapparov@gmail.com",
+      "gender": "male",
+      "identity": "12345/8945",
       "name": "Oleg",
+      "phone_code": "+420",
+      "phone_number": "123 456 789",
       "surname": "Yapparov"
-    }
-  },
-  {
-    "model": "api.guest",
-    "pk": 2,
-    "fields": {
-      "name": "Alice",
-      "surname": "Ambrozova"
     }
   }
 ]

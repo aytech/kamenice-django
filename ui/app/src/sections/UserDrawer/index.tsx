@@ -86,16 +86,10 @@ export const UserDrawer = ({
         <Form.Item
           hasFeedback
           label="Číslo OP"
-          name="obcanka"
+          name="identity"
           required
           rules={ [ FormHelper.requiredRule ] }>
           <Input placeholder="číslo občanského průkazu" />
-        </Form.Item>
-        <Form.Item
-          hasFeedback
-          label="Číslo viza"
-          name="visa">
-          <Input placeholder="číslo visa" />
         </Form.Item>
         <Form.Item
           label="Telefonní Číslo"
@@ -128,8 +122,7 @@ export const UserDrawer = ({
           label="E-Mail"
           name="email"
           required
-          rules={ [ FormHelper.requiredRule ] }
-        >
+          rules={ [ FormHelper.requiredRule ] }>
           <Input
             addonBefore={ emailPrefixIcon }
             placeholder="e-mail"
@@ -144,6 +137,12 @@ export const UserDrawer = ({
             <Select.Option value="man">Muž</Select.Option>
             <Select.Option value="woman">Žena</Select.Option>
           </Select>
+        </Form.Item>
+        <Form.Item
+          hasFeedback
+          label="Číslo viza"
+          name="visa_number">
+          <Input placeholder="číslo visa" />
         </Form.Item>
         <Title level={ 5 }>Trvalé bydliště</Title>
         <Form.Item
@@ -161,7 +160,7 @@ export const UserDrawer = ({
             </Form.Item>
             <Form.Item
               style={ { marginBottom: 0, width: "50%" } }
-              name={ [ "address", "obec" ] }>
+              name={ [ "address", "municipality" ] }>
               <Input placeholder="Obec" />
             </Form.Item>
           </Input.Group>

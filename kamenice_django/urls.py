@@ -17,8 +17,6 @@ from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import re_path
-from django.views.static import serve
 from graphene_django.views import GraphQLView
 
 from ui import views as ui
@@ -30,6 +28,6 @@ urlpatterns = [
     # Admin section
     url('admin/', admin.site.urls),
 
-    # GraphQL playground
-    url('graphql', GraphQLView.as_view(graphiql=True))
+    # GraphQL
+    url('api', GraphQLView.as_view(graphiql=True))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

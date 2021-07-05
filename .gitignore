@@ -3,3 +3,4 @@
 .idea
 kamenice_django/static
 venv
+db.sqlite3

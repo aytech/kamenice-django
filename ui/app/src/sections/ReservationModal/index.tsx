@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
 import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
-import locale from "antd/es/date-picker/locale/cs_CZ"
 import { Moment } from "moment"
 import { DrawerType, GuestForm, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
 import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
@@ -15,12 +14,12 @@ interface Props {
   close: () => void,
   guestList: GuestForm[],
   isOpen: boolean,
+
   openDrawer: () => void,
   range: ReserveRange | undefined,
   setDrawerType: (type: DrawerType) => void,
   updateRange: (range: ReserveRange) => void
 }
-const { RangePicker } = DatePicker
 
 export const ReservationModal = ({
   close,
@@ -129,9 +128,8 @@ export const ReservationModal = ({
           label="Datum Rezervace"
           name="dates"
           required>
-          <RangePicker
+          <DatePicker.RangePicker
             format={ dateFormat }
-            locale={ locale }
             showTime />
         </Form.Item>
         <Form.Item
