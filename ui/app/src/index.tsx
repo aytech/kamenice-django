@@ -7,17 +7,20 @@ import {
 } from 'react-router-dom'
 import './index.css'
 import { Affix, ConfigProvider, Layout } from 'antd'
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { AppHeader, Home, Overview } from './sections'
 import moment from 'moment'
 import 'moment/locale/cs'
 import csCZ from "antd/lib/locale/cs_CZ"
+import { ApolloProvider } from 'react-apollo'
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost'
 
 moment.locale("cs")
 
 const client = new ApolloClient({
-  uri: "/api",
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  link: ApolloLink.from([
+    new HttpLink({ uri: "/api" })
+  ])
 })
 
 ReactDOM.render(
