@@ -9,6 +9,9 @@ import "./styles.css"
 import { useState } from "react"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
+import { useQuery } from "@apollo/client"
+import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { GUESTS } from "../../lib/graphql/queries"
 
 interface Props {
   close: () => void,
@@ -31,6 +34,7 @@ export const ReservationModal = ({
   updateRange
 }: Props) => {
 
+  const { loading, data } = useQuery<GuestsData>(GUESTS, {})
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>(
     Array.from(guestList, (guest: GuestForm): OptionsType => {
       return {

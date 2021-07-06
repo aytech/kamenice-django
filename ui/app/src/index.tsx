@@ -8,24 +8,25 @@ import {
 import './index.css'
 import { Affix, ConfigProvider, Layout } from 'antd'
 import { AppHeader, Home, Overview } from './sections'
+import { getCookie } from "./lib/Cookie"
 import moment from 'moment'
 import 'moment/locale/cs'
 import csCZ from "antd/lib/locale/cs_CZ"
-import { ApolloProvider } from 'react-apollo'
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
 moment.locale("cs")
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: ApolloLink.from([
-    new HttpLink({ uri: "/api" })
-  ])
+  headers: {
+    "X-CSRFToken": getCookie("csrftoken")
+  },
+  uri: "/api"
 })
 
 ReactDOM.render(
-  <ApolloProvider client={ client }>
-    <ConfigProvider locale={ csCZ }>
+  <ConfigProvider locale={ csCZ }>
+    <ApolloProvider client={ client }>
       <Router>
         <Layout id="app">
           <Affix offsetTop={ 0 } className="app__affix-header">
@@ -37,7 +38,7 @@ ReactDOM.render(
           </Switch>
         </Layout>
       </Router>
-    </ConfigProvider>
-  </ApolloProvider>,
+    </ApolloProvider>
+  </ConfigProvider >,
   document.getElementById('root')
 );

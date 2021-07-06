@@ -9,13 +9,9 @@ import { guests, rooms } from '../../seed'
 import { useState } from 'react'
 import { UserDrawer } from '../UserDrawer'
 import { DrawerType, GuestForm } from '../../lib/Types'
-import { useQuery } from 'react-apollo'
-import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../lib/graphql/queries"
 
 export const Home = () => {
 
-  const { loading, data } = useQuery<GuestsData>(GUESTS, {})
   const [ drawerType, setDrawerType ] = useState<DrawerType>()
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guestList, setGuestList ] = useState<GuestForm[]>(guests)
