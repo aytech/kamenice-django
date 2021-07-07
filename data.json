@@ -11,8 +11,7 @@
       "gender": "male",
       "identity": "12345/8945",
       "name": "Oleg",
-      "phone_code": "+420",
-      "phone_number": "123 456 789",
+      "phone_number": "+420 123 456 789",
       "surname": "Yapparov"
     }
   }

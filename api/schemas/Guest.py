@@ -1,6 +1,5 @@
-import graphene
 from django.core.exceptions import ObjectDoesNotExist
-from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Boolean
+from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Boolean, Int
 from graphene_django import DjangoObjectType
 from api.models import Guest as GuestModel
 
@@ -13,7 +12,7 @@ class Guest(DjangoObjectType):
 
 class Query(ObjectType):
     guests = List(Guest)
-    guest = Field(Guest, guest_id=graphene.Int())
+    guest = Field(Guest, guest_id=Int())
 
     @resolve_only_args
     def resolve_guests(self):
@@ -25,9 +24,18 @@ class Query(ObjectType):
 
 
 class GuestInput(InputObjectType):
+    address_municipality = String()
+    address_psc = Int()
+    address_street = String()
+    citizenship = String()
+    email = String()
+    gender = String()
     id = ID()
+    identity = String()
     name = String()
+    phone_number = String()
     surname = String()
+    visa_number = String()
 
 
 class CreateGuest(Mutation):
@@ -39,9 +47,19 @@ class CreateGuest(Mutation):
     @staticmethod
     def mutate(_root, _info, data=None):
         instance = GuestModel(
+            address_municipality=data.address_municipality,
+            address_psc=data.address_psc,
+            address_street=data.address_street,
+            citizenship=data.citizenship,
+            email=data.email,
+            gender=data.gender,
+            identity=data.identity,
             name=data.name,
-            surname=data.surname
+            phone_number=data.phone_number,
+            surname=data.surname,
+            visa_number=data.visa_number
         )
+        instance.clean_fields()
         instance.save()
         return CreateGuest(guest=instance)
 
@@ -54,7 +72,6 @@ class UpdateGuest(Mutation):
 
     @staticmethod
     def mutate(_root, _info, data=None):
-
         instance = GuestModel.objects.get(pk=data.id)
 
         if instance:
