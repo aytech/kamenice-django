@@ -59,7 +59,7 @@ class CreateGuest(Mutation):
             surname=data.surname,
             visa_number=data.visa_number
         )
-        instance.clean_fields()
+        instance.full_clean()
         instance.save()
         return CreateGuest(guest=instance)
 
@@ -72,21 +72,31 @@ class UpdateGuest(Mutation):
 
     @staticmethod
     def mutate(_root, _info, data=None):
-        instance = GuestModel.objects.get(pk=data.id)
+        try:
+            instance = GuestModel.objects.get(pk=data.id)
+            if instance:
+                instance.address_municipality = data.address_municipality if data.address_municipality is not None \
+                    else instance.address_municipality
+                instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc
+                instance.address_street = data.address_street if data.address_street is not None \
+                    else instance.address_street
+                instance.citizenship = data.citizenship if data.citizenship is not None else instance.citizenship
+                instance.email = data.email if data.email is not None else instance.email
+                instance.gender = data.gender if data.gender is not None else instance.gender
+                instance.identity = data.identity if data.identity is not None else instance.identity
+                instance.name = data.name if data.name is not None else instance.name
+                instance.phone_number = data.phone_number if data.phone_number is not None else instance.phone_number
+                instance.surname = data.surname if data.surname is not None else instance.surname
+                instance.visa_number = data.visa_number if data.visa_number is not None else instance.visa_number
 
-        if instance:
-            instance.name = data.name if data.name is not None else instance.name
-            instance.surname = data.surname if data.surname is not None else instance.surname
-            instance.save()
-
+                instance.full_clean()
+                instance.save()
             return UpdateGuest(guest=instance)
-
-        return UpdateGuest(guest=None)
+        except ObjectDoesNotExist:
+            return UpdateGuest(guest=None)
 
 
 class DeleteGuest(Mutation):
-    ok = Boolean()
-
     class Arguments:
         guest_id = ID()
 
@@ -97,6 +107,6 @@ class DeleteGuest(Mutation):
         try:
             instance = GuestModel.objects.get(pk=guest_id)
             instance.delete()
-            return DeleteGuest(ok=True)
+            return DeleteGuest(guest=instance)
         except ObjectDoesNotExist:
-            return DeleteGuest(ok=False)
+            return DeleteGuest(guest=None)

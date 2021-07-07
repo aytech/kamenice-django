@@ -21,28 +21,28 @@ class Guest(BaseModel):
     address_street = models.CharField(blank=True, max_length=100, null=True)
     citizenship = models.CharField(blank=True, max_length=10, null=True, validators=[validate_citizenship])
     email = models.EmailField(blank=False, null=False, validators=[validate_email], error_messages={
-        "blank": "E-Mail je povinný údaj",
+        'blank': 'E-Mail je povinný údaj',
         'invalid': 'Zadejte platnou e-mailovou adresu',
-        "null": "E-Mail je povinný údaj"
-    })
-    gender = models.CharField(blank=True, max_length=10, null=True, choices=GENDER_CHOICES,
-                              validators=[validate_gender], error_messages={'invalid_choice': 'Vyberte údaj "Pohlaví" '
-                                                                                              'ze seznamu'})
+        'null': 'E-Mail je povinný údaj',
+        'unique': 'Uživatel s tímto e-mailem již existuje'
+    }, unique=True)
+    gender = models.CharField(blank=True, max_length=10, null=True, error_messages={
+        'invalid_choice': 'Vyberte údaj Pohlaví ze seznamu'}, choices=GENDER_CHOICES, validators=[validate_gender])
     identity = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        "blank": "Číslo občanského průkazu je povinný údaj",
-        "null": "Číslo občanského průkazu je povinný údaj"
+        'blank': 'Číslo občanského průkazu je povinný údaj',
+        'null': 'Číslo občanského průkazu je povinný údaj'
     })
     name = models.CharField(blank=False, max_length=100, null=False, error_messages={
-        "blank": "Jméno je povinný údaj",
-        "null": "Jméno je povinný údaj"
+        'blank': 'Jméno je povinný údaj',
+        'null': 'Jméno je povinný údaj'
     })
     phone_number = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        "blank": "Telefonní číslo je povinný údaj",
-        "null": "Telefonní číslo je povinný údaj"
+        'blank': 'Telefonní číslo je povinný údaj',
+        'null': 'Telefonní číslo je povinný údaj'
     })
     surname = models.CharField(blank=False, max_length=100, null=False, error_messages={
-        "blank": "Příjmení je povinný údaj",
-        "null": "Příjmení je povinný údaj"
+        'blank': 'Příjmení je povinný údaj',
+        'null': 'Příjmení je povinný údaj'
     })
     visa_number = models.CharField(blank=True, max_length=100, null=True)
 
