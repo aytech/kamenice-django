@@ -123,25 +123,6 @@ export const guests: GuestForm[] = [
     surname: "Yapparov",
     visa: "123"
   },
-  // {
-  //   address: {
-  //     obec: "Praha 8",
-  //     psc: 18200,
-  //     street: "Černého"
-  //   },
-  //   citizenship: { selected: "CZE" },
-  //   email: "a.ambrozova@gmail.com",
-  //   gender: "female",
-  //   id: 2,
-  //   name: "Alice",
-  //   obcanka: "12345/8927",
-  //   phone: {
-  //     code: 420,
-  //     number: 12346789
-  //   },
-  //   surname: "Ambrozova",
-  //   visa: "123"
-  // },
   {
     address: {
       obec: "Praha 8",

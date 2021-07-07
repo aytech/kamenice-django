@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Boolean, Int
+from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
 from api.models import Guest as GuestModel
 
@@ -20,7 +20,10 @@ class Query(ObjectType):
 
     @resolve_only_args
     def resolve_guest(self, guest_id):
-        return GuestModel.objects.get(pk=guest_id)
+        try:
+            return GuestModel.objects.get(pk=guest_id)
+        except ObjectDoesNotExist:
+            return None
 
 
 class GuestInput(InputObjectType):
