@@ -142,7 +142,14 @@ export const ReservationModal = ({
           name="guest"
           required
           rules={ ReservationFormHelper.guestValidators(form) }>
-          <Select options={ guestOptions } />
+          <Select
+            filterOption={ (input, option): boolean => {
+              const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
+              return match !== undefined && match >= 0
+            } }
+            options={ guestOptions }
+            showSearch
+          />
         </Form.Item>
         <Form.List name="roommates">
           { (fields, { add, remove }) => (

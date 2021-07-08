@@ -15,6 +15,10 @@ export const Home = () => {
   const [ drawerType, setDrawerType ] = useState<DrawerType>()
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guestList, setGuestList ] = useState<GuestForm[]>(guests)
+
+  const openDrawer = () => setDrawerVisible(true)
+  const closeDrawer = () => setDrawerVisible(false)
+
   const AppDrawer = () => {
     if (drawerType === "user") {
       return (
@@ -25,14 +29,13 @@ export const Home = () => {
               guestForm
             ])
           } }
-          setVisible={ setDrawerVisible }
+          close={ closeDrawer }
           visible={ drawerVisible }
         />
       )
     }
     return null
   }
-  const openDrawer = () => setDrawerVisible(true)
 
   return (
     <Content className="home">

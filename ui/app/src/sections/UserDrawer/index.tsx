@@ -1,6 +1,7 @@
 import React from "react"
-import { Button, Drawer, Form, Input, Select } from "antd"
-import { MailOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import { Button, Drawer, Form, Input, Popconfirm, Select } from "antd"
+import { CloseOutlined, MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
 import { GuestForm } from "../../lib/Types"
@@ -9,17 +10,18 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
 
 interface Props {
-  setGuest: (guest: GuestForm) => void,
-  setVisible: (visible: boolean) => void,
+  close: () => void
+  setGuest: (guest: GuestForm) => void
   visible: boolean
 }
 
 export const UserDrawer = ({
+  close,
   setGuest,
-  setVisible,
   visible
 }: Props) => {
 
+  const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
   const [ form ] = Form.useForm()
   const initialValues: Store = {
     phone: {
@@ -31,26 +33,40 @@ export const UserDrawer = ({
       <MailOutlined />
     </Form.Item>
   )
+
+  const closeDrawer = (): void => {
+    if (form.isFieldsTouched()) {
+      setConfirmClose(true)
+    } else {
+      close()
+    }
+  }
+
   return (
     <Drawer
-      onClose={ () => {
-        setVisible(false)
-      } }
+      closeIcon={ (
+        <Popconfirm
+          onCancel={ () => setConfirmClose(false) }
+          onConfirm={ close }
+          placement="rightTop"
+          title="Zavřít formulář? Data ve formuláři budou ztracena"
+          visible={ confirmClose }>
+          <CloseOutlined onClick={ closeDrawer } />
+        </Popconfirm>
+      ) }
       placement="left"
       title="Nový Uživatel"
       width={ 500 }
       visible={ visible }
       footer={
-        <div style={ {
-          textAlign: "right"
-        } }>
+        <>
           <Button
             onClick={ () => {
               form.validateFields()
                 .then(() => {
                   console.log("Submit to data store: ", form.getFieldsValue(true))
                   setGuest(form.getFieldsValue(true))
-                  setVisible(false)
+                  close()
                 })
                 .catch((error) => {
                   console.log("Fix errors: ", error)
@@ -59,8 +75,12 @@ export const UserDrawer = ({
             type="primary">
             Vytvořit
           </Button>
-        </div>
-      }>
+        </>
+      }
+      footerStyle={ {
+        padding: "16px 20px",
+        textAlign: "right"
+      } }>
       <Form
         form={ form }
         initialValues={ initialValues }
