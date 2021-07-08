@@ -6,10 +6,9 @@ import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendar
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { DrawerType, GuestForm, ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
+import { DrawerType, ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
 
 interface Props {
-  guestList: GuestForm[],
   openDrawer: () => void,
   room: Room
   setDrawerType: (type: DrawerType) => void
@@ -17,7 +16,6 @@ interface Props {
 type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
 
 export const ReserveCalendar = ({
-  guestList,
   openDrawer,
   room,
   setDrawerType
@@ -96,7 +94,6 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => { setModalOpen(false) } }
-        guestList={ guestList }
         isOpen={ modalOpen }
         openDrawer={ openDrawer }
         range={ reservedRange }

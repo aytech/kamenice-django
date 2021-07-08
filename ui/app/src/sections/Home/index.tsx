@@ -5,7 +5,7 @@ import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
 import { Link } from 'react-router-dom'
-import { guests, rooms } from '../../seed'
+import { rooms } from '../../seed'
 import { useState } from 'react'
 import { UserDrawer } from '../UserDrawer'
 import { DrawerType, GuestForm } from '../../lib/Types'
@@ -14,7 +14,7 @@ export const Home = () => {
 
   const [ drawerType, setDrawerType ] = useState<DrawerType>()
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
-  const [ guestList, setGuestList ] = useState<GuestForm[]>(guests)
+  const [ guestList, setGuestList ] = useState<GuestForm[]>([])
 
   const openDrawer = () => setDrawerVisible(true)
   const closeDrawer = () => setDrawerVisible(false)
@@ -48,7 +48,6 @@ export const Home = () => {
             rooms.map((room, index) => {
               return (
                 <ReserveCalendar
-                  guestList={ guestList }
                   key={ index }
                   openDrawer={ openDrawer }
                   room={ room }

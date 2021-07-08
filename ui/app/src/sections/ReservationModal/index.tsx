@@ -1,23 +1,20 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
 import { Moment } from "moment"
-import { DrawerType, GuestForm, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
-import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
+import { useLazyQuery } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { useState } from "react"
+import { DrawerType, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
+import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { useQuery } from "@apollo/client"
 import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../lib/graphql/queries"
 
 interface Props {
   close: () => void,
-  guestList: GuestForm[],
   isOpen: boolean,
-
   openDrawer: () => void,
   range: ReserveRange | undefined,
   setDrawerType: (type: DrawerType) => void,
@@ -26,7 +23,6 @@ interface Props {
 
 export const ReservationModal = ({
   close,
-  guestList,
   isOpen,
   openDrawer,
   range,
@@ -34,15 +30,8 @@ export const ReservationModal = ({
   updateRange
 }: Props) => {
 
-  const { loading, data } = useQuery<GuestsData>(GUESTS, {})
-  const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>(
-    Array.from(guestList, (guest: GuestForm): OptionsType => {
-      return {
-        label: `${ guest.name } ${ guest.surname }`,
-        value: guest.id === undefined ? guest.email : guest.id
-      }
-    })
-  )
+  const [ getGuests, { loading, error, data, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
+  const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const dateFormat = "YYYY-MM-DD HH:mm"
   const [ form ] = Form.useForm()
   const initialValues: Store & { type: ReservationTypeKey } = {
@@ -106,17 +95,20 @@ export const ReservationModal = ({
   useEffect(() => {
     if (isOpen === true) {
       form.resetFields()
+      getGuests()
     }
-  }, [ form, isOpen ])
+  }, [ form, getGuests, isOpen ])
 
   useEffect(() => {
-    setGuestOptions(Array.from(guestList, (guest: GuestForm): OptionsType => {
-      return {
-        label: `${ guest.name } ${ guest.surname }`,
-        value: guest.id === undefined ? guest.email : guest.id
-      }
-    }))
-  }, [ guestList ])
+    if (loading === false && data !== undefined && data.guests !== null) {
+      setGuestOptions(Array.from(data.guests, (guest: any): any => {
+        return {
+          label: `${ guest.name } ${ guest.surname }`,
+          value: guest.id
+        }
+      }));
+    }
+  }, [ loading, error, data ])
 
   return (
     <Modal
@@ -141,7 +133,8 @@ export const ReservationModal = ({
           label="Host"
           name="guest"
           required
-          rules={ ReservationFormHelper.guestValidators(form) }>
+          rules={ ReservationFormHelper.guestValidators(form) }
+          validateStatus={ loading ? "validating" : "" }>
           <Select
             filterOption={ (input, option): boolean => {
               const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
@@ -175,7 +168,7 @@ export const ReservationModal = ({
               )) }
               <Form.Item>
                 <Button
-                  disabled={ fields.length >= guestList.length }
+                  disabled={ fields.length >= guestOptions.length }
                   type="dashed"
                   onClick={ () => add() }
                   block
