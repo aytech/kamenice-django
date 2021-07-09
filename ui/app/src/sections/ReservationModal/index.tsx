@@ -5,7 +5,7 @@ import { ApolloError } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { DrawerType, OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
+import { OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
 import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
@@ -20,7 +20,6 @@ interface Props {
   loading: boolean
   openDrawer: () => void
   range: ReserveRange | undefined
-  setDrawerType: (type: DrawerType) => void
   updateRange: (range: ReserveRange) => void
 }
 
@@ -33,7 +32,6 @@ export const ReservationModal = ({
   loading,
   openDrawer,
   range,
-  setDrawerType,
   updateRange
 }: Props) => {
 
@@ -49,7 +47,6 @@ export const ReservationModal = ({
     <Button
       key="create-user"
       onClick={ () => {
-        setDrawerType("user")
         openDrawer()
       } }
       style={ {

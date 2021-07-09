@@ -1,9 +1,3 @@
-.home {
-  padding: 60px 120px;
-  background-repeat: no-repeat;
-  background-position: 10% 0;
-}
-
 @media (max-width: 75em) {
   .home {
     padding-left: 20px;

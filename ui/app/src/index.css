@@ -13,3 +13,9 @@ html {
   background: #fff;
   min-height: 100vh;
 }
+
+.app-content {
+  padding: 60px 120px;
+  background-repeat: no-repeat;
+  background-position: 10% 0;
+}

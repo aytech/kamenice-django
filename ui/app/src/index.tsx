@@ -13,6 +13,7 @@ import moment from 'moment'
 import 'moment/locale/cs'
 import csCZ from "antd/lib/locale/cs_CZ"
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import { Suites } from './sections/Suites'
 
 moment.locale("cs")
 
@@ -35,6 +36,7 @@ ReactDOM.render(
           <Switch>
             <Route exact path="/" component={ Home } />
             <Route exact path="/prehled" component={ Overview } />
+            <Route exact path="/apartma" component={ Suites } />
           </Switch>
         </Layout>
       </Router>

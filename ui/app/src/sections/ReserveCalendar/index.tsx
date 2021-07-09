@@ -7,7 +7,7 @@ import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendar
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { DrawerType, ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
+import { ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
 import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
 
 interface Props {
@@ -17,7 +17,6 @@ interface Props {
   loading: boolean
   openDrawer: () => void
   room: Room
-  setDrawerType: (type: DrawerType) => void
 }
 type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
 
@@ -28,7 +27,6 @@ export const ReserveCalendar = ({
   loading,
   openDrawer,
   room,
-  setDrawerType
 }: Props) => {
   const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
@@ -111,7 +109,6 @@ export const ReserveCalendar = ({
         isOpen={ modalOpen }
         openDrawer={ openDrawer }
         range={ reservedRange }
-        setDrawerType={ setDrawerType }
         updateRange={ updateReservedRange } />
     </>
   )

@@ -7,35 +7,20 @@ import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
 import { rooms } from '../../seed'
 import { useState } from 'react'
-import { UserDrawer } from '../UserDrawer'
-import { DrawerType } from '../../lib/Types'
+import { GuestDrawer } from '../GuestDrawer'
 import { GUESTS } from '../../lib/graphql/queries'
 import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 export const Home = () => {
 
   const [ getGuests, { loading, error, data, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
-  const [ drawerType, setDrawerType ] = useState<DrawerType>()
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
 
   const openDrawer = () => setDrawerVisible(true)
   const closeDrawer = () => setDrawerVisible(false)
 
-  const AppDrawer = () => {
-    if (drawerType === "user") {
-      return (
-        <UserDrawer
-          refetch={ refetch }
-          close={ closeDrawer }
-          visible={ drawerVisible }
-        />
-      )
-    }
-    return null
-  }
-
   return (
-    <Content className="home">
+    <Content className="app-content">
       <div className="home__listings">
         <Title level={ 3 } className="home__listings-title">
           Rezervace / Obsazenost
@@ -51,14 +36,17 @@ export const Home = () => {
                   key={ index }
                   loading={ loading }
                   openDrawer={ openDrawer }
-                  room={ room }
-                  setDrawerType={ setDrawerType } />
+                  room={ room } />
               )
             })
           }
         </Row>
       </div>
-      <AppDrawer />
+      <GuestDrawer
+        refetch={ refetch }
+        close={ closeDrawer }
+        visible={ drawerVisible }
+      />
     </Content >
   );
 }

@@ -5,7 +5,7 @@ import { CloseOutlined, MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
 import { GuestForm } from "../../lib/Types"
-import { UserFormHelper } from "../../lib/components/UserFormHelper"
+import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
 import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
@@ -19,7 +19,7 @@ interface Props {
   visible: boolean
 }
 
-export const UserDrawer = ({
+export const GuestDrawer = ({
   close,
   refetch,
   visible
@@ -36,7 +36,7 @@ export const UserDrawer = ({
     onError: (error: ApolloError): void => {
       message.error(
         <List
-          dataSource={ UserFormHelper.getGuestResponseErrorList(error.message) }
+          dataSource={ GuestFormHelper.getGuestResponseErrorList(error.message) }
           renderItem={ item => <List.Item>{ item }</List.Item> }
           size="small" />
       )
@@ -93,7 +93,10 @@ export const UserDrawer = ({
       closeIcon={ (
         <Popconfirm
           onCancel={ () => setConfirmClose(false) }
-          onConfirm={ close }
+          onConfirm={ () => {
+            setConfirmClose(false)
+            close()
+          } }
           placement="rightTop"
           title="Zavřít formulář? Data ve formuláři budou ztracena"
           visible={ confirmClose }>
@@ -121,14 +124,14 @@ export const UserDrawer = ({
         form={ form }
         initialValues={ initialValues }
         layout="vertical"
-        name="user">
+        name="guest">
         <Title level={ 5 }>Osobní údaje</Title>
         <Form.Item
           hasFeedback
           label="Jméno"
           name="name"
           required
-          rules={ UserFormHelper.requiredAlphaRules }>
+          rules={ GuestFormHelper.requiredAlphaRules }>
           <Input placeholder="Vaše Jméno" />
         </Form.Item>
         <Form.Item
@@ -136,7 +139,7 @@ export const UserDrawer = ({
           label="Příjmení"
           name="surname"
           required
-          rules={ UserFormHelper.requiredAlphaRules }>
+          rules={ GuestFormHelper.requiredAlphaRules }>
           <Input placeholder="Vaše Příjmení" />
         </Form.Item>
         <Form.Item
@@ -156,7 +159,7 @@ export const UserDrawer = ({
               className="area-field"
               hasFeedback
               name={ [ "phone", "code" ] }
-              rules={ UserFormHelper.phoneCodeRequiredRules }
+              rules={ GuestFormHelper.phoneCodeRequiredRules }
               valuePropName="value">
               <Input
                 placeholder="kód"
@@ -166,7 +169,7 @@ export const UserDrawer = ({
               className="phone-field"
               hasFeedback
               name={ [ "phone", "number" ] }
-              rules={ UserFormHelper.requiredNumericRules }>
+              rules={ GuestFormHelper.requiredNumericRules }>
               <Input
                 placeholder="číslo"
                 type="tel" />

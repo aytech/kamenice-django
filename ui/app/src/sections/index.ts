@@ -1,5 +1,5 @@
 export * from './AppHeader'
-export * from './UserDrawer'
+export * from './GuestDrawer'
 export * from './Home'
 export * from './Overview'
 export * from './ReserveCalendar'

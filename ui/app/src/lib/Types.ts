@@ -1,6 +1,5 @@
 import { Day } from "react-modern-calendar-datepicker"
 
-export type DrawerType = "user"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
 export type ReservationTypeKey = "binding" | "nonbinding" | "accommodated" | "inhabited"
 export type ReserveDay = Day & { hour?: number, minute?: number }

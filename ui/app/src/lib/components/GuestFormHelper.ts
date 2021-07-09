@@ -1,14 +1,14 @@
 import { Rule } from "antd/lib/form";
 import { FormHelper } from "./FormHelper";
 
-interface IUserFormHelper {
+interface IGuestFormHelper {
   getGuestResponseErrorList: (errorString: string) => Array<string>
   phoneCodeRequiredRules: Rule[]
   requiredAlphaRules: Rule[]
   requiredNumericRules: Rule[]
 }
 
-export const UserFormHelper: IUserFormHelper = {
+export const GuestFormHelper: IGuestFormHelper = {
   getGuestResponseErrorList: (errorString: string) => {
     try {
       return Array.from(
