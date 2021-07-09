@@ -39,7 +39,7 @@ interface Phone {
 }
 
 interface Address {
-  obec?: string
+  municipality?: string
   psc?: number
   street?: string
 }
@@ -56,10 +56,19 @@ export interface GuestForm {
   gender?: string
   id?: number
   name: string
-  obcanka: string
+  identity: string
   phone: Phone
   surname: string
   visa?: string
+}
+
+export interface GuestErrorResponse {
+  email: Array<string>
+  gender: Array<string>
+  identity: Array<string>
+  name: Array<string>
+  phone_number: Array<string>
+  surname: Array<string>
 }
 
 export interface OptionsType {

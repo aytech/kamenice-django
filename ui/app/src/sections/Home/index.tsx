@@ -4,7 +4,6 @@ import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
-import { Link } from 'react-router-dom'
 import { rooms } from '../../seed'
 import { useState } from 'react'
 import { UserDrawer } from '../UserDrawer'
@@ -58,9 +57,6 @@ export const Home = () => {
         </Row>
       </div>
       <AppDrawer />
-      <Title level={ 3 }>
-        <Link to="/prehled">Přehled</Link>
-      </Title>
     </Content >
   );
 }

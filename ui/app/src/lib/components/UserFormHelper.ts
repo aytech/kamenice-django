@@ -2,12 +2,24 @@ import { Rule } from "antd/lib/form";
 import { FormHelper } from "./FormHelper";
 
 interface IUserFormHelper {
+  getGuestResponseErrorList: (errorString: string) => Array<string>
   phoneCodeRequiredRules: Rule[]
   requiredAlphaRules: Rule[]
   requiredNumericRules: Rule[]
 }
 
 export const UserFormHelper: IUserFormHelper = {
+  getGuestResponseErrorList: (errorString: string) => {
+    try {
+      return Array.from(
+        Object.values(
+          JSON.parse(errorString.replaceAll("'", "\""))
+        ), ((list: any) => list[ 0 ])
+      )
+    } catch (error) {
+      return [ "Chyba serveru, kontaktujte správce" ]
+    }
+  },
   phoneCodeRequiredRules: [
     FormHelper.requiredRule,
     {

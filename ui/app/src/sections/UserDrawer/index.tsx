@@ -1,13 +1,16 @@
 import React from "react"
 import { useState } from "react"
-import { Button, Drawer, Form, Input, Popconfirm, Select } from "antd"
+import { Button, Drawer, Form, Input, List, message, Popconfirm, Select } from "antd"
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
-import { GuestForm } from "../../lib/Types"
+import { GuestErrorResponse, GuestForm } from "../../lib/Types"
 import { UserFormHelper } from "../../lib/components/UserFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
+import { ApolloError, useMutation } from "@apollo/client"
+import { CREATE_GUEST } from "../../lib/graphql/mutations/Guest"
+import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 
 interface Props {
   close: () => void
@@ -21,6 +24,19 @@ export const UserDrawer = ({
   visible
 }: Props) => {
 
+  const [ createGuest, { data, loading, error } ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
+    onCompleted: (data) => {
+      console.log('Complete: ', data);
+    },
+    onError: (error: ApolloError): void => {
+      message.error(
+        <List
+          dataSource={ UserFormHelper.getGuestResponseErrorList(error.message) }
+          renderItem={ item => <List.Item>{ item }</List.Item> }
+          size="small" />
+      )
+    }
+  })
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
   const [ form ] = Form.useForm()
   const initialValues: Store = {
@@ -42,6 +58,36 @@ export const UserDrawer = ({
     }
   }
 
+  const submitForm = (): void => {
+    form.validateFields()
+      .then(() => {
+        const formData: GuestForm = form.getFieldsValue(true)
+        createGuest({
+          variables: {
+            data: {
+              addressMunicipality: formData.address?.municipality,
+              addressPsc: formData.address?.psc,
+              addressStreet: formData.address?.street,
+              citizenship: formData.citizenship?.selected === undefined ? formData.citizenship?.new : formData.citizenship.selected,
+              email: formData.email,
+              gender: formData.gender,
+              identity: formData.identity,
+              name: formData.name,
+              phoneNumber: `${ formData.phone?.code } ${ formData.phone?.number }`,
+              surname: formData.surname,
+              visaNumber: formData.visa
+            }
+          }
+        })
+        console.log("Submit to data store: ", formData)
+        // setGuest(form.getFieldsValue(true))
+        // close()
+      })
+      .catch((error) => {
+        console.log("Fix errors: ", error)
+      })
+  }
+
   return (
     <Drawer
       closeIcon={ (
@@ -61,17 +107,7 @@ export const UserDrawer = ({
       footer={
         <>
           <Button
-            onClick={ () => {
-              form.validateFields()
-                .then(() => {
-                  console.log("Submit to data store: ", form.getFieldsValue(true))
-                  setGuest(form.getFieldsValue(true))
-                  close()
-                })
-                .catch((error) => {
-                  console.log("Fix errors: ", error)
-                })
-            } }
+            onClick={ submitForm }
             type="primary">
             Vytvořit
           </Button>
@@ -123,8 +159,7 @@ export const UserDrawer = ({
               rules={ UserFormHelper.phoneCodeRequiredRules }
               valuePropName="value">
               <Input
-                placeholder="kód"
-                type="tel" />
+                placeholder="kód" />
             </Form.Item>
             <Form.Item
               className="phone-field"
@@ -152,10 +187,9 @@ export const UserDrawer = ({
           label="Pohlaví"
           name="gender">
           <Select
-            onChange={ (value) => { console.log(value) } }
             placeholder="vyberte ze seznamu">
-            <Select.Option value="man">Muž</Select.Option>
-            <Select.Option value="woman">Žena</Select.Option>
+            <Select.Option value="M">Muž</Select.Option>
+            <Select.Option value="F">Žena</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item

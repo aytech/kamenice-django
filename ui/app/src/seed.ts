@@ -106,7 +106,7 @@ export const rooms: Room[] = [
 export const guests: GuestForm[] = [
   {
     address: {
-      obec: "Praha 8",
+      municipality: "Praha 8",
       psc: 18200,
       street: "Černého"
     },
@@ -115,7 +115,7 @@ export const guests: GuestForm[] = [
     gender: "M",
     id: 1,
     name: "Oleg",
-    obcanka: "12345/8927",
+    identity: "12345/8927",
     phone: {
       code: 420,
       number: 12346789
@@ -125,7 +125,7 @@ export const guests: GuestForm[] = [
   },
   {
     address: {
-      obec: "Praha 8",
+      municipality: "Praha 8",
       psc: 18200,
       street: "Černého"
     },
@@ -134,7 +134,7 @@ export const guests: GuestForm[] = [
     gender: "M",
     id: 3,
     name: "Štěpán",
-    obcanka: "12345/8927",
+    identity: "12345/8927",
     phone: {
       code: 420,
       number: 12346789
@@ -144,7 +144,7 @@ export const guests: GuestForm[] = [
   },
   {
     address: {
-      obec: "Praha 8",
+      municipality: "Praha 8",
       psc: 18200,
       street: "Černého"
     },
@@ -153,7 +153,7 @@ export const guests: GuestForm[] = [
     gender: "F",
     id: 4,
     name: "Adéla",
-    obcanka: "12345/8927",
+    identity: "12345/8927",
     phone: {
       code: 420,
       number: 12346789

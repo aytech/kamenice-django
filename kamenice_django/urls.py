@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
 from ui import views as ui
@@ -29,5 +30,5 @@ urlpatterns = [
     url('admin/', admin.site.urls),
 
     # GraphQL
-    url('api', GraphQLView.as_view(graphiql=True))
+    url('api', csrf_exempt(GraphQLView.as_view(graphiql=True)))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
