@@ -4,29 +4,34 @@ import { Button, Drawer, Form, Input, List, message, Popconfirm, Select } from "
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
-import { GuestErrorResponse, GuestForm } from "../../lib/Types"
+import { GuestForm } from "../../lib/Types"
 import { UserFormHelper } from "../../lib/components/UserFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
-import { ApolloError, useMutation } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
 import { CREATE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
+import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
   close: () => void
-  setGuest: (guest: GuestForm) => void
+  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests>>) | undefined
   visible: boolean
 }
 
 export const UserDrawer = ({
   close,
-  setGuest,
+  refetch,
   visible
 }: Props) => {
 
-  const [ createGuest, { data, loading, error } ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
-    onCompleted: (data) => {
-      console.log('Complete: ', data);
+  const [ createGuest ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
+    onCompleted: (data: CreateGuest) => {
+      message.success(`Host ${ data.createGuest?.guest?.name } ${ data.createGuest?.guest?.surname } byl přidán`)
+      if (refetch !== undefined) {
+        refetch()
+      }
+      close()
     },
     onError: (error: ApolloError): void => {
       message.error(
@@ -79,13 +84,8 @@ export const UserDrawer = ({
             }
           }
         })
-        console.log("Submit to data store: ", formData)
-        // setGuest(form.getFieldsValue(true))
-        // close()
       })
-      .catch((error) => {
-        console.log("Fix errors: ", error)
-      })
+      .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
   }
 
   return (
@@ -159,7 +159,8 @@ export const UserDrawer = ({
               rules={ UserFormHelper.phoneCodeRequiredRules }
               valuePropName="value">
               <Input
-                placeholder="kód" />
+                placeholder="kód"
+                type="text" />
             </Form.Item>
             <Form.Item
               className="phone-field"

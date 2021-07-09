@@ -31,8 +31,8 @@ export const UserFormHelper: IUserFormHelper = {
   requiredAlphaRules: [
     FormHelper.requiredRule,
     {
-      message: "zadejte pouze text bez mezer",
-      pattern: /^([A-Za-z])+$/,
+      message: "zadejte pouze text",
+      pattern: /^([A-Za-z\s])+$/,
       transform: FormHelper.trim
     }
   ],

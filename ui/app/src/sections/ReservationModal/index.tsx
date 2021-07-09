@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
 import { Moment } from "moment"
-import { useLazyQuery } from "@apollo/client"
+import { ApolloError } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -9,28 +9,35 @@ import { DrawerType, OptionsType, ReservationTypeKey, ReserveRange } from "../..
 import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../lib/graphql/queries"
+import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
-  close: () => void,
-  isOpen: boolean,
-  openDrawer: () => void,
-  range: ReserveRange | undefined,
-  setDrawerType: (type: DrawerType) => void,
+  close: () => void
+  data: Guests | undefined
+  error: ApolloError | undefined
+  getGuests: () => void
+  isOpen: boolean
+  loading: boolean
+  openDrawer: () => void
+  range: ReserveRange | undefined
+  setDrawerType: (type: DrawerType) => void
   updateRange: (range: ReserveRange) => void
 }
 
 export const ReservationModal = ({
   close,
+  data,
+  error,
+  getGuests,
   isOpen,
+  loading,
   openDrawer,
   range,
   setDrawerType,
   updateRange
 }: Props) => {
 
-  const [ getGuests, { loading, error, data, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
+
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const dateFormat = "YYYY-MM-DD HH:mm"
   const [ form ] = Form.useForm()

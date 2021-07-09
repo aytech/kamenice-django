@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { ApolloError } from '@apollo/client'
 import { Col } from 'antd'
 import Title from 'antd/lib/typography/Title'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
@@ -7,15 +8,24 @@ import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
 import { DrawerType, ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
+import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
 
 interface Props {
-  openDrawer: () => void,
+  data: Guests | undefined
+  error: ApolloError | undefined
+  getGuests: () => void
+  loading: boolean
+  openDrawer: () => void
   room: Room
   setDrawerType: (type: DrawerType) => void
 }
 type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
 
 export const ReserveCalendar = ({
+  data,
+  error,
+  getGuests,
+  loading,
   openDrawer,
   room,
   setDrawerType
@@ -94,6 +104,10 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => { setModalOpen(false) } }
+        data={ data }
+        error={ error }
+        getGuests={ getGuests }
+        loading={ loading }
         isOpen={ modalOpen }
         openDrawer={ openDrawer }
         range={ reservedRange }

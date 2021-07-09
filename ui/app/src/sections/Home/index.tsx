@@ -1,3 +1,4 @@
+import { useLazyQuery } from '@apollo/client'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
@@ -7,13 +8,15 @@ import { Row } from 'antd'
 import { rooms } from '../../seed'
 import { useState } from 'react'
 import { UserDrawer } from '../UserDrawer'
-import { DrawerType, GuestForm } from '../../lib/Types'
+import { DrawerType } from '../../lib/Types'
+import { GUESTS } from '../../lib/graphql/queries'
+import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 export const Home = () => {
 
+  const [ getGuests, { loading, error, data, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
   const [ drawerType, setDrawerType ] = useState<DrawerType>()
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
-  const [ guestList, setGuestList ] = useState<GuestForm[]>([])
 
   const openDrawer = () => setDrawerVisible(true)
   const closeDrawer = () => setDrawerVisible(false)
@@ -22,12 +25,7 @@ export const Home = () => {
     if (drawerType === "user") {
       return (
         <UserDrawer
-          setGuest={ (guestForm: GuestForm) => {
-            setGuestList([
-              ...guestList.filter((guest: GuestForm) => guest.id !== guestForm.id),
-              guestForm
-            ])
-          } }
+          refetch={ refetch }
           close={ closeDrawer }
           visible={ drawerVisible }
         />
@@ -47,7 +45,11 @@ export const Home = () => {
             rooms.map((room, index) => {
               return (
                 <ReserveCalendar
+                  data={ data }
+                  error={ error }
+                  getGuests={ getGuests }
                   key={ index }
+                  loading={ loading }
                   openDrawer={ openDrawer }
                   room={ room }
                   setDrawerType={ setDrawerType } />
