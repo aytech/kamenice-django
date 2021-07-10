@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
-from api.models import Guest as GuestModel
+from api.models.Guest import Guest as GuestModel
 
 
 class Guest(DjangoObjectType):
@@ -10,7 +10,7 @@ class Guest(DjangoObjectType):
         fields = "__all__"
 
 
-class Query(ObjectType):
+class GuestsQuery(ObjectType):
     guests = List(Guest)
     guest = Field(Guest, guest_id=Int())
 
@@ -109,7 +109,9 @@ class DeleteGuest(Mutation):
     def mutate(_root, _info, guest_id):
         try:
             instance = GuestModel.objects.get(pk=guest_id)
-            instance.delete()
+            if instance:
+                instance.deleted = True
+                instance.save()
             return DeleteGuest(guest=instance)
         except ObjectDoesNotExist:
             return DeleteGuest(guest=None)
