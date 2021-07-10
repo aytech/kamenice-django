@@ -5,6 +5,7 @@ from django.db import models
 
 from api.models.BaseModel import BaseModel
 from api.models.Guest import Guest
+from api.models.Suite import Suite
 
 
 class Reservation(BaseModel):
@@ -15,10 +16,17 @@ class Reservation(BaseModel):
         ('inhabited', 'Obydlený Termín'),
         ('nonbinding', 'Nezávazná Rezervace'),
     ]
-    guest = models.OneToOneField(
+    guest = models.ForeignKey(
         Guest,
         on_delete=models.CASCADE,
-        primary_key=True
+    )
+    roommates = models.ManyToManyField(
+        Guest,
+        related_name='+',
+    )
+    suite = models.ForeignKey(
+        Suite,
+        on_delete=models.CASCADE
     )
     type = models.CharField(blank=False, max_length=50, null=False, error_messages={
         'invalid_choice': 'Vyberte údaj Typ Rezervace ze seznamu',
@@ -100,6 +108,11 @@ class Reservation(BaseModel):
         'max_value': 'zadejte platnou minutu konce rezervace',
         'min_value': 'zadejte platnou minutu konce rezervace',
     })
+    from_date = models.DateTimeField()
+    to_date = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.guest)

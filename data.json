@@ -12,7 +12,37 @@
       "identity": "12345/8945",
       "name": "Oleg",
       "phone_number": "+420 123 456 789",
-      "surname": "Yapparov"
+      "surname": "Yapparov",
+      "created": "2021-07-10 18:10:50.372751",
+      "updated": "2021-07-10 18:10:50.372751"
+    }
+  },
+  {
+    "model": "api.guest",
+    "pk": 2,
+    "fields": {
+      "address_municipality": "Praha",
+      "address_psc": 18200,
+      "address_street": "Černého",
+      "citizenship": "CZE",
+      "email": "aambroz@gmail.com",
+      "gender": "F",
+      "identity": "12345/8945",
+      "name": "Alice",
+      "phone_number": "+420 123 456 789",
+      "surname": "Ambrozova",
+      "created": "2021-07-10 18:10:50.372751",
+      "updated": "2021-07-10 18:10:50.372751"
+    }
+  },
+  {
+    "model": "api.suite",
+    "pk": 1,
+    "fields": {
+      "title": "Apartmá 2 + 1",
+      "number": 7,
+      "created": "2021-07-10 18:10:50.372751",
+      "updated": "2021-07-10 18:10:50.372751"
     }
   }
 ]
