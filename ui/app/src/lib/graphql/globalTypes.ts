@@ -15,6 +15,16 @@ export enum GuestGender {
   M = "M",
 }
 
+/**
+ * An enumeration.
+ */
+export enum ReservationType {
+  ACCOMMODATED = "ACCOMMODATED",
+  BINDING = "BINDING",
+  INHABITED = "INHABITED",
+  NONBINDING = "NONBINDING",
+}
+
 export interface GuestInput {
   addressMunicipality?: string | null;
   addressPsc?: number | null;

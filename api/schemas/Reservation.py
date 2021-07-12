@@ -18,12 +18,12 @@ class Reservation(DjangoObjectType):
 
 
 class ReservationQuery(ObjectType):
-    reservations = List(Reservation)
+    reservations = List(Reservation, suite_id=Int())
     reservation = Field(Reservation, reservation_id=Int())
 
     @resolve_only_args
-    def resolve_reservations(self):
-        return ReservationModel.objects.all()
+    def resolve_reservations(self, suite_id):
+        return ReservationModel.objects.filter(suite_id=suite_id)
 
     @resolve_only_args
     def resolve_reservation(self, reservation_id):

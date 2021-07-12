@@ -1,23 +1,41 @@
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Row } from 'antd'
-import { rooms } from '../../seed'
 import { useState } from 'react'
 import { GuestDrawer } from '../GuestDrawer'
 import { GUESTS } from '../../lib/graphql/queries'
 import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { SUITES } from '../../lib/graphql/queries/Suites'
+import { Suites, Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
 
 export const Home = () => {
 
-  const [ getGuests, { loading, error, data, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
+  const [ getGuests, { loading: guestsLoading, error: guestsError, data: guestsData, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
+  const { loading: suitesLoading, error: suitesError, data: suitesData } = useQuery<Suites>(SUITES)
+  console.log('Data: ', suitesData)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
 
   const openDrawer = () => setDrawerVisible(true)
   const closeDrawer = () => setDrawerVisible(false)
+
+  const getSuitesCalendars = () => {
+    return suitesData?.suites?.map((suite: Suites_suites | null) => {
+      return suite !== null ? (
+        <ReserveCalendar
+          data={ guestsData }
+          error={ guestsError }
+          getGuests={ getGuests }
+          key={ suite.id }
+          loading={ guestsLoading }
+          openDrawer={ openDrawer }
+          suite={ suite } />
+      ) : null
+    })
+  }
 
   return (
     <Content className="app-content">
@@ -26,20 +44,7 @@ export const Home = () => {
           Rezervace / Obsazenost
         </Title>
         <Row gutter={ 12 }>
-          {
-            rooms.map((room, index) => {
-              return (
-                <ReserveCalendar
-                  data={ data }
-                  error={ error }
-                  getGuests={ getGuests }
-                  key={ index }
-                  loading={ loading }
-                  openDrawer={ openDrawer }
-                  room={ room } />
-              )
-            })
-          }
+          { getSuitesCalendars() }
         </Row>
       </div>
       <GuestDrawer

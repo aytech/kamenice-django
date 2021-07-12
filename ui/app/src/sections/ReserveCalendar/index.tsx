@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ApolloError } from '@apollo/client'
+import { ApolloError, useQuery } from '@apollo/client'
 import { Col } from 'antd'
 import Title from 'antd/lib/typography/Title'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
@@ -9,6 +9,10 @@ import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
 import { ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
 import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
+import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
+import { Reservations as ReservationsData, Reservations_reservations } from '../../lib/graphql/queries/Reservations/__generated__/Reservations'
+import { RESERVATIONS } from '../../lib/graphql/queries/Reservations'
+import { ReservationType } from '../../lib/graphql/globalTypes'
 
 interface Props {
   data: Guests | undefined
@@ -16,9 +20,9 @@ interface Props {
   getGuests: () => void
   loading: boolean
   openDrawer: () => void
-  room: Room
+  suite: Suites_suites
 }
-type CustomDayClassNameItem = Day & { className: string, rangeId?: number };
+type CustomDayClassNameItem = Day & { className: string, reservationId: string };
 
 export const ReserveCalendar = ({
   data,
@@ -26,43 +30,59 @@ export const ReserveCalendar = ({
   getGuests,
   loading,
   openDrawer,
-  room,
+  suite,
 }: Props) => {
+
+  const { loading: reservationsLoading, error: reservationsError, data: reservationsData } = useQuery<ReservationsData>(RESERVATIONS, {
+    variables: { suiteId: suite.id }
+  })
   const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
-
-  const getDayClassName = (type: ReservationTypeKey) => {
+  const getDayClassName = (type: ReservationType) => {
     switch (type) {
-      case "binding":
+      case "BINDING":
         return "greenDay"
-      case "nonbinding":
+      case "NONBINDING":
         return "yellowDay"
-      case "accommodated":
+      case "ACCOMMODATED":
         return "purpleDay"
-      case "inhabited":
+      case "INHABITED":
         return "orangeDay"
       default: return "greenDay"
     }
   }
   const updateReservedRange = (newRange: ReserveRange): void => {
-    room.reservedRanges = [
-      ...room.reservedRanges.filter((range: ReserveRange) => {
-        return range.id !== undefined && range.id !== newRange.id
-      }),
-      newRange
-    ]
+    console.log('Updating range: ', newRange)
+    //   room.reservedRanges = [
+    //     ...room.reservedRanges.filter((range: ReserveRange) => {
+    //       return range.id !== undefined && range.id !== newRange.id
+    //     }),
+    //     newRange
+    //   ]
   }
 
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
-    room.reservedRanges.forEach((range: ReserveRange) => {
-      TransformDate.getDaysFromRange(range.from, range.to).forEach((day: Day) => {
-        reservedDays.push({ className: getDayClassName(range.type), rangeId: range.id, ...day })
-      })
+    reservationsData?.reservations?.forEach((reservation: Reservations_reservations | null) => {
+      if (reservation !== null) {
+        TransformDate.getDaysFromRange(
+          {
+            year: reservation?.fromYear,
+            month: reservation?.fromMonth,
+            day: reservation?.fromDay
+          },
+          {
+            year: reservation.toYear,
+            month: reservation.toMonth,
+            day: reservation.toDay
+          }).forEach((day: Day) => {
+            reservedDays.push({ className: getDayClassName(reservation.type), reservationId: reservation.id, ...day })
+          })
+      }
+      setReservedDays(reservedDays)
     })
-    setReservedDays(reservedDays)
-  }, [ room.reservedRanges ])
+  }, [ reservationsData ])
 
   const setNewReservationRange = (dayValue: DayValue): void => {
     if (dayValue !== undefined && dayValue !== null) {
@@ -79,21 +99,22 @@ export const ReserveCalendar = ({
       <Col
         span={ 12 }
         className="home__listing">
-        <Title level={ 4 } className="home__listings-title"> { room.name }</Title>
+        <Title level={ 4 } className="home__listings-title"> { suite.title }</Title>
         <div className="home__calendar">
           <Calendar
             onChange={ (dayValue: DayValue) => {
-              const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
-                return day.year === dayValue?.year
-                  && day.month === dayValue.month
-                  && day.day === dayValue.day
-              })
-              if (rangeDay === undefined) {
-                setNewReservationRange(dayValue)
-              } else {
-                setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
-              }
-              setModalOpen(true)
+              console.log('Day value: ', dayValue);
+              // const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
+              //   return day.year === dayValue?.year
+              //     && day.month === dayValue.month
+              //     && day.day === dayValue.day
+              // })
+              // if (rangeDay === undefined) {
+              //   setNewReservationRange(dayValue)
+              // } else {
+              //   setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
+              // }
+              // setModalOpen(true)
             } }
             locale={ CsCalendarLocale }
             customDaysClassName={ reservedDays }

@@ -16,12 +16,12 @@ class SuitesQuery(ObjectType):
 
     @resolve_only_args
     def resolve_suites(self):
-        return SuiteModel.objects.all()
+        return SuiteModel.objects.filter(deleted=False)
 
     @resolve_only_args
     def resolve_suite(self, suite_id):
         try:
-            return SuiteModel.objects.get(pk=suite_id)
+            return SuiteModel.objects.get(pk=suite_id, deleted=False)
         except ObjectDoesNotExist:
             return None
 
