@@ -1,30 +1,45 @@
 import { useEffect, useState } from "react"
-import { PlusCircleOutlined } from "@ant-design/icons"
-import { Button, List, Skeleton } from "antd"
+import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import { Button, List, message, Popconfirm, Skeleton } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { useQuery } from "@apollo/client"
+import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import Title from "antd/lib/typography/Title"
 import "./styles.css"
+import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
+import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 
 export const Suites = () => {
 
-  const { loading, error, data, refetch } = useQuery<SuitesData>(SUITES)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
-  const [ suites, setSuites ] = useState<Suites_suites[]>([])
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
+  const [ suites, setSuites ] = useState<Suites_suites[]>([])
+
+  const { loading: queryLoading, data: queryData, refetch } = useQuery<SuitesData>(SUITES, {
+    onError: () => {
+      message.error("Chyba serveru, kontaktujte správce")
+    }
+  })
+  const [ deleteSuite, { loading: removeLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
+    onCompleted: (data: DeleteSuite) => {
+      setSuites(suites.filter((suite: Suites_suites) => suite.id !== data.deleteSuite?.suite?.id))
+    },
+    onError: (error: ApolloError) => {
+      console.log('Error: ', error)
+    }
+  })
 
   useEffect(() => {
     const suitesData: Suites_suites[] = []
-    data?.suites?.forEach((suite: Suites_suites | null) => {
+    queryData?.suites?.forEach((suite: Suites_suites | null) => {
       if (suite !== null) {
         suitesData.push(suite)
       }
     })
     setSuites(suitesData)
-  }, [ data ])
+  }, [ queryData ])
 
   const editSuite = (suite: Suites_suites): void => {
     setActiveSuite(suite)
@@ -32,7 +47,7 @@ export const Suites = () => {
   }
 
   const removeSuite = (suite: Suites_suites): void => {
-    console.log('Removing suite: ', suite)
+    deleteSuite({ variables: { suiteId: suite.id } })
   }
 
   return (
@@ -44,7 +59,7 @@ export const Suites = () => {
         className="suites-list"
         dataSource={ suites }
         itemLayout="horizontal"
-        loading={ loading }
+        loading={ queryLoading }
         renderItem={ suite => (
           <List.Item
             actions={ [
@@ -54,14 +69,21 @@ export const Suites = () => {
                 type="link">
                 upravit
               </Button>,
-              <Button
-                key="remove"
-                onClick={ () => removeSuite(suite) }
-                type="link">
-                odstranit
-              </Button>
+              <Popconfirm
+                cancelText="Ne"
+                icon={ <WarningOutlined /> }
+                okText="Ano"
+                onConfirm={ () => removeSuite(suite) }
+                title="opravdu odstranit?">
+                <Button
+                  key="remove"
+                  loading={ removeLoading }
+                  type="link">
+                  odstranit
+                </Button>
+              </Popconfirm>
             ] }>
-            <Skeleton title={ false } loading={ loading } active>
+            <Skeleton title={ false } loading={ queryLoading } active>
               <List.Item.Meta
                 title={ suite.title } />
             </Skeleton>

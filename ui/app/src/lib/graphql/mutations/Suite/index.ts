@@ -23,3 +23,13 @@ export const UPDATE_SUITE = gql`
     }
   }
 `
+
+export const DELETE_SUITE = gql`
+  mutation DeleteSuite($suiteId: ID!) {
+    deleteSuite(suiteId: $suiteId) {
+      suite {
+        id
+      }
+    }
+  }
+`
