@@ -16,7 +16,6 @@ export const Home = () => {
 
   const [ getGuests, { loading: guestsLoading, error: guestsError, data: guestsData, refetch } ] = useLazyQuery<GuestsData>(GUESTS, {})
   const { loading: suitesLoading, error: suitesError, data: suitesData } = useQuery<Suites>(SUITES)
-  console.log('Data: ', suitesData)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
 
   const openDrawer = () => setDrawerVisible(true)

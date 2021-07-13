@@ -7,7 +7,7 @@ import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendar
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { ReservationTypeKey, ReserveRange, Room } from '../../lib/Types'
+import { ReserveRange } from '../../lib/Types'
 import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
 import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
 import { Reservations as ReservationsData, Reservations_reservations } from '../../lib/graphql/queries/Reservations/__generated__/Reservations'

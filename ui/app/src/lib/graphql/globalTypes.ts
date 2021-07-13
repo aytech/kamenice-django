@@ -40,6 +40,12 @@ export interface GuestInput {
   visaNumber?: string | null;
 }
 
+export interface SuiteInput {
+  id?: string | null;
+  number?: number | null;
+  title?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

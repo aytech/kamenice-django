@@ -70,6 +70,11 @@ export interface GuestErrorResponse {
   surname: Array<string>
 }
 
+export interface SuiteForm {
+  number: number,
+  title: string
+}
+
 export interface OptionsType {
   label: string,
   value: string | number
