@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
-import { Button, Col, Tooltip } from 'antd'
+import { Col } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
@@ -12,14 +12,14 @@ import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Su
 import { Reservations as ReservationsData, Reservations_reservations } from '../../lib/graphql/queries/Reservations/__generated__/Reservations'
 import { RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
+import Title from 'antd/lib/typography/Title'
 
 interface Props {
   data: Guests | undefined
   error: ApolloError | undefined
   getGuests: () => void
   loading: boolean
-  openGuestDrawer: () => void
-  openSuiteDrawer: () => void
+  openDrawer: () => void
   suite: Suites_suites
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
@@ -29,12 +29,11 @@ export const ReserveCalendar = ({
   error,
   getGuests,
   loading,
-  openGuestDrawer,
-  openSuiteDrawer,
+  openDrawer,
   suite,
 }: Props) => {
 
-  const { loading: reservationsLoading, error: reservationsError, data: reservationsData } = useQuery<ReservationsData>(RESERVATIONS, {
+  const { data: reservationsData } = useQuery<ReservationsData>(RESERVATIONS, {
     variables: { suiteId: suite.id }
   })
   const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
@@ -100,13 +99,7 @@ export const ReserveCalendar = ({
       <Col
         span={ 12 }
         className="home__listing">
-        <Tooltip title="Upravit">
-          <Button
-            onClick={ openSuiteDrawer }
-            type="link">
-            { suite.title }
-          </Button>
-        </Tooltip>
+        <Title level={ 4 } className="home__listings-title"> { suite.title }</Title>
         <div className="home__calendar">
           <Calendar
             onChange={ (dayValue: DayValue) => {
@@ -135,7 +128,7 @@ export const ReserveCalendar = ({
         getGuests={ getGuests }
         loading={ loading }
         isOpen={ modalOpen }
-        openDrawer={ openGuestDrawer }
+        openDrawer={ openDrawer }
         range={ reservedRange }
         updateRange={ updateReservedRange } />
     </>

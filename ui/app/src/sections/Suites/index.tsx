@@ -99,11 +99,11 @@ export const Suites = () => {
         type="primary">
         Přidat apartmá
       </Button>
-      {/* <SuiteDrawer
+      <SuiteDrawer
         close={ () => setDrawerVisible(false) }
         refetch={ refetch }
         suite={ activeSuite }
-        visible={ drawerVisible } /> */}
+        visible={ drawerVisible } />
     </Content>
   )
 }
