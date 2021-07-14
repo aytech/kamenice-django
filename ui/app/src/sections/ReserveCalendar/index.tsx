@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
-import { Col } from 'antd'
-import Title from 'antd/lib/typography/Title'
+import { Button, Col, Tooltip } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
@@ -19,7 +18,8 @@ interface Props {
   error: ApolloError | undefined
   getGuests: () => void
   loading: boolean
-  openDrawer: () => void
+  openGuestDrawer: () => void
+  openSuiteDrawer: () => void
   suite: Suites_suites
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
@@ -29,7 +29,8 @@ export const ReserveCalendar = ({
   error,
   getGuests,
   loading,
-  openDrawer,
+  openGuestDrawer,
+  openSuiteDrawer,
   suite,
 }: Props) => {
 
@@ -99,7 +100,13 @@ export const ReserveCalendar = ({
       <Col
         span={ 12 }
         className="home__listing">
-        <Title level={ 4 } className="home__listings-title"> { suite.title }</Title>
+        <Tooltip title="Upravit">
+          <Button
+            onClick={ openSuiteDrawer }
+            type="link">
+            { suite.title }
+          </Button>
+        </Tooltip>
         <div className="home__calendar">
           <Calendar
             onChange={ (dayValue: DayValue) => {
@@ -114,7 +121,7 @@ export const ReserveCalendar = ({
               // } else {
               //   setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
               // }
-              // setModalOpen(true)
+              setModalOpen(true)
             } }
             locale={ CsCalendarLocale }
             customDaysClassName={ reservedDays }
@@ -128,7 +135,7 @@ export const ReserveCalendar = ({
         getGuests={ getGuests }
         loading={ loading }
         isOpen={ modalOpen }
-        openDrawer={ openDrawer }
+        openDrawer={ openGuestDrawer }
         range={ reservedRange }
         updateRange={ updateReservedRange } />
     </>

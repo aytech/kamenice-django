@@ -18,7 +18,17 @@ import { Suites } from './sections/Suites'
 moment.locale("cs")
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          suites: {
+            merge: false
+          }
+        }
+      }
+    }
+  }),
   headers: {
     "X-CSRFToken": getCookie("csrftoken")
   },

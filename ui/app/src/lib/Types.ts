@@ -19,6 +19,8 @@ export const Reservation = {
   }
 }
 
+export type DrawerType = "guest" | "suite"
+
 export interface ReserveRange {
   id?: number
   from: ReserveDay

@@ -22,10 +22,7 @@ export const Suites = () => {
       message.error("Chyba serveru, kontaktujte správce")
     }
   })
-  const [ deleteSuite, { loading: removeLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
-    onCompleted: (data: DeleteSuite) => {
-      setSuites(suites.filter((suite: Suites_suites) => suite.id !== data.deleteSuite?.suite?.id))
-    },
+  const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
     onError: (error: ApolloError) => {
       console.log('Error: ', error)
     }
@@ -40,6 +37,10 @@ export const Suites = () => {
     })
     setSuites(suitesData)
   }, [ queryData ])
+
+  useEffect(() => {
+    refetch()
+  }, [ refetch, removeData ])
 
   const editSuite = (suite: Suites_suites): void => {
     setActiveSuite(suite)
@@ -98,11 +99,11 @@ export const Suites = () => {
         type="primary">
         Přidat apartmá
       </Button>
-      <SuiteDrawer
+      {/* <SuiteDrawer
         close={ () => setDrawerVisible(false) }
         refetch={ refetch }
         suite={ activeSuite }
-        visible={ drawerVisible } />
+        visible={ drawerVisible } /> */}
     </Content>
   )
 }

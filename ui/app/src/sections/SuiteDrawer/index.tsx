@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react"
 import { Button, Drawer, Form, Input, message, Popconfirm } from "antd"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { CloseOutlined } from "@ant-design/icons"
+import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
 import { Suites, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
 import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
 import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
-import { CREATE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
+import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { SuiteForm } from "../../lib/Types"
 import { SuiteInput } from "../../lib/graphql/globalTypes"
 import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
+import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 
 interface Props {
   close: () => void
-  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Suites>>) | undefined
+  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Suites>>)
+  removeSuite: (suite: Suites_suites | undefined) => void
   suite: Suites_suites | undefined
   visible: boolean
 }
@@ -22,6 +24,7 @@ export const SuiteDrawer = ({
   close,
   suite,
   refetch,
+  removeSuite,
   visible
 }: Props) => {
 
@@ -113,6 +116,25 @@ export const SuiteDrawer = ({
       ) }
       footer={
         <>
+          <Popconfirm
+            cancelText="Ne"
+            icon={ <WarningOutlined /> }
+            okText="Ano"
+            onConfirm={ () => removeSuite(suite) }
+            placement="rightTop"
+            title="opravdu odstranit?">
+            <Button
+              danger
+              disabled={ suite === undefined }
+              key="remove"
+              // loading={ removeLoading }
+              style={ {
+                float: "left"
+              } }
+              type="primary">
+              Odstranit
+            </Button>
+          </Popconfirm>
           <Button
             onClick={ submitForm }
             type="primary">
@@ -120,6 +142,9 @@ export const SuiteDrawer = ({
           </Button>
         </>
       }
+      footerStyle={ {
+        textAlign: "right"
+      } }
       placement="left"
       title="Nové apartmá"
       visible={ visible }

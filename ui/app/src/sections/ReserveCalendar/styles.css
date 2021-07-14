@@ -13,3 +13,10 @@
 .yellowDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
   border: 2px solid rgba(228, 231, 36, 0.7) !important;
 }
+
+.home__listing > button {
+  font-size: 24px;
+  font-weight: 600;
+  height: 40px;
+  margin-bottom: .5em;
+}
