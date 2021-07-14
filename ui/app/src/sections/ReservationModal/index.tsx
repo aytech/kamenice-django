@@ -41,7 +41,7 @@ export const ReservationModal = ({
   const [ form ] = Form.useForm()
   const initialValues: Store & { type: ReservationTypeKey } = {
     dates: AntCalendarHelper.getRangePickerDates(range),
-    type: range === undefined ? "binding" : range.type
+    type: range === undefined ? "BINDING" : range.type
   }
   const footerButtons = [
     <Button

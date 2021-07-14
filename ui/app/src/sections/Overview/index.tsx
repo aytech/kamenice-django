@@ -1,6 +1,11 @@
+import { useQuery } from "@apollo/client"
 import { ApexOptions } from "apexcharts"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
+import { RESERVATIONS } from "../../lib/graphql/queries/Reservations"
+import { Reservations, Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
+import { Reservation } from "../../lib/Types"
+import "./styles.css"
 
 // https://apexcharts.com/react-chart-demos/timeline-charts/multiple-series-group-rows/
 export const Overview = () => {
@@ -25,8 +30,147 @@ export const Overview = () => {
     time += (minutes < 10 ? '0' : '') + minutes
     return time
   }
+
+  const { data } = useQuery<Reservations>(RESERVATIONS)
+
+  useEffect(() => {
+    const series: any[] = []
+    data?.reservations?.forEach((reservation: Reservations_reservations | null) => {
+      if (reservation !== null) {
+        const { fromYear, fromMonth, fromDay, fromHour, fromMinute, toYear, toMonth, toDay, toHour, toMinute } = reservation
+        let from, to
+        if (fromHour === null || fromMinute === null) {
+          from = new Date(fromYear, fromMonth, fromDay)
+        } else {
+          from = new Date(fromYear, fromMonth, fromDay, fromHour, fromMinute)
+        }
+        if (toHour === null || toMinute === null) {
+          to = new Date(toYear, toMonth, toDay)
+        } else {
+          to = new Date(toYear, toMonth, toDay, toHour, toMinute)
+        }
+        series.push({
+          data: [
+            {
+              x: `${ reservation.suite.title } (${ reservation.suite.number })`,
+              y: [ from.getTime(), to.getTime() ]
+            }
+          ],
+          name: Reservation.getType(reservation.type),
+          suite: reservation.suite.id
+        })
+      }
+
+    })
+    setSeries(series)
+    console.log('Data: ', data)
+    console.log('Series: ', series)
+  }, [ data ])
+
+  // For DEV only
+  // useEffect(() => {
+  // setSeries([
+  //   {
+  //     data: [
+  //       {
+  //         x: 'Apartman 2 + 2 (7)',
+  //         y: [
+  //           new Date(2021, 5, 1, 14, 0).getTime(),
+  //           new Date(2021, 5, 5, 10, 0).getTime()
+  //         ]
+  //       },
+  //     ],
+  //     name: 'Závazná Rezervace',
+  //     suite: 1
+  //   },
+  //   {
+  //     data: [
+  //       {
+  //         x: 'Apartman 2 + 2 (8)',
+  //         y: [
+  //           new Date(2021, 5, 7, 14, 0).getTime(),
+  //           new Date(2021, 5, 12, 10, 0).getTime()
+  //         ]
+  //       }
+  //     ],
+  //     name: 'Závazná Rezervace',
+  //     suite: 1
+  //   },
+  //   {
+  //     data: [
+  //       {
+  //         x: 'Apartman 2 + 4 (3)',
+  //         y: [
+  //           new Date(2021, 5, 3, 14, 0).getTime(),
+  //           new Date(2021, 5, 6, 10, 0).getTime()
+  //         ]
+  //       }
+  //     ],
+  //     name: 'Aktuálně Ubytování',
+  //     suite: 2
+  //   },
+  //   {
+  //     data: [
+  //       {
+  //         x: 'Apartman 2 + 4 (3)',
+  //         y: [
+  //           new Date(2021, 5, 11, 14, 0).getTime(),
+  //           new Date(2021, 5, 15, 10, 0).getTime()
+  //         ]
+  //       }
+  //     ],
+  //     name: 'Obydlený Termín',
+  //     suite: 2
+  //   },
+  //   {
+  //     data: [
+  //       {
+  //         x: 'Apartman 4 + 4 (1)',
+  //         y: [
+  //           new Date(2021, 5, 5, 14, 0).getTime(),
+  //           new Date(2021, 5, 10, 10, 0).getTime()
+  //         ]
+  //       }
+  //     ],
+  //     name: 'Nezávazná Rezervace',
+  //     suite: 3
+  //   },
+  //   {
+  //     data: [
+  //       {
+  //         x: "Novy apartma",
+  //         y: []
+  //       }
+  //     ],
+  //     name: "Novy apartma",
+  //     suite: 4
+  //   }
+  // ])
+  // }, [])
+  // -- ! -- //
+
+  const locateSeries = (index: number) => {
+    if (index === -1) {
+      console.log("Empty space was clicked")
+    } else {
+      console.log('Reservation ', series[ index ], ' was clicked')
+    }
+  }
+
   const options: ApexOptions = {
     chart: {
+      events: {
+        click: (_e, chart, config) => {
+          console.log('Event: ', _e)
+          console.log('Chart: ', chart)
+          console.log('Config: ', config)
+          console.log('Find: ', chart.series.ctx.data.twoDSeriesX[ 0 ])
+          locateSeries(config.seriesIndex)
+        }
+
+        // legendClick: (e: any) => console.log('Legend click: ', e),
+        // markerClick: (e: any) => console.log('Marker click: ', e)
+      },
       height: 350,
       locales: [ {
         name: "en",
@@ -48,7 +192,7 @@ export const Overview = () => {
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: '50%',
+        barHeight: '80%',
         rangeBarGroupRows: true
       }
     },
@@ -88,6 +232,9 @@ export const Overview = () => {
       },
       position: 'top' as const
     },
+    stroke: {
+      width: 1
+    },
     tooltip: {
       custom: (options) => {
         const tooltipValues = options.ctx.rangeBar.getTooltipValues(options)
@@ -106,73 +253,6 @@ export const Overview = () => {
       }
     }
   }
-
-  // For DEV only
-  useEffect(() => {
-    setSeries([
-      {
-        name: 'Závazná Rezervace',
-        data: [
-          {
-            x: 'Apartman 2 + 2',
-            y: [
-              new Date(2021, 5, 1, 14, 0).getTime(),
-              new Date(2021, 5, 5, 10, 0).getTime()
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Závazná Rezervace',
-        data: [
-          {
-            x: 'Apartman 2 + 2',
-            y: [
-              new Date(2021, 5, 7, 14, 0).getTime(),
-              new Date(2021, 5, 12, 10, 0).getTime()
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Aktuálně Ubytování',
-        data: [
-          {
-            x: 'Apartman 2 + 4',
-            y: [
-              new Date(2021, 5, 3, 14, 0).getTime(),
-              new Date(2021, 5, 6, 10, 0).getTime()
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Obydlený Termín',
-        data: [
-          {
-            x: 'Apartman 2 + 4',
-            y: [
-              new Date(2021, 5, 11, 14, 0).getTime(),
-              new Date(2021, 5, 15, 10, 0).getTime()
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Nezávazná Rezervace',
-        data: [
-          {
-            x: 'Apartman 4 + 4',
-            y: [
-              new Date(2021, 5, 5, 14, 0).getTime(),
-              new Date(2021, 5, 10, 10, 0).getTime()
-            ]
-          }
-        ]
-      },
-    ])
-  }, [])
-  // -- ! -- //
 
   return (
     <div id="chart">

@@ -1,19 +1,19 @@
 import { Day } from "react-modern-calendar-datepicker"
 
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
-export type ReservationTypeKey = "binding" | "nonbinding" | "accommodated" | "inhabited"
+export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED"
 export type ReserveDay = Day & { hour?: number, minute?: number }
 
 export const Reservation = {
   getType: (key: ReservationTypeKey): ReservationType => {
     switch (key) {
-      case "nonbinding":
+      case "NONBINDING":
         return "Nezávazná Rezervace"
-      case "accommodated":
+      case "ACCOMMODATED":
         return "Aktuálně Ubytování"
-      case "inhabited":
+      case "INHABITED":
         return "Obydlený Termín"
-      case "binding":
+      case "BINDING":
       default: return "Závazná Rezervace"
     }
   }

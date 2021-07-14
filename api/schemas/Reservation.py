@@ -18,11 +18,12 @@ class Reservation(DjangoObjectType):
 
 
 class ReservationQuery(ObjectType):
-    reservations = List(Reservation, suite_id=Int())
+    suite_reservations = List(Reservation, suite_id=Int())
     reservation = Field(Reservation, reservation_id=Int())
+    reservations = List(Reservation)
 
     @resolve_only_args
-    def resolve_reservations(self, suite_id):
+    def resolve_suite_reservations(self, suite_id):
         return ReservationModel.objects.filter(suite_id=suite_id)
 
     @resolve_only_args
@@ -31,6 +32,10 @@ class ReservationQuery(ObjectType):
             return ReservationModel.objects.get(pk=reservation_id)
         except ObjectDoesNotExist:
             return None
+
+    @resolve_only_args
+    def resolve_reservations(self):
+        return ReservationModel.objects.filter(deleted=False)
 
 
 class ReservationInput(InputObjectType):

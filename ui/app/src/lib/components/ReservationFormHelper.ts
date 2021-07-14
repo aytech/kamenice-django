@@ -37,20 +37,20 @@ export const ReservationFormHelper: IReservationFormHelper = {
   ],
   reservationOptions: [
     {
-      label: Reservation.getType("binding"),
-      value: "binding"
+      label: Reservation.getType("BINDING"),
+      value: "BINDING"
     },
     {
-      label: Reservation.getType("nonbinding"),
-      value: "nonbinding"
+      label: Reservation.getType("NONBINDING"),
+      value: "NONBINDING"
     },
     {
-      label: Reservation.getType("accommodated"),
-      value: "accommodated"
+      label: Reservation.getType("ACCOMMODATED"),
+      value: "ACCOMMODATED"
     },
     {
-      label: Reservation.getType("inhabited"),
-      value: "inhabited"
+      label: Reservation.getType("INHABITED"),
+      value: "INHABITED"
     }
   ],
   getRequiredRule: (message: string): Rule => {

@@ -57,7 +57,7 @@
             "deprecationReason": null
           },
           {
-            "name": "reservations",
+            "name": "suiteReservations",
             "description": null,
             "args": [
               {
@@ -106,6 +106,22 @@
               "kind": "OBJECT",
               "name": "Reservation",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reservations",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Reservation",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null

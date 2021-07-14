@@ -89,7 +89,7 @@ export const ReserveCalendar = ({
       setReservedRange({
         from: { ...dayValue, hour: defaultArrivalHour, minute: 0 },
         to: { ...dayValue, day: dayValue.day + 1, hour: defaultDepartureHour, minute: 0 },
-        type: "binding"
+        type: "BINDING"
       })
     }
   }

@@ -19,7 +19,7 @@ export const rooms: Room[] = [
           month: 7,
           day: 5
         },
-        type: "inhabited"
+        type: "INHABITED"
       },
       {
         id: 2,
@@ -37,7 +37,7 @@ export const rooms: Room[] = [
           hour: 14,
           minute: 15
         },
-        type: "accommodated"
+        type: "ACCOMMODATED"
       },
       {
         id: 3,
@@ -55,7 +55,7 @@ export const rooms: Room[] = [
           hour: 14,
           minute: 30
         },
-        type: "binding"
+        type: "BINDING"
       },
     ]
   },
@@ -79,7 +79,7 @@ export const rooms: Room[] = [
           hour: 14,
           minute: 0
         },
-        type: "binding"
+        type: "BINDING"
       },
       {
         id: 5,
@@ -97,7 +97,7 @@ export const rooms: Room[] = [
           hour: 14,
           minute: 0
         },
-        type: "nonbinding"
+        type: "NONBINDING"
       }
     ]
   }
