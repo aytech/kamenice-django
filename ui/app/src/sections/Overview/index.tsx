@@ -63,91 +63,7 @@ export const Overview = () => {
 
     })
     setSeries(series)
-    console.log('Data: ', data)
-    console.log('Series: ', series)
   }, [ data ])
-
-  // For DEV only
-  // useEffect(() => {
-  // setSeries([
-  //   {
-  //     data: [
-  //       {
-  //         x: 'Apartman 2 + 2 (7)',
-  //         y: [
-  //           new Date(2021, 5, 1, 14, 0).getTime(),
-  //           new Date(2021, 5, 5, 10, 0).getTime()
-  //         ]
-  //       },
-  //     ],
-  //     name: 'Závazná Rezervace',
-  //     suite: 1
-  //   },
-  //   {
-  //     data: [
-  //       {
-  //         x: 'Apartman 2 + 2 (8)',
-  //         y: [
-  //           new Date(2021, 5, 7, 14, 0).getTime(),
-  //           new Date(2021, 5, 12, 10, 0).getTime()
-  //         ]
-  //       }
-  //     ],
-  //     name: 'Závazná Rezervace',
-  //     suite: 1
-  //   },
-  //   {
-  //     data: [
-  //       {
-  //         x: 'Apartman 2 + 4 (3)',
-  //         y: [
-  //           new Date(2021, 5, 3, 14, 0).getTime(),
-  //           new Date(2021, 5, 6, 10, 0).getTime()
-  //         ]
-  //       }
-  //     ],
-  //     name: 'Aktuálně Ubytování',
-  //     suite: 2
-  //   },
-  //   {
-  //     data: [
-  //       {
-  //         x: 'Apartman 2 + 4 (3)',
-  //         y: [
-  //           new Date(2021, 5, 11, 14, 0).getTime(),
-  //           new Date(2021, 5, 15, 10, 0).getTime()
-  //         ]
-  //       }
-  //     ],
-  //     name: 'Obydlený Termín',
-  //     suite: 2
-  //   },
-  //   {
-  //     data: [
-  //       {
-  //         x: 'Apartman 4 + 4 (1)',
-  //         y: [
-  //           new Date(2021, 5, 5, 14, 0).getTime(),
-  //           new Date(2021, 5, 10, 10, 0).getTime()
-  //         ]
-  //       }
-  //     ],
-  //     name: 'Nezávazná Rezervace',
-  //     suite: 3
-  //   },
-  //   {
-  //     data: [
-  //       {
-  //         x: "Novy apartma",
-  //         y: []
-  //       }
-  //     ],
-  //     name: "Novy apartma",
-  //     suite: 4
-  //   }
-  // ])
-  // }, [])
-  // -- ! -- //
 
   const locateSeries = (index: number) => {
     if (index === -1) {
@@ -167,9 +83,6 @@ export const Overview = () => {
           console.log('Find: ', chart.series.ctx.data.twoDSeriesX[ 0 ])
           locateSeries(config.seriesIndex)
         }
-
-        // legendClick: (e: any) => console.log('Legend click: ', e),
-        // markerClick: (e: any) => console.log('Marker click: ', e)
       },
       height: 350,
       locales: [ {

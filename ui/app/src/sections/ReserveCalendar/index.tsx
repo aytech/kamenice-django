@@ -9,8 +9,8 @@ import { ReservationModal } from '../ReservationModal'
 import { ReserveRange } from '../../lib/Types'
 import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
 import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
-import { Reservations as ReservationsData, Reservations_reservations } from '../../lib/graphql/queries/Reservations/__generated__/Reservations'
-import { RESERVATIONS } from '../../lib/graphql/queries/Reservations'
+import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
+import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
 import Title from 'antd/lib/typography/Title'
 
@@ -33,7 +33,7 @@ export const ReserveCalendar = ({
   suite,
 }: Props) => {
 
-  const { data: reservationsData } = useQuery<ReservationsData>(RESERVATIONS, {
+  const { data: reservationsData } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
     variables: { suiteId: suite.id }
   })
   const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
@@ -64,7 +64,7 @@ export const ReserveCalendar = ({
 
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
-    reservationsData?.reservations?.forEach((reservation: Reservations_reservations | null) => {
+    reservationsData?.suiteReservations?.forEach((reservation: SuiteReservations_suiteReservations | null) => {
       if (reservation !== null) {
         TransformDate.getDaysFromRange(
           {
