@@ -4,7 +4,7 @@ import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
-import { message, Row } from 'antd'
+import { Empty, message, Row } from 'antd'
 import { useState } from 'react'
 import { GuestDrawer } from '../GuestDrawer'
 import { GUESTS } from '../../lib/graphql/queries'
@@ -45,15 +45,21 @@ export const Home = () => {
     })
   }
 
+  const getContent = () => {
+    return suitesData !== undefined && suitesData.suites !== null ? (
+      <Row gutter={ 12 }>
+        { getSuitesCalendars() }
+      </Row>
+    ) : <Empty />
+  }
+
   return (
     <Content className="app-content">
       <div className="home__listings">
         <Title level={ 3 } className="home__listings-title">
           Rezervace / Obsazenost
         </Title>
-        <Row gutter={ 12 }>
-          { getSuitesCalendars() }
-        </Row>
+        { getContent() }
       </div>
       <GuestDrawer
         close={ closeDrawer }

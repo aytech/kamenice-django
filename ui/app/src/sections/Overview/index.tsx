@@ -1,4 +1,7 @@
 import { useQuery } from "@apollo/client"
+import { Empty } from "antd"
+import { Content } from "antd/lib/layout/layout"
+import Title from "antd/lib/typography/Title"
 import { ApexOptions } from "apexcharts"
 import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
@@ -167,9 +170,20 @@ export const Overview = () => {
     }
   }
 
+  const getContent = () => {
+    return series.length > 0 ? (
+      <div id="chart">
+        <ReactApexChart series={ series } options={ options } type="rangeBar" height={ 350 }></ReactApexChart>
+      </div>
+    ) : <Empty />
+  }
+
   return (
-    <div id="chart">
-      <ReactApexChart series={ series } options={ options } type="rangeBar" height={ 350 }></ReactApexChart>
-    </div>
+    <Content className="app-content">
+      <Title level={ 3 } className="home__listings-title">
+        Přehled
+      </Title>
+      { getContent() }
+    </Content>
   )
 }
