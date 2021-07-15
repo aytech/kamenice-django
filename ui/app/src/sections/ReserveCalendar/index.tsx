@@ -103,15 +103,15 @@ export const ReserveCalendar = ({
         <div className="home__calendar">
           <Calendar
             onChange={ (dayValue: DayValue) => {
-              console.log('Day value: ', dayValue);
-              // const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
-              //   return day.year === dayValue?.year
-              //     && day.month === dayValue.month
-              //     && day.day === dayValue.day
-              // })
-              // if (rangeDay === undefined) {
-              //   setNewReservationRange(dayValue)
-              // } else {
+              const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
+                return day.year === dayValue?.year
+                  && day.month === dayValue.month
+                  && day.day === dayValue.day
+              })
+              if (rangeDay === undefined) {
+                setNewReservationRange(dayValue)
+              }
+              // else {
               //   setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
               // }
               setModalOpen(true)

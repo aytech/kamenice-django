@@ -20,3 +20,34 @@ export const CREATE_GUEST = gql`
     }
   }
 `
+
+export const UPDATE_GUEST = gql`
+  mutation UpdateGuest($data: GuestInput!) {
+    updateGuest(data: $data) {
+      guest {
+        addressMunicipality
+        addressPsc
+        addressStreet
+        citizenship
+        email
+        gender
+        identity
+        id
+        name
+        phoneNumber
+        surname
+        visaNumber
+      }
+    }
+  }
+`
+
+export const DELETE_GUEST = gql`
+  mutation DeleteGuest($guestId: ID!) {
+    deleteGuest(guestId: $guestId) {
+      guest {
+        id
+      }
+    }
+  }
+`

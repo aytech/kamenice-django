@@ -116,10 +116,7 @@ export const guests: GuestForm[] = [
     id: 1,
     name: "Oleg",
     identity: "12345/8927",
-    phone: {
-      code: 420,
-      number: 12346789
-    },
+    phone: "+420 12346789",
     surname: "Yapparov",
     visa: "123"
   },
@@ -135,10 +132,7 @@ export const guests: GuestForm[] = [
     id: 3,
     name: "Štěpán",
     identity: "12345/8927",
-    phone: {
-      code: 420,
-      number: 12346789
-    },
+    phone: "+420 12346789",
     surname: "Yapparov",
     visa: "123"
   },
@@ -154,10 +148,7 @@ export const guests: GuestForm[] = [
     id: 4,
     name: "Adéla",
     identity: "12345/8927",
-    phone: {
-      code: 420,
-      number: 12346789
-    },
+    phone: "+420 12346789",
     surname: "Yapparov",
     visa: "123"
   }

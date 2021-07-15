@@ -34,11 +34,6 @@ export interface Room {
   reservedRanges: ReserveRange[]
 }
 
-interface Phone {
-  code: number
-  number: number
-}
-
 interface Address {
   municipality?: string
   psc?: number
@@ -58,7 +53,7 @@ export interface GuestForm {
   id?: number
   name: string
   identity: string
-  phone: Phone
+  phone: string
   surname: string
   visa?: string
 }

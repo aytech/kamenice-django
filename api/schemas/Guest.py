@@ -16,7 +16,7 @@ class GuestsQuery(ObjectType):
 
     @resolve_only_args
     def resolve_guests(self):
-        return GuestModel.objects.all()
+        return GuestModel.objects.filter(deleted=False)
 
     @resolve_only_args
     def resolve_guest(self, guest_id):

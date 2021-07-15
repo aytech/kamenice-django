@@ -25,6 +25,9 @@ const client = new ApolloClient({
         fields: {
           suites: {
             merge: false
+          },
+          guests: {
+            merge: false
           }
         }
       }

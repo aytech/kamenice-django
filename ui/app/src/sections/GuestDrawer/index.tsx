@@ -1,4 +1,3 @@
-import React from "react"
 import { useState } from "react"
 import { Button, Drawer, Form, Input, List, message, Popconfirm, Select } from "antd"
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
@@ -9,18 +8,22 @@ import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
 import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
-import { CREATE_GUEST } from "../../lib/graphql/mutations/Guest"
+import { CREATE_GUEST, UPDATE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
+import { GuestsFull, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 
 interface Props {
   close: () => void
-  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests>>) | undefined
+  guest: GuestsFull_guests | null
+  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests | GuestsFull>>) | undefined
   visible: boolean
 }
 
 export const GuestDrawer = ({
   close,
+  guest,
   refetch,
   visible
 }: Props) => {
@@ -42,12 +45,33 @@ export const GuestDrawer = ({
       )
     }
   })
+  const [ updateGuest ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {
+    onCompleted: (data: UpdateGuest) => {
+      message.success(`Host ${ data.updateGuest?.guest?.name } ${ data.updateGuest?.guest?.surname } byl upraven`)
+    },
+    onError: () => {
+      message.error("Chyba serveru, kontaktujte správce")
+    }
+  })
+
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
   const [ form ] = Form.useForm()
   const initialValues: Store = {
-    phone: {
-      code: "+420"
-    }
+    address: {
+      municipality: guest?.addressMunicipality,
+      psc: guest?.addressPsc,
+      street: guest?.addressStreet
+    },
+    citizenship: {
+      selected: guest?.citizenship
+    },
+    email: guest?.email,
+    gender: guest?.gender,
+    identity: guest?.identity,
+    name: guest?.name,
+    phone: guest?.phoneNumber,
+    surname: guest?.surname,
+    visa: guest?.visaNumber
   }
   const emailPrefixIcon = (
     <Form.Item name="email-prefix" noStyle>
@@ -67,23 +91,24 @@ export const GuestDrawer = ({
     form.validateFields()
       .then(() => {
         const formData: GuestForm = form.getFieldsValue(true)
-        createGuest({
-          variables: {
-            data: {
-              addressMunicipality: formData.address?.municipality,
-              addressPsc: formData.address?.psc,
-              addressStreet: formData.address?.street,
-              citizenship: formData.citizenship?.selected === undefined ? formData.citizenship?.new : formData.citizenship.selected,
-              email: formData.email,
-              gender: formData.gender,
-              identity: formData.identity,
-              name: formData.name,
-              phoneNumber: `${ formData.phone?.code } ${ formData.phone?.number }`,
-              surname: formData.surname,
-              visaNumber: formData.visa
-            }
-          }
-        })
+        const variables = {
+          addressMunicipality: formData.address?.municipality,
+          addressPsc: formData.address?.psc,
+          addressStreet: formData.address?.street,
+          citizenship: formData.citizenship?.selected === undefined ? formData.citizenship?.new : formData.citizenship.selected,
+          email: formData.email,
+          gender: formData.gender,
+          identity: formData.identity,
+          name: formData.name,
+          phoneNumber: formData.phone,
+          surname: formData.surname,
+          visaNumber: formData.visa
+        }
+        if (guest === null) {
+          createGuest({ variables: { data: { ...variables } } })
+        } else {
+          updateGuest({ variables: { data: { id: guest.id, ...variables } } })
+        }
       })
       .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
   }
@@ -95,6 +120,7 @@ export const GuestDrawer = ({
           onCancel={ () => setConfirmClose(false) }
           onConfirm={ () => {
             setConfirmClose(false)
+            form.resetFields()
             close()
           } }
           placement="rightTop"
@@ -112,7 +138,7 @@ export const GuestDrawer = ({
           <Button
             onClick={ submitForm }
             type="primary">
-            Vytvořit
+            { guest === null ? "Vytvořit" : "Upravit" }
           </Button>
         </>
       }
@@ -151,30 +177,12 @@ export const GuestDrawer = ({
           <Input placeholder="číslo občanského průkazu" />
         </Form.Item>
         <Form.Item
+          hasFeedback
           label="Telefonní Číslo"
           name="phone"
-          required>
-          <Input.Group compact>
-            <Form.Item
-              className="area-field"
-              hasFeedback
-              name={ [ "phone", "code" ] }
-              rules={ GuestFormHelper.phoneCodeRequiredRules }
-              valuePropName="value">
-              <Input
-                placeholder="kód"
-                type="text" />
-            </Form.Item>
-            <Form.Item
-              className="phone-field"
-              hasFeedback
-              name={ [ "phone", "number" ] }
-              rules={ GuestFormHelper.requiredNumericRules }>
-              <Input
-                placeholder="číslo"
-                type="tel" />
-            </Form.Item>
-          </Input.Group>
+          required
+          rules={ [ FormHelper.requiredRule ] }>
+          <Input placeholder="číslo" />
         </Form.Item>
         <Form.Item
           hasFeedback
@@ -199,7 +207,7 @@ export const GuestDrawer = ({
         <Form.Item
           hasFeedback
           label="Číslo viza"
-          name="visa_number">
+          name="visa">
           <Input placeholder="číslo visa" />
         </Form.Item>
         <Title level={ 5 }>Trvalé bydliště</Title>

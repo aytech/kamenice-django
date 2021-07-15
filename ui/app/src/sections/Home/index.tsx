@@ -63,6 +63,7 @@ export const Home = () => {
       </div>
       <GuestDrawer
         close={ closeDrawer }
+        guest={ null }
         refetch={ guestsRefetch }
         visible={ drawerVisible } />
     </Content >

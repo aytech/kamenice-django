@@ -43,6 +43,7 @@ export const ReservationModal = ({
     dates: AntCalendarHelper.getRangePickerDates(range),
     type: range === undefined ? "BINDING" : range.type
   }
+
   const footerButtons = [
     <Button
       key="create-user"
@@ -71,6 +72,7 @@ export const ReservationModal = ({
       OK
     </Button>
   ]
+
   const submitForm = (): void => {
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
     const newRange: ReserveRange = {
@@ -92,8 +94,7 @@ export const ReservationModal = ({
     }
     if (range !== undefined) newRange.id = range.id
     updateRange(newRange)
-    console.log("Form: ", form.getFieldsValue(true))
-    // close()
+    close()
   }
 
   useEffect(() => {
