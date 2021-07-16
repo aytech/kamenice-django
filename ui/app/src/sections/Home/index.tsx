@@ -1,4 +1,4 @@
-import { useLazyQuery, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
@@ -7,8 +7,6 @@ import { ReserveCalendar } from '../ReserveCalendar'
 import { Empty, message, Row } from 'antd'
 import { useState } from 'react'
 import { GuestDrawer } from '../GuestDrawer'
-import { GUESTS } from '../../lib/graphql/queries'
-import { Guests as GuestsData } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES } from '../../lib/graphql/queries/Suites'
 
@@ -21,11 +19,6 @@ export const Home = () => {
       message.error("Chyba při načítání apartmá, kontaktujte správce")
     }
   })
-  const [ getGuests, { loading: guestsLoading, error: guestsError, data: guestsData, refetch: guestsRefetch } ] = useLazyQuery<GuestsData>(GUESTS, {
-    onError: () => {
-      message.error("Chyba při načítání hostů, kontaktujte správce")
-    }
-  })
 
   const openDrawer = () => setDrawerVisible(true)
   const closeDrawer = () => setDrawerVisible(false)
@@ -34,11 +27,7 @@ export const Home = () => {
     return suitesData?.suites?.map((suite: Suites_suites | null) => {
       return suite !== null ? (
         <ReserveCalendar
-          data={ guestsData }
-          error={ guestsError }
-          getGuests={ getGuests }
           key={ suite.id }
-          loading={ guestsLoading }
           openDrawer={ openDrawer }
           suite={ suite } />
       ) : null
@@ -46,7 +35,7 @@ export const Home = () => {
   }
 
   const getContent = () => {
-    return suitesData !== undefined && suitesData.suites !== null ? (
+    return suitesData !== undefined && suitesData.suites !== null && suitesData.suites.length > 0 ? (
       <Row gutter={ 12 }>
         { getSuitesCalendars() }
       </Row>
@@ -64,7 +53,7 @@ export const Home = () => {
       <GuestDrawer
         close={ closeDrawer }
         guest={ null }
-        refetch={ guestsRefetch }
+        // refetch={ () => console.log("Refetching") }
         visible={ drawerVisible } />
     </Content >
   );

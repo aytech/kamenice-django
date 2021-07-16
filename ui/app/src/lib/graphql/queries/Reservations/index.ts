@@ -3,11 +3,7 @@ import { gql } from "@apollo/client";
 export const SUITE_RESERVATIONS = gql`
   query SuiteReservations($suiteId: Int!) {
     suiteReservations(suiteId: $suiteId) {
-      fromYear
-      fromMonth
-      fromDay
-      fromHour
-      fromMinute
+      fromDate
       guest {
         id
         name
@@ -19,11 +15,12 @@ export const SUITE_RESERVATIONS = gql`
         name
         surname
       }
-      toYear
-      toMonth
-      toDay
-      toHour
-      toMinute
+      suite {
+        id
+        title
+        number
+      }
+      toDate
       type
     }
   }
@@ -32,22 +29,24 @@ export const SUITE_RESERVATIONS = gql`
 export const RESERVATIONS = gql`
   query Reservations {
     reservations {
-      fromYear
-      fromMonth
-      fromDay
-      fromHour
-      fromMinute
+      fromDate
+      guest {
+        id
+        name
+        surname
+      }
       id
+      roommates {
+        id
+        name
+        surname
+      }
       suite {
         id
         title
         number
       }
-      toYear
-      toMonth
-      toDay
-      toHour
-      toMinute
+      toDate
       type
     }
   }

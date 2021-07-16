@@ -13,22 +13,17 @@ import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservati
 import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
 import Title from 'antd/lib/typography/Title'
+import moment, { Moment } from 'moment'
 
 interface Props {
-  data: Guests | undefined
-  error: ApolloError | undefined
-  getGuests: () => void
-  loading: boolean
+  // getGuests: () => void
   openDrawer: () => void
   suite: Suites_suites
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
 
 export const ReserveCalendar = ({
-  data,
-  error,
-  getGuests,
-  loading,
+  // getGuests,
   openDrawer,
   suite,
 }: Props) => {
@@ -52,33 +47,27 @@ export const ReserveCalendar = ({
       default: return "greenDay"
     }
   }
-  const updateReservedRange = (newRange: ReserveRange): void => {
-    console.log('Updating range: ', newRange)
-    //   room.reservedRanges = [
-    //     ...room.reservedRanges.filter((range: ReserveRange) => {
-    //       return range.id !== undefined && range.id !== newRange.id
-    //     }),
-    //     newRange
-    //   ]
-  }
 
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
     reservationsData?.suiteReservations?.forEach((reservation: SuiteReservations_suiteReservations | null) => {
       if (reservation !== null) {
+        const from: Moment = moment(reservation.fromDate)
+        const to: Moment = moment(reservation.toDate)
         TransformDate.getDaysFromRange(
           {
-            year: reservation?.fromYear,
-            month: reservation?.fromMonth,
-            day: reservation?.fromDay
+            year: from.year(),
+            month: from.month(),
+            day: from.date()
           },
           {
-            year: reservation.toYear,
-            month: reservation.toMonth,
-            day: reservation.toDay
+            year: to.year(),
+            month: to.month(),
+            day: to.date()
           }).forEach((day: Day) => {
             reservedDays.push({ className: getDayClassName(reservation.type), reservationId: reservation.id, ...day })
           })
+          console.log('Reservation: ', reservedDays)
       }
       setReservedDays(reservedDays)
     })
@@ -123,14 +112,11 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => { setModalOpen(false) } }
-        data={ data }
-        error={ error }
-        getGuests={ getGuests }
-        loading={ loading }
+        // getGuests={ getGuests }
         isOpen={ modalOpen }
         openDrawer={ openDrawer }
         range={ reservedRange }
-        updateRange={ updateReservedRange } />
+        suite={ suite } />
     </>
   )
 }

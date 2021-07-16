@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -9,32 +9,41 @@ import { OptionsType, ReservationTypeKey, ReserveRange } from "../../lib/Types"
 import { AntCalendarHelper } from "../../lib/components/AntCalendarHelper"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
+import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { CREATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { GUESTS } from "../../lib/graphql/queries/Guests"
 
 interface Props {
   close: () => void
-  data: Guests | undefined
-  error: ApolloError | undefined
-  getGuests: () => void
   isOpen: boolean
-  loading: boolean
   openDrawer: () => void
   range: ReserveRange | undefined
-  updateRange: (range: ReserveRange) => void
+  suite: Suites_suites
 }
 
 export const ReservationModal = ({
   close,
-  data,
-  error,
-  getGuests,
   isOpen,
-  loading,
   openDrawer,
   range,
-  updateRange
+  suite
 }: Props) => {
 
+  const [ fetchGuests, { loading: guestsQueryLoading, error: guestsQueryError, data: guestsQueryData, refetch: guestsRefetch } ] = useLazyQuery<Guests>(GUESTS, {
+    onError: () => {
+      message.error("Chyba při načítání hostů, kontaktujte správce")
+    }
+  })
+  const [ createReservation, { loading, error, data } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
+    onCompleted: (data: CreateReservation): void => {
+      message.success("Reservation created!")
+    },
+    onError: (error: ApolloError): void => {
+      message.error("Oops, error: " + error.message)
+    }
+  })
 
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const dateFormat = "YYYY-MM-DD HH:mm"
@@ -45,16 +54,16 @@ export const ReservationModal = ({
   }
 
   const footerButtons = [
-    <Button
-      key="create-user"
-      onClick={ () => {
-        openDrawer()
-      } }
-      style={ {
-        float: "left"
-      } }>
-      Vytvořit Uživatele
-    </Button>,
+    // <Button
+    //   key="create-user"
+    //   onClick={ () => {
+    //     openDrawer()
+    //   } }
+    //   style={ {
+    //     float: "left"
+    //   } }>
+    //   Vytvořit Uživatele
+    // </Button>,
     <Button
       key="cancel"
       onClick={ close }>
@@ -74,46 +83,42 @@ export const ReservationModal = ({
   ]
 
   const submitForm = (): void => {
+    const formData = form.getFieldsValue(true)
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
-    const newRange: ReserveRange = {
-      from: {
-        year: from.year(),
-        month: from.month() + 1,
-        day: from.date(),
-        hour: from.hour(),
-        minute: from.minute()
-      },
-      to: {
-        year: to.year(),
-        month: to.month() + 1,
-        day: to.date(),
-        hour: to.hour(),
-        minute: to.minute()
-      },
-      type: form.getFieldValue("type")
+    const roommates = formData.roommates === undefined ? [] :
+      Array.from(formData.roommates, (data: { id: number }) => data.id)
+    console.log("From: ", form.getFieldValue("dates")[0].format(dateFormat))
+    const variables = {
+      fromDate: from.format(dateFormat),
+      guest: formData.guest,
+      notes: formData.notes,
+      purpose: formData.purpose,
+      roommates: roommates,
+      suite: +suite.id,
+      toDate: to.format(dateFormat),
+      type: formData.type
     }
-    if (range !== undefined) newRange.id = range.id
-    updateRange(newRange)
-    close()
+    createReservation({ variables: { data: variables } })
+    console.log('Form: ', form.getFieldsValue(true))
+    console.log('Submit ', variables)
   }
 
   useEffect(() => {
     if (isOpen === true) {
-      form.resetFields()
-      getGuests()
+      fetchGuests()
     }
-  }, [ form, getGuests, isOpen ])
+  }, [ fetchGuests, isOpen ])
 
   useEffect(() => {
-    if (loading === false && data !== undefined && data.guests !== null) {
-      setGuestOptions(Array.from(data.guests, (guest: any): any => {
+    if (guestsQueryData?.guests !== undefined && guestsQueryData?.guests !== null) {
+      setGuestOptions(Array.from(guestsQueryData?.guests, (guest: any): any => {
         return {
           label: `${ guest.name } ${ guest.surname }`,
           value: guest.id
         }
-      }));
+      }))
     }
-  }, [ loading, error, data ])
+  }, [ guestsQueryData ])
 
   return (
     <Modal
@@ -139,15 +144,14 @@ export const ReservationModal = ({
           name="guest"
           required
           rules={ ReservationFormHelper.guestValidators(form) }
-          validateStatus={ loading ? "validating" : "" }>
+          validateStatus={ guestsQueryLoading ? "validating" : "" }>
           <Select
             filterOption={ (input, option): boolean => {
               const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
               return match !== undefined && match >= 0
             } }
             options={ guestOptions }
-            showSearch
-          />
+            showSearch />
         </Form.Item>
         <Form.List name="roommates">
           { (fields, { add, remove }) => (
@@ -205,8 +209,7 @@ export const ReservationModal = ({
         <Form.Item
           label="Účel pobytu"
           name="purpose">
-          <Select
-            options={ ReservationFormHelper.purposeOptions } />
+          <Input placeholder="účel pobytu" />
         </Form.Item>
         <Form.Item
           label="Poznámky"

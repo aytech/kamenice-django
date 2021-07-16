@@ -9,7 +9,6 @@ interface IReservationFormHelper {
   getRequiredRule: (message: string) => Rule
   guestValidators: (form: FormInstance) => Rule[]
   mealOptions: OptionsType[]
-  purposeOptions: OptionsType[]
   reservationOptions: (OptionsType & { value: ReservationTypeKey })[]
   roommateValidators: (form: FormInstance) => Rule[]
 }
@@ -27,12 +26,6 @@ export const ReservationFormHelper: IReservationFormHelper = {
     {
       label: "Polopenze",
       value: "halfboard"
-    }
-  ],
-  purposeOptions: [
-    {
-      label: "Turistika",
-      value: "tourism"
     }
   ],
   reservationOptions: [

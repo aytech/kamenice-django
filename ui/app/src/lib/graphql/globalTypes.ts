@@ -40,6 +40,16 @@ export interface GuestInput {
   visaNumber?: string | null;
 }
 
+export interface ReservationInput {
+  fromDate?: string | null;
+  guest?: number | null;
+  id?: string | null;
+  roommates?: (number | null)[] | null;
+  suite?: number | null;
+  toDate?: string | null;
+  type?: string | null;
+}
+
 export interface SuiteInput {
   id?: string | null;
   number?: number | null;

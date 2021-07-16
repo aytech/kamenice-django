@@ -9,6 +9,20 @@ import { ReservationType } from "./../../../globalTypes";
 // GraphQL query operation: Reservations
 // ====================================================
 
+export interface Reservations_reservations_guest {
+  __typename: "Guest";
+  id: string;
+  name: string;
+  surname: string;
+}
+
+export interface Reservations_reservations_roommates {
+  __typename: "Guest";
+  id: string;
+  name: string;
+  surname: string;
+}
+
 export interface Reservations_reservations_suite {
   __typename: "Suite";
   id: string;
@@ -18,18 +32,12 @@ export interface Reservations_reservations_suite {
 
 export interface Reservations_reservations {
   __typename: "Reservation";
-  fromYear: number;
-  fromMonth: number;
-  fromDay: number;
-  fromHour: number | null;
-  fromMinute: number | null;
+  fromDate: any;
+  guest: Reservations_reservations_guest;
   id: string;
+  roommates: Reservations_reservations_roommates[];
   suite: Reservations_reservations_suite;
-  toYear: number;
-  toMonth: number;
-  toDay: number;
-  toHour: number | null;
-  toMinute: number | null;
+  toDate: any;
   type: ReservationType;
 }
 

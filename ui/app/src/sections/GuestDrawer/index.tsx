@@ -17,23 +17,26 @@ import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/G
 interface Props {
   close: () => void
   guest: GuestsFull_guests | null
-  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests | GuestsFull>>) | undefined
+  // refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests | GuestsFull>>) | undefined
   visible: boolean
 }
 
 export const GuestDrawer = ({
   close,
   guest,
-  refetch,
+  // refetch,
   visible
 }: Props) => {
+
+  const [ form ] = Form.useForm()
 
   const [ createGuest ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
     onCompleted: (data: CreateGuest) => {
       message.success(`Host ${ data.createGuest?.guest?.name } ${ data.createGuest?.guest?.surname } byl přidán`)
-      if (refetch !== undefined) {
-        refetch()
-      }
+      // if (refetch !== undefined) {
+      //   refetch()
+      // }
+      form.resetFields()
       close()
     },
     onError: (error: ApolloError): void => {
@@ -48,6 +51,8 @@ export const GuestDrawer = ({
   const [ updateGuest ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {
     onCompleted: (data: UpdateGuest) => {
       message.success(`Host ${ data.updateGuest?.guest?.name } ${ data.updateGuest?.guest?.surname } byl upraven`)
+      form.resetFields()
+      close()
     },
     onError: () => {
       message.error("Chyba serveru, kontaktujte správce")
@@ -55,7 +60,6 @@ export const GuestDrawer = ({
   })
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
-  const [ form ] = Form.useForm()
   const initialValues: Store = {
     address: {
       municipality: guest?.addressMunicipality,

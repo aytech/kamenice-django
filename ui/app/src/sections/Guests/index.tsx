@@ -86,7 +86,7 @@ export const Guests = () => {
       <GuestDrawer
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
-        refetch={ refetch }
+        // refetch={ refetch }
         visible={ drawerVisible } />
     </Content>
   )

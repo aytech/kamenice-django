@@ -23,21 +23,21 @@ export interface SuiteReservations_suiteReservations_roommates {
   surname: string;
 }
 
+export interface SuiteReservations_suiteReservations_suite {
+  __typename: "Suite";
+  id: string;
+  title: string;
+  number: number | null;
+}
+
 export interface SuiteReservations_suiteReservations {
   __typename: "Reservation";
-  fromYear: number;
-  fromMonth: number;
-  fromDay: number;
-  fromHour: number | null;
-  fromMinute: number | null;
+  fromDate: any;
   guest: SuiteReservations_suiteReservations_guest;
   id: string;
   roommates: SuiteReservations_suiteReservations_roommates[];
-  toYear: number;
-  toMonth: number;
-  toDay: number;
-  toHour: number | null;
-  toMinute: number | null;
+  suite: SuiteReservations_suiteReservations_suite;
+  toDate: any;
   type: ReservationType;
 }
 
