@@ -29,7 +29,7 @@ class Guest(BaseModel):
         'invalid': 'Zadejte platnou e-mailovou adresu',
         'null': 'E-Mail je povinný údaj',
         'unique': 'Uživatel s tímto e-mailem již existuje',
-    }, unique=True)
+    })
     gender = models.CharField(blank=True, max_length=10, null=True, error_messages={
         'invalid_choice': 'Vyberte údaj Pohlaví ze seznamu'}, choices=GENDER_CHOICES, validators=[validate_gender])
     identity = models.CharField(blank=False, max_length=50, null=False, error_messages={

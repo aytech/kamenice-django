@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, Drawer, Form, Input, List, message, Popconfirm, Select } from "antd"
+import { Button, Drawer, Form, Input, message, Popconfirm, Select } from "antd"
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
@@ -40,12 +40,7 @@ export const GuestDrawer = ({
       close()
     },
     onError: (error: ApolloError): void => {
-      message.error(
-        <List
-          dataSource={ GuestFormHelper.getGuestResponseErrorList(error.message) }
-          renderItem={ item => <List.Item>{ item }</List.Item> }
-          size="small" />
-      )
+      message.error(error.message)
     }
   })
   const [ updateGuest ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {

@@ -1,6 +1,8 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
+from graphql import GraphQLError
+
 from api.models.Guest import Guest as GuestModel
 
 
@@ -50,6 +52,13 @@ class CreateGuest(Mutation):
 
     @staticmethod
     def mutate(_root, _info, data=None):
+
+        try:
+            GuestModel.objects.get(email=data.email, deleted=False)
+            raise GraphQLError('Uživatel s tímto e-mailem již existuje')
+        except ObjectDoesNotExist:
+            pass
+
         instance = GuestModel(
             age=data.age,
             address_municipality=data.address_municipality,
@@ -64,8 +73,14 @@ class CreateGuest(Mutation):
             surname=data.surname,
             visa_number=data.visa_number
         )
-        instance.full_clean()
+
+        try:
+            instance.full_clean()
+        except ValidationError as errors:
+            raise GraphQLError(errors.messages[0])
+
         instance.save()
+
         return CreateGuest(guest=instance)
 
 
@@ -78,7 +93,8 @@ class UpdateGuest(Mutation):
     @staticmethod
     def mutate(_root, _info, data=None):
         try:
-            instance = GuestModel.objects.get(pk=data.id)
+            instance = GuestModel.objects.get(pk=data.id, deleted=False)
+
             if instance:
                 instance.age = data.age if data.age is not None else instance.age
                 instance.address_municipality = data.address_municipality if data.address_municipality is not None \
@@ -98,8 +114,9 @@ class UpdateGuest(Mutation):
                 instance.full_clean()
                 instance.save()
             return UpdateGuest(guest=instance)
+
         except ObjectDoesNotExist:
-            return UpdateGuest(guest=None)
+            raise GraphQLError('Host nebyl nalezen')
 
 
 class DeleteGuest(Mutation):

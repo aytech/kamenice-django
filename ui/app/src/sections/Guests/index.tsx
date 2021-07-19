@@ -34,8 +34,8 @@ export const Guests = () => {
       if (guest !== null) {
         guestsData.push(guest)
       }
-      setGuests(guestsData)
     })
+    setGuests(guestsData)
   }, [ queryData ])
 
   useEffect(() => {
@@ -86,7 +86,6 @@ export const Guests = () => {
       <Button
         icon={ <PlusCircleOutlined /> }
         onClick={ () => {
-          // setActiveSuite(undefined)
           setDrawerVisible(true)
         } }
         type="primary">
