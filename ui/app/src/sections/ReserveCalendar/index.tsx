@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { ApolloError, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Col } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { ReserveRange } from '../../lib/Types'
-import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
+import { ReservationRange } from '../../lib/Types'
 import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
 import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
 import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
@@ -16,24 +15,22 @@ import Title from 'antd/lib/typography/Title'
 import moment, { Moment } from 'moment'
 
 interface Props {
-  // getGuests: () => void
-  openDrawer: () => void
   suite: Suites_suites
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
 
 export const ReserveCalendar = ({
-  // getGuests,
-  openDrawer,
   suite,
 }: Props) => {
 
   const { data: reservationsData } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
     variables: { suiteId: suite.id }
   })
-  const [ reservedRange, setReservedRange ] = useState<ReserveRange | undefined>()
+  const [ reservedRange, setReservedRange ] = useState<ReservationRange>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
+  const [ selectedReservation, setSelectedReservation ] = useState<SuiteReservations_suiteReservations>()
+
   const getDayClassName = (type: ReservationType) => {
     switch (type) {
       case "BINDING":
@@ -48,6 +45,35 @@ export const ReserveCalendar = ({
     }
   }
 
+  const setReservationRange = (dayValue: DayValue) => {
+    console.log('Day Value: ', dayValue)
+    const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
+      return day.year === dayValue?.year
+        && day.month === dayValue.month
+        && day.day === dayValue.day
+    })
+    if (rangeDay !== undefined) {
+      const reservation = reservationsData?.suiteReservations?.find(reservation => reservation?.id === rangeDay.reservationId)
+      if (reservation !== undefined && reservation !== null) {
+        setReservedRange({
+          from: moment(reservation.fromDate),
+          to: moment(reservation.toDate)
+        })
+        setSelectedReservation(reservation)
+      }
+    }
+    if (rangeDay === undefined && dayValue !== undefined && dayValue !== null) {
+      setReservedRange({
+        // Moment counts months from 0, so - 1 is required to get the current month
+        from: moment([ dayValue.year, dayValue.month - 1, dayValue.day, defaultArrivalHour, 0 ]),
+        // default range is the selected day + 1 day, default arrival and departure times
+        to: moment([ dayValue.year, dayValue.month - 1, dayValue.day + 1, defaultDepartureHour, 0 ])
+      })
+    }
+    setModalOpen(true)
+  }
+
+  // Add reserved days to calendar based on reservation data from server
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
     reservationsData?.suiteReservations?.forEach((reservation: SuiteReservations_suiteReservations | null) => {
@@ -57,31 +83,20 @@ export const ReserveCalendar = ({
         TransformDate.getDaysFromRange(
           {
             year: from.year(),
-            month: from.month(),
+            month: from.month() + 1,
             day: from.date()
           },
           {
             year: to.year(),
-            month: to.month(),
+            month: to.month() + 1,
             day: to.date()
           }).forEach((day: Day) => {
             reservedDays.push({ className: getDayClassName(reservation.type), reservationId: reservation.id, ...day })
           })
-          console.log('Reservation: ', reservedDays)
       }
       setReservedDays(reservedDays)
     })
   }, [ reservationsData ])
-
-  const setNewReservationRange = (dayValue: DayValue): void => {
-    if (dayValue !== undefined && dayValue !== null) {
-      setReservedRange({
-        from: { ...dayValue, hour: defaultArrivalHour, minute: 0 },
-        to: { ...dayValue, day: dayValue.day + 1, hour: defaultDepartureHour, minute: 0 },
-        type: "BINDING"
-      })
-    }
-  }
 
   return (
     <>
@@ -91,31 +106,20 @@ export const ReserveCalendar = ({
         <Title level={ 4 } className="home__listings-title"> { suite.title }</Title>
         <div className="home__calendar">
           <Calendar
-            onChange={ (dayValue: DayValue) => {
-              const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
-                return day.year === dayValue?.year
-                  && day.month === dayValue.month
-                  && day.day === dayValue.day
-              })
-              if (rangeDay === undefined) {
-                setNewReservationRange(dayValue)
-              }
-              // else {
-              //   setReservedRange(room.reservedRanges.find(range => range.id === rangeDay.rangeId))
-              // }
-              setModalOpen(true)
-            } }
+            onChange={ setReservationRange }
             locale={ CsCalendarLocale }
             customDaysClassName={ reservedDays }
             shouldHighlightWeekends />
         </div>
       </Col>
       <ReservationModal
-        close={ () => { setModalOpen(false) } }
-        // getGuests={ getGuests }
+        close={ () => {
+          setSelectedReservation(undefined)
+          setModalOpen(false)
+        } }
         isOpen={ modalOpen }
-        openDrawer={ openDrawer }
         range={ reservedRange }
+        reservation={ selectedReservation }
         suite={ suite } />
     </>
   )

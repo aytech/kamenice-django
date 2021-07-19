@@ -3,7 +3,7 @@ import { Button, List, message, Popconfirm } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
-import { WarningOutlined } from "@ant-design/icons"
+import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
 import { useMutation, useQuery } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
@@ -83,10 +83,19 @@ export const Guests = () => {
             <List.Item.Meta title={ `${ guest.name } ${ guest.surname }` } />
           </List.Item>
         ) } />
+      <Button
+        icon={ <PlusCircleOutlined /> }
+        onClick={ () => {
+          // setActiveSuite(undefined)
+          setDrawerVisible(true)
+        } }
+        type="primary">
+        Přidat hosta
+      </Button>
       <GuestDrawer
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
-        // refetch={ refetch }
+        refetch={ refetch }
         visible={ drawerVisible } />
     </Content>
   )

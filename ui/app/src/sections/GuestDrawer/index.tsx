@@ -17,14 +17,14 @@ import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/G
 interface Props {
   close: () => void
   guest: GuestsFull_guests | null
-  // refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests | GuestsFull>>) | undefined
+  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Guests | GuestsFull>>) | undefined
   visible: boolean
 }
 
 export const GuestDrawer = ({
   close,
   guest,
-  // refetch,
+  refetch,
   visible
 }: Props) => {
 
@@ -33,9 +33,9 @@ export const GuestDrawer = ({
   const [ createGuest ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
     onCompleted: (data: CreateGuest) => {
       message.success(`Host ${ data.createGuest?.guest?.name } ${ data.createGuest?.guest?.surname } byl přidán`)
-      // if (refetch !== undefined) {
-      //   refetch()
-      // }
+      if (refetch !== undefined) {
+        refetch()
+      }
       form.resetFields()
       close()
     },
