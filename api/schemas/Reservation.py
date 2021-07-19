@@ -49,6 +49,34 @@ class ReservationInput(InputObjectType):
     type = String()
 
 
+class ReservationUtility:
+    @staticmethod
+    def get_duplicate(suite_id, instance):
+        return ReservationModel.objects.filter(
+            # Match range that is surrounding the new reservation
+            Q(
+                deleted=False,
+                from_date__lte=instance.from_date,
+                suite_id=suite_id,
+                to_date__gte=instance.to_date
+            )
+            |  # Match range with start date within the range of the new reservation
+            Q(
+                deleted=False,
+                from_date__gt=instance.from_date,
+                suite_id=suite_id,
+                from_date__lt=instance.to_date
+            )
+            |  # Match range with end date within the range of the new reservation
+            Q(
+                deleted=False,
+                to_date__gt=instance.from_date,
+                suite_id=suite_id,
+                to_date__lt=instance.to_date
+            )
+        )
+
+
 class CreateReservation(Mutation):
     class Arguments:
         data = ReservationInput(required=True)
@@ -66,30 +94,7 @@ class CreateReservation(Mutation):
             type=data.type,
         )
 
-        duplicate = ReservationModel.objects.filter(
-            # Match range that is surrounding the new reservation
-            Q(
-                deleted=False,
-                from_date__lte=instance.from_date,
-                suite_id=data.suite,
-                to_date__gte=instance.to_date
-            )
-            |  # Match range with start date within the range of the new reservation
-            Q(
-                deleted=False,
-                from_date__gt=instance.from_date,
-                suite_id=data.suite,
-                from_date__lt=instance.to_date
-            )
-            |  # Match range with end date within the range of the new reservation
-            Q(
-                deleted=False,
-                to_date__gt=instance.from_date,
-                suite_id=data.suite,
-                to_date__lt=instance.to_date
-            )
-        )
-        if duplicate.count() > 0:
+        if ReservationUtility.get_duplicate(data.suite, instance=instance).count() > 0:
             raise GraphQLError('Apartmá je rezervováno pro tuto dobu')
 
         try:
@@ -128,29 +133,51 @@ class UpdateReservation(Mutation):
 
     @staticmethod
     def mutate(_root, _info, data=None):
+
         try:
             instance = ReservationModel.objects.get(pk=data.id)
             if instance:
-                instance.from_year = data.from_year if data.from_year is not None else instance.from_year
-                instance.from_month = data.from_month if data.from_month is not None else instance.from_month
-                instance.from_day = data.from_day if data.from_day is not None else instance.from_day
-                instance.from_hour = data.from_hour if data.from_hour is not None else instance.from_hour
-                instance.from_minute = data.from_minute if data.from_minute is not None else instance.from_minute
-                instance.meal = data.meal if data.meal is not None else instance.meal
-                instance.notes = data.notes if data.notes is not None else instance.notes
-                instance.purpose = data.purpose if data.purpose is not None else instance.purpose
-                instance.to_year = data.to_year if data.to_year is not None else instance.to_year
-                instance.to_month = data.to_month if data.to_month is not None else instance.to_month
-                instance.to_day = data.to_day if data.to_day is not None else instance.to_day
-                instance.to_hour = data.to_hour if data.to_hour is not None else instance.to_hour
-                instance.to_minute = data.to_minute if data.to_minute is not None else instance.to_minute
-                instance.type = data.type if data.type is not None else instance.type
+                instance.from_date = data.from_date if data.from_date is not None else instance.from_date
+                instance.to_date = data.to_date if data.to_date is not None else instance.to_date
 
+                duplicate = ReservationUtility.get_duplicate(data.suite, instance=instance)
+
+                if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
+                    raise GraphQLError('Apartmá je rezervováno pro tuto dobu')
+
+            instance.meal = data.meal if data.meal is not None else instance.meal
+            instance.notes = data.notes if data.notes is not None else instance.notes
+            instance.purpose = data.purpose if data.purpose is not None else instance.purpose
+            instance.type = data.type if data.type is not None else instance.type
+
+            try:
+                instance.guest = Guest.objects.get(pk=data.guest)
+            except ObjectDoesNotExist:
+                raise GraphQLError('Prosím vyberte hosta ze seznamu')
+
+            try:
+                instance.suite = Suite.objects.get(pk=data.suite)
+            except ObjectDoesNotExist:
+                raise GraphQLError('Apartmá nebylo nalezeno')
+
+            try:
                 instance.full_clean()
-                instance.save()
+            except ValidationError as errors:
+                raise GraphQLError(errors.messages[0])
+
+            instance.save()
+
+            try:
+                for roommate_id in data.roommates:
+                    instance.roommates.add(Guest.objects.get(pk=roommate_id))
+            except ObjectDoesNotExist as ex:
+                print('Failed to add roommate', ex)
+
+            instance.save()
+
             return UpdateReservation(reservation=instance)
         except ObjectDoesNotExist:
-            return UpdateReservation(reservation=None)
+            raise GraphQLError('Rezervace nebyla nalezena')
 
 
 class DeleteReservation(Mutation):

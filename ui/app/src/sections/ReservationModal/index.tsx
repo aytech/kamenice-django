@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, useMutation, useQuery } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -11,14 +11,17 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { CREATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { CREATE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
-import { SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
+import { SuiteReservations, SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
+import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { ReservationInput } from "../../lib/graphql/globalTypes"
 
 interface Props {
   close: () => void
   isOpen: boolean
   range: ReservationRange | undefined
+  refetchReservations: (variables?: Partial<SuiteReservations>) => Promise<ApolloQueryResult<SuiteReservations>>
   reservation: SuiteReservations_suiteReservations | undefined
   suite: Suites_suites
 }
@@ -27,6 +30,7 @@ export const ReservationModal = ({
   close,
   isOpen,
   range,
+  refetchReservations,
   reservation,
   suite
 }: Props) => {
@@ -36,12 +40,20 @@ export const ReservationModal = ({
       message.error("Chyba při načítání hostů, kontaktujte správce")
     }
   })
-  const [ createReservation, { loading, error, data } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
+  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (data: CreateReservation): void => {
-      message.success("Reservation created!")
+      message.success("Rezervace byla vytvořena!")
     },
     onError: (error: ApolloError): void => {
-      message.error("Oops, error: " + error.message)
+      message.error(error.message)
+    }
+  })
+  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
+    onCompleted: (data: UpdateReservation) => {
+      message.success("Rezervace byla aktualizována!")
+    },
+    onError: (error: ApolloError) => {
+      message.error(error.message)
     }
   })
 
@@ -93,7 +105,7 @@ export const ReservationModal = ({
     const roommates = formData.roommates === undefined ? [] :
       Array.from(formData.roommates, (data: { id: number }) => data.id)
 
-    const variables = {
+    const variables: ReservationInput = {
       fromDate: from.format(dateFormat),
       guest: formData.guest,
       meal: formData.meal,
@@ -104,11 +116,13 @@ export const ReservationModal = ({
       toDate: to.format(dateFormat),
       type: formData.type
     }
-    if (reservation === undefined) {
-      createReservation({ variables: { data: variables } })
+    if (reservation !== undefined && reservation.id !== undefined) {
+      updateReservation({ variables: { data: { ...variables, id: reservation.id } } })
     } else {
-      console.log('Update form: ', formData)
+      createReservation({ variables: { data: variables } })
     }
+    refetchReservations()
+    close()
   }
 
   useEffect(() => {

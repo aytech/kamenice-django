@@ -23,7 +23,7 @@ export const ReserveCalendar = ({
   suite,
 }: Props) => {
 
-  const { data: reservationsData } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
+  const { data: reservationsData, refetch } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
     variables: { suiteId: suite.id }
   })
   const [ reservedRange, setReservedRange ] = useState<ReservationRange>()
@@ -101,9 +101,13 @@ export const ReserveCalendar = ({
   return (
     <>
       <Col
-        span={ 12 }
+        span={ 8 }
         className="home__listing">
-        <Title level={ 4 } className="home__listings-title"> { suite.title }</Title>
+        <Title
+          level={ 4 }
+          className="home__listings-title">
+          { suite.title }
+        </Title>
         <div className="home__calendar">
           <Calendar
             onChange={ setReservationRange }
@@ -119,6 +123,7 @@ export const ReserveCalendar = ({
         } }
         isOpen={ modalOpen }
         range={ reservedRange }
+        refetchReservations={ refetch }
         reservation={ selectedReservation }
         suite={ suite } />
     </>
