@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
 import {
   BrowserRouter as Router,
@@ -23,13 +22,16 @@ const client = new ApolloClient({
     typePolicies: {
       Query: {
         fields: {
+          guests: {
+            merge: false
+          },
+          reservations: {
+            merge: false
+          },
           suiteReservations: {
             merge: false
           },
           suites: {
-            merge: false
-          },
-          guests: {
             merge: false
           }
         }

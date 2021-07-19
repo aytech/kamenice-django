@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import { RESERVATIONS } from "../../lib/graphql/queries/Reservations"
 import { Reservations, Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
+import { Reservation } from "../../lib/Types"
 import "./styles.css"
 
 // https://apexcharts.com/react-chart-demos/timeline-charts/multiple-series-group-rows/
@@ -33,55 +34,45 @@ export const Overview = () => {
     return time
   }
 
-  const { data } = useQuery<Reservations>(RESERVATIONS)
+  const { data, refetch } = useQuery<Reservations>(RESERVATIONS)
 
   useEffect(() => {
     const series: any[] = []
     data?.reservations?.forEach((reservation: Reservations_reservations | null) => {
       if (reservation !== null) {
-        // const { fromYear, fromMonth, fromDay, fromHour, fromMinute, toYear, toMonth, toDay, toHour, toMinute } = reservation
-        // let from, to
-        // if (fromHour === null || fromMinute === null) {
-        //   from = new Date(fromYear, fromMonth, fromDay)
-        // } else {
-        //   from = new Date(fromYear, fromMonth, fromDay, fromHour, fromMinute)
-        // }
-        // if (toHour === null || toMinute === null) {
-        //   to = new Date(toYear, toMonth, toDay)
-        // } else {
-        //   to = new Date(toYear, toMonth, toDay, toHour, toMinute)
-        // }
-        // series.push({
-        //   data: [
-        //     {
-        //       x: `${ reservation.suite.title } (${ reservation.suite.number })`,
-        //       y: [ from.getTime(), to.getTime() ]
-        //     }
-        //   ],
-        //   name: Reservation.getType(reservation.type),
-        //   suite: reservation.suite.id
-        // })
+        series.push({
+          data: [
+            {
+              x: `${ reservation.suite.title } (${ reservation.suite.number })`,
+              y: [
+                new Date(reservation.fromDate).getTime(),
+                new Date(reservation.toDate).getTime()
+              ]
+            }
+          ],
+          name: Reservation.getType(reservation.type),
+          reservation: reservation.id,
+          suite: reservation.suite.id
+        })
       }
     })
     setSeries(series)
   }, [ data ])
 
+  useEffect(() => {
+    refetch()
+  }, [ refetch ])
+
   const locateSeries = (index: number) => {
-    if (index === -1) {
-      console.log("Empty space was clicked")
-    } else {
-      console.log('Reservation ', series[ index ], ' was clicked')
+    if (index !== -1) {
+      console.warn('Reservation ', series[ index ])
     }
   }
 
   const options: ApexOptions = {
     chart: {
       events: {
-        click: (_e, chart, config) => {
-          console.log('Event: ', _e)
-          console.log('Chart: ', chart)
-          console.log('Config: ', config)
-          console.log('Find: ', chart.series.ctx.data.twoDSeriesX[ 0 ])
+        click: (_e, _chart, config) => {
           locateSeries(config.seriesIndex)
         }
       },
