@@ -5,13 +5,10 @@ import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Empty, message, Row } from 'antd'
-import { useState } from 'react'
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES } from '../../lib/graphql/queries/Suites'
 
 export const Home = () => {
-
-  const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
 
   const { data: suitesData } = useQuery<SuitesData>(SUITES, {
     onError: () => {

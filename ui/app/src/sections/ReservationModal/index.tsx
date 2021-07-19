@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, message, Modal, Select, Space } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { OptionsType, ReservationRange, ReservationTypeKey } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
@@ -51,25 +51,35 @@ export const ReservationModal = ({
   const initialValues: Store & { type: ReservationTypeKey } = {
     dates: range !== undefined ? [ range.from, range.to ] : [],
     guest: reservation === undefined ? null : reservation.guest.id,
-    roommates: reservation === undefined ? [] : Array.from(reservation.roommates, roommate => roommate.id),
+    roommates: reservation === undefined ? [] : Array.from(reservation.roommates, roommate => {
+      return { id: roommate.id }
+    }),
     type: reservation === undefined ? "BINDING" : reservation.type
   }
 
+
   const footerButtons = [
-    <Button
+    <Popconfirm
       key="cancel"
-      onClick={ close }>
-      Zrušit
-    </Button>,
+      onConfirm={ close }
+      title="Zavřít formulář? Data ve formuláři budou ztracena">
+      <Button
+        danger
+        icon={ <CloseCircleOutlined /> }>
+        Zrušit
+      </Button>
+    </Popconfirm>,
     <Button
       key="ok"
+      icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
       onClick={ () => {
         form.validateFields()
           .then(submitForm)
           .catch((error: string) => {
             console.log('Oops: ', error)
           })
-      } }>
+      } }
+      type="primary">
       { reservation === undefined ? "Uložit" : "Upravit" }
     </Button>
   ]
@@ -93,7 +103,7 @@ export const ReservationModal = ({
     if (reservation === undefined) {
       createReservation({ variables: { data: variables } })
     } else {
-      console.log('Update form')
+      console.log('Update form: ', formData)
     }
   }
 
@@ -118,8 +128,14 @@ export const ReservationModal = ({
 
   return (
     <Modal
+      closeIcon={ (
+        <Popconfirm
+          onConfirm={ close }
+          title="Zavřít formulář? Data ve formuláři budou ztracena">
+          <CloseOutlined />
+        </Popconfirm>
+      ) }
       footer={ footerButtons }
-      onCancel={ close }
       title="Rezervační formulář"
       visible={ isOpen }>
       <Form
@@ -163,7 +179,9 @@ export const ReservationModal = ({
                     fieldKey={ [ fieldKey, 'first' ] }
                     name={ [ name, "id" ] }
                     rules={ ReservationFormHelper.roommateValidators(form) }>
-                    <Select options={ guestOptions } />
+                    <Select
+                      options={ guestOptions }
+                      showSearch />
                   </Form.Item>
                   <MinusCircleOutlined onClick={ () => {
                     remove(name)

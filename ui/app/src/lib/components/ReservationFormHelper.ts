@@ -17,15 +17,15 @@ export const ReservationFormHelper: IReservationFormHelper = {
   mealOptions: [
     {
       label: "Bez Stravy",
-      value: "nomeal"
+      value: "NOMEAL"
     },
     {
       label: "Jen Snídaně",
-      value: "breakfast"
+      value: "BREAKFAST"
     },
     {
       label: "Polopenze",
-      value: "halfboard"
+      value: "HALFBOARD"
     }
   ],
   reservationOptions: [
