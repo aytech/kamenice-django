@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationType } from "./../../../globalTypes";
+import { ReservationMeal, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL query operation: SuiteReservations
@@ -35,6 +35,9 @@ export interface SuiteReservations_suiteReservations {
   fromDate: any;
   guest: SuiteReservations_suiteReservations_guest;
   id: string;
+  meal: ReservationMeal;
+  notes: string | null;
+  purpose: string | null;
   roommates: SuiteReservations_suiteReservations_roommates[];
   suite: SuiteReservations_suiteReservations_suite;
   toDate: any;

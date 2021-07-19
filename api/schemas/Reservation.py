@@ -40,6 +40,9 @@ class ReservationInput(InputObjectType):
     from_date = String()
     guest = Int()
     id = ID()
+    meal = String()
+    notes = String()
+    purpose = String()
     roommates = List(Int)
     suite = Int()
     to_date = String()
@@ -56,6 +59,9 @@ class CreateReservation(Mutation):
     def mutate(_root, _info, data=None):
         instance = ReservationModel(
             from_date=data.from_date,
+            meal=data.meal,
+            notes=data.notes,
+            purpose=data.purpose,
             to_date=data.to_date,
             type=data.type,
         )
@@ -125,17 +131,21 @@ class UpdateReservation(Mutation):
         try:
             instance = ReservationModel.objects.get(pk=data.id)
             if instance:
-                instance.type = data.type if data.type is not None else instance.type
                 instance.from_year = data.from_year if data.from_year is not None else instance.from_year
                 instance.from_month = data.from_month if data.from_month is not None else instance.from_month
                 instance.from_day = data.from_day if data.from_day is not None else instance.from_day
                 instance.from_hour = data.from_hour if data.from_hour is not None else instance.from_hour
                 instance.from_minute = data.from_minute if data.from_minute is not None else instance.from_minute
+                instance.meal = data.meal if data.meal is not None else instance.meal
+                instance.notes = data.notes if data.notes is not None else instance.notes
+                instance.purpose = data.purpose if data.purpose is not None else instance.purpose
                 instance.to_year = data.to_year if data.to_year is not None else instance.to_year
                 instance.to_month = data.to_month if data.to_month is not None else instance.to_month
                 instance.to_day = data.to_day if data.to_day is not None else instance.to_day
                 instance.to_hour = data.to_hour if data.to_hour is not None else instance.to_hour
                 instance.to_minute = data.to_minute if data.to_minute is not None else instance.to_minute
+                instance.type = data.type if data.type is not None else instance.type
+
                 instance.full_clean()
                 instance.save()
             return UpdateReservation(reservation=instance)

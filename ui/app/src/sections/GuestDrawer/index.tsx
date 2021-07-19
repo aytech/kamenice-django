@@ -96,6 +96,7 @@ export const GuestDrawer = ({
       .then(() => {
         const formData: GuestForm = form.getFieldsValue(true)
         const variables = {
+          age: formData.age,
           addressMunicipality: formData.address?.municipality,
           addressPsc: formData.address?.psc,
           addressStreet: formData.address?.street,
@@ -198,6 +199,16 @@ export const GuestDrawer = ({
             addonBefore={ emailPrefixIcon }
             placeholder="e-mail"
             type="email" />
+        </Form.Item>
+        <Form.Item
+          hasFeedback
+          label="Věk"
+          name="age"
+          required
+          rules={ [ FormHelper.requiredRule ] }>
+          <Select
+            options={ GuestFormHelper.ageOptions }
+            placeholder="vyberte ze seznamu" />
         </Form.Item>
         <Form.Item
           label="Pohlaví"

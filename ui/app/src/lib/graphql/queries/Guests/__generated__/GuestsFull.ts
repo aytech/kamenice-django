@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { GuestGender } from "./../../../globalTypes";
+import { GuestAge, GuestGender } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL query operation: GuestsFull
@@ -11,6 +11,7 @@ import { GuestGender } from "./../../../globalTypes";
 
 export interface GuestsFull_guests {
   __typename: "Guest";
+  age: GuestAge;
   addressMunicipality: string | null;
   addressPsc: number | null;
   addressStreet: string | null;

@@ -10,6 +10,9 @@ export const SUITE_RESERVATIONS = gql`
         surname
       }
       id
+      meal
+      notes
+      purpose
       roommates {
         id
         name
@@ -36,6 +39,9 @@ export const RESERVATIONS = gql`
         surname
       }
       id
+      meal
+      notes
+      purpose
       roommates {
         id
         name

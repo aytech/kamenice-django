@@ -6,6 +6,11 @@ from kamenice_django.validators.guest import validate_citizenship, validate_gend
 
 
 class Guest(BaseModel):
+    AGE_CHOICES = [
+        ('CHILD', 'Do 3 let'),
+        ('YOUNG', '3-12 let'),
+        ('ADULT', '12+'),
+    ]
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female')
@@ -13,6 +18,11 @@ class Guest(BaseModel):
     address_municipality = models.CharField(blank=True, max_length=100, null=True)
     address_psc = models.IntegerField(blank=True, null=True)
     address_street = models.CharField(blank=True, max_length=100, null=True)
+    age = models.CharField(blank=False, max_length=10, null=False, error_messages={
+        'blank': 'Vyberte věk ze seznamu',
+        'invalid_choice': 'Vyberte věk ze seznamu',
+        'null': 'Vyberte věk ze seznamu',
+    }, choices=AGE_CHOICES)
     citizenship = models.CharField(blank=True, max_length=10, null=True, validators=[validate_citizenship])
     email = models.EmailField(blank=False, null=False, validators=[validate_email], error_messages={
         'blank': 'E-Mail je povinný údaj',

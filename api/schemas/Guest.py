@@ -27,6 +27,7 @@ class GuestsQuery(ObjectType):
 
 
 class GuestInput(InputObjectType):
+    age = String()
     address_municipality = String()
     address_psc = Int()
     address_street = String()
@@ -50,6 +51,7 @@ class CreateGuest(Mutation):
     @staticmethod
     def mutate(_root, _info, data=None):
         instance = GuestModel(
+            age=data.age,
             address_municipality=data.address_municipality,
             address_psc=data.address_psc,
             address_street=data.address_street,
@@ -78,6 +80,7 @@ class UpdateGuest(Mutation):
         try:
             instance = GuestModel.objects.get(pk=data.id)
             if instance:
+                instance.age = data.age if data.age is not None else instance.age
                 instance.address_municipality = data.address_municipality if data.address_municipality is not None \
                     else instance.address_municipality
                 instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc

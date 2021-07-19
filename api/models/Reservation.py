@@ -15,6 +15,11 @@ class Reservation(BaseModel):
         ('INHABITED', 'Obydlený Termín'),
         ('NONBINDING', 'Nezávazná Rezervace'),
     ]
+    MEAL_CHOICES = [
+        ('NOMEAL', 'Bez Stravy'),
+        ('BREAKFAST', 'Jen Snídaně'),
+        ('HALFBOARD', 'Polopenze')
+    ]
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.BooleanField(default=False)
     from_date = models.DateTimeField(blank=False, null=False, error_messages={
@@ -25,7 +30,12 @@ class Reservation(BaseModel):
         Guest,
         on_delete=models.DO_NOTHING,
     )
+    meal = models.CharField(blank=False, max_length=50, null=False, error_messages={
+        'invalid_choice': 'Vyberte údaj Strava ze seznamu',
+        'null': 'Vyberte údaj Strava ze seznamu',
+    }, choices=MEAL_CHOICES)
     notes = models.TextField(blank=True, null=True)
+    purpose = models.CharField(blank=True, max_length=100, null=True)
     roommates = models.ManyToManyField(
         Guest,
         related_name='+',

@@ -103,53 +103,53 @@ export const rooms: Room[] = [
   }
 ]
 
-export const guests: GuestForm[] = [
-  {
-    address: {
-      municipality: "Praha 8",
-      psc: 18200,
-      street: "Černého"
-    },
-    citizenship: { selected: "RU" },
-    email: "oyapparov@gmail.com",
-    gender: "M",
-    id: 1,
-    name: "Oleg",
-    identity: "12345/8927",
-    phone: "+420 12346789",
-    surname: "Yapparov",
-    visa: "123"
-  },
-  {
-    address: {
-      municipality: "Praha 8",
-      psc: 18200,
-      street: "Černého"
-    },
-    citizenship: { selected: "CZE" },
-    email: "syapparov@gmail.com",
-    gender: "M",
-    id: 3,
-    name: "Štěpán",
-    identity: "12345/8927",
-    phone: "+420 12346789",
-    surname: "Yapparov",
-    visa: "123"
-  },
-  {
-    address: {
-      municipality: "Praha 8",
-      psc: 18200,
-      street: "Černého"
-    },
-    citizenship: { selected: "CZE" },
-    email: "a.yapik@gmail.com",
-    gender: "F",
-    id: 4,
-    name: "Adéla",
-    identity: "12345/8927",
-    phone: "+420 12346789",
-    surname: "Yapparov",
-    visa: "123"
-  }
-]
+// export const guests: GuestForm[] = [
+//   {
+//     address: {
+//       municipality: "Praha 8",
+//       psc: 18200,
+//       street: "Černého"
+//     },
+//     citizenship: { selected: "RU" },
+//     email: "oyapparov@gmail.com",
+//     gender: "M",
+//     id: 1,
+//     name: "Oleg",
+//     identity: "12345/8927",
+//     phone: "+420 12346789",
+//     surname: "Yapparov",
+//     visa: "123"
+//   },
+//   {
+//     address: {
+//       municipality: "Praha 8",
+//       psc: 18200,
+//       street: "Černého"
+//     },
+//     citizenship: { selected: "CZE" },
+//     email: "syapparov@gmail.com",
+//     gender: "M",
+//     id: 3,
+//     name: "Štěpán",
+//     identity: "12345/8927",
+//     phone: "+420 12346789",
+//     surname: "Yapparov",
+//     visa: "123"
+//   },
+//   {
+//     address: {
+//       municipality: "Praha 8",
+//       psc: 18200,
+//       street: "Černého"
+//     },
+//     citizenship: { selected: "CZE" },
+//     email: "a.yapik@gmail.com",
+//     gender: "F",
+//     id: 4,
+//     name: "Adéla",
+//     identity: "12345/8927",
+//     phone: "+420 12346789",
+//     surname: "Yapparov",
+//     visa: "123"
+//   }
+// ]

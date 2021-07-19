@@ -443,7 +443,35 @@
             "deprecationReason": null
           },
           {
+            "name": "meal",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ReservationMeal",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "notes",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "purpose",
             "description": "",
             "args": [],
             "type": {
@@ -602,6 +630,22 @@
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "age",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "GuestAge",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -802,6 +846,36 @@
       },
       {
         "kind": "ENUM",
+        "name": "GuestAge",
+        "description": "An enumeration.",
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "CHILD",
+            "description": "Do 3 let",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "YOUNG",
+            "description": "3-12 let",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ADULT",
+            "description": "12+",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
         "name": "GuestGender",
         "description": "An enumeration.",
         "specifiedByUrl": null,
@@ -818,6 +892,36 @@
           {
             "name": "F",
             "description": "Female",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "ReservationMeal",
+        "description": "An enumeration.",
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "NOMEAL",
+            "description": "Bez Stravy",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BREAKFAST",
+            "description": "Jen Snídaně",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "HALFBOARD",
+            "description": "Polopenze",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -1153,6 +1257,18 @@
         "fields": null,
         "inputFields": [
           {
+            "name": "age",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "addressMunicipality",
             "description": null,
             "type": {
@@ -1410,6 +1526,42 @@
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "meal",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "notes",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "purpose",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "defaultValue": null,

@@ -10,9 +10,27 @@
 /**
  * An enumeration.
  */
+export enum GuestAge {
+  ADULT = "ADULT",
+  CHILD = "CHILD",
+  YOUNG = "YOUNG",
+}
+
+/**
+ * An enumeration.
+ */
 export enum GuestGender {
   F = "F",
   M = "M",
+}
+
+/**
+ * An enumeration.
+ */
+export enum ReservationMeal {
+  BREAKFAST = "BREAKFAST",
+  HALFBOARD = "HALFBOARD",
+  NOMEAL = "NOMEAL",
 }
 
 /**
@@ -26,6 +44,7 @@ export enum ReservationType {
 }
 
 export interface GuestInput {
+  age?: string | null;
   addressMunicipality?: string | null;
   addressPsc?: number | null;
   addressStreet?: string | null;
@@ -44,6 +63,9 @@ export interface ReservationInput {
   fromDate?: string | null;
   guest?: number | null;
   id?: string | null;
+  meal?: string | null;
+  notes?: string | null;
+  purpose?: string | null;
   roommates?: (number | null)[] | null;
   suite?: number | null;
   toDate?: string | null;

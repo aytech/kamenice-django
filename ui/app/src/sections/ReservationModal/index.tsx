@@ -51,6 +51,9 @@ export const ReservationModal = ({
   const initialValues: Store & { type: ReservationTypeKey } = {
     dates: range !== undefined ? [ range.from, range.to ] : [],
     guest: reservation === undefined ? null : reservation.guest.id,
+    meal: reservation === undefined ? null : reservation.meal,
+    notes: reservation === undefined ? null : reservation.notes,
+    purpose: reservation === undefined ? null : reservation.purpose,
     roommates: reservation === undefined ? [] : Array.from(reservation.roommates, roommate => {
       return { id: roommate.id }
     }),
@@ -93,6 +96,7 @@ export const ReservationModal = ({
     const variables = {
       fromDate: from.format(dateFormat),
       guest: formData.guest,
+      meal: formData.meal,
       notes: formData.notes,
       purpose: formData.purpose,
       roommates: roommates,

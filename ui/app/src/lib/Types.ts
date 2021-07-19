@@ -52,6 +52,7 @@ interface Citizenship {
 }
 
 export interface GuestForm {
+  age: string,
   address?: Address
   citizenship?: Citizenship
   email: string
