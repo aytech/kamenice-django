@@ -46,7 +46,6 @@ export const ReserveCalendar = ({
   }
 
   const setReservationRange = (dayValue: DayValue) => {
-    console.log('Day Value: ', dayValue)
     const rangeDay = reservedDays.find((day: CustomDayClassNameItem) => {
       return day.year === dayValue?.year
         && day.month === dayValue.month
@@ -94,8 +93,8 @@ export const ReserveCalendar = ({
             reservedDays.push({ className: getDayClassName(reservation.type), reservationId: reservation.id, ...day })
           })
       }
-      setReservedDays(reservedDays)
     })
+    setReservedDays(reservedDays)
   }, [ reservationsData ])
 
   return (

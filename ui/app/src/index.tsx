@@ -23,6 +23,9 @@ const client = new ApolloClient({
     typePolicies: {
       Query: {
         fields: {
+          suiteReservations: {
+            merge: false
+          },
           suites: {
             merge: false
           },

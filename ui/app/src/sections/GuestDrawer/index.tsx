@@ -61,6 +61,7 @@ export const GuestDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
   const initialValues: Store = {
+    age: guest?.age,
     address: {
       municipality: guest?.addressMunicipality,
       psc: guest?.addressPsc,

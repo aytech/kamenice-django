@@ -1,3 +1,7 @@
+.cancel-button {
+  float: left
+}
+
 .roommate-list, .roommate-list>.ant-space-item:first-child {
   width: 100%
 }

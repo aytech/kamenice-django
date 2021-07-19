@@ -11,11 +11,12 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { CREATE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { SuiteReservations, SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
+import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 
 interface Props {
   close: () => void
@@ -41,7 +42,7 @@ export const ReservationModal = ({
     }
   })
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
-    onCompleted: (data: CreateReservation): void => {
+    onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
     },
     onError: (error: ApolloError): void => {
@@ -49,11 +50,21 @@ export const ReservationModal = ({
     }
   })
   const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
-    onCompleted: (data: UpdateReservation) => {
+    onCompleted: () => {
       message.success("Rezervace byla aktualizována!")
     },
     onError: (error: ApolloError) => {
       message.error(error.message)
+    }
+  })
+  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
+    onCompleted: () => {
+      message.success("Rezervace byla odstraněna!")
+      refetchReservations()
+      close()
+    },
+    onError: (error: ApolloError) => {
+      message.error(error)
     }
   })
 
@@ -71,33 +82,6 @@ export const ReservationModal = ({
     }),
     type: reservation === undefined ? "BINDING" : reservation.type
   }
-
-
-  const footerButtons = [
-    <Popconfirm
-      key="cancel"
-      onConfirm={ close }
-      title="Zavřít formulář? Data ve formuláři budou ztracena">
-      <Button
-        danger
-        icon={ <CloseCircleOutlined /> }>
-        Zrušit
-      </Button>
-    </Popconfirm>,
-    <Button
-      key="ok"
-      icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
-      onClick={ () => {
-        form.validateFields()
-          .then(submitForm)
-          .catch((error: string) => {
-            console.log('Oops: ', error)
-          })
-      } }
-      type="primary">
-      { reservation === undefined ? "Uložit" : "Upravit" }
-    </Button>
-  ]
 
   const submitForm = (): void => {
     const formData = form.getFieldsValue(true)
@@ -124,6 +108,36 @@ export const ReservationModal = ({
     refetchReservations()
     close()
   }
+
+  const footerButtons = [
+    <Popconfirm
+      cancelText="Ne"
+      key="cancel"
+      okText="Ano"
+      onConfirm={ () => {
+        if (reservation !== undefined) {
+          deleteReservation({ variables: { reservationId: reservation.id } })
+        }
+      } }
+      title="Odstranit rezervaci?">
+      <Button
+        className="cancel-button"
+        danger
+        icon={ <CloseCircleOutlined /> }>
+        Odstranit
+      </Button>
+    </Popconfirm>,
+    <Button
+      key="ok"
+      icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
+      onClick={ () => {
+        form.validateFields()
+          .then(submitForm)
+      } }
+      type="primary">
+      { reservation === undefined ? "Uložit" : "Upravit" }
+    </Button>
+  ]
 
   useEffect(() => {
     if (guestsQueryData?.guests !== undefined && guestsQueryData?.guests !== null) {

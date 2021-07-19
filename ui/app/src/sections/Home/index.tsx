@@ -4,7 +4,7 @@ import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
-import { message, Row, Skeleton } from 'antd'
+import { Empty, message, Row, Skeleton } from 'antd'
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES } from '../../lib/graphql/queries/Suites'
 
@@ -16,6 +16,22 @@ export const Home = () => {
     }
   })
 
+  const getContent = () => {
+    return suitesData?.suites?.length !== undefined && suitesData.suites.length > 0 ? (
+      <Row gutter={ 8 }>
+        {
+          suitesData.suites.map((suite: Suites_suites | null) => {
+            return suite !== null ? (
+              <ReserveCalendar
+                key={ suite.id }
+                suite={ suite } />
+            ) : null
+          })
+        }
+      </Row>
+    ) : <Empty />
+  }
+
   return (
     <Content className="app-content">
       <div className="home__listings">
@@ -25,17 +41,7 @@ export const Home = () => {
         <Skeleton
           active
           loading={ suitesLoading }>
-          <Row gutter={ 8 }>
-            {
-              suitesData?.suites?.map((suite: Suites_suites | null) => {
-                return suite !== null ? (
-                  <ReserveCalendar
-                    key={ suite.id }
-                    suite={ suite } />
-                ) : null
-              })
-            }
-          </Row>
+          { getContent() }
         </Skeleton>
       </div>
     </Content >

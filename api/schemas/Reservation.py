@@ -22,7 +22,7 @@ class ReservationQuery(ObjectType):
 
     @resolve_only_args
     def resolve_suite_reservations(self, suite_id):
-        return ReservationModel.objects.filter(suite_id=suite_id)
+        return ReservationModel.objects.filter(suite_id=suite_id, deleted=False)
 
     @resolve_only_args
     def resolve_reservation(self, reservation_id):
