@@ -13,6 +13,7 @@ import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/G
 import { GuestsFull, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
+import { useEffect } from "react"
 
 interface Props {
   close: () => void
@@ -113,6 +114,12 @@ export const GuestDrawer = ({
       })
       .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
   }
+
+  useEffect(() => {
+    if (visible === true) {
+      form.resetFields()
+    }
+  }, [ form, visible ])
 
   return (
     <Drawer

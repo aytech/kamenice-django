@@ -68,6 +68,7 @@ export const ReservationModal = ({
     }
   })
 
+  const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const dateFormat = "YYYY-MM-DD HH:mm"
   const [ form ] = Form.useForm()
@@ -81,6 +82,11 @@ export const ReservationModal = ({
       return { id: roommate.id }
     }),
     type: reservation === undefined ? "BINDING" : reservation.type
+  }
+
+  const closeModal = () => {
+    setDeleteConfirmVisible(false)
+    setTimeout(() => { close() })
   }
 
   const submitForm = (): void => {
@@ -109,26 +115,30 @@ export const ReservationModal = ({
     close()
   }
 
-  const footerButtons = [
-    <Popconfirm
-      cancelText="Ne"
-      key="cancel"
-      okText="Ano"
-      onConfirm={ () => {
-        if (reservation !== undefined) {
+  const getRemoveButton = () => {
+    return reservation !== undefined ? (
+      <Popconfirm
+        cancelText="Ne"
+        key="remove"
+        okText="Ano"
+        onConfirm={ () => {
           deleteReservation({ variables: { reservationId: reservation.id } })
-        }
-      } }
-      title="Odstranit rezervaci?">
-      <Button
-        className="cancel-button"
-        danger
-        icon={ <CloseCircleOutlined /> }>
-        Odstranit
-      </Button>
-    </Popconfirm>,
+        } }
+        title="Odstranit rezervaci?">
+        <Button
+          className="cancel-button"
+          danger
+          icon={ <CloseCircleOutlined /> }>
+          Odstranit
+        </Button>
+      </Popconfirm>
+    ) : null
+  }
+
+  const footerButtons = [
+    getRemoveButton(),
     <Button
-      key="ok"
+      key="create"
       icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
       onClick={ () => {
         form.validateFields()
@@ -162,9 +172,17 @@ export const ReservationModal = ({
     <Modal
       closeIcon={ (
         <Popconfirm
-          onConfirm={ close }
-          title="Zavřít formulář? Data ve formuláři budou ztracena">
-          <CloseOutlined />
+          onCancel={ () => setDeleteConfirmVisible(false) }
+          onConfirm={ closeModal }
+          title="Zavřít formulář? Data ve formuláři budou ztracena"
+          visible={ deleteConfirmVisible }>
+          <CloseOutlined onClick={ () => {
+            if (form.isFieldsTouched()) {
+              setDeleteConfirmVisible(true)
+            } else {
+              closeModal()
+            }
+          } } />
         </Popconfirm>
       ) }
       footer={ footerButtons }

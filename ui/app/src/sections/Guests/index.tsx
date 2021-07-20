@@ -86,6 +86,7 @@ export const Guests = () => {
       <Button
         icon={ <PlusCircleOutlined /> }
         onClick={ () => {
+          setSelectedGuest(null)
           setDrawerVisible(true)
         } }
         type="primary">
