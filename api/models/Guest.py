@@ -18,10 +18,8 @@ class Guest(BaseModel):
     address_municipality = models.CharField(blank=True, max_length=100, null=True)
     address_psc = models.IntegerField(blank=True, null=True)
     address_street = models.CharField(blank=True, max_length=100, null=True)
-    age = models.CharField(blank=False, max_length=10, null=False, error_messages={
-        'blank': 'Vyberte věk ze seznamu',
+    age = models.CharField(blank=True, max_length=10, null=True, error_messages={
         'invalid_choice': 'Vyberte věk ze seznamu',
-        'null': 'Vyberte věk ze seznamu',
     }, choices=AGE_CHOICES)
     citizenship = models.CharField(blank=True, max_length=10, null=True, validators=[validate_citizenship])
     email = models.EmailField(blank=False, null=False, validators=[validate_email], error_messages={
@@ -32,18 +30,12 @@ class Guest(BaseModel):
     })
     gender = models.CharField(blank=True, max_length=10, null=True, error_messages={
         'invalid_choice': 'Vyberte údaj Pohlaví ze seznamu'}, choices=GENDER_CHOICES, validators=[validate_gender])
-    identity = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        'blank': 'Číslo občanského průkazu je povinný údaj',
-        'null': 'Číslo občanského průkazu je povinný údaj',
-    })
+    identity = models.CharField(blank=True, max_length=50, null=True)
     name = models.CharField(blank=False, max_length=100, null=False, error_messages={
         'blank': 'Jméno je povinný údaj',
         'null': 'Jméno je povinný údaj',
     })
-    phone_number = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        'blank': 'Telefonní číslo je povinný údaj',
-        'null': 'Telefonní číslo je povinný údaj',
-    })
+    phone_number = models.CharField(blank=True, max_length=50, null=True)
     surname = models.CharField(blank=False, max_length=100, null=False, error_messages={
         'blank': 'Příjmení je povinný údaj',
         'null': 'Příjmení je povinný údaj',

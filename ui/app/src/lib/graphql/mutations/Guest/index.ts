@@ -21,6 +21,18 @@ export const CREATE_GUEST = gql`
   }
 `
 
+export const CREATE_GUEST_BASIC = gql`
+  mutation CreateGuestBasic($data: GuestInput!) {
+    createGuest(data: $data) {
+      guest {
+        email
+        name
+        surname
+      }
+    }
+  }
+`
+
 export const UPDATE_GUEST = gql`
   mutation UpdateGuest($data: GuestInput!) {
     updateGuest(data: $data) {

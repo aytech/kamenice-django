@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, ApolloQueryResult, useMutation, useQuery } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -12,7 +12,6 @@ import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Su
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { SuiteReservations, SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
@@ -20,7 +19,9 @@ import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql
 
 interface Props {
   close: () => void
+  guests: Guests | undefined
   isOpen: boolean
+  openGuestDrawer: () => void
   range: ReservationRange | undefined
   refetchReservations: (variables?: Partial<SuiteReservations>) => Promise<ApolloQueryResult<SuiteReservations>>
   reservation: SuiteReservations_suiteReservations | undefined
@@ -29,18 +30,15 @@ interface Props {
 
 export const ReservationModal = ({
   close,
+  guests,
   isOpen,
+  openGuestDrawer,
   range,
   refetchReservations,
   reservation,
   suite
 }: Props) => {
 
-  const { data: guestsQueryData } = useQuery<Guests>(GUESTS, {
-    onError: () => {
-      message.error("Chyba při načítání hostů, kontaktujte správce")
-    }
-  })
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
@@ -138,6 +136,11 @@ export const ReservationModal = ({
   const footerButtons = [
     getRemoveButton(),
     <Button
+      key="guest"
+      onClick={ openGuestDrawer }>
+      Přidat hosta
+    </Button>,
+    <Button
       key="create"
       icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
       onClick={ () => {
@@ -150,15 +153,15 @@ export const ReservationModal = ({
   ]
 
   useEffect(() => {
-    if (guestsQueryData?.guests !== undefined && guestsQueryData?.guests !== null) {
-      setGuestOptions(Array.from(guestsQueryData?.guests, (guest: any): any => {
+    if (guests?.guests !== undefined && guests?.guests !== null) {
+      setGuestOptions(Array.from(guests?.guests, (guest: any): any => {
         return {
           label: `${ guest.name } ${ guest.surname }`,
           value: guest.id
         }
       }))
     }
-  }, [ guestsQueryData ])
+  }, [ guests ])
 
   // Reset form to update range, has to be after modal is opened,
   // otherwise the form might not be initialized

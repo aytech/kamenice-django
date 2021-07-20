@@ -138,7 +138,7 @@ export const GuestDrawer = ({
         </Popconfirm>
       ) }
       placement="left"
-      title="Nový Uživatel"
+      title="Nový host"
       width={ 500 }
       visible={ visible }
       footer={

@@ -17,10 +17,10 @@ export interface CreateGuest_createGuest_guest {
   citizenship: string | null;
   email: string;
   gender: GuestGender | null;
-  identity: string;
+  identity: string | null;
   id: string;
   name: string;
-  phoneNumber: string;
+  phoneNumber: string | null;
   surname: string;
   visaNumber: string | null;
 }

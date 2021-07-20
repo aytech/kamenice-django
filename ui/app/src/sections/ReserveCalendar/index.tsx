@@ -13,6 +13,9 @@ import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
 import Title from 'antd/lib/typography/Title'
 import moment, { Moment } from 'moment'
+import { GuestDrawerSmall } from '../GuestDrawerSmall'
+import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
+import { GUESTS } from '../../lib/graphql/queries/Guests'
 
 interface Props {
   suite: Suites_suites
@@ -23,11 +26,14 @@ export const ReserveCalendar = ({
   suite,
 }: Props) => {
 
-  const { data: reservationsData, refetch } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
+  const { data: reservationsData, refetch: reservationRefetch } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
     variables: { suiteId: suite.id }
   })
+  const { data: guestsQueryData, refetch: guestsRefetch } = useQuery<Guests>(GUESTS)
+
   const [ reservedRange, setReservedRange ] = useState<ReservationRange>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
+  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<SuiteReservations_suiteReservations>()
 
@@ -120,11 +126,17 @@ export const ReserveCalendar = ({
           setSelectedReservation(undefined)
           setModalOpen(false)
         } }
+        guests={ guestsQueryData }
         isOpen={ modalOpen }
+        openGuestDrawer={ () => setGuestDrawerOpen(true) }
         range={ reservedRange }
-        refetchReservations={ refetch }
+        refetchReservations={ reservationRefetch }
         reservation={ selectedReservation }
         suite={ suite } />
+      <GuestDrawerSmall
+        close={ () => setGuestDrawerOpen(false) }
+        open={ guestDrawerOpen }
+        refetch={ guestsRefetch } />
     </>
   )
 }
