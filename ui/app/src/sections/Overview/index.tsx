@@ -1,178 +1,145 @@
 import { useQuery } from "@apollo/client"
-import { Empty } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
-import { ApexOptions } from "apexcharts"
+import Timeline from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import ReactApexChart from "react-apexcharts"
 import { RESERVATIONS } from "../../lib/graphql/queries/Reservations"
 import { Reservations, Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
-import { Reservation } from "../../lib/Types"
+import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
+import moment, { Moment } from "moment"
 
-// https://apexcharts.com/react-chart-demos/timeline-charts/multiple-series-group-rows/
+// https://github.com/namespace-ee/react-calendar-timeline
 export const Overview = () => {
 
-  const [ series, setSeries ] = useState<any[]>([])
-  const getColor = (reservationType: string): string => {
+  const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
-      case "Nezávazná Rezervace":
+      case "NONBINDING":
         return "#e4e724"
-      case "Aktuálně Ubytování":
+      case "ACCOMMODATED":
         return "#9c88ff"
-      case "Obydlený Termín":
+      case "INHABITED":
         return "#db913c"
-      case "Závazná Rezervace":
+      case "BINDING":
       default: return "#0eca2d"
     }
-  }
-  const getTimePadded = (hours: number, minutes: number) => {
-    let time = ''
-    time += (hours < 10 ? '0' : '') + hours
-    time += ':'
-    time += (minutes < 10 ? '0' : '') + minutes
-    return time
   }
 
   const { data, refetch } = useQuery<Reservations>(RESERVATIONS)
 
+  const [ groups, setGroups ] = useState<{ id: number, stackItems: boolean, title: string }[]>([
+    {
+      id: 1,
+      stackItems: true,
+      title: "Apartma 2 + 1"
+    },
+    {
+      id: 2,
+      stackItems: true,
+      title: "Apartma 2 + 2"
+    }
+  ])
+  const [ items, setItems ] = useState<{ end_time: Moment, group: number, id: number, itemProps: any, start_time: Moment, title: string }[]>([
+    {
+      end_time: moment("2021-07-09T10:00"),
+      group: 1,
+      id: 1,
+      itemProps: {
+        className: "weekend",
+        style: {
+          background: "#db913c"
+        }
+      },
+      start_time: moment("2021-07-05T14:00"),
+      title: "Oleg Yapparov"
+    },
+    {
+      end_time: moment("2021-07-16T10:00"),
+      group: 2,
+      id: 2,
+      itemProps: {
+        className: "weekend",
+        style: {
+          background: "#0eca2d"
+        }
+      },
+      start_time: moment("2021-07-12T14:00"),
+      title: "Alice Ambrozova"
+    },
+    {
+      end_time: moment("2021-07-16T10:00"),
+      group: 1,
+      id: 3,
+      itemProps: {
+        className: "weekend",
+        style: {
+          background: "#9c88ff"
+        }
+      },
+      start_time: moment("2021-07-12T14:00"),
+      title: "Iva Ambrozova"
+    },
+    {
+      end_time: moment("2021-07-23T10:00"),
+      group: 1,
+      id: 4,
+      itemProps: {
+        className: "weekend",
+        style: {
+          background: "#e4e724"
+        }
+      },
+      start_time: moment("2021-07-19T14:00"),
+      title: "Oleg Yapparov"
+    },
+  ])
+
   useEffect(() => {
-    const series: any[] = []
+    const groups: { id: number, stackItems: boolean, title: string }[] = []
+    const reservations: { end_time: Moment, group: number, id: number, itemProps: any, start_time: Moment, title: string }[] = []
     data?.reservations?.forEach((reservation: Reservations_reservations | null) => {
       if (reservation !== null) {
-        series.push({
-          data: [
-            {
-              x: `${ reservation.suite.title } (${ reservation.suite.number })`,
-              y: [
-                new Date(reservation.fromDate).getTime(),
-                new Date(reservation.toDate).getTime()
-              ]
+        const groupIndex = groups.findIndex(group => group.id === +reservation.suite.id)
+        if (groupIndex === -1) {
+          groups.push({
+            id: +reservation.suite.id,
+            stackItems: true,
+            title: reservation.suite.title
+          })
+        }
+        reservations.push({
+          end_time: moment(reservation.toDate),
+          group: +reservation.suite.id,
+          id: +reservation.id,
+          itemProps: {
+            className: 'weekend',
+            style: {
+              background: getReservationColor(reservation.type)
             }
-          ],
-          name: Reservation.getType(reservation.type),
-          reservation: reservation.id,
-          suite: reservation.suite.id
+          },
+          start_time: moment(reservation.fromDate),
+          title: `${reservation.guest.name} ${reservation.guest.surname}`
         })
       }
     })
-    setSeries(series)
+    // setGroups(groups)
+    // setItems(reservations)
   }, [ data ])
 
   useEffect(() => {
     refetch()
   }, [ refetch ])
 
-  const locateSeries = (index: number) => {
-    if (index !== -1) {
-      console.warn('Reservation ', series[ index ])
-    }
-  }
-
-  const options: ApexOptions = {
-    chart: {
-      events: {
-        click: (_e, _chart, config) => {
-          locateSeries(config.seriesIndex)
-        }
-      },
-      height: 350,
-      locales: [ {
-        name: "en",
-        options: {
-          months: [ "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec" ],
-          shortMonths: [ "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec" ],
-          toolbar: {
-            download: "Stáhnout",
-            pan: "Panoráma",
-            reset: "Resetovat Přiblížení",
-            selectionZoom: "Zvětšení Výběru",
-            zoomIn: "Přiblížit",
-            zoomOut: "Oddálit"
-          }
-        }
-      } ],
-      type: "rangeBar" as const
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: '80%',
-        rangeBarGroupRows: true
-      }
-    },
-    colors: [ ({ seriesIndex, w }: { seriesIndex: any, w: any }) => {
-      return getColor(w.config.series[ seriesIndex ].name)
-    }
-    ],
-    fill: {
-      type: 'solid'
-    },
-    xaxis: {
-      type: 'datetime' as const
-    },
-    legend: {
-      customLegendItems: [
-        "Závazná Rezervace",
-        "Nezávazná Rezervace",
-        "Aktuálně Ubytování",
-        "Obydlený Termín"
-      ],
-      markers: {
-        width: 12,
-        height: 12,
-        strokeWidth: 0,
-        strokeColor: '#fff',
-        fillColors: [
-          "#0eca2d",
-          "#e4e724",
-          "#9c88ff",
-          "#db913c"
-        ],
-        radius: 12,
-        customHTML: undefined,
-        onClick: undefined,
-        offsetX: 0,
-        offsetY: 0
-      },
-      position: 'top' as const
-    },
-    stroke: {
-      width: 1
-    },
-    tooltip: {
-      custom: (options) => {
-        const tooltipValues = options.ctx.rangeBar.getTooltipValues(options)
-        const seriesName = tooltipValues.seriesName.trim().substring(0, tooltipValues.seriesName.trim().length - 1)
-        const reservationName = tooltipValues.ylabel.trim().substring(0, tooltipValues.ylabel.trim().length - 1)
-        const from = new Date(tooltipValues.start)
-        const to = new Date(tooltipValues.end)
-        return '<div class="apexcharts-tooltip-rangebar"><div>' +
-          `<span class="series-name" style="font-weight: bold">${ reservationName }</span>` +
-          '</div><div>' +
-          `<span class="category" style="color:${ getColor(seriesName) }">${ tooltipValues.seriesName }</span>` +
-          `<span class="value start-value" style="font-weight: bold">${ tooltipValues.startVal } ${ getTimePadded(from.getHours(), from.getMinutes()) }</span>` +
-          '<span class="separator"> - </span>' +
-          `<span class="value end-value" style="font-weight: bold">${ tooltipValues.endVal } ${ getTimePadded(to.getHours(), to.getMinutes()) }</span>` +
-          '</div></div></div>'
-      }
-    }
-  }
-
-  const getContent = () => {
-    return series.length > 0 ? (
-      <div id="chart">
-        <ReactApexChart series={ series } options={ options } type="rangeBar" height={ 350 }></ReactApexChart>
-      </div>
-    ) : <Empty />
-  }
-
   return (
     <Content className="app-content">
       <Title level={ 3 } className="home__listings-title">
         Přehled
       </Title>
-      { getContent() }
+      <Timeline
+        defaultTimeEnd={ moment().add(20, "day") }
+        defaultTimeStart={ moment().add(-20, "day") }
+        groups={ groups }
+        items={ items } />
     </Content>
   )
 }

@@ -14,15 +14,19 @@ export const GuestFormHelper: IGuestFormHelper = {
   ageOptions: [
     {
       label: "12+",
-      value: "ADULT"
-    },
-    {
-      label: "3-12 let",
       value: "YOUNG"
     },
     {
-      label: "Do 3 let",
+      label: "3-12 let",
       value: "CHILD"
+    },
+    {
+      label: "Do 3 let",
+      value: "INFANT"
+    },
+    {
+      label: "Dospělý",
+      value: "ADULT"
     }
   ],
   getGuestResponseErrorList: (errorString: string) => {
@@ -48,7 +52,7 @@ export const GuestFormHelper: IGuestFormHelper = {
     FormHelper.requiredRule,
     {
       message: "zadejte pouze text",
-      pattern: /^([A-Za-z\s])+$/,
+      pattern: /^([A-Za-z\sáÁčČďĎéÉěĚíÍňŇřŘšŠťŤúÚůŮýÝžŽóÓ])+$/,
       transform: FormHelper.trim
     }
   ],

@@ -7,9 +7,10 @@ from kamenice_django.validators.guest import validate_citizenship, validate_gend
 
 class Guest(BaseModel):
     AGE_CHOICES = [
-        ('CHILD', 'Do 3 let'),
-        ('YOUNG', '3-12 let'),
-        ('ADULT', '12+'),
+        ('INFANT', 'Do 3 let'),
+        ('CHILD', '3-12 let'),
+        ('YOUNG', '12+'),
+        ('ADULT', 'Dospělý'),
     ]
     GENDER_CHOICES = [
         ('M', 'Male'),
