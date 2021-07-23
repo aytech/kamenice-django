@@ -12,12 +12,19 @@
 
 .react-calendar-timeline .rct-calendar-header {
   border: 1px solid #eee;
+  border-bottom: none;
+}
+
+.react-calendar-timeline .rct-calendar-header .days {
+  border-top: 1px solid #eee;
 }
 
 .react-calendar-timeline .rct-dateHeader {
+  background-color: #fff;
   border-bottom: none;
-  border-left: 1px solid #eee;
+  border-left: none;
   border-right: 1px solid #eee;
+  color: #4c4c4c;
 }
 
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-even, .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
@@ -25,19 +32,76 @@
 }
 
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row {
-  border: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  border-left: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .react-calendar-timeline .rct-sidebar {
   border-right: 1px solid #eee;
-  font-weight: bold;
+  box-shadow: 10px 0 10px -5px rgb(12 12 12 / 10%);
+  font-weight: 700;
+  text-align: center;
+  z-index: 2;
 }
 
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd, .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd, .react-calendar-timeline .rct-header-root {
   background-color: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #d5d5d5;
 }
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
   border-left: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-vertical-lines .rct-vl.rct-vl-first {
+  border-left-width: 1px;
+}
+
+.react-calendar-timeline .rct-header-root .side-header {
+  border-left: 1px solid #eee;
+  border-top: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-items .reservation-item {
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 25%) 1px 1px 0px;
+}
+
+.rt-marker__label {
+  position: absolute;
+  bottom: 70%;
+  left: 50%;
+  display: table;
+  min-width: 70px;
+  height: 40px;
+  padding: 0 10px;
+  line-height: 1.1;
+  text-align: center;
+  background: currentColor;
+  transform: translateX(-50%);
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 32;
+}
+
+.rt-marker__label::before {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  transform: translateX(-1px);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid currentColor;
+  content: ' ';
+}
+
+.rt-marker__content {
+  display: table-cell;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: white;
 }

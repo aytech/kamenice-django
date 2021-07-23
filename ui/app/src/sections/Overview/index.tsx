@@ -1,20 +1,21 @@
 import { useQuery } from "@apollo/client"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
-import Timeline, { TimelineGroup, TimelineItem } from "react-calendar-timeline"
+import Text from "antd/lib/typography/Text"
+import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
+import { Popover } from "antd"
 import { RESERVATIONS } from "../../lib/graphql/queries/Reservations"
 import { Reservations, Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, Guest, IReservation, Reservation, ReservationTypeKey } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
 import { ReservationModal } from "../ReservationModal"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { emptyReservation } from "../../lib/Constants"
-import { Tooltip } from "antd"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Overview = () => {
@@ -22,13 +23,13 @@ export const Overview = () => {
   const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
       case "NONBINDING":
-        return "#e4e724"
+        return "rgb(254, 223, 3)"
       case "ACCOMMODATED":
-        return "#9c88ff"
+        return "rgb(0, 133, 182)"
       case "INHABITED":
-        return "#db913c"
+        return "rgb(254, 127, 45)"
       case "BINDING":
-      default: return "#0eca2d"
+      default: return "rgb(0, 212, 157)"
     }
   }
 
@@ -40,10 +41,6 @@ export const Overview = () => {
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
-
-  const getReservationFillTitle = (guest: Guest, type: ReservationTypeKey): string => {
-    return `${ guest?.name } ${ guest?.surname } - ${ Reservation.getType(type) }`
-  }
 
   useEffect(() => {
     setItems([])
@@ -62,18 +59,20 @@ export const Overview = () => {
           })
         }
         reservations.push({
+          color: getReservationColor(reservation.type),
           end_time: moment(reservation.toDate),
-          fullTitle: getReservationFillTitle(reservation.guest, reservation.type),
           group: +reservation.suite.id,
           id: +reservation.id,
           itemProps: {
-            className: 'weekend',
+            className: 'reservation-item',
             style: {
-              background: getReservationColor(reservation.type)
+              background: getReservationColor(reservation.type),
+              border: "none"
             }
           },
           start_time: moment(reservation.fromDate),
-          title: `${ reservation.guest.name } ${ reservation.guest.surname }`
+          title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
+          type: Reservation.getType(reservation.type)
         })
       }
     })
@@ -96,6 +95,13 @@ export const Overview = () => {
         canResize={ false }
         defaultTimeEnd={ moment().add(12, "day") }
         defaultTimeStart={ moment().add(-12, "day") }
+        groupRenderer={ ({ group }) => {
+          return (
+            <>
+              <Title level={ 5 }>{ group.title }</Title>
+            </>
+          )
+        } }
         groups={ groups }
         itemRenderer={ ({ item, itemContext, getItemProps, getResizeProps }) => {
           const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
@@ -105,9 +111,21 @@ export const Overview = () => {
               <div
                 className="rct-item-content"
                 style={ { maxHeight: `${ itemContext.dimensions.height }` } }>
-                <Tooltip title={ item.fullTitle }>
-                  { item.title }
-                </Tooltip>
+                <Popover title={ item.title } content={ (
+                  <>
+                    <div style={ { color: item.color, fontWeight: 700 } }>
+                      { item.type }
+                    </div>
+                    <div>
+                      Od: <strong>{ item.start_time.format("DD MMM HH:mm") }</strong>
+                    </div>
+                    <div>
+                      Do: <strong>{ item.end_time.format("DD MMM HH:mm") }</strong>
+                    </div>
+                  </>
+                ) }>
+                  <Text strong>{ item.title }</Text>
+                </Popover>
               </div>
               { itemContext.useResizeHandle ? <div { ...rightResizeProps } /> : '' }
             </div>
@@ -120,13 +138,13 @@ export const Overview = () => {
           if (selectedGroup !== undefined) {
             setSelectedReservation({
               ...emptyReservation,
-              fromDate: moment(time).hours(14).minutes(0),
+              fromDate: moment(time),
               suite: {
                 id: selectedGroup.id,
                 number: selectedGroup.roomNumber,
                 title: selectedGroup.suiteTitle
               },
-              toDate: moment(time).add(1, "day").hours(10).minutes(0)
+              toDate: moment(time).add(1, "day")
             })
             setReservationModalOpen(true)
           }
@@ -150,7 +168,38 @@ export const Overview = () => {
               setReservationModalOpen(true)
             }
           }
-        } } />
+        } }>
+        <TimelineHeaders>
+          <SidebarHeader>
+            { ({ getRootProps }) => {
+              return (
+                <div
+                  { ...getRootProps() }
+                  className="side-header" />
+              )
+            } }
+          </SidebarHeader>
+          <DateHeader unit="primaryHeader" />
+          <DateHeader
+            className="days"
+            unit="day" />
+        </TimelineHeaders>
+        <CursorMarker>
+          {
+            ({ styles, date }) => {
+              return (
+                <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
+                  <div className="rt-marker__label">
+                    <div className="rt-marker__content">
+                      { moment(date).format("DD MMM HH:mm") }
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+          }
+        </CursorMarker>
+      </Timeline>
       <ReservationModal
         close={ () => {
           setSelectedReservation(emptyReservation)
@@ -165,6 +214,6 @@ export const Overview = () => {
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }
         refetch={ guestsRefetch } />
-    </Content>
+    </Content >
   )
 }

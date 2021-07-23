@@ -116,5 +116,6 @@ export interface CustomGroupFields {
 }
 
 export interface CustomItemFields {
-  fullTitle?: string
+  color?: string
+  type?: string
 }
