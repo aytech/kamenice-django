@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, ApolloQueryResult, useMutation } from "@apollo/client"
+import { ApolloError, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { OptionsType, ReservationRange, ReservationTypeKey } from "../../lib/Types"
+import { OptionsType, ReservationRange, ReservationTypeKey, Suite } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { SuiteReservations, SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
+import { SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
@@ -23,9 +22,9 @@ interface Props {
   isOpen: boolean
   openGuestDrawer: () => void
   range: ReservationRange | undefined
-  refetchReservations: (variables?: Partial<SuiteReservations>) => Promise<ApolloQueryResult<SuiteReservations>>
+  refetchReservations: () => Promise<any>
   reservation: SuiteReservations_suiteReservations | undefined
-  suite: Suites_suites
+  suite: Suite | undefined
 }
 
 export const ReservationModal = ({
@@ -42,6 +41,7 @@ export const ReservationModal = ({
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
+      refetchReservations()
     },
     onError: (error: ApolloError): void => {
       message.error(error.message)
@@ -50,6 +50,7 @@ export const ReservationModal = ({
   const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: () => {
       message.success("Rezervace byla aktualizována!")
+      refetchReservations()
     },
     onError: (error: ApolloError) => {
       message.error(error.message)
@@ -88,6 +89,9 @@ export const ReservationModal = ({
   }
 
   const submitForm = (): void => {
+    if (suite === undefined) {
+      return
+    }
     const formData = form.getFieldsValue(true)
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
     const roommates = formData.roommates === undefined ? [] :
@@ -109,7 +113,6 @@ export const ReservationModal = ({
     } else {
       createReservation({ variables: { data: variables } })
     }
-    refetchReservations()
     close()
   }
 
@@ -117,6 +120,7 @@ export const ReservationModal = ({
     return reservation !== undefined ? (
       <Popconfirm
         cancelText="Ne"
+        disabled={ suite === undefined }
         key="remove"
         okText="Ano"
         onConfirm={ () => {
@@ -136,11 +140,13 @@ export const ReservationModal = ({
   const footerButtons = [
     getRemoveButton(),
     <Button
+      disabled={ suite === undefined }
       key="guest"
       onClick={ openGuestDrawer }>
       Přidat hosta
     </Button>,
     <Button
+      disabled={ suite === undefined }
       key="create"
       icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
       onClick={ () => {

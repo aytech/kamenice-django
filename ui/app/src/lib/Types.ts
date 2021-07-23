@@ -83,3 +83,18 @@ export interface OptionsType {
   label: string,
   value: string | number
 }
+
+export interface CustomGroupFields {
+  roomNumber: number | null
+  suiteTitle: string
+}
+
+export interface CustomItemFields {
+
+}
+
+export interface Suite {
+  id: string
+  number: number| null
+  title: string
+}

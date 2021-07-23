@@ -6,8 +6,7 @@ import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendar
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { ReservationRange } from '../../lib/Types'
-import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
+import { ReservationRange, Suite } from '../../lib/Types'
 import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
 import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
@@ -18,7 +17,7 @@ import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
 import { GUESTS } from '../../lib/graphql/queries/Guests'
 
 interface Props {
-  suite: Suites_suites
+  suite: Suite
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
 

@@ -24,7 +24,11 @@ export const Home = () => {
             return suite !== null ? (
               <ReserveCalendar
                 key={ suite.id }
-                suite={ suite } />
+                suite={ {
+                  id: suite.id,
+                  number: suite.number,
+                  title: suite.title
+                } } />
             ) : null
           })
         }
