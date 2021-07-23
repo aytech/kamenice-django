@@ -155,23 +155,20 @@ class UpdateReservation(Mutation):
             except ObjectDoesNotExist:
                 raise GraphQLError('Prosím vyberte hosta ze seznamu')
 
-            try:
-                instance.suite = Suite.objects.get(pk=data.suite)
-            except ObjectDoesNotExist:
-                raise GraphQLError('Apartmá nebylo nalezeno')
-
-            try:
-                instance.full_clean()
-            except ValidationError as errors:
-                raise GraphQLError(errors.messages[0])
-
-            instance.save()
+            # Roommates are recreated from scratch
+            for roommate_id in instance.roommates.all():
+                instance.roommates.remove(roommate_id)
 
             try:
                 for roommate_id in data.roommates:
                     instance.roommates.add(Guest.objects.get(pk=roommate_id))
             except ObjectDoesNotExist as ex:
                 print('Failed to add roommate', ex)
+
+            try:
+                instance.full_clean()
+            except ValidationError as errors:
+                raise GraphQLError(errors.messages[0])
 
             instance.save()
 

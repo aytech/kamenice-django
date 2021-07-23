@@ -25,7 +25,7 @@ export const Home = () => {
               <ReserveCalendar
                 key={ suite.id }
                 suite={ {
-                  id: suite.id,
+                  id: +suite.id,
                   number: suite.number,
                   title: suite.title
                 } } />

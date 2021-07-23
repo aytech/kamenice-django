@@ -33,8 +33,8 @@ export const SuiteDrawer = ({
       }
       close()
     },
-    onError: (error: ApolloError): void => {
-      console.log('Error creating: ', error)
+    onError: (reason: ApolloError): void => {
+      console.error(reason)
     }
   })
   const [ updateSuite ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE, {
@@ -45,8 +45,8 @@ export const SuiteDrawer = ({
       }
       close()
     },
-    onError: (error: ApolloError): void => {
-      console.log('Error updating: ', error)
+    onError: (reason: ApolloError): void => {
+      console.error(reason)
     }
   })
 

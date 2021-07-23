@@ -8,11 +8,12 @@ import { Reservations, Reservations_reservations } from "../../lib/graphql/queri
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, ReservationRange, Suite } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
 import { ReservationModal } from "../ReservationModal"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
+import { emptyReservation } from "../../lib/Constants"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Overview = () => {
@@ -37,19 +38,18 @@ export const Overview = () => {
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ reservedRange, setReservedRange ] = useState<ReservationRange>()
-  const [ selectedReservation, setSelectedReservation ] = useState<Reservations_reservations>()
-  const [ selectedSuite, setSelectedSuite ] = useState<Suite>()
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
 
   useEffect(() => {
-    const groups: TimelineGroup<CustomGroupFields>[] = []
+    setItems([])
+    const suites: TimelineGroup<CustomGroupFields>[] = []
     const reservations: TimelineItem<CustomItemFields, Moment>[] = []
     reservationsData?.reservations?.forEach((reservation: Reservations_reservations | null) => {
       if (reservation !== null) {
-        const groupIndex = groups.findIndex(group => group.id === +reservation.suite.id)
+        const groupIndex = suites.findIndex(suite => suite.id === reservation.suite.id)
         if (groupIndex === -1) {
-          groups.push({
-            id: +reservation.suite.id,
+          suites.push({
+            id: reservation.suite.id,
             roomNumber: reservation.suite.number,
             stackItems: true,
             suiteTitle: reservation.suite.title,
@@ -71,7 +71,7 @@ export const Overview = () => {
         })
       }
     })
-    setGroups(groups)
+    setGroups(suites)
     setItems(reservations)
   }, [ reservationsData ])
 
@@ -85,6 +85,9 @@ export const Overview = () => {
         Přehled
       </Title>
       <Timeline
+        canChangeGroup={ false }
+        canMove={ false }
+        canResize={ false }
         defaultTimeEnd={ moment().add(20, "day") }
         defaultTimeStart={ moment().add(-20, "day") }
         groups={ groups }
@@ -93,14 +96,15 @@ export const Overview = () => {
         onCanvasClick={ (groupId: number, time: number) => {
           const selectedGroup = groups.find(group => group.id === groupId)
           if (selectedGroup !== undefined) {
-            setSelectedSuite({
-              id: String(selectedGroup.id),
-              number: 0,
-              title: selectedGroup.suiteTitle
-            })
-            setReservedRange({
-              from: moment(time).hour(14).minutes(0),
-              to: moment(time).add(1, "day").hours(10).minutes(0)
+            setSelectedReservation({
+              ...emptyReservation,
+              fromDate: moment(time).hours(14).minutes(0),
+              suite: {
+                id: selectedGroup.id,
+                number: selectedGroup.roomNumber,
+                title: selectedGroup.suiteTitle
+              },
+              toDate: moment(time).add(1, "day").hours(10).minutes(0)
             })
             setReservationModalOpen(true)
           }
@@ -109,28 +113,32 @@ export const Overview = () => {
           if (reservationsData?.reservations !== undefined && reservationsData.reservations !== null) {
             const reservation = reservationsData.reservations.find(entry => entry !== null && entry.id === String(itemId))
             if (reservation !== undefined && reservation !== null) {
-              setReservedRange({
-                from: moment(reservation.fromDate),
-                to: moment(reservation.toDate)
+              setSelectedReservation({
+                fromDate: moment(reservation.fromDate),
+                guest: reservation.guest,
+                id: +reservation.id,
+                meal: reservation.meal,
+                notes: reservation.notes,
+                purpose: reservation.purpose,
+                roommates: reservation.roommates,
+                suite: reservation.suite,
+                toDate: moment(reservation.toDate),
+                type: reservation.type
               })
-              setSelectedSuite(reservation.suite)
-              setSelectedReservation(reservation)
               setReservationModalOpen(true)
             }
           }
         } } />
       <ReservationModal
         close={ () => {
-          setSelectedReservation(undefined)
+          setSelectedReservation(emptyReservation)
           setReservationModalOpen(false)
         } }
         guests={ guestsQueryData }
         isOpen={ reservationModalOpen }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        range={ reservedRange }
         refetchReservations={ reservationsRefetch }
-        reservation={ selectedReservation }
-        suite={ selectedSuite } />
+        reservation={ selectedReservation } />
       <GuestDrawerSmall
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }

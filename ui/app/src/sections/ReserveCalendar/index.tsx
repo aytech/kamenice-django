@@ -4,9 +4,9 @@ import { Col } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
-import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
+import { defaultArrivalHour, defaultDepartureHour, emptyReservation } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { ReservationRange, Suite } from '../../lib/Types'
+import { IReservation, Suite } from '../../lib/Types'
 import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
 import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
 import { ReservationType } from '../../lib/graphql/globalTypes'
@@ -30,11 +30,10 @@ export const ReserveCalendar = ({
   })
   const { data: guestsQueryData, refetch: guestsRefetch } = useQuery<Guests>(GUESTS)
 
-  const [ reservedRange, setReservedRange ] = useState<ReservationRange>()
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
-  const [ selectedReservation, setSelectedReservation ] = useState<SuiteReservations_suiteReservations>()
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
 
   const getDayClassName = (type: ReservationType) => {
     switch (type) {
@@ -59,19 +58,27 @@ export const ReserveCalendar = ({
     if (rangeDay !== undefined) {
       const reservation = reservationsData?.suiteReservations?.find(reservation => reservation?.id === rangeDay.reservationId)
       if (reservation !== undefined && reservation !== null) {
-        setReservedRange({
-          from: moment(reservation.fromDate),
-          to: moment(reservation.toDate)
+        setSelectedReservation({
+          fromDate: moment(reservation.fromDate),
+          guest: { id: reservation.guest.id },
+          meal: reservation.meal,
+          id: +reservation.id,
+          notes: reservation.notes,
+          purpose: reservation.purpose,
+          roommates: reservation.roommates,
+          suite: reservation.suite,
+          toDate: moment(reservation.toDate),
+          type: reservation.type
         })
-        setSelectedReservation(reservation)
       }
     }
     if (rangeDay === undefined && dayValue !== undefined && dayValue !== null) {
-      setReservedRange({
-        // Moment counts months from 0, so - 1 is required to get the current month
-        from: moment([ dayValue.year, dayValue.month - 1, dayValue.day, defaultArrivalHour, 0 ]),
-        // default range is the selected day + 1 day, default arrival and departure times
-        to: moment([ dayValue.year, dayValue.month - 1, dayValue.day + 1, defaultDepartureHour, 0 ])
+      setSelectedReservation({
+        fromDate: moment([ dayValue.year, dayValue.month - 1, dayValue.day, defaultArrivalHour, 0 ]),
+        roommates: [],
+        suite: { id: suite.id },
+        toDate: moment([ dayValue.year, dayValue.month - 1, dayValue.day + 1, defaultDepartureHour, 0 ]),
+        type: "NONBINDING"
       })
     }
     setModalOpen(true)
@@ -122,16 +129,14 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => {
-          setSelectedReservation(undefined)
+          setSelectedReservation(emptyReservation)
           setModalOpen(false)
         } }
         guests={ guestsQueryData }
         isOpen={ modalOpen }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        range={ reservedRange }
         refetchReservations={ reservationRefetch }
-        reservation={ selectedReservation }
-        suite={ suite } />
+        reservation={ selectedReservation } />
       <GuestDrawerSmall
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }

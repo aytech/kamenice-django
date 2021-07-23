@@ -21,6 +21,7 @@ export const Reservation = {
 }
 
 export type DrawerType = "guest" | "suite"
+export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
 
 export interface ReservationRange {
   from: Moment
@@ -74,6 +75,29 @@ export interface GuestErrorResponse {
   surname: Array<string>
 }
 
+export interface Guest {
+  id: number | string
+}
+
+export interface Suite {
+  id: number | string
+  number?: number | null
+  title?: string
+}
+
+export interface IReservation {
+  fromDate: Moment
+  guest?: Guest
+  meal?: ReservationMeal
+  id?: number
+  notes?: string | null
+  purpose?: string | null
+  roommates: Array<Guest>
+  suite: Suite
+  toDate: Moment
+  type: ReservationTypeKey
+}
+
 export interface SuiteForm {
   number: number,
   title: string
@@ -91,10 +115,4 @@ export interface CustomGroupFields {
 
 export interface CustomItemFields {
 
-}
-
-export interface Suite {
-  id: string
-  number: number| null
-  title: string
 }

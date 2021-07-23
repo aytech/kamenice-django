@@ -23,8 +23,8 @@ export const Suites = () => {
     }
   })
   const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
-    onError: (error: ApolloError) => {
-      console.log('Error: ', error)
+    onError: (reason: ApolloError) => {
+      console.error(reason)
     }
   })
 

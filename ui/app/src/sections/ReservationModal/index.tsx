@@ -5,13 +5,12 @@ import { ApolloError, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { OptionsType, ReservationRange, ReservationTypeKey, Suite } from "../../lib/Types"
+import { IReservation, OptionsType, ReservationTypeKey } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { SuiteReservations_suiteReservations } from "../../lib/graphql/queries/Reservations/__generated__/SuiteReservations"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
@@ -21,10 +20,8 @@ interface Props {
   guests: Guests | undefined
   isOpen: boolean
   openGuestDrawer: () => void
-  range: ReservationRange | undefined
   refetchReservations: () => Promise<any>
-  reservation: SuiteReservations_suiteReservations | undefined
-  suite: Suite | undefined
+  reservation: IReservation
 }
 
 export const ReservationModal = ({
@@ -32,16 +29,15 @@ export const ReservationModal = ({
   guests,
   isOpen,
   openGuestDrawer,
-  range,
   refetchReservations,
   reservation,
-  suite
 }: Props) => {
 
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
       refetchReservations()
+      close()
     },
     onError: (error: ApolloError): void => {
       message.error(error.message)
@@ -51,6 +47,7 @@ export const ReservationModal = ({
     onCompleted: () => {
       message.success("Rezervace byla aktualizována!")
       refetchReservations()
+      close()
     },
     onError: (error: ApolloError) => {
       message.error(error.message)
@@ -72,15 +69,15 @@ export const ReservationModal = ({
   const dateFormat = "YYYY-MM-DD HH:mm"
   const [ form ] = Form.useForm()
   const initialValues: Store & { type: ReservationTypeKey } = {
-    dates: range !== undefined ? [ range.from, range.to ] : [],
-    guest: reservation === undefined ? null : reservation.guest.id,
-    meal: reservation === undefined ? null : reservation.meal,
-    notes: reservation === undefined ? null : reservation.notes,
-    purpose: reservation === undefined ? null : reservation.purpose,
-    roommates: reservation === undefined ? [] : Array.from(reservation.roommates, roommate => {
+    dates: [ reservation.fromDate, reservation.toDate ],
+    guest: reservation.guest === undefined ? null : reservation.guest.id,
+    meal: reservation.meal,
+    notes: reservation.notes,
+    purpose: reservation.purpose,
+    roommates: Array.from(reservation.roommates, roommate => {
       return { id: roommate.id }
     }),
-    type: reservation === undefined ? "BINDING" : reservation.type
+    type: reservation.type
   }
 
   const closeModal = () => {
@@ -89,9 +86,6 @@ export const ReservationModal = ({
   }
 
   const submitForm = (): void => {
-    if (suite === undefined) {
-      return
-    }
     const formData = form.getFieldsValue(true)
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
     const roommates = formData.roommates === undefined ? [] :
@@ -104,27 +98,25 @@ export const ReservationModal = ({
       notes: formData.notes,
       purpose: formData.purpose,
       roommates: roommates,
-      suite: +suite.id,
+      suite: +reservation.suite.id,
       toDate: to.format(dateFormat),
       type: formData.type
     }
     if (reservation !== undefined && reservation.id !== undefined) {
-      updateReservation({ variables: { data: { ...variables, id: reservation.id } } })
+      updateReservation({ variables: { data: { ...variables, id: String(reservation.id) } } })
     } else {
       createReservation({ variables: { data: variables } })
     }
-    close()
   }
 
   const getRemoveButton = () => {
     return reservation !== undefined ? (
       <Popconfirm
         cancelText="Ne"
-        disabled={ suite === undefined }
         key="remove"
         okText="Ano"
         onConfirm={ () => {
-          deleteReservation({ variables: { reservationId: reservation.id } })
+          deleteReservation({ variables: { reservationId: String(reservation.id) } })
         } }
         title="Odstranit rezervaci?">
         <Button
@@ -140,13 +132,11 @@ export const ReservationModal = ({
   const footerButtons = [
     getRemoveButton(),
     <Button
-      disabled={ suite === undefined }
       key="guest"
       onClick={ openGuestDrawer }>
       Přidat hosta
     </Button>,
     <Button
-      disabled={ suite === undefined }
       key="create"
       icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
       onClick={ () => {
@@ -154,7 +144,7 @@ export const ReservationModal = ({
           .then(submitForm)
       } }
       type="primary">
-      { reservation === undefined ? "Uložit" : "Upravit" }
+      { reservation.id === undefined ? "Uložit" : "Upravit" }
     </Button>
   ]
 
@@ -175,7 +165,7 @@ export const ReservationModal = ({
     if (isOpen === true) {
       form.resetFields()
     }
-  }, [ form, isOpen, range ])
+  }, [ form, isOpen ])
 
   return (
     <Modal
@@ -231,7 +221,6 @@ export const ReservationModal = ({
                   align="baseline"
                   className="roommate-list"
                   key={ key }>
-                  { console.log(name) }
                   <Form.Item
                     hasFeedback
                     { ...restField }
