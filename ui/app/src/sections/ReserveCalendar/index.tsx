@@ -60,7 +60,11 @@ export const ReserveCalendar = ({
       if (reservation !== undefined && reservation !== null) {
         setSelectedReservation({
           fromDate: moment(reservation.fromDate),
-          guest: { id: reservation.guest.id },
+          guest: {
+            id: reservation.guest.id,
+            name: reservation.guest.name,
+            surname: reservation.guest.surname
+          },
           meal: reservation.meal,
           id: +reservation.id,
           notes: reservation.notes,

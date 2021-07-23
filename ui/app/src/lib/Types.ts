@@ -76,7 +76,9 @@ export interface GuestErrorResponse {
 }
 
 export interface Guest {
-  id: number | string
+  id?: number | string
+  name: string
+  surname: string
 }
 
 export interface Suite {
@@ -114,5 +116,5 @@ export interface CustomGroupFields {
 }
 
 export interface CustomItemFields {
-
+  fullTitle?: string
 }

@@ -8,12 +8,13 @@ import { Reservations, Reservations_reservations } from "../../lib/graphql/queri
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, Guest, IReservation, Reservation, ReservationTypeKey } from "../../lib/Types"
 import { ReservationModal } from "../ReservationModal"
 import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { emptyReservation } from "../../lib/Constants"
+import { Tooltip } from "antd"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Overview = () => {
@@ -40,6 +41,10 @@ export const Overview = () => {
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
 
+  const getReservationFillTitle = (guest: Guest, type: ReservationTypeKey): string => {
+    return `${ guest?.name } ${ guest?.surname } - ${ Reservation.getType(type) }`
+  }
+
   useEffect(() => {
     setItems([])
     const suites: TimelineGroup<CustomGroupFields>[] = []
@@ -58,6 +63,7 @@ export const Overview = () => {
         }
         reservations.push({
           end_time: moment(reservation.toDate),
+          fullTitle: getReservationFillTitle(reservation.guest, reservation.type),
           group: +reservation.suite.id,
           id: +reservation.id,
           itemProps: {
@@ -88,11 +94,27 @@ export const Overview = () => {
         canChangeGroup={ false }
         canMove={ false }
         canResize={ false }
-        defaultTimeEnd={ moment().add(20, "day") }
-        defaultTimeStart={ moment().add(-20, "day") }
+        defaultTimeEnd={ moment().add(12, "day") }
+        defaultTimeStart={ moment().add(-12, "day") }
         groups={ groups }
+        itemRenderer={ ({ item, itemContext, getItemProps, getResizeProps }) => {
+          const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
+          return item.itemProps !== undefined ? (
+            <div { ...getItemProps(item.itemProps) }>
+              { itemContext.useResizeHandle ? <div { ...leftResizeProps } /> : '' }
+              <div
+                className="rct-item-content"
+                style={ { maxHeight: `${ itemContext.dimensions.height }` } }>
+                <Tooltip title={ item.fullTitle }>
+                  { item.title }
+                </Tooltip>
+              </div>
+              { itemContext.useResizeHandle ? <div { ...rightResizeProps } /> : '' }
+            </div>
+          ) : null
+        } }
         items={ items }
-        lineHeight={ 50 }
+        lineHeight={ 60 }
         onCanvasClick={ (groupId: number, time: number) => {
           const selectedGroup = groups.find(group => group.id === groupId)
           if (selectedGroup !== undefined) {

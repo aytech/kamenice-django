@@ -1,3 +1,43 @@
 #chart {
   margin-top: 2em;
 }
+
+.react-calendar-timeline {
+  color: #4c4c4c;
+}
+
+.react-calendar-timeline .rct-scroll {
+  border-right: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-calendar-header {
+  border: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-dateHeader {
+  border-bottom: none;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-even, .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
+  border-bottom: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row {
+  border: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-sidebar {
+  border-right: 1px solid #eee;
+  font-weight: bold;
+}
+
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-odd, .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd, .react-calendar-timeline .rct-header-root {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.react-calendar-timeline .rct-vertical-lines .rct-vl {
+  border-left: 1px solid #eee;
+}
