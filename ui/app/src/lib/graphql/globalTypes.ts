@@ -13,6 +13,7 @@
 export enum GuestAge {
   ADULT = "ADULT",
   CHILD = "CHILD",
+  INFANT = "INFANT",
   YOUNG = "YOUNG",
 }
 

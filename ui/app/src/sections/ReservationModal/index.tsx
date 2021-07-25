@@ -9,7 +9,7 @@ import { IReservation, OptionsType, ReservationTypeKey } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
@@ -17,11 +17,11 @@ import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql
 
 interface Props {
   close: () => void
-  guests: Guests | undefined
+  guests: (Guests_guests | null)[] | undefined | null
   isOpen: boolean
   openGuestDrawer: () => void
-  refetchReservations: () => Promise<any>
-  reservation: IReservation
+  refetch: () => Promise<any>
+  reservation: IReservation | undefined
 }
 
 export const ReservationModal = ({
@@ -29,14 +29,14 @@ export const ReservationModal = ({
   guests,
   isOpen,
   openGuestDrawer,
-  refetchReservations,
+  refetch,
   reservation,
 }: Props) => {
 
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
-      refetchReservations()
+      refetch()
       close()
     },
     onError: (error: ApolloError): void => {
@@ -46,7 +46,7 @@ export const ReservationModal = ({
   const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: () => {
       message.success("Rezervace byla aktualizována!")
-      refetchReservations()
+      refetch()
       close()
     },
     onError: (error: ApolloError) => {
@@ -56,7 +56,7 @@ export const ReservationModal = ({
   const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
     onCompleted: () => {
       message.success("Rezervace byla odstraněna!")
-      refetchReservations()
+      refetch()
       close()
     },
     onError: (error: ApolloError) => {
@@ -68,7 +68,7 @@ export const ReservationModal = ({
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const dateFormat = "YYYY-MM-DD HH:mm"
   const [ form ] = Form.useForm()
-  const initialValues: Store & { type: ReservationTypeKey } = {
+  const initialValues: Store & { type: ReservationTypeKey } = reservation !== undefined ? {
     dates: [ reservation.fromDate, reservation.toDate ],
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
@@ -78,7 +78,7 @@ export const ReservationModal = ({
       return { id: roommate.id }
     }),
     type: reservation.type
-  }
+  } : { type: "NONBINDING" }
 
   const closeModal = () => {
     setDeleteConfirmVisible(false)
@@ -98,7 +98,7 @@ export const ReservationModal = ({
       notes: formData.notes,
       purpose: formData.purpose,
       roommates: roommates,
-      suite: +reservation.suite.id,
+      suite: reservation !== undefined ? +reservation.suite.id : null,
       toDate: to.format(dateFormat),
       type: formData.type
     }
@@ -144,13 +144,13 @@ export const ReservationModal = ({
           .then(submitForm)
       } }
       type="primary">
-      { reservation.id === undefined ? "Uložit" : "Upravit" }
+      { (reservation !== undefined && reservation.id !== undefined) ? "Upravit" : "Uložit" }
     </Button>
   ]
 
   useEffect(() => {
-    if (guests?.guests !== undefined && guests?.guests !== null) {
-      setGuestOptions(Array.from(guests?.guests, (guest: any): any => {
+    if (guests !== undefined && guests !== null) {
+      setGuestOptions(Array.from(guests, (guest: any): any => {
         return {
           label: `${ guest.name } ${ guest.surname }`,
           value: guest.id

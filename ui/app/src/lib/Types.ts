@@ -111,8 +111,8 @@ export interface OptionsType {
 }
 
 export interface CustomGroupFields {
-  roomNumber: number | null
-  suiteTitle: string
+  number: number | null
+  title: string
 }
 
 export interface CustomItemFields {

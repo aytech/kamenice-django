@@ -35,6 +35,11 @@ const client = new ApolloClient({
             merge: false
           }
         }
+      },
+      Reservation: {
+        fields: {
+          roommates: { merge: false }
+        }
       }
     }
   }),

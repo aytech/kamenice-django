@@ -4,7 +4,7 @@ import { Col } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
-import { defaultArrivalHour, defaultDepartureHour, emptyReservation } from '../../lib/Constants'
+import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
 import { IReservation, Suite } from '../../lib/Types'
 import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
@@ -33,7 +33,7 @@ export const ReserveCalendar = ({
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ reservedDays, setReservedDays ] = useState<CustomDayClassNameItem[]>([])
-  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
   const getDayClassName = (type: ReservationType) => {
     switch (type) {
@@ -133,13 +133,13 @@ export const ReserveCalendar = ({
       </Col>
       <ReservationModal
         close={ () => {
-          setSelectedReservation(emptyReservation)
+          setSelectedReservation(undefined)
           setModalOpen(false)
         } }
-        guests={ guestsQueryData }
+        guests={ guestsQueryData?.guests }
         isOpen={ modalOpen }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        refetchReservations={ reservationRefetch }
+        refetch={ reservationRefetch }
         reservation={ selectedReservation } />
       <GuestDrawerSmall
         close={ () => setGuestDrawerOpen(false) }

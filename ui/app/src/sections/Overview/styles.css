@@ -52,6 +52,10 @@
   border-bottom: 1px solid #d5d5d5;
 }
 
+.react-calendar-timeline .rct-item .rct-item-content {
+  width: 100%;
+}
+
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
   border-left: 1px solid #eee;
 }
@@ -72,7 +76,6 @@
 
 .rt-marker__label {
   position: absolute;
-  bottom: 70%;
   left: 50%;
   display: table;
   min-width: 70px;

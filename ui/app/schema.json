@@ -57,6 +57,18 @@
             "deprecationReason": null
           },
           {
+            "name": "suitesWithReservations",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "SuitesWithReservations",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "suiteReservations",
             "description": null,
             "args": [
@@ -842,20 +854,26 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "CHILD",
+            "name": "INFANT",
             "description": "Do 3 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "YOUNG",
+            "name": "CHILD",
             "description": "3-12 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "ADULT",
+            "name": "YOUNG",
             "description": "12+",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ADULT",
+            "description": "Dospělý",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -950,6 +968,66 @@
             "deprecationReason": null
           }
         ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "SuitesWithReservations",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "guests",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Guest",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "suites",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Suite",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "reservations",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Reservation",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
         "possibleTypes": null
       },
       {

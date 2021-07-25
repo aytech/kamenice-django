@@ -42,7 +42,7 @@ class Reservation(BaseModel):
     )
     suite = models.ForeignKey(
         Suite,
-        on_delete=models.DO_NOTHING
+        on_delete=models.CASCADE
     )
     to_date = models.DateTimeField(blank=False, null=False, error_messages={
         'invalid': 'Zadejte platný datum konce rezervace',

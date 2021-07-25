@@ -5,17 +5,14 @@ import Text from "antd/lib/typography/Text"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
 import { Popover } from "antd"
-import { RESERVATIONS } from "../../lib/graphql/queries/Reservations"
-import { Reservations, Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
-import { ReservationModal } from "../ReservationModal"
-import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
-import { emptyReservation } from "../../lib/Constants"
+import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
+import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { ReservationModal } from "../ReservationModal"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Overview = () => {
@@ -33,36 +30,29 @@ export const Overview = () => {
     }
   }
 
-  const { data: reservationsData, refetch: reservationsRefetch } = useQuery<Reservations>(RESERVATIONS)
-  const { data: guestsQueryData, refetch: guestsRefetch } = useQuery<Guests>(GUESTS)
+  const { data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>(emptyReservation)
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
   useEffect(() => {
-    setItems([])
     const suites: TimelineGroup<CustomGroupFields>[] = []
     const reservations: TimelineItem<CustomItemFields, Moment>[] = []
-    reservationsData?.reservations?.forEach((reservation: Reservations_reservations | null) => {
+    data?.suites?.forEach((suite: SuitesWithReservations_suites | null) => {
+      if (suite !== null) {
+        suites.push({ ...suite, stackItems: true })
+      }
+    })
+    data?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
       if (reservation !== null) {
-        const groupIndex = suites.findIndex(suite => suite.id === reservation.suite.id)
-        if (groupIndex === -1) {
-          suites.push({
-            id: reservation.suite.id,
-            roomNumber: reservation.suite.number,
-            stackItems: true,
-            suiteTitle: reservation.suite.title,
-            title: reservation.suite.title
-          })
-        }
         reservations.push({
           color: getReservationColor(reservation.type),
           end_time: moment(reservation.toDate),
-          group: +reservation.suite.id,
-          id: +reservation.id,
+          group: reservation.suite.id,
+          id: reservation.id,
           itemProps: {
             className: 'reservation-item',
             style: {
@@ -78,11 +68,7 @@ export const Overview = () => {
     })
     setGroups(suites)
     setItems(reservations)
-  }, [ reservationsData ])
-
-  useEffect(() => {
-    reservationsRefetch()
-  }, [ reservationsRefetch ])
+  }, [ data ])
 
   return (
     <Content className="app-content">
@@ -108,25 +94,25 @@ export const Overview = () => {
           return item.itemProps !== undefined ? (
             <div { ...getItemProps(item.itemProps) }>
               { itemContext.useResizeHandle ? <div { ...leftResizeProps } /> : '' }
-              <div
-                className="rct-item-content"
-                style={ { maxHeight: `${ itemContext.dimensions.height }` } }>
-                <Popover title={ item.title } content={ (
-                  <>
-                    <div style={ { color: item.color, fontWeight: 700 } }>
-                      { item.type }
-                    </div>
-                    <div>
-                      Od: <strong>{ item.start_time.format("DD MMM HH:mm") }</strong>
-                    </div>
-                    <div>
-                      Do: <strong>{ item.end_time.format("DD MMM HH:mm") }</strong>
-                    </div>
-                  </>
-                ) }>
+              <Popover title={ item.title } content={ (
+                <>
+                  <div style={ { color: item.color, fontWeight: 700 } }>
+                    { item.type }
+                  </div>
+                  <div>
+                    Od: <strong>{ item.start_time.format("DD MMM HH:mm") }</strong>
+                  </div>
+                  <div>
+                    Do: <strong>{ item.end_time.format("DD MMM HH:mm") }</strong>
+                  </div>
+                </>
+              ) }>
+                <div
+                  className="rct-item-content"
+                  style={ { maxHeight: `${ itemContext.dimensions.height }` } }>
                   <Text strong>{ item.title }</Text>
-                </Popover>
-              </div>
+                </div>
+              </Popover>
               { itemContext.useResizeHandle ? <div { ...rightResizeProps } /> : '' }
             </div>
           ) : null
@@ -137,21 +123,18 @@ export const Overview = () => {
           const selectedGroup = groups.find(group => group.id === groupId)
           if (selectedGroup !== undefined) {
             setSelectedReservation({
-              ...emptyReservation,
               fromDate: moment(time),
-              suite: {
-                id: selectedGroup.id,
-                number: selectedGroup.roomNumber,
-                title: selectedGroup.suiteTitle
-              },
-              toDate: moment(time).add(1, "day")
+              suite: { ...selectedGroup },
+              roommates: [],
+              toDate: moment(time).add(1, "day"),
+              type: "NONBINDING"
             })
             setReservationModalOpen(true)
           }
         } }
         onItemClick={ (itemId: number, _e, time: number) => {
-          if (reservationsData?.reservations !== undefined && reservationsData.reservations !== null) {
-            const reservation = reservationsData.reservations.find(entry => entry !== null && entry.id === String(itemId))
+          if (data?.reservations !== undefined && data.reservations !== null) {
+            const reservation = data.reservations.find(entry => entry !== null && entry.id === String(itemId))
             if (reservation !== undefined && reservation !== null) {
               setSelectedReservation({
                 fromDate: moment(reservation.fromDate),
@@ -202,18 +185,18 @@ export const Overview = () => {
       </Timeline>
       <ReservationModal
         close={ () => {
-          setSelectedReservation(emptyReservation)
+          setSelectedReservation(undefined)
           setReservationModalOpen(false)
         } }
-        guests={ guestsQueryData }
+        guests={ data?.guests }
         isOpen={ reservationModalOpen }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        refetchReservations={ reservationsRefetch }
+        refetch={ refetch }
         reservation={ selectedReservation } />
       <GuestDrawerSmall
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }
-        refetch={ guestsRefetch } />
+        refetch={ refetch } />
     </Content >
   )
 }
