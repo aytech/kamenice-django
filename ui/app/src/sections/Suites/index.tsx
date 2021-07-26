@@ -18,7 +18,8 @@ export const Suites = () => {
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
   const { loading: queryLoading, data: queryData, refetch } = useQuery<SuitesData>(SUITES, {
-    onError: () => {
+    onError: (reason: ApolloError) => {
+      console.error(reason);
       message.error("Chyba serveru, kontaktujte správce")
     }
   })

@@ -1,4 +1,4 @@
-import { BookOutlined, EyeOutlined, HomeOutlined, IdcardOutlined, LoginOutlined } from "@ant-design/icons"
+import { BookOutlined, EyeOutlined, HomeOutlined, IdcardOutlined } from "@ant-design/icons"
 import { Menu } from "antd"
 import { Link } from "react-router-dom"
 
@@ -16,9 +16,6 @@ export const MenuItems = () => {
       </Menu.Item>
       <Menu.Item key="suites" icon={ <HomeOutlined /> }>
         <Link to="/apartma">Apartmá</Link>
-      </Menu.Item>
-      <Menu.Item key="login" icon={ <LoginOutlined /> }>
-        <Link to="/login">Přihlášení</Link>
       </Menu.Item>
     </Menu>
   )

@@ -1,8 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
-from graphql import GraphQLError
-
 from api.models.Guest import Guest as GuestModel
 
 
@@ -55,7 +53,7 @@ class CreateGuest(Mutation):
 
         try:
             GuestModel.objects.get(email=data.email, deleted=False)
-            raise GraphQLError('Uživatel s tímto e-mailem již existuje')
+            raise Exception('Uživatel s tímto e-mailem již existuje')
         except ObjectDoesNotExist:
             pass
 
@@ -77,7 +75,7 @@ class CreateGuest(Mutation):
         try:
             instance.full_clean()
         except ValidationError as errors:
-            raise GraphQLError(errors.messages[0])
+            raise Exception(errors.messages[0])
 
         instance.save()
 
@@ -116,7 +114,7 @@ class UpdateGuest(Mutation):
             return UpdateGuest(guest=instance)
 
         except ObjectDoesNotExist:
-            raise GraphQLError('Host nebyl nalezen')
+            raise Exception('Host nebyl nalezen')
 
 
 class DeleteGuest(Mutation):

@@ -2,8 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from graphene import ObjectType, List, Field, Int, resolve_only_args, Mutation, InputObjectType, ID, String
 from graphene_django import DjangoObjectType
-from graphql import GraphQLError
-
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
@@ -95,22 +93,22 @@ class CreateReservation(Mutation):
         )
 
         if ReservationUtility.get_duplicate(data.suite, instance=instance).count() > 0:
-            raise GraphQLError('Apartmá je rezervováno pro tuto dobu')
+            raise Exception('Apartmá je rezervováno pro tuto dobu')
 
         try:
             instance.guest = Guest.objects.get(pk=data.guest)
         except ObjectDoesNotExist:
-            raise GraphQLError('Prosím vyberte hosta ze seznamu')
+            raise Exception('Prosím vyberte hosta ze seznamu')
 
         try:
             instance.suite = Suite.objects.get(pk=data.suite)
         except ObjectDoesNotExist:
-            raise GraphQLError('Apartmá nebylo nalezeno')
+            raise Exception('Apartmá nebylo nalezeno')
 
         try:
             instance.full_clean()
         except ValidationError as errors:
-            raise GraphQLError(errors.messages[0])
+            raise Exception(errors.messages[0])
 
         instance.save()
 
@@ -143,7 +141,7 @@ class UpdateReservation(Mutation):
                 duplicate = ReservationUtility.get_duplicate(data.suite, instance=instance)
 
                 if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
-                    raise GraphQLError('Apartmá je rezervováno pro tuto dobu')
+                    raise Exception('Apartmá je rezervováno pro tuto dobu')
 
             instance.meal = data.meal if data.meal is not None else instance.meal
             instance.notes = data.notes if data.notes is not None else instance.notes
@@ -153,7 +151,7 @@ class UpdateReservation(Mutation):
             try:
                 instance.guest = Guest.objects.get(pk=data.guest)
             except ObjectDoesNotExist:
-                raise GraphQLError('Prosím vyberte hosta ze seznamu')
+                raise Exception('Prosím vyberte hosta ze seznamu')
 
             # Roommates are recreated from scratch
             for roommate_id in instance.roommates.all():
@@ -168,13 +166,13 @@ class UpdateReservation(Mutation):
             try:
                 instance.full_clean()
             except ValidationError as errors:
-                raise GraphQLError(errors.messages[0])
+                raise Exception(errors.messages[0])
 
             instance.save()
 
             return UpdateReservation(reservation=instance)
         except ObjectDoesNotExist:
-            raise GraphQLError('Rezervace nebyla nalezena')
+            raise Exception('Rezervace nebyla nalezena')
 
 
 class DeleteReservation(Mutation):

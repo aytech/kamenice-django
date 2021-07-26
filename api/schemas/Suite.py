@@ -1,12 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from graphene import ObjectType, List, Field, Int, resolve_only_args, Mutation, String, InputObjectType, ID
 from graphene_django import DjangoObjectType
-
-from api.models.Guest import Guest as GuestModel
-from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite as SuiteModel
-from api.schemas.Guest import Guest
-from api.schemas.Reservation import Reservation
 
 
 class Suite(DjangoObjectType):
@@ -15,16 +10,9 @@ class Suite(DjangoObjectType):
         fields = '__all__'
 
 
-class SuitesWithReservations(ObjectType):
-    guests = List(Guest)
-    suites = List(Suite)
-    reservations = List(Reservation)
-
-
 class SuitesQuery(ObjectType):
     suites = List(Suite)
     suite = Field(Suite, suite_id=Int())
-    suites_with_reservations = Field(SuitesWithReservations)
 
     @resolve_only_args
     def resolve_suites(self):
@@ -36,14 +24,6 @@ class SuitesQuery(ObjectType):
             return SuiteModel.objects.get(pk=suite_id, deleted=False)
         except ObjectDoesNotExist:
             return None
-
-    @resolve_only_args
-    def resolve_suites_with_reservations(self):
-        return SuitesWithReservations(
-            guests=GuestModel.objects.filter(deleted=False),
-            suites=SuiteModel.objects.filter(deleted=False),
-            reservations=ReservationModel.objects.filter(deleted=False)
-        )
 
 
 class SuiteInput(InputObjectType):
