@@ -28,10 +28,6 @@ class SuitesQuery(ObjectType):
 
     @resolve_only_args
     def resolve_suites(self):
-        suites = SuiteModel.objects.filter(deleted=False)
-        for suite in suites:
-            suite.reservation_set.filter(deleted=False)
-            print("Suite: ", suite.reservation_set.filter(deleted=False))
         return SuiteModel.objects.filter(deleted=False)
 
     @resolve_only_args
