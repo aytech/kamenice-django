@@ -1,34 +1,32 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
 import { Col } from 'antd'
 import { Calendar, Day, DayValue } from 'react-modern-calendar-datepicker'
 import { CsCalendarLocale, TransformDate } from '../../lib/components/CsCalendarLocale'
 import './styles.css'
 import { defaultArrivalHour, defaultDepartureHour } from '../../lib/Constants'
 import { ReservationModal } from '../ReservationModal'
-import { IReservation, Suite } from '../../lib/Types'
-import { SuiteReservations as ReservationsData, SuiteReservations_suiteReservations } from '../../lib/graphql/queries/Reservations/__generated__/SuiteReservations'
-import { SUITE_RESERVATIONS } from '../../lib/graphql/queries/Reservations'
+import { IReservation } from '../../lib/Types'
 import { ReservationType } from '../../lib/graphql/globalTypes'
 import Title from 'antd/lib/typography/Title'
 import moment, { Moment } from 'moment'
 import { GuestDrawerSmall } from '../GuestDrawerSmall'
-import { Guests } from '../../lib/graphql/queries/Guests/__generated__/Guests'
-import { GUESTS } from '../../lib/graphql/queries/Guests'
+import { SuitesWithReservations_guests, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
+import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
 
 interface Props {
-  suite: Suite
+  guests: (SuitesWithReservations_guests | null)[] | null
+  refetch: () => Promise<any>
+  reservations: (SuitesWithReservations_reservations | null)[] | undefined
+  suite: Suites_suites
 }
 type CustomDayClassNameItem = Day & { className: string, reservationId: string };
 
 export const ReserveCalendar = ({
+  guests,
+  refetch,
+  reservations,
   suite,
 }: Props) => {
-
-  const { data: reservationsData, refetch: reservationRefetch } = useQuery<ReservationsData>(SUITE_RESERVATIONS, {
-    variables: { suiteId: suite.id }
-  })
-  const { data: guestsQueryData, refetch: guestsRefetch } = useQuery<Guests>(GUESTS)
 
   const [ modalOpen, setModalOpen ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -56,7 +54,7 @@ export const ReserveCalendar = ({
         && day.day === dayValue.day
     })
     if (rangeDay !== undefined) {
-      const reservation = reservationsData?.suiteReservations?.find(reservation => reservation?.id === rangeDay.reservationId)
+      const reservation = reservations?.find(reservation => reservation?.id === rangeDay.reservationId)
       if (reservation !== undefined && reservation !== null) {
         setSelectedReservation({
           fromDate: moment(reservation.fromDate),
@@ -91,7 +89,7 @@ export const ReserveCalendar = ({
   // Add reserved days to calendar based on reservation data from server
   useEffect(() => {
     const reservedDays: CustomDayClassNameItem[] = []
-    reservationsData?.suiteReservations?.forEach((reservation: SuiteReservations_suiteReservations | null) => {
+    reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
       if (reservation !== null) {
         const from: Moment = moment(reservation.fromDate)
         const to: Moment = moment(reservation.toDate)
@@ -111,7 +109,7 @@ export const ReserveCalendar = ({
       }
     })
     setReservedDays(reservedDays)
-  }, [ reservationsData ])
+  }, [ reservations ])
 
   return (
     <>
@@ -136,15 +134,15 @@ export const ReserveCalendar = ({
           setSelectedReservation(undefined)
           setModalOpen(false)
         } }
-        guests={ guestsQueryData?.guests }
+        guests={ guests }
         isOpen={ modalOpen }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        refetch={ reservationRefetch }
+        refetch={ refetch }
         reservation={ selectedReservation } />
       <GuestDrawerSmall
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }
-        refetch={ guestsRefetch } />
+        refetch={ refetch } />
     </>
   )
 }

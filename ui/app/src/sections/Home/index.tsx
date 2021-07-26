@@ -1,34 +1,41 @@
-import { useQuery } from '@apollo/client'
+import { ApolloError, useQuery } from '@apollo/client'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
 import { ReserveCalendar } from '../ReserveCalendar'
 import { Empty, message, Row, Skeleton } from 'antd'
-import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
-import { SUITES } from '../../lib/graphql/queries/Suites'
+import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { SUITES_WITH_RESERVATIONS } from '../../lib/graphql/queries/Suites'
+import { SuitesWithReservations, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
 
 export const Home = () => {
 
-  const { loading: suitesLoading, data: suitesData } = useQuery<SuitesData>(SUITES, {
-    onError: () => {
+  const { loading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+    onError: (reason: ApolloError) => {
+      console.error(reason);
       message.error("Chyba při načítání apartmá, kontaktujte správce")
     }
   })
 
+  const filterSuiteReservations = (suite: Suites_suites) => {
+    return data?.reservations?.filter((reservation: SuitesWithReservations_reservations | null) => {
+      return reservation !== null && reservation.suite.id === suite.id
+    })
+  }
+
   const getContent = () => {
-    return suitesData?.suites?.length !== undefined && suitesData.suites.length > 0 ? (
+    return data?.suites?.length !== undefined && data.suites.length > 0 ? (
       <Row gutter={ 8 }>
         {
-          suitesData.suites.map((suite: Suites_suites | null) => {
+          data.suites.map((suite: Suites_suites | null) => {
             return suite !== null ? (
               <ReserveCalendar
+                guests={ data.guests }
                 key={ suite.id }
-                suite={ {
-                  id: +suite.id,
-                  number: suite.number,
-                  title: suite.title
-                } } />
+                refetch={ refetch }
+                reservations={ filterSuiteReservations(suite) }
+                suite={ suite } />
             ) : null
           })
         }
@@ -44,10 +51,10 @@ export const Home = () => {
         </Title>
         <Skeleton
           active
-          loading={ suitesLoading }>
+          loading={ loading }>
           { getContent() }
         </Skeleton>
       </div>
     </Content >
-  );
+  )
 }

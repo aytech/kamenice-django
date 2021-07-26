@@ -14,6 +14,7 @@ import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../.
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { dateFormat } from "../../lib/Constants"
 
 interface Props {
   close: () => void
@@ -66,7 +67,7 @@ export const ReservationModal = ({
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
-  const dateFormat = "YYYY-MM-DD HH:mm"
+
   const [ form ] = Form.useForm()
   const initialValues: Store & { type: ReservationTypeKey } = reservation !== undefined ? {
     dates: [ reservation.fromDate, reservation.toDate ],
