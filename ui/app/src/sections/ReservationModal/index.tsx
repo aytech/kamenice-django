@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, useMutation } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -15,13 +15,14 @@ import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { dateFormat } from "../../lib/Constants"
+import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface Props {
   close: () => void
   guests: (Guests_guests | null)[] | undefined | null
   isOpen: boolean
   openGuestDrawer: () => void
-  refetch: () => Promise<any>
+  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<SuitesWithReservations>>) | undefined
   reservation: IReservation | undefined
 }
 
@@ -37,7 +38,9 @@ export const ReservationModal = ({
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (): void => {
       message.success("Rezervace byla vytvořena!")
-      refetch()
+      if (refetch !== undefined) {
+        refetch()
+      }
       close()
     },
     onError: (error: ApolloError): void => {
@@ -47,7 +50,9 @@ export const ReservationModal = ({
   const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: () => {
       message.success("Rezervace byla aktualizována!")
-      refetch()
+      if (refetch !== undefined) {
+        refetch()
+      }
       close()
     },
     onError: (error: ApolloError) => {
@@ -57,7 +62,9 @@ export const ReservationModal = ({
   const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
     onCompleted: () => {
       message.success("Rezervace byla odstraněna!")
-      refetch()
+      if (refetch !== undefined) {
+        refetch()
+      }
       close()
     },
     onError: (error: ApolloError) => {

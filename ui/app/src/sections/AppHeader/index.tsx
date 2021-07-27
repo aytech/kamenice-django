@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
-import Search from 'antd/lib/input/Search'
+import { Link } from 'react-router-dom'
 import { Header } from 'antd/lib/layout/layout'
 import './styles.css'
 import logo from './assets/mill.svg'
 import { MenuItems } from './components/MenuItems'
 
-export const AppHeader = withRouter(({ location, history }: RouteComponentProps) => {
+interface Props {
+  isAuthenticated: boolean
+}
 
-  const [ search, setSearch ] = useState("")
+export const AppHeader = ({ isAuthenticated }: Props) => {
 
   return (
     <Header className="app-header">
@@ -18,19 +18,13 @@ export const AppHeader = withRouter(({ location, history }: RouteComponentProps)
             <img src={ logo } alt="Kamenice logo" />
           </Link>
         </div>
-        <div className="app-header__search-input">
-          <Search
-            placeholder=""
-            enterButton
-            onChange={ (event) => setSearch(event.target.value) }
-            onSearch={ () => { } }
-            value={ search }
-          />
-        </div>
-      </div>
-      <div className="app-header__menu-section">
-        <MenuItems />
+        {
+          isAuthenticated === true &&
+          <div className="app-header__menu-section">
+            <MenuItems />
+          </div>
+        }
       </div>
     </Header>
   )
-})
+}

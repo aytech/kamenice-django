@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
+import { RouteComponentProps, withRouter } from "react-router-dom"
 import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
 import { Button, List, message, Popconfirm, Skeleton } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import Title from "antd/lib/typography/Title"
@@ -11,13 +12,17 @@ import "./styles.css"
 import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 
-export const Suites = () => {
+interface Props {
+  isAuthenticated: boolean
+}
+
+export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
-  const { loading: queryLoading, data: queryData, refetch } = useQuery<SuitesData>(SUITES, {
+  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES, {
     onError: (reason: ApolloError) => {
       console.error(reason);
       message.error("Chyba serveru, kontaktujte správce")
@@ -30,6 +35,14 @@ export const Suites = () => {
   })
 
   useEffect(() => {
+    if (isAuthenticated === true) {
+      getData()
+    } else {
+      history.push("/login")
+    }
+  }, [ getData, history, isAuthenticated ])
+
+  useEffect(() => {
     const suitesData: Suites_suites[] = []
     queryData?.suites?.forEach((suite: Suites_suites | null) => {
       if (suite !== null) {
@@ -40,7 +53,9 @@ export const Suites = () => {
   }, [ queryData ])
 
   useEffect(() => {
-    refetch()
+    if (refetch !== undefined) {
+      refetch()
+    }
   }, [ refetch, removeData ])
 
   const editSuite = (suite: Suites_suites): void => {
@@ -107,4 +122,4 @@ export const Suites = () => {
         visible={ drawerVisible } />
     </Content>
   )
-}
+})

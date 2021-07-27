@@ -2,12 +2,14 @@ import graphene as graphene
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
+from api.schemas.User import UserQuery
 
 
 class Query(
     GuestsQuery,
     ReservationQuery,
     SuitesQuery,
+    UserQuery,
     graphene.ObjectType
 ):
     pass

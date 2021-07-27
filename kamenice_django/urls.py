@@ -18,23 +18,23 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import re_path
 from django.views.decorators.csrf import csrf_exempt
-from graphene_django.views import GraphQLView
-
+from api.schema import schema
+from api.views import PrivateGraphQLView
 from ui import views as ui
 
 urlpatterns = [
-    
-    # Client UI routes
-    re_path(r'^$', ui.home, name='home'),
-    re_path(r'^prehled$', ui.home, name='home'),
-    re_path(r'^guests$', ui.home, name='home'),
-    re_path(r'^apartma$', ui.home, name='home'),
-    re_path(r'^login$', ui.home, name='home'),
 
-    # Admin section
-    re_path('admin/', admin.site.urls),
+                  # Client UI routes
+                  re_path(r'^$', ui.home, name='home'),
+                  re_path(r'^prehled$', ui.home, name='home'),
+                  re_path(r'^guests$', ui.home, name='home'),
+                  re_path(r'^apartma$', ui.home, name='home'),
+                  re_path(r'^login$', ui.login, name='login'),
 
-    # GraphQL
-    re_path('api', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+                  # Admin section
+                  re_path('admin/', admin.site.urls),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  # GraphQL
+                  re_path('api', csrf_exempt(PrivateGraphQLView.as_view(graphiql=True, schema=schema))),
+
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

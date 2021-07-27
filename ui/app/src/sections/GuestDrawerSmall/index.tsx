@@ -1,5 +1,5 @@
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
-import { ApolloError, ApolloQueryResult, useMutation } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
 import { Button, Drawer, Form, Input, message, Popconfirm } from "antd"
 import Title from "antd/lib/typography/Title"
 import { useState } from "react"
@@ -7,13 +7,13 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { CREATE_GUEST_BASIC } from "../../lib/graphql/mutations/Guest"
 import { CreateGuestBasic, CreateGuestBasicVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuestBasic"
-import { Guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { GuestForm } from "../../lib/Types"
 
 interface Props {
   close: () => void
   open: boolean
-  refetch: (variables?: Partial<Guests>) => Promise<ApolloQueryResult<Guests>>
+  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<SuitesWithReservations>>) | undefined
 }
 
 export const GuestDrawerSmall = ({
@@ -29,7 +29,9 @@ export const GuestDrawerSmall = ({
   const [ createGuest ] = useMutation<CreateGuestBasic, CreateGuestBasicVariables>(CREATE_GUEST_BASIC, {
     onCompleted: (data: CreateGuestBasic) => {
       message.success(`Host ${ data.createGuest?.guest?.name } ${ data.createGuest?.guest?.surname } byl přidán`)
-      refetch()
+      if (refetch !== undefined) {
+        refetch()
+      }
       close()
     },
     onError: (error: ApolloError): void => {

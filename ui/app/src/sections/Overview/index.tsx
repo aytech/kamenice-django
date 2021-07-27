@@ -1,4 +1,5 @@
-import { useQuery } from "@apollo/client"
+import { RouteComponentProps, withRouter } from "react-router-dom"
+import { useLazyQuery } from "@apollo/client"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
 import Text from "antd/lib/typography/Text"
@@ -14,8 +15,12 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { ReservationModal } from "../ReservationModal"
 
+interface Props {
+  isAuthenticated: boolean
+}
+
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Overview = () => {
+export const Overview = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
 
   const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
@@ -30,13 +35,21 @@ export const Overview = () => {
     }
   }
 
-  const { data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
+  const [ getData, { data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
+
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      getData()
+    } else {
+      history.push("/login")
+    }
+  }, [ getData, history, isAuthenticated ])
 
   useEffect(() => {
     const suites: TimelineGroup<CustomGroupFields>[] = []
@@ -199,4 +212,4 @@ export const Overview = () => {
         refetch={ refetch } />
     </Content >
   )
-}
+})

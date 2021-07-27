@@ -10,12 +10,13 @@ import { ReservationType } from '../../lib/graphql/globalTypes'
 import Title from 'antd/lib/typography/Title'
 import moment, { Moment } from 'moment'
 import { GuestDrawerSmall } from '../GuestDrawerSmall'
-import { SuitesWithReservations_guests, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
+import { SuitesWithReservations, SuitesWithReservations_guests, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
 import { Suites_suites } from '../../lib/graphql/queries/Suites/__generated__/Suites'
+import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 
 interface Props {
   guests: (SuitesWithReservations_guests | null)[] | null
-  refetch: () => Promise<any>
+  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<SuitesWithReservations>>) | undefined
   reservations: (SuitesWithReservations_reservations | null)[] | undefined
   suite: Suites_suites
 }

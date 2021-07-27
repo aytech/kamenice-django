@@ -13,7 +13,7 @@ import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/S
 
 interface Props {
   close: () => void
-  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Suites>>)
+  refetch: ((variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<Suites>>) | undefined
   suite: Suites_suites | undefined
   visible: boolean
 }

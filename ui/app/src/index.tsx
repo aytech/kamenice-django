@@ -1,20 +1,10 @@
 import ReactDOM from 'react-dom'
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom'
 import './index.css'
-import { Affix, ConfigProvider, Layout } from 'antd'
-import { AppHeader, Home, Overview } from './sections'
 import { getCookie } from "./lib/Cookie"
 import moment from 'moment'
 import 'moment/locale/cs'
-import csCZ from "antd/lib/locale/cs_CZ"
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import { Suites } from './sections/Suites'
-import { Guests } from './sections/Guests'
-import { Login } from './sections/Login'
+import { App } from './sections/App'
 
 moment.locale("cs")
 
@@ -51,23 +41,8 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-  <ConfigProvider locale={ csCZ }>
-    <ApolloProvider client={ client }>
-      <Router>
-        <Layout id="app">
-          <Affix offsetTop={ 0 } className="app__affix-header">
-            <AppHeader />
-          </Affix>
-          <Switch>
-            <Route exact path="/" component={ Home } />
-            <Route exact path="/apartma" component={ Suites } />
-            <Route exact path="/guests" component={ Guests } />
-            <Route exact path="/prehled" component={ Overview } />
-            <Route exact path="/login" component={ Login } />
-          </Switch>
-        </Layout>
-      </Router>
-    </ApolloProvider>
-  </ConfigProvider >,
+  <ApolloProvider client={ client }>
+    <App />
+  </ApolloProvider>,
   document.getElementById('root')
 );

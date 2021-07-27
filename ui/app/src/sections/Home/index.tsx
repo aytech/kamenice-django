@@ -1,17 +1,23 @@
-import { ApolloError, useQuery } from '@apollo/client'
+import { ApolloError, useLazyQuery } from '@apollo/client'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
-import { ReserveCalendar } from '../ReserveCalendar'
 import { Empty, message, Row, Skeleton } from 'antd'
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from '../../lib/graphql/queries/Suites'
 import { SuitesWithReservations, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
+import { useEffect } from 'react'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
+import { ReserveCalendar } from '../ReserveCalendar'
 
-export const Home = () => {
+interface Props {
+  isAuthenticated: boolean
+}
 
-  const { loading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+export const Home = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
+
+  const [ getData, { loading, data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => {
       console.error(reason);
       message.error("Chyba při načítání apartmá, kontaktujte správce")
@@ -43,7 +49,15 @@ export const Home = () => {
     ) : <Empty />
   }
 
-  return (
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      getData()
+    } else {
+      history.push("/login")
+    }
+  }, [ getData, history, isAuthenticated ])
+
+  return isAuthenticated === true ? (
     <Content className="app-content">
       <div className="home__listings">
         <Title level={ 3 } className="home__listings-title">
@@ -56,5 +70,5 @@ export const Home = () => {
         </Skeleton>
       </div>
     </Content >
-  )
-}
+  ) : null
+})

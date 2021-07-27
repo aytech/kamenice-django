@@ -1,23 +1,28 @@
 import { useState } from "react"
+import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, List, message, Popconfirm } from "antd"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
-import { useMutation, useQuery } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
 import { DELETE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 
-export const Guests = () => {
+interface Props {
+  isAuthenticated: boolean
+}
+
+export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<GuestsFull_guests[]>([])
   const [ selectedGuest, setSelectedGuest ] = useState<GuestsFull_guests | null>(null)
 
-  const { loading: queryLoading, data: queryData, refetch } = useQuery<GuestsData>(GUESTS_FULL, {
+  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL, {
     onError: () => {
       message.error("Chyba při načítání hostů, kontaktujte správce")
     }
@@ -27,6 +32,14 @@ export const Guests = () => {
       message.error("Chyba serveru, kontaktujte správce")
     }
   })
+
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      getData()
+    } else {
+      history.push("/login")
+    }
+  }, [ getData, history, isAuthenticated ])
 
   useEffect(() => {
     const guestsData: GuestsFull_guests[] = []
@@ -39,7 +52,9 @@ export const Guests = () => {
   }, [ queryData ])
 
   useEffect(() => {
-    refetch()
+    if (refetch !== undefined) {
+      refetch()
+    }
   }, [ refetch, deleteData ])
 
   return (
@@ -99,4 +114,4 @@ export const Guests = () => {
         visible={ drawerVisible } />
     </Content>
   )
-}
+})
