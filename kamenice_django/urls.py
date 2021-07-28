@@ -38,6 +38,6 @@ urlpatterns = [
                   re_path('api', GraphQLView.as_view(graphiql=True, schema=schema)),
 
                   # Fallback
-                  re_path(r'^.*$', ui.home, name='404')
+                  # re_path(r'^.*$', ui.home, name='404')
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
