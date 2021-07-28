@@ -41,7 +41,7 @@ export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponent
     },
     onError: (reason: ApolloError) => {
       console.error(reason);
-      message.error("Chyba serveru, kontaktujte správce")
+      message.error("Nesprávné přihlašovací údaje")
     }
   })
 
