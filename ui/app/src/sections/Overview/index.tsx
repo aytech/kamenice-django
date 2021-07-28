@@ -1,11 +1,10 @@
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { ApolloError, useLazyQuery } from "@apollo/client"
-import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
 import Text from "antd/lib/typography/Text"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Empty, message, Popover } from "antd"
+import { Empty, Layout, message, Popover } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
@@ -202,25 +201,29 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
   }
 
   return (
-    <Content className="app-content">
-      <Title level={ 3 } className="home__listings-title">
-        Přehled
-      </Title>
-      { getTimeline() }
-      <ReservationModal
-        close={ () => {
-          setSelectedReservation(undefined)
-          setReservationModalOpen(false)
-        } }
-        guests={ data?.guests }
-        isOpen={ reservationModalOpen }
-        openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        refetch={ refetch }
-        reservation={ selectedReservation } />
-      <GuestDrawerSmall
-        close={ () => setGuestDrawerOpen(false) }
-        open={ guestDrawerOpen }
-        refetch={ refetch } />
-    </Content >
+    <Layout>
+      <Layout.Header>
+        <Title level={ 3 } className="home__listings-title">
+          Přehled
+        </Title>
+      </Layout.Header>
+      <Layout.Content className="app-content">
+        { getTimeline() }
+        <ReservationModal
+          close={ () => {
+            setSelectedReservation(undefined)
+            setReservationModalOpen(false)
+          } }
+          guests={ data?.guests }
+          isOpen={ reservationModalOpen }
+          openGuestDrawer={ () => setGuestDrawerOpen(true) }
+          refetch={ refetch }
+          reservation={ selectedReservation } />
+        <GuestDrawerSmall
+          close={ () => setGuestDrawerOpen(false) }
+          open={ guestDrawerOpen }
+          refetch={ refetch } />
+      </Layout.Content>
+    </Layout>
   )
 })

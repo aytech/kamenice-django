@@ -19,3 +19,7 @@ html {
   background-repeat: no-repeat;
   background-position: 10% 0;
 }
+
+.ant-layout-header {
+  background-color: #f0f2f5;
+}

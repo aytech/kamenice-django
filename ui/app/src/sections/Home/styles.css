@@ -17,7 +17,7 @@
 .home__listing {
   text-align: center;
   margin-bottom: 2em;
-  margin-top: 2em;
+  /* margin-top: 2em; */
 }
 
 .home__calendar {

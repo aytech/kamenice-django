@@ -1,5 +1,6 @@
 import { ApolloError, useMutation, useQuery } from "@apollo/client"
-import { Button, Form, Input, Layout, message, Spin } from "antd"
+import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
+import Title from "antd/lib/typography/Title"
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
@@ -14,18 +15,28 @@ interface Props {
   setIsAuthenticated: (state: boolean) => void
 }
 
-const layout = {
+const layout: FormProps = {
   labelCol: {
-    span: 8,
+    lg: 8,
+    md: 8,
+    sm: 8
   },
   wrapperCol: {
-    span: 16,
+    lg: 16,
+    md: 16,
+    sm: 16,
   },
 };
 const tailLayout = {
   wrapperCol: {
-    offset: 8,
-    span: 16,
+    lg: {
+      offset: 8,
+      span: 16,
+    },
+    xs: {
+      offset: 0,
+      span: 24
+    }
   },
 };
 
@@ -68,6 +79,11 @@ export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponent
 
   return (
     <Layout>
+      <Layout.Header>
+        <Title level={ 3 } className="home__listings-title">
+          Přihlášení
+        </Title>
+      </Layout.Header>
       <Layout.Content>
         <Spin spinning={ userLoading || loginLoading } tip={ spinnerTip }>
           <Form

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
-import { Button, List, message, Popconfirm, Skeleton } from "antd"
-import { Content } from "antd/lib/layout/layout"
+import { Button, Layout, List, message, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
@@ -68,58 +67,63 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
   }
 
   return (
-    <Content className="app-content">
-      <Title level={ 3 } className="home__listings-title">
-        Seznam apartmá
-      </Title>
-      <List
-        className="suites-list"
-        dataSource={ suites }
-        itemLayout="horizontal"
-        loading={ queryLoading }
-        renderItem={ suite => (
-          <List.Item
-            actions={ [
-              <Button
-                key="edit"
-                onClick={ () => editSuite(suite) }
-                type="link">
-                upravit
-              </Button>,
-              <Popconfirm
-                cancelText="Ne"
-                icon={ <WarningOutlined /> }
-                okText="Ano"
-                onConfirm={ () => removeSuite(suite) }
-                title="opravdu odstranit?">
+    <Layout>
+      <Layout.Header>
+        <Title level={ 3 } className="home__listings-title">
+          Seznam apartmá
+        </Title>
+      </Layout.Header>
+      <Layout.Content className="app-content">
+        <List
+          bordered={ true }
+          className="suites-list"
+          dataSource={ suites }
+          itemLayout="horizontal"
+          loading={ queryLoading }
+          renderItem={ suite => (
+            <List.Item
+              actions={ [
                 <Button
-                  key="remove"
-                  loading={ removeLoading }
+                  key="edit"
+                  onClick={ () => editSuite(suite) }
                   type="link">
-                  odstranit
-                </Button>
-              </Popconfirm>
-            ] }>
-            <Skeleton title={ false } loading={ queryLoading } active>
-              <List.Item.Meta
-                title={ suite.title } />
-            </Skeleton>
-          </List.Item>
-        ) } />
-      <Button
-        icon={ <PlusCircleOutlined /> }
-        onClick={ () => {
-          setActiveSuite(undefined)
-          setDrawerVisible(true)
-        } }
-        type="primary">
-        Přidat apartmá
-      </Button>
-      <SuiteDrawer
-        close={ () => setDrawerVisible(false) }
-        refetch={ refetch }
-        suite={ activeSuite }
-        visible={ drawerVisible } />
-    </Content>
+                  upravit
+                </Button>,
+                <Popconfirm
+                  cancelText="Ne"
+                  icon={ <WarningOutlined /> }
+                  okText="Ano"
+                  onConfirm={ () => removeSuite(suite) }
+                  title="opravdu odstranit?">
+                  <Button
+                    key="remove"
+                    loading={ removeLoading }
+                    type="link">
+                    odstranit
+                  </Button>
+                </Popconfirm>
+              ] }>
+              <Skeleton title={ false } loading={ queryLoading } active>
+                <List.Item.Meta
+                  title={ suite.title } />
+              </Skeleton>
+            </List.Item>
+          ) } />
+        <Button
+          icon={ <PlusCircleOutlined /> }
+          onClick={ () => {
+            setActiveSuite(undefined)
+            setDrawerVisible(true)
+          } }
+          type="primary">
+          Přidat apartmá
+        </Button>
+        <SuiteDrawer
+          close={ () => setDrawerVisible(false) }
+          refetch={ refetch }
+          suite={ activeSuite }
+          visible={ drawerVisible } />
+      </Layout.Content>
+    </Layout>
   )
 })

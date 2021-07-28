@@ -1,9 +1,8 @@
 import { ApolloError, useLazyQuery } from '@apollo/client'
-import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import "react-modern-calendar-datepicker/lib/DatePicker.css"
 import './styles.css'
-import { Empty, message, Row, Skeleton } from 'antd'
+import { Empty, Layout, message, Row, Skeleton } from 'antd'
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from '../../lib/graphql/queries/Suites'
 import { SuitesWithReservations, SuitesWithReservations_reservations } from '../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations'
@@ -58,17 +57,21 @@ export const Home = withRouter(({ history, isAuthenticated }: RouteComponentProp
   }, [ getData, history, isAuthenticated ])
 
   return isAuthenticated === true ? (
-    <Content className="app-content">
-      <div className="home__listings">
+    <Layout>
+      <Layout.Header>
         <Title level={ 3 } className="home__listings-title">
           Rezervace / Obsazenost
         </Title>
-        <Skeleton
-          active
-          loading={ loading }>
-          { getContent() }
-        </Skeleton>
-      </div>
-    </Content >
+      </Layout.Header>
+      <Layout.Content className="app-content">
+        <div className="home__listings">
+          <Skeleton
+            active
+            loading={ loading }>
+            { getContent() }
+          </Skeleton>
+        </div>
+      </Layout.Content >
+    </Layout>
   ) : null
 })
