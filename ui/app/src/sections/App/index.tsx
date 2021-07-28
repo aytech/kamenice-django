@@ -6,6 +6,7 @@ import { AppHeader } from "../AppHeader"
 import { Guests } from "../Guests"
 import { Home } from "../Home"
 import { Login } from "../Login"
+import { NotFound } from "../NotFound"
 import { Overview } from "../Overview"
 import { Suites } from "../Suites"
 
@@ -21,11 +22,24 @@ export const App = () => {
             <AppHeader isAuthenticated={ isAuthenticated } />
           </Affix>
           <Switch>
-            <Route exact path="/" render={ () => <Home isAuthenticated={ isAuthenticated } /> } />
-            <Route exact path="/apartma" render={ () => <Suites isAuthenticated={ isAuthenticated } /> } />
-            <Route exact path="/guests" render={ () => <Guests isAuthenticated={ isAuthenticated } /> } />
-            <Route exact path="/prehled" render={ () => <Overview isAuthenticated={ isAuthenticated } /> } />
-            <Route exact path="/login" render={ () => <Login setIsAuthenticated={ setIsAuthenticated } /> } />
+            <Route exact path="/">
+              <Home isAuthenticated={ isAuthenticated } />
+            </Route>
+            <Route exact path="/apartma">
+              <Suites isAuthenticated={ isAuthenticated } />
+            </Route>
+            <Route exact path="/guests">
+              <Guests isAuthenticated={ isAuthenticated } />
+            </Route>
+            <Route exact path="/prehled">
+              <Overview isAuthenticated={ isAuthenticated } />
+            </Route>
+            <Route exact path="/login">
+              <Login setIsAuthenticated={ setIsAuthenticated } />
+            </Route>
+            <Route path="*">
+              <NotFound />
+            </Route>
           </Switch>
         </Layout>
       </Router>
