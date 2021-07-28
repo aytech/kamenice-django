@@ -1,5 +1,6 @@
 import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { Button, Form, Input, Layout, message, Spin } from "antd"
+import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { setCookie } from "../../lib/Cookie"
@@ -30,7 +31,7 @@ const tailLayout = {
 
 export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponentProps & Props) => {
 
-  const [ getToken ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN, {
+  const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN, {
     onCompleted: (data: RetrieveToken) => {
       if (data.tokenAuth?.token !== undefined) {
         setCookie("authtoken", data.tokenAuth.token)
@@ -39,11 +40,12 @@ export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponent
       }
     },
     onError: (reason: ApolloError) => {
-      message.error(reason.message)
+      console.error(reason);
+      message.error("Chyba serveru, kontaktujte správce")
     }
   })
 
-  const { loading } = useQuery<Whoami>(USER, {
+  const { loading: userLoading } = useQuery<Whoami>(USER, {
     onCompleted: (data: Whoami) => {
       if (data?.whoami?.username !== undefined) {
         setIsAuthenticated(true)
@@ -57,14 +59,17 @@ export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponent
 
   const [ form ] = Form.useForm()
 
+  const [ spinnerTip, setSpinnerTip ] = useState<string>("Načítám...")
+
   const submitForm = (variables: any): void => {
+    setSpinnerTip("Přihlašování...")
     getToken({ variables })
   }
 
   return (
     <Layout>
       <Layout.Content>
-        <Spin spinning={ loading } tip="Načítám...">
+        <Spin spinning={ userLoading || loginLoading } tip={ spinnerTip }>
           <Form
             { ...layout }
             className="login"
