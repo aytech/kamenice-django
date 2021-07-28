@@ -1,0 +1,12 @@
+.ant-layout-content .login {
+  margin: 10em auto;
+  width: 30%;
+}
+
+.ant-layout-content .login .ant-form-item-control-input-content {
+  text-align: right;
+}
+
+.ant-layout-content .login .ant-form-item-control-input-content > button {
+  margin-left: 2em;
+}
