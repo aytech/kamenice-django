@@ -1,6 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from graphene import resolve_only_args, ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
+from graphql_jwt.decorators import login_required
+
 from api.models.Guest import Guest as GuestModel
 
 
@@ -14,16 +16,20 @@ class GuestsQuery(ObjectType):
     guests = List(Guest)
     guest = Field(Guest, guest_id=Int())
 
-    @resolve_only_args
-    def resolve_guests(self):
-        return GuestModel.objects.filter(deleted=False)
+    @classmethod
+    def resolve_guests(cls, _query, info):
+        if info.context.user.is_authenticated:
+            return GuestModel.objects.filter(deleted=False)
+        raise Exception('Unauthorized')
 
-    @resolve_only_args
-    def resolve_guest(self, guest_id):
-        try:
-            return GuestModel.objects.get(pk=guest_id)
-        except ObjectDoesNotExist:
-            return None
+    @classmethod
+    def resolve_guest(cls, _query, info, guest_id):
+        if info.context.user.is_authenticated:
+            try:
+                return GuestModel.objects.get(pk=guest_id)
+            except ObjectDoesNotExist:
+                return None
+        raise Exception('Unauthorized')
 
 
 class GuestInput(InputObjectType):
@@ -49,7 +55,9 @@ class CreateGuest(Mutation):
     guest = Field(Guest)
 
     @staticmethod
-    def mutate(_root, _info, data=None):
+    def mutate(_root, info, data=None):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
 
         try:
             GuestModel.objects.get(email=data.email, deleted=False)
@@ -89,7 +97,10 @@ class UpdateGuest(Mutation):
     guest = Field(Guest)
 
     @staticmethod
-    def mutate(_root, _info, data=None):
+    def mutate(_root, info, data=None):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
+
         try:
             instance = GuestModel.objects.get(pk=data.id, deleted=False)
 
@@ -124,7 +135,10 @@ class DeleteGuest(Mutation):
     guest = Field(Guest)
 
     @staticmethod
-    def mutate(_root, _info, guest_id):
+    def mutate(_root, info, guest_id):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
+        
         try:
             instance = GuestModel.objects.get(pk=guest_id)
             if instance:

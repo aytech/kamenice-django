@@ -1,11 +1,11 @@
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { useLazyQuery } from "@apollo/client"
+import { ApolloError, useLazyQuery } from "@apollo/client"
 import { Content } from "antd/lib/layout/layout"
 import Title from "antd/lib/typography/Title"
 import Text from "antd/lib/typography/Text"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Popover } from "antd"
+import { Empty, message, Popover } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
@@ -35,7 +35,12 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
     }
   }
 
-  const [ getData, { data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
+  const [ getData, { data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+    onError: (reason: ApolloError) => {
+      console.error(reason)
+      message.error("Chyba serveru, kontaktujte správce")
+    }
+  })
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -83,11 +88,8 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
     setItems(reservations)
   }, [ data ])
 
-  return (
-    <Content className="app-content">
-      <Title level={ 3 } className="home__listings-title">
-        Přehled
-      </Title>
+  const getTimeline = () => {
+    return data !== undefined ? (
       <Timeline
         canChangeGroup={ false }
         canMove={ false }
@@ -196,6 +198,15 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
           }
         </CursorMarker>
       </Timeline>
+    ) : <Empty />
+  }
+
+  return (
+    <Content className="app-content">
+      <Title level={ 3 } className="home__listings-title">
+        Přehled
+      </Title>
+      { getTimeline() }
       <ReservationModal
         close={ () => {
           setSelectedReservation(undefined)

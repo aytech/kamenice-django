@@ -18,20 +18,27 @@ class ReservationQuery(ObjectType):
     reservation = Field(Reservation, reservation_id=Int())
     reservations = List(Reservation)
 
-    @resolve_only_args
-    def resolve_suite_reservations(self, suite_id):
-        return ReservationModel.objects.filter(suite_id=suite_id, deleted=False)
+    @classmethod
+    def resolve_suite_reservations(cls, _query, info, suite_id):
+        if info.context.user.is_authenticated:
+            return ReservationModel.objects.filter(suite_id=suite_id, deleted=False)
+        raise Exception('Unauthorized')
 
-    @resolve_only_args
-    def resolve_reservation(self, reservation_id):
+    @classmethod
+    def resolve_reservation(cls, _query, info, reservation_id):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
+
         try:
             return ReservationModel.objects.get(pk=reservation_id)
         except ObjectDoesNotExist:
             return None
 
-    @resolve_only_args
-    def resolve_reservations(self):
-        return ReservationModel.objects.filter(deleted=False)
+    @classmethod
+    def resolve_reservations(cls, _query, info):
+        if info.context.user.is_authenticated:
+            return ReservationModel.objects.filter(deleted=False)
+        raise Exception('Unauthorized')
 
 
 class ReservationInput(InputObjectType):
@@ -82,7 +89,10 @@ class CreateReservation(Mutation):
     reservation = Field(Reservation)
 
     @staticmethod
-    def mutate(_root, _info, data=None):
+    def mutate(_root, info, data=None):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
+
         instance = ReservationModel(
             from_date=data.from_date,
             meal=data.meal,
@@ -130,7 +140,9 @@ class UpdateReservation(Mutation):
     reservation = Field(Reservation)
 
     @staticmethod
-    def mutate(_root, _info, data=None):
+    def mutate(_root, info, data=None):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
 
         try:
             instance = ReservationModel.objects.get(pk=data.id)
@@ -182,7 +194,10 @@ class DeleteReservation(Mutation):
     reservation = Field(Reservation)
 
     @staticmethod
-    def mutate(_root, _info, reservation_id):
+    def mutate(_root, info, reservation_id):
+        if not info.context.user.is_authenticated:
+            raise Exception('Unauthorized')
+
         try:
             instance = ReservationModel.objects.get(pk=reservation_id)
             if instance:

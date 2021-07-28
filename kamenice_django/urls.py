@@ -17,9 +17,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import re_path
-from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
+
 from api.schema import schema
-from api.views import PrivateGraphQLView
 from ui import views as ui
 
 urlpatterns = [
@@ -35,6 +35,6 @@ urlpatterns = [
                   re_path('admin/', admin.site.urls),
 
                   # GraphQL
-                  re_path('api', csrf_exempt(PrivateGraphQLView.as_view(graphiql=True, schema=schema))),
+                  re_path('api', GraphQLView.as_view(graphiql=True, schema=schema)),
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

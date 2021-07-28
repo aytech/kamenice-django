@@ -24,7 +24,7 @@ export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentPr
 
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL, {
     onError: () => {
-      message.error("Chyba při načítání hostů, kontaktujte správce")
+      message.error("Chyba serveru, kontaktujte správce")
     }
   })
   const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {

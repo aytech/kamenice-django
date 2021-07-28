@@ -1,4 +1,6 @@
 import graphene as graphene
+import graphql_jwt
+
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
@@ -16,6 +18,8 @@ class Query(
 
 
 class Mutation(graphene.ObjectType):
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+
     create_guest = CreateGuest.Field()
     delete_guest = DeleteGuest.Field()
     update_guest = UpdateGuest.Field()
