@@ -81,9 +81,14 @@ export const Login = withRouter(({ history, location, setIsAuthenticated }: Rout
 
   const [ form ] = Form.useForm()
 
-  const submitForm = (variables: any): void => {
+  const submitForm = (data: { password: string, username: string }): void => {
     setSpinnerTip("Přihlašování...")
-    getToken({ variables })
+    getToken({
+      variables: {
+        password: data.password.trim(),
+        username: data.username.trim()
+      }
+    })
   }
 
   return (
