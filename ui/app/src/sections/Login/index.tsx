@@ -1,6 +1,7 @@
 import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
 import Title from "antd/lib/typography/Title"
+import { useEffect } from "react"
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
@@ -40,14 +41,24 @@ const tailLayout = {
   },
 };
 
-export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponentProps & Props) => {
+export const Login = withRouter(({ history, location, setIsAuthenticated }: RouteComponentProps & Props) => {
+
+  const [ spinnerTip, setSpinnerTip ] = useState<string>("Načítám...")
+  const [ referrer, setReferrer ] = useState<string>("/")
+
+  useEffect(() => {
+    const urlParts = location.search.substring(1).split("=")
+    if (urlParts.length >= 2 && urlParts[ 1 ] !== undefined) {
+      setReferrer(urlParts[ 1 ])
+    }
+  }, [ location ])
 
   const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN, {
     onCompleted: (data: RetrieveToken) => {
       if (data.tokenAuth?.token !== undefined) {
         setCookie("authtoken", data.tokenAuth.token)
         setIsAuthenticated(true)
-        history.push("/")
+        history.push(referrer)
       }
     },
     onError: (reason: ApolloError) => {
@@ -69,8 +80,6 @@ export const Login = withRouter(({ history, setIsAuthenticated }: RouteComponent
   })
 
   const [ form ] = Form.useForm()
-
-  const [ spinnerTip, setSpinnerTip ] = useState<string>("Načítám...")
 
   const submitForm = (variables: any): void => {
     setSpinnerTip("Přihlašování...")

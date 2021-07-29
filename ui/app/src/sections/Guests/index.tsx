@@ -37,7 +37,7 @@ export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentPr
     if (isAuthenticated === true) {
       getData()
     } else {
-      history.push("/login")
+      history.push("/login?next=/guests")
     }
   }, [ getData, history, isAuthenticated ])
 

@@ -51,7 +51,7 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
     if (isAuthenticated === true) {
       getData()
     } else {
-      history.push("/login")
+      history.push("/login?next=/prehled")
     }
   }, [ getData, history, isAuthenticated ])
 
