@@ -14,9 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import re_path
+from django.views.static import serve
 from graphene_django.views import GraphQLView
 
 from api.schema import schema
@@ -25,16 +26,21 @@ from ui import views as ui
 handler404 = 'ui.views.page_not_found'
 
 urlpatterns = [
-                  # Client UI routes
-                  re_path(r'^$', ui.home, name='home'),
-                  re_path(r'^prehled$', ui.home, name='home'),
-                  re_path(r'^guests$', ui.home, name='home'),
-                  re_path(r'^apartma$', ui.home, name='home'),
-                  re_path(r'^login$', ui.login, name='login'),
+    # Client UI routes
+    url(r'^$', ui.home, name='home'),
+    url(r'^prehled$', ui.home, name='home'),
+    url(r'^guests$', ui.home, name='home'),
+    url(r'^apartma$', ui.home, name='home'),
+    url(r'^login$', ui.login, name='login'),
 
-                  # Admin section
-                  re_path('admin/', admin.site.urls),
+    # Admin section
+    url('admin/', admin.site.urls),
 
-                  # GraphQL
-                  re_path('api', GraphQLView.as_view(graphiql=True, schema=schema)),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # GraphQL
+    url('api', GraphQLView.as_view(graphiql=True, schema=schema)),
+
+    # Static
+    re_path(r'^static/(?P<path>.*)$', serve, {
+        'document_root': settings.STATIC_ROOT,
+    }),
+]
