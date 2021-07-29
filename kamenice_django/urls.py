@@ -22,8 +22,9 @@ from graphene_django.views import GraphQLView
 from api.schema import schema
 from ui import views as ui
 
-urlpatterns = [
+handler404 = 'ui.views.page_not_found'
 
+urlpatterns = [
                   # Client UI routes
                   re_path(r'^$', ui.home, name='home'),
                   re_path(r'^prehled$', ui.home, name='home'),
@@ -36,8 +37,4 @@ urlpatterns = [
 
                   # GraphQL
                   re_path('api', GraphQLView.as_view(graphiql=True, schema=schema)),
-
-                  # Fallback
-                  # re_path(r'^.*$', ui.home, name='404')
-
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

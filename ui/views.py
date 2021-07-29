@@ -9,3 +9,7 @@ def home(request):
 
 def login(request):
     return render(request, 'index.html')
+
+
+def page_not_found(request, _exception):
+    return render(request, 'index.html')
