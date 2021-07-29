@@ -71,7 +71,7 @@ export const Login = withRouter(({ history, location, setIsAuthenticated }: Rout
     onCompleted: (data: Whoami) => {
       if (data?.whoami?.username !== undefined) {
         setIsAuthenticated(true)
-        history.push("/")
+        history.push(referrer)
       }
     },
     onError: (reason: ApolloError) => {
