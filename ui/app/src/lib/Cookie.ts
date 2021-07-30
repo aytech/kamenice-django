@@ -17,3 +17,10 @@ export const setCookie = (name: string, value: string): void => {
     document.cookie = `${ name }=${ value };path=/`
   }
 }
+
+export const deleteCookie = (name: string): void => {
+  const cookie = getCookie(name)
+  if (cookie !== null) {
+    setCookie(name, `${ cookie };expires=Thu, 01 Jan 1970 00:00:01 GMT`)
+  }
+}

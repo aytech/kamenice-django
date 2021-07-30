@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
+import { authToken } from "../../lib/Constants"
 import { setCookie } from "../../lib/Cookie"
 import { JWT_TOKEN } from "../../lib/graphql/mutations/User"
 import { RetrieveToken, RetrieveTokenVariables } from "../../lib/graphql/mutations/User/__generated__/RetrieveToken"
@@ -56,7 +57,7 @@ export const Login = withRouter(({ history, location, setIsAuthenticated }: Rout
   const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN, {
     onCompleted: (data: RetrieveToken) => {
       if (data.tokenAuth?.token !== undefined) {
-        setCookie("authtoken", data.tokenAuth.token)
+        setCookie(authToken, data.tokenAuth.token)
         setIsAuthenticated(true)
         history.push(referrer)
       }

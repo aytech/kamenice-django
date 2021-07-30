@@ -5,7 +5,7 @@
   padding: 0;
 }
 
-.app-header__logo-search-section {
+.app-header__container {
   display: flex;
   align-items: center;
   flex-grow: 1;
@@ -13,7 +13,7 @@
 
 .app-header__logo {
   display: inline-block;
-  padding: 0 20px;
+  padding: 0 20px 10px;
 }
 
 .app-header__logo img {

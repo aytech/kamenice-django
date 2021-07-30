@@ -18,7 +18,7 @@ export const App = () => {
       <Router>
         <Layout id="app">
           <Affix offsetTop={ 0 } className="app__affix-header">
-            <Header isAuthenticated={ isAuthenticated } />
+            <Header isAuthenticated={ isAuthenticated } setIsAuthenticated={ setIsAuthenticated } />
           </Affix>
           <Switch>
             <Route exact path="/">
