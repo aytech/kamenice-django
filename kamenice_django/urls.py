@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin
 from django.urls import re_path
 from django.views.decorators.csrf import csrf_exempt
@@ -28,17 +27,17 @@ handler404 = 'ui.views.page_not_found'
 
 urlpatterns = [
     # Client UI routes
-    url(r'^$', ui.home, name='home'),
-    url(r'^prehled$', ui.home, name='home'),
-    url(r'^guests$', ui.home, name='home'),
-    url(r'^apartma$', ui.home, name='home'),
-    url(r'^login$', ui.login, name='login'),
+    re_path(r'^$', ui.home, name='home'),
+    re_path(r'^prehled$', ui.home, name='home'),
+    re_path(r'^guests$', ui.home, name='home'),
+    re_path(r'^apartma$', ui.home, name='home'),
+    re_path(r'^login$', ui.login, name='login'),
 
     # Admin section
-    url('admin/', admin.site.urls),
+    re_path(r'^admin/', admin.site.urls),
 
     # GraphQL
-    url('api', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
+    re_path('^api$', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
 
     # Static
     re_path(r'^static/(?P<path>.*)$', serve, {
@@ -46,5 +45,5 @@ urlpatterns = [
     }),
 
     # Catch all
-    url(r'^.*$', ui.home, name='404'),
+    re_path(r'^.*$', ui.home, name='404'),
 ]
