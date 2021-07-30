@@ -15,11 +15,18 @@ html {
 }
 
 .app-content {
-  padding: 60px 120px;
+  padding: 30px 120px;
   background-repeat: no-repeat;
   background-position: 10% 0;
 }
 
 .ant-layout-header {
+  align-items: center;
   background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+}
+
+.ant-layout-header h3 {
+  margin: 0;
 }

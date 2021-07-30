@@ -1,9 +1,7 @@
-import { Day } from "react-modern-calendar-datepicker"
 import { Moment } from "moment"
 
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
 export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED"
-export type ReserveDay = Day & { hour?: number, minute?: number }
 
 export const Reservation = {
   getType: (key: ReservationTypeKey): ReservationType => {
@@ -26,19 +24,6 @@ export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
 export interface ReservationRange {
   from: Moment
   to: Moment
-}
-
-export interface ReserveRange {
-  id?: number
-  from: ReserveDay
-  to: ReserveDay
-  type: ReservationTypeKey
-}
-
-export interface Room {
-  id: number
-  name: string
-  reservedRanges: ReserveRange[]
 }
 
 interface Address {

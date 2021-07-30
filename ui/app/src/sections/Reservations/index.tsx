@@ -19,7 +19,7 @@ interface Props {
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Overview = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
+export const Reservations = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
 
   const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
@@ -51,7 +51,7 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
     if (isAuthenticated === true) {
       getData()
     } else {
-      history.push("/login?next=/prehled")
+      history.push("/login?next=/")
     }
   }, [ getData, history, isAuthenticated ])
 
@@ -204,10 +204,10 @@ export const Overview = withRouter(({ history, isAuthenticated }: RouteComponent
     <Layout>
       <Layout.Header>
         <Title level={ 3 } className="home__listings-title">
-          Přehled
+          Rezervace / Obsazenost
         </Title>
       </Layout.Header>
-      <Layout.Content className="app-content">
+      <Layout.Content className="app-content timeline">
         { getTimeline() }
         <ReservationModal
           close={ () => {
