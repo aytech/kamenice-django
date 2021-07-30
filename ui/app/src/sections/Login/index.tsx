@@ -60,7 +60,7 @@ export const Login = withRouter(({
 
   const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN_LOGIN, {
     onCompleted: (data: RetrieveToken) => {
-      if (data.tokenAuth?.token !== undefined) {
+      if (data.tokenAuth !== null) {
         setIsAuthenticated(true)
         history.push(referrer)
       }
@@ -73,7 +73,7 @@ export const Login = withRouter(({
 
   const { loading: userLoading, refetch: userRefetch } = useQuery<Whoami>(USER, {
     onCompleted: (data: Whoami) => {
-      if (data?.whoami?.username !== undefined) {
+      if (data.whoami !== null) {
         setIsAuthenticated(true)
         history.push(referrer)
       }
