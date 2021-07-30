@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { Button, Layout, List, message, Popconfirm } from "antd"
+import { Button, Layout, List, message } from "antd"
 import Title from "antd/lib/typography/Title"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
-import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import { PlusCircleOutlined } from "@ant-design/icons"
 import { useLazyQuery, useMutation } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
@@ -11,6 +11,7 @@ import { GuestDrawer } from "../GuestDrawer"
 import { DELETE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import "./styles.css"
+import { GuestItem } from "./components/GuestItem"
 
 interface Props {
   isAuthenticated: boolean
@@ -69,48 +70,28 @@ export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentPr
           bordered={ true }
           className="guests-list"
           dataSource={ guests }
+          footer={
+            <Button
+              icon={ <PlusCircleOutlined /> }
+              onClick={ () => {
+                setSelectedGuest(null)
+                setDrawerVisible(true)
+              } }
+              type="primary">
+              Přidat hosta
+            </Button>
+          }
+          header={ <h4>Seznam hostů</h4> }
           itemLayout="horizontal"
           loading={ queryLoading }
           renderItem={ (guest: GuestsFull_guests) => (
-            <List.Item
-              actions={ [
-                <Button
-                  key="edit"
-                  onClick={ () => {
-                    setSelectedGuest(guest)
-                    setDrawerVisible(true)
-                  } }
-                  type="link">
-                  upravit
-                </Button>,
-                <Popconfirm
-                  cancelText="Ne"
-                  icon={ <WarningOutlined /> }
-                  okText="Ano"
-                  onConfirm={ () => {
-                    deleteGuest({ variables: { guestId: guest.id } })
-                  } }
-                  title="opravdu odstranit?">
-                  <Button
-                    key="remove"
-                    loading={ deleteLoading }
-                    type="link">
-                    odstranit
-                  </Button>
-                </Popconfirm>
-              ] }>
-              <List.Item.Meta title={ `${ guest.name } ${ guest.surname }` } />
-            </List.Item>
+            <GuestItem
+              deleteGuest={ (id: string) => deleteGuest({ variables: { guestId: id } }) }
+              guest={ guest }
+              loading={ deleteLoading }
+              openGuestDrawer={ () => setDrawerVisible(true) }
+              selectGuest={ setSelectedGuest } />
           ) } />
-        <Button
-          icon={ <PlusCircleOutlined /> }
-          onClick={ () => {
-            setSelectedGuest(null)
-            setDrawerVisible(true)
-          } }
-          type="primary">
-          Přidat hosta
-        </Button>
         <GuestDrawer
           close={ () => setDrawerVisible(false) }
           guest={ selectedGuest }

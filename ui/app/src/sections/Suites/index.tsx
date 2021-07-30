@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
-import { Button, Layout, List, message, Popconfirm, Skeleton } from "antd"
+import { HomeOutlined, PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import { Avatar, Button, Layout, List, message, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
@@ -70,7 +70,7 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
     <Layout>
       <Layout.Header>
         <Title level={ 3 } className="home__listings-title">
-          Seznam apartmá
+          Apartmá
         </Title>
       </Layout.Header>
       <Layout.Content className="app-content">
@@ -78,6 +78,18 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
           bordered={ true }
           className="suites-list"
           dataSource={ suites }
+          footer={
+            <Button
+              icon={ <PlusCircleOutlined /> }
+              onClick={ () => {
+                setActiveSuite(undefined)
+                setDrawerVisible(true)
+              } }
+              type="primary">
+              Přidat apartmá
+            </Button>
+          }
+          header={ <h4>Seznam apartmá</h4> }
           itemLayout="horizontal"
           loading={ queryLoading }
           renderItem={ suite => (
@@ -105,19 +117,16 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
               ] }>
               <Skeleton title={ false } loading={ queryLoading } active>
                 <List.Item.Meta
+                  avatar={
+                    <Avatar gap={ 4 } size="large">
+                      <HomeOutlined />
+                    </Avatar>
+                  }
+                  description={ `číslo pokoje - ${ suite.number }` }
                   title={ suite.title } />
               </Skeleton>
             </List.Item>
           ) } />
-        <Button
-          icon={ <PlusCircleOutlined /> }
-          onClick={ () => {
-            setActiveSuite(undefined)
-            setDrawerVisible(true)
-          } }
-          type="primary">
-          Přidat apartmá
-        </Button>
         <SuiteDrawer
           close={ () => setDrawerVisible(false) }
           refetch={ refetch }
