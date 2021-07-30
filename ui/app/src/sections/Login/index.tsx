@@ -12,6 +12,7 @@ import { Whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import "./styles.css"
 
 interface Props {
+  isAuthenticated: boolean
   setIsAuthenticated: (state: boolean) => void
 }
 
@@ -40,7 +41,12 @@ const tailLayout = {
   },
 };
 
-export const Login = withRouter(({ history, location, setIsAuthenticated }: RouteComponentProps & Props) => {
+export const Login = withRouter(({
+  history,
+  isAuthenticated,
+  location,
+  setIsAuthenticated
+}: RouteComponentProps & Props) => {
 
   const [ spinnerTip, setSpinnerTip ] = useState<string>("Načítám...")
   const [ referrer, setReferrer ] = useState<string>("/")
@@ -65,7 +71,7 @@ export const Login = withRouter(({ history, location, setIsAuthenticated }: Rout
     }
   })
 
-  const { loading: userLoading } = useQuery<Whoami>(USER, {
+  const { loading: userLoading, refetch: userRefetch } = useQuery<Whoami>(USER, {
     onCompleted: (data: Whoami) => {
       if (data?.whoami?.username !== undefined) {
         setIsAuthenticated(true)
@@ -76,6 +82,13 @@ export const Login = withRouter(({ history, location, setIsAuthenticated }: Rout
       console.error(reason)
     }
   })
+
+  useEffect(() => {
+    // Refetch user when whoami query is cached
+    if (isAuthenticated === false) {
+      userRefetch()
+    }
+  }, [ isAuthenticated, userRefetch ])
 
   const [ form ] = Form.useForm()
 

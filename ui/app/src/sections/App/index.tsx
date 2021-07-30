@@ -31,7 +31,7 @@ export const App = () => {
               <Guests isAuthenticated={ isAuthenticated } />
             </Route>
             <Route exact path="/login">
-              <Login setIsAuthenticated={ setIsAuthenticated } />
+              <Login isAuthenticated={ isAuthenticated } setIsAuthenticated={ setIsAuthenticated } />
             </Route>
             <Route path="*">
               <NotFound />
