@@ -18,6 +18,7 @@ class Query(
 
 
 class Mutation(graphene.ObjectType):
+    delete_token = graphql_jwt.DeleteJSONWebTokenCookie.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
 
     create_guest = CreateGuest.Field()

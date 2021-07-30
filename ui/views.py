@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.middleware.csrf import get_token
 from django.shortcuts import render
 
 
@@ -8,7 +9,7 @@ def home(request):
 
 
 def login(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'token': get_token(request)})
 
 
 def page_not_found(request, _exception):

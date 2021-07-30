@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import re_path
-from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from graphene_django.views import GraphQLView
+from graphql_jwt.decorators import jwt_cookie
 
 from api.schema import schema
 from ui import views as ui
@@ -37,7 +37,7 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
 
     # GraphQL
-    re_path('^api$', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
+    re_path('^api$', jwt_cookie(GraphQLView.as_view(graphiql=False, schema=schema))),
 
     # Static
     re_path(r'^static/(?P<path>.*)$', serve, {

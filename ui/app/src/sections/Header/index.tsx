@@ -2,9 +2,10 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
 import './styles.css'
 import logo from './assets/mill.svg'
 import { MenuItems } from './components/MenuItems'
-import { PageHeader } from 'antd'
-import { deleteCookie } from '../../lib/Cookie'
-import { authToken } from '../../lib/Constants'
+import { message, PageHeader, Spin } from 'antd'
+import { ApolloError, useMutation } from '@apollo/client'
+import { JWT_TOKEN_LOGOUT } from '../../lib/graphql/mutations/User'
+import { DeleteToken } from '../../lib/graphql/mutations/User/__generated__/DeleteToken'
 
 interface Props {
   isAuthenticated: boolean,
@@ -18,27 +19,36 @@ export const Header = withRouter(({
   setIsAuthenticated
 }: RouteComponentProps & Props) => {
 
-  const logout = (): void => {
-    deleteCookie(authToken)
-    setIsAuthenticated(false)
-    history.push(`/login?next=${ location.pathname }`)
-  }
+  const [ logout, { loading } ] = useMutation<DeleteToken>(JWT_TOKEN_LOGOUT, {
+    onCompleted: () => {
+      setIsAuthenticated(false)
+      history.push(`/login?next=${ location.pathname }`)
+    },
+    onError: (reason: ApolloError) => {
+      console.error(reason);
+      message.error("Chyba serveru, kontaktujte správce")
+    }
+  })
 
   return (
-    <PageHeader className="app-header">
-      <div className="app-header__container">
-        <div className="app-header__logo">
-          <Link to="/">
-            <img src={ logo } alt="Kamenice logo" />
-          </Link>
-        </div>
-        {
-          isAuthenticated === true &&
-          <div className="app-header__menu-section">
-            <MenuItems logout={ logout } />
+    <Spin
+      spinning={ loading }
+      tip="Odhlašuji...">
+      <PageHeader className="app-header">
+        <div className="app-header__container">
+          <div className="app-header__logo">
+            <Link to="/">
+              <img src={ logo } alt="Kamenice logo" />
+            </Link>
           </div>
-        }
-      </div>
-    </PageHeader>
+          {
+            isAuthenticated === true &&
+            <div className="app-header__menu-section">
+              <MenuItems logout={ logout } />
+            </div>
+          }
+        </div>
+      </PageHeader>
+    </Spin>
   )
 })

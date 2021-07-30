@@ -1005,6 +1005,18 @@
         "specifiedByUrl": null,
         "fields": [
           {
+            "name": "deleteToken",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "DeleteJSONWebTokenCookie",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "tokenAuth",
             "description": "Obtain JSON Web Token mutation",
             "args": [
@@ -1294,6 +1306,34 @@
               "kind": "OBJECT",
               "name": "UpdateSuite",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DeleteJSONWebTokenCookie",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "deleted",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null

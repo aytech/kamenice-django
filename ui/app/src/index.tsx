@@ -10,7 +10,7 @@ moment.locale("cs")
 
 const httpLink = new HttpLink({ uri: '/api' });
 const authMiddleware = new ApolloLink((operation, forward) => {
-  const authtoken = getCookie("authtoken")
+  const authtoken = getCookie("JWT")
   const csrftoken = getCookie("csrftoken")
   operation.setContext(({ headers = {} }) => ({
     headers: {
