@@ -6,16 +6,20 @@ import { SuiteDrawer } from "../SuiteDrawer"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
-import Title from "antd/lib/typography/Title"
 import "./styles.css"
 import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 
 interface Props {
   isAuthenticated: boolean
+  setPageTitle: (title: string) => void
 }
 
-export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
+export const Suites = withRouter(({
+  history,
+  isAuthenticated,
+  setPageTitle
+}: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
@@ -34,12 +38,13 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
   })
 
   useEffect(() => {
+    setPageTitle("Apartmá")
     if (isAuthenticated === true) {
       getData()
     } else {
       history.push("/login?next=/apartma")
     }
-  }, [ getData, history, isAuthenticated ])
+  }, [ getData, history, isAuthenticated, setPageTitle ])
 
   useEffect(() => {
     const suitesData: Suites_suites[] = []
@@ -67,72 +72,65 @@ export const Suites = withRouter(({ history, isAuthenticated }: RouteComponentPr
   }
 
   return (
-    <Layout>
-      <Layout.Header>
-        <Title level={ 3 } className="home__listings-title">
-          Apartmá
-        </Title>
-      </Layout.Header>
-      <Layout.Content className="app-content">
-        <List
-          bordered={ true }
-          className="suites-list"
-          dataSource={ suites }
-          footer={
-            <Button
-              icon={ <PlusCircleOutlined /> }
-              onClick={ () => {
-                setActiveSuite(undefined)
-                setDrawerVisible(true)
-              } }
-              type="primary">
-              Přidat apartmá
-            </Button>
-          }
-          header={ <h4>Seznam apartmá</h4> }
-          itemLayout="horizontal"
-          loading={ queryLoading }
-          renderItem={ suite => (
-            <List.Item
-              actions={ [
+    <Layout.Content className="app-content">
+      <List
+        bordered={ true }
+        className="suites-list"
+        dataSource={ suites }
+        footer={
+          <Button
+            icon={ <PlusCircleOutlined /> }
+            onClick={ () => {
+              setActiveSuite(undefined)
+              setDrawerVisible(true)
+            } }
+            type="primary">
+            Přidat apartmá
+          </Button>
+        }
+        header={ <h4>Seznam apartmá</h4> }
+        itemLayout="horizontal"
+        loading={ queryLoading }
+        renderItem={ suite => (
+          <List.Item
+            actions={ [
+              <Button
+                key="edit"
+                onClick={ () => editSuite(suite) }
+                type="link">
+                upravit
+              </Button>,
+              <Popconfirm
+                cancelText="Ne"
+                icon={ <WarningOutlined /> }
+                okText="Ano"
+                onConfirm={ () => removeSuite(suite) }
+                title="opravdu odstranit?">
                 <Button
-                  key="edit"
-                  onClick={ () => editSuite(suite) }
+                  key="remove"
+                  loading={ removeLoading }
                   type="link">
-                  upravit
-                </Button>,
-                <Popconfirm
-                  cancelText="Ne"
-                  icon={ <WarningOutlined /> }
-                  okText="Ano"
-                  onConfirm={ () => removeSuite(suite) }
-                  title="opravdu odstranit?">
-                  <Button
-                    key="remove"
-                    loading={ removeLoading }
-                    type="link">
-                    odstranit
-                  </Button>
-                </Popconfirm>
-              ] }>
-              <Skeleton title={ false } loading={ queryLoading } active>
-                <List.Item.Meta
-                  avatar={
-                    <Avatar gap={ 4 } size="large">
-                      <HomeOutlined />
-                    </Avatar>
-                  }
-                  description={ `číslo pokoje - ${ suite.number }` }
-                  title={ suite.title } />
-              </Skeleton>
-            </List.Item>
-          ) } />
-        <SuiteDrawer
-          close={ () => setDrawerVisible(false) }
-          refetch={ refetch }
-          suite={ activeSuite }
-          visible={ drawerVisible } />
-      </Layout.Content>
-    </Layout>
+                  odstranit
+                </Button>
+              </Popconfirm>
+            ] }>
+            <Skeleton title={ false } loading={ queryLoading } active>
+              <List.Item.Meta
+                avatar={
+                  <Avatar gap={ 4 } size="large">
+                    <HomeOutlined />
+                  </Avatar>
+                }
+                description={ `číslo pokoje - ${ suite.number }` }
+                title={ suite.title } />
+            </Skeleton>
+          </List.Item>
+        ) } />
+      <SuiteDrawer
+        close={ () => setDrawerVisible(false) }
+        refetch={ refetch }
+        suite={ activeSuite }
+        visible={ drawerVisible } />
+    </Layout.Content>
   )
 })

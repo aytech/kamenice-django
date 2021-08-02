@@ -16,10 +16,11 @@ import { ReservationModal } from "../ReservationModal"
 
 interface Props {
   isAuthenticated: boolean
+  setPageTitle: (title: string) => void
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Reservations = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
+export const Reservations = withRouter(({ history, isAuthenticated, setPageTitle }: RouteComponentProps & Props) => {
 
   const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
@@ -48,12 +49,13 @@ export const Reservations = withRouter(({ history, isAuthenticated }: RouteCompo
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
   useEffect(() => {
+    setPageTitle("Rezervace / Obsazenost")
     if (isAuthenticated === true) {
       getData()
     } else {
       history.push("/login?next=/")
     }
-  }, [ getData, history, isAuthenticated ])
+  }, [ getData, history, isAuthenticated, setPageTitle ])
 
   useEffect(() => {
     const suites: TimelineGroup<CustomGroupFields>[] = []
@@ -201,29 +203,22 @@ export const Reservations = withRouter(({ history, isAuthenticated }: RouteCompo
   }
 
   return (
-    <Layout>
-      <Layout.Header>
-        <Title level={ 3 } className="home__listings-title">
-          Rezervace / Obsazenost
-        </Title>
-      </Layout.Header>
-      <Layout.Content className="app-content timeline">
-        { getTimeline() }
-        <ReservationModal
-          close={ () => {
-            setSelectedReservation(undefined)
-            setReservationModalOpen(false)
-          } }
-          guests={ data?.guests }
-          isOpen={ reservationModalOpen }
-          openGuestDrawer={ () => setGuestDrawerOpen(true) }
-          refetch={ refetch }
-          reservation={ selectedReservation } />
-        <GuestDrawerSmall
-          close={ () => setGuestDrawerOpen(false) }
-          open={ guestDrawerOpen }
-          refetch={ refetch } />
-      </Layout.Content>
-    </Layout>
+    <Layout.Content className="app-content timeline">
+      { getTimeline() }
+      <ReservationModal
+        close={ () => {
+          setSelectedReservation(undefined)
+          setReservationModalOpen(false)
+        } }
+        guests={ data?.guests }
+        isOpen={ reservationModalOpen }
+        openGuestDrawer={ () => setGuestDrawerOpen(true) }
+        refetch={ refetch }
+        reservation={ selectedReservation } />
+      <GuestDrawerSmall
+        close={ () => setGuestDrawerOpen(false) }
+        open={ guestDrawerOpen }
+        refetch={ refetch } />
+    </Layout.Content>
   )
 })

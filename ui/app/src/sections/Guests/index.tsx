@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, Layout, List, message } from "antd"
-import Title from "antd/lib/typography/Title"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined } from "@ant-design/icons"
 import { useLazyQuery, useMutation } from "@apollo/client"
@@ -15,9 +14,14 @@ import { GuestItem } from "./components/GuestItem"
 
 interface Props {
   isAuthenticated: boolean
+  setPageTitle: (title: string) => void
 }
 
-export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentProps & Props) => {
+export const Guests = withRouter(({
+  history,
+  isAuthenticated,
+  setPageTitle
+}: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<GuestsFull_guests[]>([])
@@ -36,11 +40,12 @@ export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentPr
 
   useEffect(() => {
     if (isAuthenticated === true) {
+      setPageTitle("Hosté")
       getData()
     } else {
       history.push("/login?next=/guests")
     }
-  }, [ getData, history, isAuthenticated ])
+  }, [ getData, history, isAuthenticated, setPageTitle ])
 
   useEffect(() => {
     const guestsData: GuestsFull_guests[] = []
@@ -59,45 +64,38 @@ export const Guests = withRouter(({ history, isAuthenticated }: RouteComponentPr
   }, [ refetch, deleteData ])
 
   return (
-    <Layout>
-      <Layout.Header>
-        <Title level={ 3 } className="home__listings-title">
-          Hosté
-        </Title>
-      </Layout.Header>
-      <Layout.Content className="app-content">
-        <List
-          bordered={ true }
-          className="guests-list"
-          dataSource={ guests }
-          footer={
-            <Button
-              icon={ <PlusCircleOutlined /> }
-              onClick={ () => {
-                setSelectedGuest(null)
-                setDrawerVisible(true)
-              } }
-              type="primary">
-              Přidat hosta
-            </Button>
-          }
-          header={ <h4>Seznam hostů</h4> }
-          itemLayout="horizontal"
-          loading={ queryLoading }
-          renderItem={ (guest: GuestsFull_guests) => (
-            <GuestItem
-              deleteGuest={ (id: string) => deleteGuest({ variables: { guestId: id } }) }
-              guest={ guest }
-              loading={ deleteLoading }
-              openGuestDrawer={ () => setDrawerVisible(true) }
-              selectGuest={ setSelectedGuest } />
-          ) } />
-        <GuestDrawer
-          close={ () => setDrawerVisible(false) }
-          guest={ selectedGuest }
-          refetch={ refetch }
-          visible={ drawerVisible } />
-      </Layout.Content>
-    </Layout>
+    <Layout.Content className="app-content">
+      <List
+        bordered={ true }
+        className="guests-list"
+        dataSource={ guests }
+        footer={
+          <Button
+            icon={ <PlusCircleOutlined /> }
+            onClick={ () => {
+              setSelectedGuest(null)
+              setDrawerVisible(true)
+            } }
+            type="primary">
+            Přidat hosta
+          </Button>
+        }
+        header={ <h4>Seznam hostů</h4> }
+        itemLayout="horizontal"
+        loading={ queryLoading }
+        renderItem={ (guest: GuestsFull_guests) => (
+          <GuestItem
+            deleteGuest={ (id: string) => deleteGuest({ variables: { guestId: id } }) }
+            guest={ guest }
+            loading={ deleteLoading }
+            openGuestDrawer={ () => setDrawerVisible(true) }
+            selectGuest={ setSelectedGuest } />
+        ) } />
+      <GuestDrawer
+        close={ () => setDrawerVisible(false) }
+        guest={ selectedGuest }
+        refetch={ refetch }
+        visible={ drawerVisible } />
+    </Layout.Content>
   )
 })

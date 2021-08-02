@@ -21,11 +21,8 @@ export const Header = withRouter(({
 }: RouteComponentProps & Props) => {
 
   const redirectAfterLogout = () => {
-    // Delay to next tick so that cookie is cleared
-    setTimeout(() => {
-      setIsAuthenticated(false)
-      history.push(`/login?next=${ location.pathname }`)
-    })
+    setIsAuthenticated(false)
+    history.push(`/login?next=${ location.pathname }`)
   }
 
   const [ logout, { loading } ] = useMutation<DeleteToken>(JWT_TOKEN_LOGOUT, {
