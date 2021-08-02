@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined, PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
-import { Avatar, Button, Layout, List, message, Popconfirm, Skeleton } from "antd"
+import { Avatar, Button, List, message, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
@@ -72,7 +72,7 @@ export const Suites = withRouter(({
   }
 
   return (
-    <Layout.Content className="app-content">
+    <>
       <List
         bordered={ true }
         className="suites-list"
@@ -131,6 +131,6 @@ export const Suites = withRouter(({
         refetch={ refetch }
         suite={ activeSuite }
         visible={ drawerVisible } />
-    </Layout.Content>
+    </>
   )
 })

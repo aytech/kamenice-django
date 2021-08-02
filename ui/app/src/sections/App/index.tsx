@@ -42,7 +42,9 @@ export const App = () => {
             <Skeleton active loading={ userLoading } paragraph={ { rows: 5 } }>
               <Switch>
                 <Route exact path="/">
-                  <Reservations isAuthenticated={ isAuthenticated } setPageTitle={ setPageTitle } />
+                  <Reservations
+                    isAuthenticated={ isAuthenticated }
+                    setPageTitle={ setPageTitle } />
                 </Route>
                 <Route exact path="/apartma">
                   <Suites

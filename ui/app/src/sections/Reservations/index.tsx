@@ -4,7 +4,7 @@ import Title from "antd/lib/typography/Title"
 import Text from "antd/lib/typography/Text"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Empty, Layout, message, Popover } from "antd"
+import { Empty, message, Popover } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
@@ -203,7 +203,7 @@ export const Reservations = withRouter(({ history, isAuthenticated, setPageTitle
   }
 
   return (
-    <Layout.Content className="app-content timeline">
+    <>
       { getTimeline() }
       <ReservationModal
         close={ () => {
@@ -219,6 +219,6 @@ export const Reservations = withRouter(({ history, isAuthenticated, setPageTitle
         close={ () => setGuestDrawerOpen(false) }
         open={ guestDrawerOpen }
         refetch={ refetch } />
-    </Layout.Content>
+    </>
   )
 })

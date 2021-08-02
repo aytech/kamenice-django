@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { Button, Layout, List, message } from "antd"
+import { Button, List, message } from "antd"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined } from "@ant-design/icons"
 import { useLazyQuery, useMutation } from "@apollo/client"
@@ -64,7 +64,7 @@ export const Guests = withRouter(({
   }, [ refetch, deleteData ])
 
   return (
-    <Layout.Content className="app-content">
+    <>
       <List
         bordered={ true }
         className="guests-list"
@@ -96,6 +96,6 @@ export const Guests = withRouter(({
         guest={ selectedGuest }
         refetch={ refetch }
         visible={ drawerVisible } />
-    </Layout.Content>
+    </>
   )
 })

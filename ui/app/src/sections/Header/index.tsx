@@ -34,20 +34,14 @@ export const Header = withRouter(({
     <Spin
       spinning={ loading }
       tip="Odhlašuji...">
-      <PageHeader className="app-header">
-        <div className="app-header__container">
-          <div className="app-header__logo">
-            <Link to="/">
-              <img src={ logo } alt="Kamenice logo" />
-            </Link>
-          </div>
-          {
-            isAuthenticated === true &&
-            <div className="app-header__menu-section">
-              <MenuItems logout={ logout } />
-            </div>
-          }
-        </div>
+      <PageHeader>
+        <Link to="/">
+          <img className="logo" src={ logo } alt="Kamenice logo" />
+        </Link>
+        {
+          isAuthenticated === true &&
+          <MenuItems logout={ logout } />
+        }
       </PageHeader>
     </Spin>
   )
