@@ -14,9 +14,11 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { ReservationModal } from "../ReservationModal"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
+import { apolloErrorUnauthorized } from "../../lib/Constants"
 
 interface Props {
   setPageTitle: (title: string) => void
+  setUser: (user: Whoami_whoami | undefined) => void
   user: Whoami_whoami | undefined
 }
 
@@ -24,6 +26,7 @@ interface Props {
 export const Reservations = withRouter(({
   history,
   setPageTitle,
+  setUser,
   user
 }: RouteComponentProps & Props) => {
 
@@ -42,8 +45,13 @@ export const Reservations = withRouter(({
 
   const [ getData, { data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => {
-      console.error(reason)
-      message.error("Chyba serveru, kontaktujte správce")
+      if (reason.message === apolloErrorUnauthorized) {
+        setUser(undefined)
+        history.push("/login?next=/")
+      } else {
+        console.error(reason)
+        message.error("Chyba serveru, kontaktujte správce")
+      }
     }
   })
 

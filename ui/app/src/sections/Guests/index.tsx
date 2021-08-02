@@ -3,7 +3,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, List, message } from "antd"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
@@ -12,15 +12,18 @@ import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/G
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
+import { apolloErrorUnauthorized } from "../../lib/Constants"
 
 interface Props {
   setPageTitle: (title: string) => void
+  setUser: (user: Whoami_whoami | undefined) => void
   user: Whoami_whoami | undefined
 }
 
 export const Guests = withRouter(({
   history,
   setPageTitle,
+  setUser,
   user
 }: RouteComponentProps & Props) => {
 
@@ -29,8 +32,14 @@ export const Guests = withRouter(({
   const [ selectedGuest, setSelectedGuest ] = useState<GuestsFull_guests | null>(null)
 
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL, {
-    onError: () => {
-      message.error("Chyba serveru, kontaktujte správce")
+    onError: (reason: ApolloError) => {
+      if (reason.message === apolloErrorUnauthorized) {
+        setUser(undefined)
+        history.push("/login?next=/guests")
+      } else {
+        console.error(reason);
+        message.error("Chyba serveru, kontaktujte správce")
+      }
     }
   })
   const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {

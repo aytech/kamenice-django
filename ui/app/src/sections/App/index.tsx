@@ -55,6 +55,7 @@ export const App = () => {
                 <Route exact path="/">
                   <Reservations
                     setPageTitle={ setPageTitle }
+                    setUser={ setUser }
                     user={ user } />
                 </Route>
                 <Route exact path="/apartma">
@@ -66,6 +67,7 @@ export const App = () => {
                 <Route exact path="/guests">
                   <Guests
                     setPageTitle={ setPageTitle }
+                    setUser={ setUser }
                     user={ user } />
                 </Route>
                 <Route exact path="/login">
