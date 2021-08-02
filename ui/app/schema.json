@@ -1018,7 +1018,7 @@
           },
           {
             "name": "tokenAuth",
-            "description": "Obtain JSON Web Token mutation",
+            "description": null,
             "args": [
               {
                 "name": "username",
@@ -1347,7 +1347,7 @@
       {
         "kind": "OBJECT",
         "name": "ObtainJSONWebToken",
-        "description": "Obtain JSON Web Token mutation",
+        "description": null,
         "specifiedByUrl": null,
         "fields": [
           {
@@ -1378,6 +1378,18 @@
                 "name": "Int",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "UserType",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

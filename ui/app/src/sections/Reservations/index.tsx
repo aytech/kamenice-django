@@ -13,14 +13,19 @@ import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { ReservationModal } from "../ReservationModal"
+import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 
 interface Props {
-  isAuthenticated: boolean
   setPageTitle: (title: string) => void
+  user: Whoami_whoami | undefined
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Reservations = withRouter(({ history, isAuthenticated, setPageTitle }: RouteComponentProps & Props) => {
+export const Reservations = withRouter(({
+  history,
+  setPageTitle,
+  user
+}: RouteComponentProps & Props) => {
 
   const getReservationColor = (reservationType: string): string => {
     switch (reservationType) {
@@ -50,12 +55,12 @@ export const Reservations = withRouter(({ history, isAuthenticated, setPageTitle
 
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
-    if (isAuthenticated === true) {
-      getData()
-    } else {
+    if (user === undefined) {
       history.push("/login?next=/")
+    } else {
+      getData()
     }
-  }, [ getData, history, isAuthenticated, setPageTitle ])
+  }, [ getData, history, setPageTitle, user ])
 
   useEffect(() => {
     const suites: TimelineGroup<CustomGroupFields>[] = []

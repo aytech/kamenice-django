@@ -7,15 +7,20 @@
 // GraphQL mutation operation: RetrieveToken
 // ====================================================
 
+export interface RetrieveToken_tokenAuth_user {
+  __typename: "UserType";
+  /**
+   * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+   */
+  username: string;
+}
+
 export interface RetrieveToken_tokenAuth {
   __typename: "ObtainJSONWebToken";
-  token: string;
+  user: RetrieveToken_tokenAuth_user | null;
 }
 
 export interface RetrieveToken {
-  /**
-   * Obtain JSON Web Token mutation
-   */
   tokenAuth: RetrieveToken_tokenAuth | null;
 }
 

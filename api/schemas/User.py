@@ -1,6 +1,9 @@
+import graphene
+import graphql_jwt
 from django.contrib.auth import get_user_model
 from graphene import ObjectType, Field
 from graphene_django import DjangoObjectType
+from graphql_jwt.decorators import login_required
 
 
 class UserType(DjangoObjectType):
@@ -18,3 +21,11 @@ class UserQuery(ObjectType):
         if user.is_anonymous:
             return None
         return user
+
+
+class ObtainJSONWebToken(graphql_jwt.JSONWebTokenMutation):
+    user = Field(UserType)
+
+    @classmethod
+    def resolve(cls, _root, info, **kwargs):
+        return cls(user=info.context.user)

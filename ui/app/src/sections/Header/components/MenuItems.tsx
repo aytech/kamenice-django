@@ -1,12 +1,25 @@
 import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant-design/icons"
 import { Avatar, Menu } from "antd"
 import { Link } from "react-router-dom"
+import { Colors } from "../../../lib/components/Colors"
+import { Whoami_whoami } from "../../../lib/graphql/queries/User/__generated__/Whoami"
 
 interface Props {
-  logout: () => void
+  logout: () => void,
+  user: Whoami_whoami
 }
 
-export const MenuItems = ({ logout }: Props) => {
+export const MenuItems = ({ logout, user }: Props) => {
+
+  const userAvatar = (
+    <Avatar
+      size={ 32 }
+      style={ {
+        backgroundColor: Colors.getRandomColor()
+      } }>
+      { user.username.substring(0, 1).toUpperCase() }
+    </Avatar>
+  )
   return (
     <>
       <Menu mode="horizontal">
@@ -21,7 +34,9 @@ export const MenuItems = ({ logout }: Props) => {
         </Menu.Item>
       </Menu >
       <Menu className="user" mode="horizontal">
-        <Menu.SubMenu title={ <Avatar size={ 32 }>I</Avatar> }>
+        <Menu.SubMenu
+          key="user-sub"
+          title={ userAvatar }>
           <Menu.Item
             key="logout"
             icon={ <LogoutOutlined /> }

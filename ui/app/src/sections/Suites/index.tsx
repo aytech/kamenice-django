@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { HomeOutlined, PlusCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import { HomeOutlined, WarningOutlined } from "@ant-design/icons"
 import { Avatar, Button, List, message, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
@@ -9,16 +9,21 @@ import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/S
 import "./styles.css"
 import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
+import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
+import { AddSuite } from "./components/AddSuite"
+import { apolloErrorUnauthorized } from "../../lib/Constants"
 
 interface Props {
-  isAuthenticated: boolean
   setPageTitle: (title: string) => void
+  setUser: (user: Whoami_whoami | undefined) => void
+  user: Whoami_whoami | undefined
 }
 
 export const Suites = withRouter(({
   history,
-  isAuthenticated,
-  setPageTitle
+  setPageTitle,
+  setUser,
+  user
 }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
@@ -27,8 +32,13 @@ export const Suites = withRouter(({
 
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES, {
     onError: (reason: ApolloError) => {
-      console.error(reason);
-      message.error("Chyba serveru, kontaktujte správce")
+      if (reason.message === apolloErrorUnauthorized) {
+        setUser(undefined)
+        history.push("/login?next=/apartma")
+      } else {
+        console.error(reason);
+        message.error("Chyba serveru, kontaktujte správce")
+      }
     }
   })
   const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
@@ -39,12 +49,12 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     setPageTitle("Apartmá")
-    if (isAuthenticated === true) {
-      getData()
-    } else {
+    if (user === undefined) {
       history.push("/login?next=/apartma")
+    } else {
+      getData()
     }
-  }, [ getData, history, isAuthenticated, setPageTitle ])
+  }, [ getData, history, setPageTitle, user ])
 
   useEffect(() => {
     const suitesData: Suites_suites[] = []
@@ -78,15 +88,12 @@ export const Suites = withRouter(({
         className="suites-list"
         dataSource={ suites }
         footer={
-          <Button
-            icon={ <PlusCircleOutlined /> }
-            onClick={ () => {
+          <AddSuite
+            onAdd={ () => {
               setActiveSuite(undefined)
               setDrawerVisible(true)
             } }
-            type="primary">
-            Přidat apartmá
-          </Button>
+            user={ user } />
         }
         header={ <h4>Seznam apartmá</h4> }
         itemLayout="horizontal"

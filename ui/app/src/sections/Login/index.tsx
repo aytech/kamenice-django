@@ -6,12 +6,13 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { JWT_TOKEN_LOGIN } from "../../lib/graphql/mutations/User"
 import { RetrieveToken, RetrieveTokenVariables } from "../../lib/graphql/mutations/User/__generated__/RetrieveToken"
+import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import "./styles.css"
 
 interface Props {
-  isAuthenticated: boolean
-  setIsAuthenticated: (state: boolean) => void
   setPageTitle: (title: string) => void
+  setUser: (user: Whoami_whoami) => void
+  user: Whoami_whoami | undefined
 }
 
 const layout: FormProps = {
@@ -41,10 +42,10 @@ const tailLayout = {
 
 export const Login = withRouter(({
   history,
-  isAuthenticated,
   location,
-  setIsAuthenticated,
-  setPageTitle
+  setPageTitle,
+  setUser,
+  user
 }: RouteComponentProps & Props) => {
 
   const getReferrer = useCallback(() => {
@@ -57,21 +58,24 @@ export const Login = withRouter(({
 
   useEffect(() => {
     setPageTitle("Přihlášení")
-    if (isAuthenticated === true) {
+    if (user !== undefined) {
       history.push(getReferrer())
     }
-  }, [ getReferrer, history, isAuthenticated, setPageTitle ])
+  }, [ getReferrer, history, setPageTitle, user ])
 
   const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN_LOGIN, {
     onCompleted: (data: RetrieveToken) => {
-      if (data.tokenAuth !== null) {
-        setIsAuthenticated(true)
+      const user = data.tokenAuth?.user
+      if (user !== undefined && user !== null) {
+        setUser(user)
         history.push(getReferrer())
+      } else {
+        message.error("Nesprávné přihlašovací údaje")
       }
     },
     onError: (reason: ApolloError) => {
       console.error(reason);
-      message.error("Nesprávné přihlašovací údaje")
+      message.error("Chyba serveru, kontaktujte správce")
     }
   })
 

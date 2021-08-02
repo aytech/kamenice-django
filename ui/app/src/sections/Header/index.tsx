@@ -2,47 +2,35 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
 import './styles.css'
 import logo from './assets/mill.svg'
 import { MenuItems } from './components/MenuItems'
-import { PageHeader, Spin } from 'antd'
-import { useMutation } from '@apollo/client'
-import { JWT_TOKEN_LOGOUT } from '../../lib/graphql/mutations/User'
-import { DeleteToken } from '../../lib/graphql/mutations/User/__generated__/DeleteToken'
-import { ApolloHelper } from '../../lib/components/ApolloHelper'
+import { PageHeader } from 'antd'
+import { Whoami_whoami } from '../../lib/graphql/queries/User/__generated__/Whoami'
 
 interface Props {
-  isAuthenticated: boolean,
-  setIsAuthenticated: (status: boolean) => void
+  logout: () => void
+  user: Whoami_whoami | undefined
 }
 
 export const Header = withRouter(({
   history,
   location,
-  isAuthenticated,
-  setIsAuthenticated
+  logout,
+  user
 }: RouteComponentProps & Props) => {
 
-  const redirectAfterLogout = () => {
-    setIsAuthenticated(false)
-    history.push(`/login?next=${ location.pathname }`)
-  }
-
-  const [ logout, { loading } ] = useMutation<DeleteToken>(JWT_TOKEN_LOGOUT, {
-    onCompleted: redirectAfterLogout,
-    onError: ApolloHelper.onQueryError
-  })
-
   return (
-    <Spin
-      spinning={ loading }
-      tip="Odhlašuji...">
-      <PageHeader>
-        <Link to="/">
-          <img className="logo" src={ logo } alt="Kamenice logo" />
-        </Link>
-        {
-          isAuthenticated === true &&
-          <MenuItems logout={ logout } />
-        }
-      </PageHeader>
-    </Spin>
+    <PageHeader>
+      <Link to="/">
+        <img className="logo" src={ logo } alt="Kamenice logo" />
+      </Link>
+      {
+        user !== undefined &&
+        <MenuItems
+          logout={ () => {
+            logout()
+            history.push(`/login?next=${ location.pathname }`)
+          } }
+          user={ user } />
+      }
+    </PageHeader>
   )
 })

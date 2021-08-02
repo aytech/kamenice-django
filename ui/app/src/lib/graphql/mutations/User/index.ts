@@ -3,7 +3,9 @@ import { gql } from "@apollo/client";
 export const JWT_TOKEN_LOGIN = gql`
   mutation RetrieveToken($username: String!, $password: String!) {
     tokenAuth(username: $username, password: $password) {
-      token
+      user {
+        username
+      }
     }
   } 
 `

@@ -11,16 +11,17 @@ import { DELETE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
+import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 
 interface Props {
-  isAuthenticated: boolean
   setPageTitle: (title: string) => void
+  user: Whoami_whoami | undefined
 }
 
 export const Guests = withRouter(({
   history,
-  isAuthenticated,
-  setPageTitle
+  setPageTitle,
+  user
 }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
@@ -39,13 +40,13 @@ export const Guests = withRouter(({
   })
 
   useEffect(() => {
-    if (isAuthenticated === true) {
-      setPageTitle("Hosté")
-      getData()
-    } else {
+    setPageTitle("Hosté")
+    if (user === undefined) {
       history.push("/login?next=/guests")
+    } else {
+      getData()
     }
-  }, [ getData, history, isAuthenticated, setPageTitle ])
+  }, [ getData, history, setPageTitle, user ])
 
   useEffect(() => {
     const guestsData: GuestsFull_guests[] = []
