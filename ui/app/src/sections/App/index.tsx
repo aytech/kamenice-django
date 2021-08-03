@@ -20,7 +20,7 @@ export const App = () => {
   const [ user, setUser ] = useState<Whoami_whoami>()
   const [ pageTitle, setPageTitle ] = useState<string>("Načítám...")
 
-  const { loading: userLoading } = useQuery<Whoami>(USER, {
+  const { loading: userLoading, refetch: refetchUser } = useQuery<Whoami>(USER, {
     onCompleted: (data: Whoami) => {
       if (data.whoami !== null) {
         setUser(data.whoami)
@@ -54,6 +54,7 @@ export const App = () => {
               <Switch>
                 <Route exact path="/">
                   <Reservations
+                    refetchUser={ refetchUser }
                     setPageTitle={ setPageTitle }
                     setUser={ setUser }
                     user={ user } />
