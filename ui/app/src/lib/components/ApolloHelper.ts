@@ -1,8 +1,10 @@
 import { ApolloError } from "@apollo/client";
 import { message } from "antd";
+import { apolloErrorUnauthorized } from "../Constants";
 
 interface Props {
   onQueryError: (reason: ApolloError, text?: string) => void
+  onRefetchError: (reason: ApolloError, callback: () => void) => void
 }
 
 export const ApolloHelper: Props = {
@@ -12,5 +14,10 @@ export const ApolloHelper: Props = {
       text = "Chyba serveru, kontaktujte správce"
     }
     message.error(text)
+  },
+  onRefetchError: (reason: ApolloError, callback: () => void) => {
+    if (reason.message === apolloErrorUnauthorized) {
+      callback()
+    }
   }
 }

@@ -1,6 +1,9 @@
+import { ReservationTypeKey } from "../Types"
+
 interface Props {
   colors: string[]
   getRandomColor: () => string
+  getReservationColor: (reservationType: ReservationTypeKey) => string
 }
 
 export const Colors: Props = {
@@ -20,5 +23,17 @@ export const Colors: Props = {
   ],
   getRandomColor: () => {
     return Colors.colors[ Math.floor(Math.random() * Colors.colors.length) ]
+  },
+  getReservationColor: (reservationType: ReservationTypeKey): string => {
+    switch (reservationType) {
+      case "NONBINDING":
+        return "rgb(254, 223, 3)"
+      case "ACCOMMODATED":
+        return "rgb(0, 133, 182)"
+      case "INHABITED":
+        return "rgb(254, 127, 45)"
+      case "BINDING":
+      default: return "rgb(0, 212, 157)"
+    }
   }
 }

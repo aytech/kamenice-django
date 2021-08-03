@@ -15,6 +15,8 @@ import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWith
 import { ReservationModal } from "../ReservationModal"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { apolloErrorUnauthorized } from "../../lib/Constants"
+import { Colors } from "../../lib/components/Colors"
+import { useCallback } from "react"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -30,24 +32,15 @@ export const Reservations = withRouter(({
   user
 }: RouteComponentProps & Props) => {
 
-  const getReservationColor = (reservationType: string): string => {
-    switch (reservationType) {
-      case "NONBINDING":
-        return "rgb(254, 223, 3)"
-      case "ACCOMMODATED":
-        return "rgb(0, 133, 182)"
-      case "INHABITED":
-        return "rgb(254, 127, 45)"
-      case "BINDING":
-      default: return "rgb(0, 212, 157)"
-    }
-  }
+  const invalidateLogin = useCallback(() => {
+    setUser(undefined)
+    history.push("/login?next=/")
+  }, [ history, setUser ])
 
   const [ getData, { data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => {
       if (reason.message === apolloErrorUnauthorized) {
-        setUser(undefined)
-        history.push("/login?next=/")
+        invalidateLogin()
       } else {
         console.error(reason)
         message.error("Chyba serveru, kontaktujte správce")
@@ -81,14 +74,14 @@ export const Reservations = withRouter(({
     data?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
       if (reservation !== null) {
         reservations.push({
-          color: getReservationColor(reservation.type),
+          color: Colors.getReservationColor(reservation.type),
           end_time: moment(reservation.toDate),
           group: reservation.suite.id,
           id: reservation.id,
           itemProps: {
             className: 'reservation-item',
             style: {
-              background: getReservationColor(reservation.type),
+              background: Colors.getReservationColor(reservation.type),
               border: "none"
             }
           },

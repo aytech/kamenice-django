@@ -12,6 +12,8 @@ import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/S
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { AddSuite } from "./components/AddSuite"
 import { apolloErrorUnauthorized } from "../../lib/Constants"
+import { ApolloHelper } from "../../lib/components/ApolloHelper"
+import { useCallback } from "react"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -30,11 +32,15 @@ export const Suites = withRouter(({
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
+  const invalidateLogin = useCallback(() => {
+    setUser(undefined)
+    history.push("/login?next=/apartma")
+  }, [ history, setUser ])
+
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES, {
     onError: (reason: ApolloError) => {
       if (reason.message === apolloErrorUnauthorized) {
-        setUser(undefined)
-        history.push("/login?next=/apartma")
+        invalidateLogin()
       } else {
         console.error(reason);
         message.error("Chyba serveru, kontaktujte správce")
@@ -42,9 +48,7 @@ export const Suites = withRouter(({
     }
   })
   const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
-    onError: (reason: ApolloError) => {
-      console.error(reason)
-    }
+    onError: ApolloHelper.onQueryError
   })
 
   useEffect(() => {
@@ -68,9 +72,11 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     if (refetch !== undefined) {
-      refetch()
+      refetch().catch((reason: ApolloError) => {
+        ApolloHelper.onRefetchError(reason, invalidateLogin)
+      })
     }
-  }, [ refetch, removeData ])
+  }, [ invalidateLogin, refetch, removeData ])
 
   const editSuite = (suite: Suites_suites): void => {
     setActiveSuite(suite)
@@ -97,7 +103,7 @@ export const Suites = withRouter(({
         }
         header={ <h4>Seznam apartmá</h4> }
         itemLayout="horizontal"
-        loading={ queryLoading }
+        loading={ queryLoading || removeLoading }
         renderItem={ suite => (
           <List.Item
             actions={ [

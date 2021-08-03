@@ -13,6 +13,8 @@ import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { apolloErrorUnauthorized } from "../../lib/Constants"
+import { ApolloHelper } from "../../lib/components/ApolloHelper"
+import { useCallback } from "react"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -31,11 +33,15 @@ export const Guests = withRouter(({
   const [ guests, setGuests ] = useState<GuestsFull_guests[]>([])
   const [ selectedGuest, setSelectedGuest ] = useState<GuestsFull_guests | null>(null)
 
+  const invalidateLogin = useCallback(() => {
+    setUser(undefined)
+    history.push("/login?next=/guests")
+  }, [ history, setUser ])
+
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL, {
     onError: (reason: ApolloError) => {
       if (reason.message === apolloErrorUnauthorized) {
-        setUser(undefined)
-        history.push("/login?next=/guests")
+        invalidateLogin()
       } else {
         console.error(reason);
         message.error("Chyba serveru, kontaktujte správce")
@@ -43,9 +49,7 @@ export const Guests = withRouter(({
     }
   })
   const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {
-    onError: () => {
-      message.error("Chyba serveru, kontaktujte správce")
-    }
+    onError: () => ApolloHelper.onQueryError
   })
 
   useEffect(() => {
@@ -69,9 +73,11 @@ export const Guests = withRouter(({
 
   useEffect(() => {
     if (refetch !== undefined) {
-      refetch()
+      refetch().catch((reason: ApolloError) => {
+        ApolloHelper.onRefetchError(reason, invalidateLogin)
+      })
     }
-  }, [ refetch, deleteData ])
+  }, [ refetch, deleteData, invalidateLogin ])
 
   return (
     <>
@@ -92,7 +98,7 @@ export const Guests = withRouter(({
         }
         header={ <h4>Seznam hostů</h4> }
         itemLayout="horizontal"
-        loading={ queryLoading }
+        loading={ queryLoading || deleteLoading }
         renderItem={ (guest: GuestsFull_guests) => (
           <GuestItem
             deleteGuest={ (id: string) => deleteGuest({ variables: { guestId: id } }) }
