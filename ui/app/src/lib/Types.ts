@@ -104,3 +104,7 @@ export interface CustomItemFields {
   color?: string
   type?: string
 }
+
+export interface User {
+  username: string
+}

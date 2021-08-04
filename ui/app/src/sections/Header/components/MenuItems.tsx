@@ -2,11 +2,11 @@ import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant
 import { Avatar, Menu } from "antd"
 import { Link } from "react-router-dom"
 import { Colors } from "../../../lib/components/Colors"
-import { Whoami_whoami } from "../../../lib/graphql/queries/User/__generated__/Whoami"
+import { User } from "../../../lib/Types"
 
 interface Props {
   logout: () => void,
-  user: Whoami_whoami
+  user: User
 }
 
 export const MenuItems = ({ logout, user }: Props) => {

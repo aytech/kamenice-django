@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined, WarningOutlined } from "@ant-design/icons"
-import { Avatar, Button, List, message, Popconfirm, Skeleton } from "antd"
+import { Avatar, Button, List, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
@@ -11,18 +11,18 @@ import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { AddSuite } from "./components/AddSuite"
-import { apolloErrorUnauthorized } from "../../lib/Constants"
-import { ApolloHelper } from "../../lib/components/ApolloHelper"
-import { useCallback } from "react"
+import { User } from "../../lib/Types"
 
 interface Props {
+  reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
-  user: Whoami_whoami | undefined
+  user: User | undefined
 }
 
 export const Suites = withRouter(({
   history,
+  reauthenticate,
   setPageTitle,
   setUser,
   user
@@ -32,30 +32,12 @@ export const Suites = withRouter(({
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
-  const invalidateLogin = useCallback(() => {
-    setUser(undefined)
-    history.push("/login?next=/apartma")
-  }, [ history, setUser ])
-
-  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES, {
-    onError: (reason: ApolloError) => {
-      if (reason.message === apolloErrorUnauthorized) {
-        invalidateLogin()
-      } else {
-        console.error(reason);
-        message.error("Chyba serveru, kontaktujte správce")
-      }
-    }
-  })
-  const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
-    onError: ApolloHelper.onQueryError
-  })
+  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES)
+  const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
 
   useEffect(() => {
     setPageTitle("Apartmá")
-    if (user === undefined) {
-      history.push("/login?next=/apartma")
-    } else {
+    if (user !== undefined) {
       getData()
     }
   }, [ getData, history, setPageTitle, user ])
@@ -72,11 +54,9 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     if (refetch !== undefined) {
-      refetch().catch((reason: ApolloError) => {
-        ApolloHelper.onRefetchError(reason, invalidateLogin)
-      })
+      refetch().catch(() => reauthenticate(refetch))
     }
-  }, [ invalidateLogin, refetch, removeData ])
+  }, [ reauthenticate, refetch ])
 
   const editSuite = (suite: Suites_suites): void => {
     setActiveSuite(suite)

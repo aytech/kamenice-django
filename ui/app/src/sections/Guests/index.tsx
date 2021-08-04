@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { Button, List, message } from "antd"
+import { Button, List } from "antd"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
@@ -12,20 +12,19 @@ import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/G
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
-import { apolloErrorUnauthorized } from "../../lib/Constants"
-import { ApolloHelper } from "../../lib/components/ApolloHelper"
-import { useCallback } from "react"
+import { User } from "../../lib/Types"
 
 interface Props {
+  reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
-  user: Whoami_whoami | undefined
+  user: User | undefined
 }
 
 export const Guests = withRouter(({
   history,
+  reauthenticate,
   setPageTitle,
-  setUser,
   user
 }: RouteComponentProps & Props) => {
 
@@ -33,30 +32,12 @@ export const Guests = withRouter(({
   const [ guests, setGuests ] = useState<GuestsFull_guests[]>([])
   const [ selectedGuest, setSelectedGuest ] = useState<GuestsFull_guests | null>(null)
 
-  const invalidateLogin = useCallback(() => {
-    setUser(undefined)
-    history.push("/login?next=/guests")
-  }, [ history, setUser ])
-
-  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL, {
-    onError: (reason: ApolloError) => {
-      if (reason.message === apolloErrorUnauthorized) {
-        invalidateLogin()
-      } else {
-        console.error(reason);
-        message.error("Chyba serveru, kontaktujte správce")
-      }
-    }
-  })
-  const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {
-    onError: () => ApolloHelper.onQueryError
-  })
+  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL)
+  const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST)
 
   useEffect(() => {
     setPageTitle("Hosté")
-    if (user === undefined) {
-      history.push("/login?next=/guests")
-    } else {
+    if (user !== undefined) {
       getData()
     }
   }, [ getData, history, setPageTitle, user ])
@@ -73,11 +54,9 @@ export const Guests = withRouter(({
 
   useEffect(() => {
     if (refetch !== undefined) {
-      refetch().catch((reason: ApolloError) => {
-        ApolloHelper.onRefetchError(reason, invalidateLogin)
-      })
+      refetch().catch(() => reauthenticate(refetch))
     }
-  }, [ refetch, deleteData, invalidateLogin ])
+  }, [ reauthenticate, refetch ])
 
   return (
     <>

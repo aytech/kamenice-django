@@ -1,18 +1,18 @@
 import { ApolloError, useMutation } from "@apollo/client"
 import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
-import { useCallback } from "react"
-import { useEffect } from "react"
+import { useCallback, useEffect } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { JWT_TOKEN_LOGIN } from "../../lib/graphql/mutations/User"
-import { RetrieveToken, RetrieveTokenVariables } from "../../lib/graphql/mutations/User/__generated__/RetrieveToken"
-import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
+import { refreshTokenName, tokenName } from "../../lib/Constants"
+import { TOKEN_AUTH } from "../../lib/graphql/mutations/User"
+import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/User/__generated__/TokenAuth"
+import { User } from "../../lib/Types"
 import "./styles.css"
 
 interface Props {
   setPageTitle: (title: string) => void
-  setUser: (user: Whoami_whoami) => void
-  user: Whoami_whoami | undefined
+  setUser: (user: User) => void
+  user: User | undefined
 }
 
 const layout: FormProps = {
@@ -56,21 +56,17 @@ export const Login = withRouter(({
     return "/"
   }, [ location ])
 
-  useEffect(() => {
-    setPageTitle("Přihlášení")
-    if (user !== undefined) {
-      history.push(getReferrer())
-    }
-  }, [ getReferrer, history, setPageTitle, user ])
-
-  const [ getToken, { loading: loginLoading } ] = useMutation<RetrieveToken, RetrieveTokenVariables>(JWT_TOKEN_LOGIN, {
-    onCompleted: (data: RetrieveToken) => {
-      const user = data.tokenAuth?.user
-      if (user !== undefined && user !== null) {
-        setUser(user)
+  const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
+    onCompleted: (token: TokenAuth) => {
+      if (token.tokenAuth !== null) {
+        localStorage.setItem(tokenName, token.tokenAuth.token)
+        localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
+        setUser({ username: token.tokenAuth.payload.username })
+        // for debugging only
+        localStorage.setItem("tokenExpiresIn", token.tokenAuth.payload.exp)
+        localStorage.setItem("refreshTokenExpiresIn", token.tokenAuth.refreshExpiresIn.toString())
+        // --- / ---
         history.push(getReferrer())
-      } else {
-        message.error("Nesprávné přihlašovací údaje")
       }
     },
     onError: (reason: ApolloError) => {
@@ -79,9 +75,13 @@ export const Login = withRouter(({
     }
   })
 
+  useEffect(() => {
+    setPageTitle("Přihlášení")
+  }, [ getReferrer, history, setPageTitle, user ])
+
   const [ form ] = Form.useForm()
 
-  const submitForm = (data: { password: string, username: string }): void => {
+  const login = (data: { password: string, username: string }): void => {
     getToken({
       variables: {
         password: data.password.trim(),
@@ -98,7 +98,7 @@ export const Login = withRouter(({
           className="login"
           form={ form }
           name="login"
-          onFinish={ submitForm }>
+          onFinish={ login }>
           <Form.Item
             label="Jméno"
             name="username"

@@ -1,54 +1,38 @@
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { ApolloError, ApolloQueryResult, useLazyQuery } from "@apollo/client"
+import { useLazyQuery } from "@apollo/client"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Empty, message } from "antd"
+import { Empty } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, Reservation, User } from "../../lib/Types"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { ReservationModal } from "../ReservationModal"
-import { Whoami, Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
-import { apolloErrorUnauthorized } from "../../lib/Constants"
+import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { Colors } from "../../lib/components/Colors"
-import { useCallback } from "react"
 import { ReservationItem } from "./components/ReservationItem"
 
 interface Props {
-  refetchUser: () => Promise<ApolloQueryResult<Whoami>>
+  reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
-  user: Whoami_whoami | undefined
+  user: User | undefined
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(({
   history,
-  refetchUser,
+  reauthenticate,
   setPageTitle,
   setUser,
   user
 }: RouteComponentProps & Props) => {
 
-  const invalidateLogin = useCallback(() => {
-    setUser(undefined)
-    history.push("/login?next=/")
-  }, [ history, setUser ])
-
-  const [ getData, { data, refetch: refetchData } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
-    onError: (reason: ApolloError) => {
-      if (reason.message === apolloErrorUnauthorized) {
-        invalidateLogin()
-      } else {
-        console.error(reason)
-        message.error("Chyba serveru, kontaktujte správce")
-      }
-    }
-  })
+  const [ getData, { data, refetch: refetchData } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -58,12 +42,16 @@ export const Reservations = withRouter(({
 
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
-    if (user === undefined) {
-      history.push("/login?next=/")
-    } else {
+    if (user !== undefined) {
       getData()
     }
   }, [ getData, history, setPageTitle, user ])
+
+  useEffect(() => {
+    if (refetchData !== undefined) {
+      refetchData().catch(() => reauthenticate(refetchData))
+    }
+  }, [ reauthenticate, refetchData ])
 
   useEffect(() => {
     const suites: TimelineGroup<CustomGroupFields>[] = []
@@ -100,52 +88,40 @@ export const Reservations = withRouter(({
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
   const onCanvasClick = (groupId: number, time: number) => {
-    refetchUser().then((response: ApolloQueryResult<Whoami>) => {
-      if (response.data.whoami === null) {
-        invalidateLogin()
-      } else {
-        const selectedGroup = groups.find(group => group.id === groupId)
-        if (selectedGroup !== undefined) {
-          setSelectedReservation({
-            fromDate: moment(time),
-            suite: { ...selectedGroup },
-            roommates: [],
-            toDate: moment(time).add(1, "day"),
-            type: "NONBINDING"
-          })
-          setReservationModalOpen(true)
-        }
-      }
-    })
+    const selectedGroup = groups.find(group => group.id === groupId)
+    if (selectedGroup !== undefined) {
+      setSelectedReservation({
+        fromDate: moment(time),
+        suite: { ...selectedGroup },
+        roommates: [],
+        toDate: moment(time).add(1, "day"),
+        type: "NONBINDING"
+      })
+      setReservationModalOpen(true)
+    }
   }
 
   // Click on item on the timeline opens modal
   // with existing reservation for editing
   const onItemClick = (itemId: number) => {
-    refetchUser().then((response: ApolloQueryResult<Whoami>) => {
-      if (response.data.whoami === null) {
-        invalidateLogin()
-      } else {
-        if (data?.reservations !== undefined && data.reservations !== null) {
-          const reservation = data.reservations.find(entry => entry !== null && entry.id === String(itemId))
-          if (reservation !== undefined && reservation !== null) {
-            setSelectedReservation({
-              fromDate: moment(reservation.fromDate),
-              guest: reservation.guest,
-              id: +reservation.id,
-              meal: reservation.meal,
-              notes: reservation.notes,
-              purpose: reservation.purpose,
-              roommates: reservation.roommates,
-              suite: reservation.suite,
-              toDate: moment(reservation.toDate),
-              type: reservation.type
-            })
-            setReservationModalOpen(true)
-          }
-        }
+    if (data?.reservations !== undefined && data.reservations !== null) {
+      const reservation = data.reservations.find(entry => entry !== null && entry.id === String(itemId))
+      if (reservation !== undefined && reservation !== null) {
+        setSelectedReservation({
+          fromDate: moment(reservation.fromDate),
+          guest: reservation.guest,
+          id: +reservation.id,
+          meal: reservation.meal,
+          notes: reservation.notes,
+          purpose: reservation.purpose,
+          roommates: reservation.roommates,
+          suite: reservation.suite,
+          toDate: moment(reservation.toDate),
+          type: reservation.type
+        })
+        setReservationModalOpen(true)
       }
-    })
+    }
   }
 
   const getTimeline = () => {

@@ -3,11 +3,11 @@ import './styles.css'
 import logo from './assets/mill.svg'
 import { MenuItems } from './components/MenuItems'
 import { PageHeader } from 'antd'
-import { Whoami_whoami } from '../../lib/graphql/queries/User/__generated__/Whoami'
+import { User } from '../../lib/Types'
 
 interface Props {
   logout: () => void
-  user: Whoami_whoami | undefined
+  user: User | undefined
 }
 
 export const Header = withRouter(({

@@ -1,8 +1,10 @@
 import { Popover } from "antd"
-import { ReactCalendarItemRendererProps } from "react-calendar-timeline"
+import { Moment } from "moment"
+import { ReactCalendarItemRendererProps, TimelineItem } from "react-calendar-timeline"
 import Text from "antd/lib/typography/Text"
+import { CustomItemFields } from "../../../../lib/Types"
 
-export const ReservationItem = ({ item, itemContext, getItemProps, getResizeProps }: ReactCalendarItemRendererProps<any>) => {
+export const ReservationItem = ({ item, itemContext, getItemProps, getResizeProps }: ReactCalendarItemRendererProps<TimelineItem<CustomItemFields, Moment>>) => {
   const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
   return item.itemProps !== undefined ? (
     <div { ...getItemProps(item.itemProps) }>

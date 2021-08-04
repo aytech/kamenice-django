@@ -1,10 +1,10 @@
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import { Whoami_whoami } from "../../../../lib/graphql/queries/User/__generated__/Whoami";
+import { User } from "../../../../lib/Types";
 
 interface Props {
   onAdd: () => void
-  user: Whoami_whoami | undefined
+  user: User | undefined
 }
 
 export const AddSuite = ({
