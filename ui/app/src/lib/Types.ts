@@ -1,5 +1,6 @@
 import { Moment } from "moment"
 
+export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
 export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED"
 

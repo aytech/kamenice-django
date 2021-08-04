@@ -37,10 +37,8 @@ export const Guests = withRouter(({
 
   useEffect(() => {
     setPageTitle("Hosté")
-    if (user !== undefined) {
-      getData()
-    }
-  }, [ getData, history, setPageTitle, user ])
+    getData()
+  }, [ getData, history, setPageTitle ])
 
   useEffect(() => {
     const guestsData: GuestsFull_guests[] = []

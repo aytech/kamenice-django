@@ -9,14 +9,12 @@ import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/S
 import "./styles.css"
 import { DELETE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
-import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { AddSuite } from "./components/AddSuite"
 import { User } from "../../lib/Types"
 
 interface Props {
   reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
-  setUser: (user: Whoami_whoami | undefined) => void
   user: User | undefined
 }
 
@@ -24,7 +22,6 @@ export const Suites = withRouter(({
   history,
   reauthenticate,
   setPageTitle,
-  setUser,
   user
 }: RouteComponentProps & Props) => {
 
@@ -37,10 +34,8 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     setPageTitle("Apartmá")
-    if (user !== undefined) {
-      getData()
-    }
-  }, [ getData, history, setPageTitle, user ])
+    getData()
+  }, [ getData, history, setPageTitle ])
 
   useEffect(() => {
     const suitesData: Suites_suites[] = []

@@ -1,9 +1,10 @@
 import { ApolloError, useMutation } from "@apollo/client"
 import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
-import { useCallback, useEffect } from "react"
+import { useEffect } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { refreshTokenName, tokenName } from "../../lib/Constants"
+import { UrlHelper } from "../../lib/components/UrlHelper"
+import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
 import { TOKEN_AUTH } from "../../lib/graphql/mutations/User"
 import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/User/__generated__/TokenAuth"
 import { User } from "../../lib/Types"
@@ -48,14 +49,6 @@ export const Login = withRouter(({
   user
 }: RouteComponentProps & Props) => {
 
-  const getReferrer = useCallback(() => {
-    const urlParts = location.search.substring(1).split("=")
-    if (urlParts.length >= 2 && urlParts[ 1 ] !== undefined) {
-      return urlParts[ 1 ]
-    }
-    return "/"
-  }, [ location ])
-
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
     onCompleted: (token: TokenAuth) => {
       if (token.tokenAuth !== null) {
@@ -66,18 +59,23 @@ export const Login = withRouter(({
         localStorage.setItem("tokenExpiresIn", token.tokenAuth.payload.exp)
         localStorage.setItem("refreshTokenExpiresIn", token.tokenAuth.refreshExpiresIn.toString())
         // --- / ---
-        history.push(getReferrer())
+        history.push(UrlHelper.getReferrer())
       }
     },
     onError: (reason: ApolloError) => {
-      console.error(reason);
-      message.error("Chyba serveru, kontaktujte správce")
+      switch (reason.message) {
+        case errorMessages.invalidCredentials:
+          message.error("Prosím zadejte platné přihlašovací údaje")
+          break
+        default:
+          message.error("Chyba serveru, kontaktujte správce")
+      }
     }
   })
 
   useEffect(() => {
     setPageTitle("Přihlášení")
-  }, [ getReferrer, history, setPageTitle, user ])
+  }, [ history, setPageTitle ])
 
   const [ form ] = Form.useForm()
 

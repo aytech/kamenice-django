@@ -7,20 +7,17 @@ import { Empty } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, Reservation, User } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
 import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { ReservationModal } from "../ReservationModal"
-import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 
 interface Props {
   reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
-  setUser: (user: Whoami_whoami | undefined) => void
-  user: User | undefined
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
@@ -28,8 +25,6 @@ export const Reservations = withRouter(({
   history,
   reauthenticate,
   setPageTitle,
-  setUser,
-  user
 }: RouteComponentProps & Props) => {
 
   const [ getData, { data, refetch: refetchData } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
@@ -42,10 +37,8 @@ export const Reservations = withRouter(({
 
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
-    if (user !== undefined) {
-      getData()
-    }
-  }, [ getData, history, setPageTitle, user ])
+    getData()
+  }, [ getData, history, setPageTitle ])
 
   useEffect(() => {
     if (refetchData !== undefined) {
