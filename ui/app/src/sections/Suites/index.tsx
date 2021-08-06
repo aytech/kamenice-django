@@ -3,7 +3,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined, WarningOutlined } from "@ant-design/icons"
 import { Avatar, Button, List, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
@@ -20,7 +20,6 @@ interface Props {
 
 export const Suites = withRouter(({
   history,
-  reauthenticate,
   setPageTitle,
   user
 }: RouteComponentProps & Props) => {
@@ -46,12 +45,6 @@ export const Suites = withRouter(({
     })
     setSuites(suitesData)
   }, [ queryData ])
-
-  useEffect(() => {
-    if (refetch !== undefined) {
-      refetch().catch(() => reauthenticate(refetch))
-    }
-  }, [ reauthenticate, refetch ])
 
   const editSuite = (suite: Suites_suites): void => {
     setActiveSuite(suite)

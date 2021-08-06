@@ -3,7 +3,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, List } from "antd"
 import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
@@ -49,12 +49,6 @@ export const Guests = withRouter(({
     })
     setGuests(guestsData)
   }, [ queryData ])
-
-  useEffect(() => {
-    if (refetch !== undefined) {
-      refetch().catch(() => reauthenticate(refetch))
-    }
-  }, [ reauthenticate, refetch ])
 
   return (
     <>

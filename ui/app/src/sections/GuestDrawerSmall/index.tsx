@@ -7,13 +7,12 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { CREATE_GUEST_BASIC } from "../../lib/graphql/mutations/Guest"
 import { CreateGuestBasic, CreateGuestBasicVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuestBasic"
-import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { GuestForm } from "../../lib/Types"
 
 interface Props {
   close: () => void
   open: boolean
-  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<SuitesWithReservations>>) | undefined
+  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<any>>) | undefined
 }
 
 export const GuestDrawerSmall = ({

@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
-from graphene import ObjectType, List, Field, Int, resolve_only_args, Mutation, InputObjectType, ID, String
+from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String
 from graphene_django import DjangoObjectType
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
@@ -145,7 +145,8 @@ class UpdateReservation(Mutation):
             raise Exception('Unauthorized')
 
         try:
-            instance = ReservationModel.objects.get(pk=data.id)
+            instance = ReservationModel.objects.get(pk=data.id, deleted=False)
+
             if instance:
                 instance.from_date = data.from_date if data.from_date is not None else instance.from_date
                 instance.to_date = data.to_date if data.to_date is not None else instance.to_date
@@ -155,34 +156,35 @@ class UpdateReservation(Mutation):
                 if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
                     raise Exception('Apartmá je rezervováno pro tuto dobu')
 
-            instance.meal = data.meal if data.meal is not None else instance.meal
-            instance.notes = data.notes if data.notes is not None else instance.notes
-            instance.purpose = data.purpose if data.purpose is not None else instance.purpose
-            instance.type = data.type if data.type is not None else instance.type
+                instance.meal = data.meal if data.meal is not None else instance.meal
+                instance.notes = data.notes if data.notes is not None else instance.notes
+                instance.purpose = data.purpose if data.purpose is not None else instance.purpose
+                instance.type = data.type if data.type is not None else instance.type
 
-            try:
-                instance.guest = Guest.objects.get(pk=data.guest)
-            except ObjectDoesNotExist:
-                raise Exception('Prosím vyberte hosta ze seznamu')
+                try:
+                    instance.guest = Guest.objects.get(pk=data.guest)
+                except ObjectDoesNotExist:
+                    raise Exception('Prosím vyberte hosta ze seznamu')
 
-            # Roommates are recreated from scratch
-            for roommate_id in instance.roommates.all():
-                instance.roommates.remove(roommate_id)
+                # Roommates are recreated from scratch
+                for roommate_id in instance.roommates.all():
+                    instance.roommates.remove(roommate_id)
 
-            try:
-                for roommate_id in data.roommates:
-                    instance.roommates.add(Guest.objects.get(pk=roommate_id))
-            except ObjectDoesNotExist as ex:
-                print('Failed to add roommate', ex)
+                try:
+                    for roommate_id in data.roommates:
+                        instance.roommates.add(Guest.objects.get(pk=roommate_id))
+                except ObjectDoesNotExist as ex:
+                    print('Failed to add roommate', ex)
 
-            try:
-                instance.full_clean()
-            except ValidationError as errors:
-                raise Exception(errors.messages[0])
+                try:
+                    instance.full_clean()
+                except ValidationError as errors:
+                    raise Exception(errors.messages[0])
 
-            instance.save()
+                instance.save()
 
-            return UpdateReservation(reservation=instance)
+                return UpdateReservation(reservation=instance)
+
         except ObjectDoesNotExist:
             raise Exception('Rezervace nebyla nalezena')
 
