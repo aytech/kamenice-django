@@ -5,6 +5,7 @@ import Title from "antd/lib/typography/Title"
 import { useState } from "react"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
+import { errorMessages } from "../../lib/Constants"
 import { CREATE_GUEST_BASIC } from "../../lib/graphql/mutations/Guest"
 import { CreateGuestBasic, CreateGuestBasicVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuestBasic"
 import { GuestForm } from "../../lib/Types"
@@ -12,12 +13,14 @@ import { GuestForm } from "../../lib/Types"
 interface Props {
   close: () => void
   open: boolean
+  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<any>>) | undefined
 }
 
 export const GuestDrawerSmall = ({
   close,
   open,
+  reauthenticate,
   refetch
 }: Props) => {
 
@@ -25,18 +28,7 @@ export const GuestDrawerSmall = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
-  const [ createGuest ] = useMutation<CreateGuestBasic, CreateGuestBasicVariables>(CREATE_GUEST_BASIC, {
-    onCompleted: (data: CreateGuestBasic) => {
-      message.success(`Host ${ data.createGuest?.guest?.name } ${ data.createGuest?.guest?.surname } byl přidán`)
-      if (refetch !== undefined) {
-        refetch()
-      }
-      close()
-    },
-    onError: (error: ApolloError): void => {
-      message.error(error.message)
-    }
-  })
+  const [ createGuest ] = useMutation<CreateGuestBasic, CreateGuestBasicVariables>(CREATE_GUEST_BASIC)
 
   const submitForm = (): void => {
     form.validateFields()
@@ -47,7 +39,22 @@ export const GuestDrawerSmall = ({
           name: formData.name,
           surname: formData.surname
         }
-        createGuest({ variables: { data: variables } })
+        const submitGuestRequest = () => createGuest({ variables: { data: variables } })
+          .then(() => {
+            message.success(`Host ${ formData.name } ${ formData.surname } byl přidán`)
+            if (refetch !== undefined) {
+              refetch()
+            }
+            close()
+          })
+        submitGuestRequest()
+          .catch((reason: ApolloError) => {
+            if (reason.message === errorMessages.signatureExpired) {
+              reauthenticate(submitGuestRequest, (reason: ApolloError) => message.error(reason.message))
+            } else {
+              message.error(reason.message)
+            }
+          })
       })
       .catch(() => console.error("Formulář nelze odeslat"))
   }

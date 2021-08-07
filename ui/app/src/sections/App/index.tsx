@@ -160,6 +160,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
         <GuestDrawerSmall
           close={ () => setGuestDrawerOpen(false) }
           open={ guestDrawerOpen }
+          reauthenticate={ reauthenticate }
           refetch={ refetch } />
       </Layout.Content>
     </Layout>
