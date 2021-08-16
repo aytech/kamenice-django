@@ -1,54 +1,64 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, List } from "antd"
-import { GuestsFull as GuestsData, GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
+import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
-import { GUESTS_FULL } from "../../lib/graphql/queries/Guests"
+import { ApolloError } from "@apollo/client"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
-import { DELETE_GUEST } from "../../lib/graphql/mutations/Guest"
-import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 import { User } from "../../lib/Types"
+import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
 
 interface Props {
-  reauthenticate: (callback: () => void) => void
+  guestsData: (HomePage_guests | null)[] | null | undefined,
+  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
   user: User | undefined
 }
 
 export const Guests = withRouter(({
-  history,
+  guestsData,
   reauthenticate,
-  setPageTitle,
-  user
+  setPageTitle
 }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
-  const [ guests, setGuests ] = useState<GuestsFull_guests[]>([])
-  const [ selectedGuest, setSelectedGuest ] = useState<GuestsFull_guests | null>(null)
-
-  const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<GuestsData>(GUESTS_FULL)
-  const [ deleteGuest, { loading: deleteLoading, data: deleteData } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST)
+  const [ guests, setGuests ] = useState<(Guests_guests)[]>([])
+  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
   useEffect(() => {
     setPageTitle("Hosté")
-    getData()
-  }, [ getData, history, setPageTitle ])
+  }, [ setPageTitle ])
 
   useEffect(() => {
-    const guestsData: GuestsFull_guests[] = []
-    queryData?.guests?.forEach((guest: GuestsFull_guests | null) => {
+    const guestsList: Guests_guests[] = []
+    guestsData?.forEach((guest: HomePage_guests | null) => {
       if (guest !== null) {
-        guestsData.push(guest)
+        guestsList.push(guest)
       }
     })
-    setGuests(guestsData)
-  }, [ queryData ])
+    setGuests(guestsList)
+  }, [ guestsData ])
+
+  const addGuest = (guest: Guests_guests) => setGuests(guests.concat(guest))
+
+  const updateGuestState = (guest: Guests_guests) => {
+    setGuests(
+      Array.from(guests, (cachedGuest: Guests_guests) => {
+        if (cachedGuest.id === guest.id) {
+          return guest
+        }
+        return cachedGuest
+      })
+    )
+  }
+
+  const removeGuest = (guest: Guests_guests) =>
+    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guest.id))
 
   return (
     <>
@@ -69,19 +79,19 @@ export const Guests = withRouter(({
         }
         header={ <h4>Seznam hostů</h4> }
         itemLayout="horizontal"
-        loading={ queryLoading || deleteLoading }
-        renderItem={ (guest: GuestsFull_guests) => (
+        renderItem={ (guest: Guests_guests) => (
           <GuestItem
-            deleteGuest={ (id: string) => deleteGuest({ variables: { guestId: id } }) }
             guest={ guest }
-            loading={ deleteLoading }
             openGuestDrawer={ () => setDrawerVisible(true) }
             selectGuest={ setSelectedGuest } />
         ) } />
       <GuestDrawer
+        addGuest={ addGuest }
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
-        refetch={ refetch }
+        reauthenticate={ reauthenticate }
+        removeGuest={ removeGuest }
+        updateGuestCache={ updateGuestState }
         visible={ drawerVisible } />
     </>
   )

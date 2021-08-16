@@ -1,4 +1,4 @@
-import { Affix, Layout, Skeleton } from "antd"
+import { Affix, Layout, message, Skeleton } from "antd"
 import { useState } from "react"
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom"
 import { Header } from "../Header"
@@ -7,7 +7,7 @@ import { Login } from "../Login"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
 import { Suites } from "../Suites"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
+import { ApolloError, ApolloQueryResult, useMutation, useQuery } from "@apollo/client"
 import Title from "antd/lib/typography/Title"
 import { RefreshToken, RefreshTokenVariables } from "../../lib/graphql/mutations/User/__generated__/RefreshToken"
 import { RevokeToken, RevokeTokenVariables } from "../../lib/graphql/mutations/User/__generated__/RevokeToken"
@@ -28,6 +28,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
+  const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
 
   const [ refreshToken, { loading: tokenLoading } ] = useMutation<RefreshToken, RefreshTokenVariables>(TOKEN_REFRESH, {
     onCompleted: (token: RefreshToken) => {
@@ -45,6 +46,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
 
   const redirectToLogin = useCallback(() => {
     setUser(undefined)
+    setInitialLoading(false)
     history.push(`/login?next=${ UrlHelper.getReferrer() }`)
   }, [ history ])
 
@@ -69,13 +71,24 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
     }
   }
 
+  const onDataFetch = (data: HomePage) => {
+    if (data.whoami !== null) {
+      setUser({ username: data.whoami.username })
+    }
+    setInitialLoading(false)
+  }
+
+  const onDataRefetch = (value: ApolloQueryResult<HomePage>) => onDataFetch(value.data)
+
   const { loading, data, refetch } = useQuery<HomePage>(HOME_PAGE, {
-    onCompleted: (data: HomePage) => {
-      if (data.whoami !== null) {
-        setUser({ username: data.whoami.username })
+    onCompleted: onDataFetch,
+    onError: (reason: ApolloError) => {
+      if (reason.message.indexOf(errorMessages.signatureExpired) !== -1) {
+        reauthenticate(() => refetch().then(onDataRefetch), (reason: ApolloError) => message.error(reason.message))
+      } else {
+        message.error(reason.message)
       }
-    },
-    onError: () => reauthenticate(refetch)
+    }
   })
 
   const [ revokeToken, { loading: revokeLoading } ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
@@ -107,7 +120,9 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
         <Skeleton
           active
           loading={
-            revokeLoading
+            loading
+            || initialLoading
+            || revokeLoading
             || tokenLoading
           }
           paragraph={ { rows: 5 } }>
@@ -118,7 +133,6 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
                   setReservation(reservation)
                   setReservationModalOpen(true)
                 } }
-                reauthenticate={ reauthenticate }
                 setPageTitle={ setPageTitle } />
             </Route>
             <Route exact path="/apartma">
@@ -129,6 +143,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
             </Route>
             <Route exact path="/guests">
               <Guests
+                guestsData={ data?.guests }
                 reauthenticate={ reauthenticate }
                 setPageTitle={ setPageTitle }
                 setUser={ setUser }
@@ -155,8 +170,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
           reauthenticate={ reauthenticate }
           openGuestDrawer={ () => setGuestDrawerOpen(true) }
           refetch={ refetch }
-          reservation={ reservation }
-        />
+          reservation={ reservation } />
         <GuestDrawerSmall
           close={ () => setGuestDrawerOpen(false) }
           open={ guestDrawerOpen }

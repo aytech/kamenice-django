@@ -40,6 +40,7 @@ export const UPDATE_GUEST = gql`
         addressMunicipality
         addressPsc
         addressStreet
+        age
         citizenship
         email
         gender

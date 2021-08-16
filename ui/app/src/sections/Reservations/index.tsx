@@ -1,5 +1,5 @@
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { ApolloError, useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
@@ -8,7 +8,6 @@ import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
-import { GuestDrawerSmall } from "../GuestDrawerSmall"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { Colors } from "../../lib/components/Colors"
@@ -16,7 +15,6 @@ import { ReservationItem } from "./components/ReservationItem"
 
 interface Props {
   openReservationModal: (reservation: IReservation) => void
-  reauthenticate: (callback: () => void) => void
   setPageTitle: (title: string) => void
 }
 
@@ -24,28 +22,13 @@ interface Props {
 export const Reservations = withRouter(({
   history,
   openReservationModal,
-  reauthenticate,
   setPageTitle,
 }: RouteComponentProps & Props) => {
 
-  const { data, refetch: refetchData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
+  const { data } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
-  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
-
-  // useEffect(() => {
-  //   setPageTitle("Rezervace / Obsazenost")
-  //   getData()
-  // }, [ getData, history, setPageTitle ])
-
-  // useEffect(() => {
-  //   if (refetchData !== undefined) {
-  //     refetchData().catch(() => reauthenticate(refetchData))
-  //   }
-  // }, [ reauthenticate, refetchData ])
 
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
@@ -118,10 +101,6 @@ export const Reservations = withRouter(({
         })
       }
     }
-  }
-
-  const getTimeline = () => {
-
   }
 
   return data !== undefined ? (

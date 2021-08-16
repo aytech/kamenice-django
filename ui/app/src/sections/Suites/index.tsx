@@ -3,7 +3,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined, WarningOutlined } from "@ant-design/icons"
 import { Avatar, Button, List, Popconfirm, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
@@ -29,7 +29,7 @@ export const Suites = withRouter(({
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
   const [ getData, { loading: queryLoading, data: queryData, refetch } ] = useLazyQuery<SuitesData>(SUITES)
-  const [ deleteSuite, { loading: removeLoading, data: removeData } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
+  const [ deleteSuite, { loading: removeLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
 
   useEffect(() => {
     setPageTitle("Apartmá")

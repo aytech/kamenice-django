@@ -1,20 +1,15 @@
-import { WarningOutlined } from "@ant-design/icons"
-import { Avatar, Button, List, Popconfirm } from "antd"
+import { Avatar, Button, List } from "antd"
 import { Colors } from "../../../lib/components/Colors"
 import { GuestsFull_guests } from "../../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 
 interface Props {
-  deleteGuest: (id: string) => void
   guest: GuestsFull_guests
-  loading: boolean
   openGuestDrawer: () => void
   selectGuest: (guest: GuestsFull_guests) => void
 }
 
 export const GuestItem = ({
-  deleteGuest,
   guest,
-  loading,
   openGuestDrawer,
   selectGuest
 }: Props) => {
@@ -30,19 +25,6 @@ export const GuestItem = ({
           type="link">
           upravit
         </Button>,
-        <Popconfirm
-          cancelText="Ne"
-          icon={ <WarningOutlined /> }
-          okText="Ano"
-          onConfirm={ () => deleteGuest(guest.id) }
-          title="opravdu odstranit?">
-          <Button
-            key="remove"
-            loading={ loading }
-            type="link">
-            odstranit
-          </Button>
-        </Popconfirm>
       ] }>
       <List.Item.Meta
         avatar={
