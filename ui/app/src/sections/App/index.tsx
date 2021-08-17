@@ -15,19 +15,14 @@ import { TOKEN_REFRESH, TOKEN_REVOKE } from "../../lib/graphql/mutations/User"
 import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
 import { useCallback } from "react"
 import { UrlHelper } from "../../lib/components/UrlHelper"
-import { IReservation, User } from "../../lib/Types"
-import { ReservationModal } from "../ReservationModal"
+import { User } from "../../lib/Types"
 import { HOME_PAGE } from "../../lib/graphql/queries/App"
 import { HomePage } from "../../lib/graphql/queries/App/__generated__/HomePage"
-import { GuestDrawerSmall } from "../GuestDrawerSmall"
 
 export const App = withRouter(({ history }: RouteComponentProps) => {
 
   const [ user, setUser ] = useState<User>()
   const [ pageTitle, setPageTitle ] = useState<string>("Načítám...")
-  const [ reservation, setReservation ] = useState<IReservation>()
-  const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
 
   const [ refreshToken, { loading: tokenLoading } ] = useMutation<RefreshToken, RefreshTokenVariables>(TOKEN_REFRESH, {
@@ -129,11 +124,11 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
           <Switch>
             <Route exact path="/">
               <Reservations
-                openReservationModal={ (reservation: IReservation) => {
-                  setReservation(reservation)
-                  setReservationModalOpen(true)
-                } }
-                setPageTitle={ setPageTitle } />
+                guests={ data?.guests }
+                reauthenticate={ reauthenticate }
+                reservations={ data?.reservations }
+                setPageTitle={ setPageTitle }
+                suites={ data?.suites } />
             </Route>
             <Route exact path="/apartma">
               <Suites
@@ -160,22 +155,6 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
             </Route>
           </Switch>
         </Skeleton>
-        <ReservationModal
-          close={ () => {
-            setReservation(undefined)
-            setReservationModalOpen(false)
-          } }
-          guests={ data?.guests }
-          isOpen={ reservationModalOpen }
-          reauthenticate={ reauthenticate }
-          openGuestDrawer={ () => setGuestDrawerOpen(true) }
-          refetch={ refetch }
-          reservation={ reservation } />
-        <GuestDrawerSmall
-          close={ () => setGuestDrawerOpen(false) }
-          open={ guestDrawerOpen }
-          reauthenticate={ reauthenticate }
-          refetch={ refetch } />
       </Layout.Content>
     </Layout>
   )

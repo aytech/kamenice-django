@@ -3,15 +3,43 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationInput } from "./../../../globalTypes";
+import { ReservationInput, ReservationMeal, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CreateReservation
 // ====================================================
 
+export interface CreateReservation_createReservation_reservation_guest {
+  __typename: "Guest";
+  id: string;
+  name: string;
+  surname: string;
+}
+
+export interface CreateReservation_createReservation_reservation_roommates {
+  __typename: "Guest";
+  id: string;
+  name: string;
+  surname: string;
+}
+
+export interface CreateReservation_createReservation_reservation_suite {
+  __typename: "Suite";
+  id: string;
+}
+
 export interface CreateReservation_createReservation_reservation {
   __typename: "Reservation";
+  fromDate: any;
   id: string;
+  guest: CreateReservation_createReservation_reservation_guest;
+  meal: ReservationMeal;
+  notes: string | null;
+  purpose: string | null;
+  roommates: CreateReservation_createReservation_reservation_roommates[];
+  suite: CreateReservation_createReservation_reservation_suite;
+  toDate: any;
+  type: ReservationType;
 }
 
 export interface CreateReservation_createReservation {

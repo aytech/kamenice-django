@@ -17,6 +17,33 @@ export const HOME_PAGE = gql`
       surname
       visaNumber
     }
+    reservations {
+      fromDate
+      id
+      guest {
+        id
+        name
+        surname
+      }
+      meal
+      notes
+      purpose
+      roommates {
+        id
+        name
+        surname
+      }
+      suite {
+        id
+      }
+      toDate
+      type
+    }
+    suites {
+      id
+      number
+      title
+    }
     whoami {
       username
     }

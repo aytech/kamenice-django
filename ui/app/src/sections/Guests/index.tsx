@@ -13,11 +13,11 @@ import { User } from "../../lib/Types"
 import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
 
 interface Props {
-  guestsData: (HomePage_guests | null)[] | null | undefined,
+  guestsData?: (HomePage_guests | null)[] | null
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
-  user: User | undefined
+  user?: User
 }
 
 export const Guests = withRouter(({

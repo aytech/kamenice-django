@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, ApolloQueryResult, OperationVariables, useMutation } from "@apollo/client"
+import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -18,12 +18,11 @@ import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql
 
 interface Props {
   close: () => void
-  guests: (Guests_guests | null)[] | undefined | null
+  guests?: (Guests_guests | null)[] | null
   isOpen: boolean
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   openGuestDrawer: () => void
-  refetch: ((variables?: Partial<OperationVariables> | undefined) => Promise<ApolloQueryResult<any>>) | undefined
-  reservation: IReservation | undefined
+  reservation?: IReservation
 }
 
 export const ReservationModal = ({
@@ -32,8 +31,7 @@ export const ReservationModal = ({
   isOpen,
   reauthenticate,
   openGuestDrawer,
-  refetch,
-  reservation
+  reservation,
 }: Props) => {
 
   const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
@@ -61,12 +59,6 @@ export const ReservationModal = ({
     form.resetFields()
     setDeleteConfirmVisible(false)
     setTimeout(() => { close() })
-  }
-
-  const refetchData = () => {
-    if (refetch !== undefined) {
-      refetch()
-    }
   }
 
   const errorHandler = (reason: ApolloError, callback: () => void) => {
@@ -97,9 +89,8 @@ export const ReservationModal = ({
     if (reservation !== undefined && reservation.id !== undefined) {
       const submitUpdatedReservation =
         () => updateReservation({ variables: { data: { ...variables, id: String(reservation.id) } } })
-          .then(() => {
+          .then((value: FetchResult<UpdateReservation>) => {
             message.success("Rezervace byla aktualizována!")
-            refetchData()
             closeModal()
           })
       submitUpdatedReservation()
@@ -108,7 +99,6 @@ export const ReservationModal = ({
       const submitNewReservation = () => createReservation({ variables: { data: variables } })
         .then(() => {
           message.success("Rezervace byla vytvořena!")
-          refetchData()
           closeModal()
         })
       submitNewReservation()
@@ -120,7 +110,6 @@ export const ReservationModal = ({
     const handler = () => deleteReservation({ variables: { reservationId: String(reservation?.id) } })
       .then(() => {
         message.success("Rezervace byla odstraněna!")
-        refetchData()
         closeModal()
       })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))

@@ -4,7 +4,26 @@ export const CREATE_RESERVATION = gql`
   mutation CreateReservation($data: ReservationInput!) {
     createReservation(data: $data) {
       reservation {
+        fromDate
         id
+        guest {
+          id
+          name
+          surname
+        }
+        meal
+        notes
+        purpose
+        roommates {
+          id
+          name
+          surname
+        }
+        suite {
+          id
+        }
+        toDate
+        type
       }
     }
   }
@@ -24,7 +43,28 @@ export const UPDATE_RESERVATION = gql`
   mutation UpdateReservation($data: ReservationInput!) {
     updateReservation(data: $data) {
       reservation {
+        fromDate
         id
+        guest {
+          id
+          name
+          surname
+        }
+        meal
+        notes
+        purpose
+        roommates {
+          id
+          name
+          surname
+        }
+        suite {
+          id
+          number
+          title
+        }
+        toDate
+        type
       }
     }
   }

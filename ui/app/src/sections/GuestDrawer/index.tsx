@@ -18,12 +18,12 @@ import { errorMessages } from "../../lib/Constants"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 
 interface Props {
-  addGuest: (guest: Guests_guests) => void
+  addGuest?: (guest: Guests_guests) => void
   close: () => void
-  guest: GuestsFull_guests | null
+  guest?: GuestsFull_guests | null
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  removeGuest: (guest: GuestsFull_guests) => void
-  updateGuestCache: (guest: Guests_guests) => void
+  removeGuest?: (guest: GuestsFull_guests) => void
+  updateGuestCache?: (guest: Guests_guests) => void
   visible: boolean
 }
 
@@ -84,7 +84,9 @@ export const GuestDrawer = ({
           if (value.data?.updateGuest !== undefined && value.data.updateGuest !== null) {
             form.resetFields()
             message.success("Hotovo!")
-            updateGuestCache(value.data.updateGuest?.guest as Guests_guests)
+            if (updateGuestCache !== undefined) {
+              updateGuestCache(value.data.updateGuest?.guest as Guests_guests)
+            }
             close()
           }
         })
@@ -104,7 +106,9 @@ export const GuestDrawer = ({
           if (value.data?.createGuest !== undefined && value.data.createGuest !== null) {
             form.resetFields()
             message.success("Hotovo!")
-            addGuest(value.data.createGuest?.guest as Guests_guests)
+            if (addGuest !== undefined) {
+              addGuest(value.data.createGuest?.guest as Guests_guests)
+            }
             close()
           }
         })
@@ -123,7 +127,9 @@ export const GuestDrawer = ({
         .then((value: FetchResult<DeleteGuest>) => {
           if (value.data?.deleteGuest !== undefined && value.data?.deleteGuest !== null) {
             message.success("Hotovo!")
-            removeGuest(value.data.deleteGuest?.guest as Guests_guests)
+            if (removeGuest !== undefined) {
+              removeGuest(value.data.deleteGuest?.guest as Guests_guests)
+            }
             close()
           }
         })
@@ -154,7 +160,7 @@ export const GuestDrawer = ({
           surname: formData.surname,
           visaNumber: formData.visa
         }
-        if (guest === null) {
+        if (guest === undefined || guest === null) {
           createGuestAction(variables)
         } else {
           updateGuestAction(guest.id, variables)
@@ -191,7 +197,7 @@ export const GuestDrawer = ({
       visible={ visible }
       footer={
         <>
-          { guest !== null &&
+          { guest !== undefined && guest !== null &&
             <Popconfirm
               cancelText="Ne"
               icon={ <WarningOutlined /> }
