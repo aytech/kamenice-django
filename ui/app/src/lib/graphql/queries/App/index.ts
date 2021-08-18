@@ -35,6 +35,8 @@ export const HOME_PAGE = gql`
       }
       suite {
         id
+        number
+        title
       }
       toDate
       type

@@ -43,6 +43,8 @@ export interface HomePage_reservations_roommates {
 export interface HomePage_reservations_suite {
   __typename: "Suite";
   id: string;
+  number: number | null;
+  title: string;
 }
 
 export interface HomePage_reservations {

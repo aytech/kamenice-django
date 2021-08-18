@@ -6,30 +6,32 @@ import { Empty } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, Reservation } from "../../lib/Types"
-import { SuitesWithReservations_reservations, SuitesWithReservations_suites } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
+import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
 import { ApolloError } from "@apollo/client"
 import { GuestDrawer } from "../GuestDrawer"
 import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
+import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { useCallback } from "react"
 
 interface Props {
   guests?: (HomePage_guests | null)[] | null
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  reservations?: (SuitesWithReservations_reservations | null)[] | null
+  reservationsData?: (Reservations_reservations | null)[] | null
   setPageTitle: (title: string) => void
-  suites?: (SuitesWithReservations_suites | null)[] | null
+  suitesData?: (Suites_suites | null)[] | null
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(({
   guests,
   reauthenticate,
-  reservations,
+  reservationsData,
   setPageTitle,
-  suites
+  suitesData
 }: RouteComponentProps & Props) => {
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
@@ -38,44 +40,78 @@ export const Reservations = withRouter(({
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
 
+  const getTimelineReservationItem = (reservation: Reservations_reservations): TimelineItem<CustomItemFields, Moment> => {
+    return {
+      color: Colors.getReservationColor(reservation.type),
+      end_time: moment(reservation.toDate),
+      group: reservation.suite.id,
+      guest: reservation.guest,
+      id: reservation.id,
+      itemProps: {
+        className: 'reservation-item',
+        style: {
+          background: Colors.getReservationColor(reservation.type),
+          border: "none"
+        }
+      },
+      meal: reservation.meal,
+      notes: reservation.notes,
+      purpose: reservation.purpose,
+      roommates: reservation.roommates,
+      start_time: moment(reservation.fromDate),
+      suite: reservation.suite,
+      title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
+      type: reservation.type
+    }
+  }
+
+  const addReservation = (reservation?: Reservations_reservations | null) => {
+    if (reservation !== undefined && reservation !== null) {
+      const existingReservation = items.find(item => item.id === reservation.id)
+      if (existingReservation === undefined) {
+        setItems(items.concat(getTimelineReservationItem(reservation)))
+      }
+    }
+  }
+
+  const removeReservation = (reservationId?: string | null) => {
+    if (reservationId !== undefined && reservationId !== null) {
+      setItems(items.filter(item => item.id !== reservationId))
+    }
+    setReservation(undefined)
+  }
+
+  const updateReservationState = useCallback((reservation?: Reservations_reservations | null) => {
+    const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
+    reservationsData?.forEach((cachedReservation: Reservations_reservations | null) => {
+      if (cachedReservation !== null) {
+        if (reservation !== undefined && reservation !== null && cachedReservation.id === reservation.id) {
+          reservationList.push(getTimelineReservationItem(reservation))
+        } else {
+          reservationList.push(getTimelineReservationItem(cachedReservation))
+        }
+      }
+    })
+    setItems(reservationList)
+  }, [ reservationsData ])
+
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
   }, [ setPageTitle ])
 
   useEffect(() => {
-    const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
-    reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
-      if (reservation !== null) {
-        reservationList.push({
-          color: Colors.getReservationColor(reservation.type),
-          end_time: moment(reservation.toDate),
-          group: reservation.suite.id,
-          id: reservation.id,
-          itemProps: {
-            className: 'reservation-item',
-            style: {
-              background: Colors.getReservationColor(reservation.type),
-              border: "none"
-            }
-          },
-          start_time: moment(reservation.fromDate),
-          title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
-          type: Reservation.getType(reservation.type)
-        })
-      }
-    })
-    setItems(reservationList)
-  }, [ reservations ])
+    updateReservationState()
+  }, [ reservationsData, updateReservationState ])
 
   useEffect(() => {
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
-    suites?.forEach((suite: SuitesWithReservations_suites | null) => {
+    suitesData?.forEach((suite: Suites_suites | null) => {
       if (suite !== null) {
         suiteList.push({ ...suite, stackItems: true })
       }
     })
     setGroups(suiteList)
-  }, [ suites ])
+  }, [ suitesData ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
@@ -96,27 +132,25 @@ export const Reservations = withRouter(({
   // Click on item on the timeline opens modal
   // with existing reservation for editing
   const onItemClick = (itemId: number) => {
-    if (reservations !== undefined && reservations !== null) {
-      const reservation = reservations.find(entry => entry !== null && entry.id === String(itemId))
-      if (reservation !== undefined && reservation !== null) {
-        setReservation({
-          fromDate: moment(reservation.fromDate),
-          guest: reservation.guest,
-          id: +reservation.id,
-          meal: reservation.meal,
-          notes: reservation.notes,
-          purpose: reservation.purpose,
-          roommates: reservation.roommates,
-          suite: reservation.suite,
-          toDate: moment(reservation.toDate),
-          type: reservation.type
-        })
-        setReservationModalOpen(true)
-      }
+    const timelineItem = items.find(item => item.id === itemId)
+    if (timelineItem !== undefined) {
+      setReservation({
+        fromDate: moment(timelineItem.start_time),
+        guest: timelineItem.guest,
+        id: timelineItem.id,
+        meal: timelineItem.meal,
+        notes: timelineItem.notes,
+        purpose: timelineItem.purpose,
+        roommates: timelineItem.roommates,
+        suite: timelineItem.suite,
+        toDate: moment(timelineItem.end_time),
+        type: timelineItem.type
+      })
+      setReservationModalOpen(true)
     }
   }
 
-  return reservations !== null ? (
+  return reservationsData !== null ? (
     <>
       <Timeline
         canChangeGroup={ false }
@@ -169,6 +203,7 @@ export const Reservations = withRouter(({
         </CursorMarker>
       </Timeline>
       <ReservationModal
+        addReservation={ addReservation }
         close={ () => {
           setReservation(undefined)
           setReservationModalOpen(false)
@@ -177,7 +212,9 @@ export const Reservations = withRouter(({
         isOpen={ reservationModalOpen }
         reauthenticate={ reauthenticate }
         openGuestDrawer={ () => setGuestDrawerOpen(true) }
-        reservation={ reservation } />
+        removeReservation={ removeReservation }
+        reservation={ reservation }
+        updateReservationState={ updateReservationState } />
       <GuestDrawer
         close={ () => setGuestDrawerOpen(false) }
         reauthenticate={ reauthenticate }

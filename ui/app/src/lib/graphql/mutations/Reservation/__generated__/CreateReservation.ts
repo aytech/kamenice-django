@@ -26,6 +26,8 @@ export interface CreateReservation_createReservation_reservation_roommates {
 export interface CreateReservation_createReservation_reservation_suite {
   __typename: "Suite";
   id: string;
+  number: number | null;
+  title: string;
 }
 
 export interface CreateReservation_createReservation_reservation {

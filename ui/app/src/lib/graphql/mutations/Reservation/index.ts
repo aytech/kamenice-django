@@ -21,6 +21,8 @@ export const CREATE_RESERVATION = gql`
         }
         suite {
           id
+          number
+          title
         }
         toDate
         type

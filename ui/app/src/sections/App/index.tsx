@@ -126,9 +126,9 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
               <Reservations
                 guests={ data?.guests }
                 reauthenticate={ reauthenticate }
-                reservations={ data?.reservations }
+                reservationsData={ data?.reservations }
                 setPageTitle={ setPageTitle }
-                suites={ data?.suites } />
+                suitesData={ data?.suites } />
             </Route>
             <Route exact path="/apartma">
               <Suites

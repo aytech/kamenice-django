@@ -77,13 +77,13 @@ export interface IReservation {
   fromDate: Moment
   guest?: Guest
   meal?: ReservationMeal
-  id?: number
+  id?: number | string
   notes?: string | null
   purpose?: string | null
   roommates: Array<Guest>
   suite: Suite
   toDate: Moment
-  type: ReservationTypeKey
+  type?: ReservationTypeKey
 }
 
 export interface SuiteForm {
@@ -103,7 +103,13 @@ export interface CustomGroupFields {
 
 export interface CustomItemFields {
   color?: string
-  type?: string
+  guest: Guest
+  meal: ReservationMeal
+  notes: string | null
+  purpose: string | null
+  roommates: Guest[]
+  suite: Suite
+  type?: ReservationTypeKey
 }
 
 export interface User {
