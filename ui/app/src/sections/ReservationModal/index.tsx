@@ -9,13 +9,14 @@ import { IReservation, OptionsType, ReservationTypeKey } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { dateFormat, errorMessages } from "../../lib/Constants"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
+import { GuestDrawer } from "../GuestDrawer"
+import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
   addReservation: (reservation?: Reservations_reservations | null) => void
@@ -23,7 +24,6 @@ interface Props {
   guests?: (Guests_guests | null)[] | null
   isOpen: boolean
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  openGuestDrawer: () => void
   removeReservation: (reservationId?: string | null) => void
   reservation?: IReservation
   updateReservationState: (reservation?: Reservations_reservations | null) => void
@@ -35,7 +35,6 @@ export const ReservationModal = ({
   guests,
   isOpen,
   reauthenticate,
-  openGuestDrawer,
   removeReservation,
   reservation,
   updateReservationState
@@ -46,6 +45,7 @@ export const ReservationModal = ({
   const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
+  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
 
   const [ form ] = Form.useForm()
@@ -66,6 +66,17 @@ export const ReservationModal = ({
     form.resetFields()
     setDeleteConfirmVisible(false)
     setTimeout(() => { close() })
+  }
+
+  const getGuestOption = (guest: Guests_guests) => {
+    return {
+      label: `${ guest.name } ${ guest.surname }`,
+      value: guest.id
+    }
+  }
+
+  const addGuestOption = (guest: Guests_guests) => {
+    setGuestOptions(guestOptions.concat(getGuestOption(guest)))
   }
 
   const errorHandler = (reason: ApolloError, callback: () => void) => {
@@ -155,7 +166,7 @@ export const ReservationModal = ({
     getRemoveButton(),
     <Button
       key="guest"
-      onClick={ openGuestDrawer }>
+      onClick={ () => setGuestDrawerOpen(true) }>
       Přidat hosta
     </Button>,
     <Button
@@ -171,138 +182,146 @@ export const ReservationModal = ({
   ]
 
   useEffect(() => {
-    if (guests !== undefined && guests !== null) {
-      setGuestOptions(Array.from(guests, (guest: any): any => {
-        return {
-          label: `${ guest.name } ${ guest.surname }`,
-          value: guest.id
-        }
-      }))
-    }
-  }, [ guests ])
-
-  useEffect(() => {
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
-    if (isOpen === true) { 
+    if (isOpen === true) {
       form.resetFields()
     }
   }, [ form, isOpen, reservation ])
 
+  useEffect(() => {
+    if (guests !== undefined && guests !== null) {
+      const options: OptionsType[] = []
+      guests.forEach((guest: Guests_guests | null) => {
+        if (guest !== null) {
+          options.push(getGuestOption(guest))
+        }
+      })
+      setGuestOptions(options)
+    }
+  }, [ guests ])
+
   return (
-    <Modal
-      closeIcon={ (
-        <Popconfirm
-          onCancel={ () => setDeleteConfirmVisible(false) }
-          onConfirm={ closeModal }
-          title="Zavřít formulář? Data ve formuláři budou ztracena"
-          visible={ deleteConfirmVisible }>
-          <CloseOutlined onClick={ () => {
-            if (form.isFieldsTouched()) {
-              setDeleteConfirmVisible(true)
-            } else {
-              closeModal()
-            }
-          } } />
-        </Popconfirm>
-      ) }
-      footer={ footerButtons }
-      title="Rezervační formulář"
-      visible={ isOpen }>
-      <Form
-        form={ form }
-        initialValues={ initialValues }
-        layout="vertical">
-        <Form.Item
-          label="Datum Rezervace"
-          name="dates"
-          required>
-          <DatePicker.RangePicker
-            format={ dateFormat }
-            showTime />
-        </Form.Item>
-        <Form.Item
-          hasFeedback
-          label="Host"
-          name="guest"
-          required
-          rules={ ReservationFormHelper.guestValidators(form) }>
-          <Select
-            filterOption={ (input, option): boolean => {
-              const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
-              return match !== undefined && match >= 0
-            } }
-            options={ guestOptions }
-            showSearch />
-        </Form.Item>
-        <Form.List name="roommates">
-          { (fields, { add, remove }) => (
-            <>
-              { fields.map(({ key, name, fieldKey, ...restField }) => (
-                <Space
-                  align="baseline"
-                  className="roommate-list"
-                  key={ key }>
-                  <Form.Item
-                    hasFeedback
-                    { ...restField }
-                    fieldKey={ [ fieldKey, 'first' ] }
-                    name={ [ name, "id" ] }
-                    rules={ ReservationFormHelper.roommateValidators(form) }>
-                    <Select
-                      options={ guestOptions }
-                      showSearch />
-                  </Form.Item>
-                  <MinusCircleOutlined onClick={ () => {
-                    remove(name)
-                    form.validateFields()
-                  } } />
-                </Space>
-              )) }
-              <Form.Item>
-                <Button
-                  disabled={ fields.length >= guestOptions.length }
-                  type="dashed"
-                  onClick={ () => add() }
-                  block
-                  icon={ <PlusOutlined /> }>
-                  Přidat spolubydlícího
-                </Button>
-              </Form.Item>
-            </>
-          ) }
-        </Form.List>
-        <Form.Item
-          hasFeedback
-          label="Typ Rezervace"
-          name="type"
-          required
-          rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
-          <Select
-            options={ ReservationFormHelper.reservationOptions } />
-        </Form.Item>
-        <Form.Item
-          hasFeedback
-          label="Strava"
-          name="meal"
-          required
-          rules={ [ FormHelper.requiredRule ] }>
-          <Select
-            options={ ReservationFormHelper.mealOptions } />
-        </Form.Item>
-        <Form.Item
-          label="Účel pobytu"
-          name="purpose">
-          <Input placeholder="účel pobytu" />
-        </Form.Item>
-        <Form.Item
-          label="Poznámky"
-          name="notes">
-          <Input.TextArea
-            placeholder="zadejte text"
-            allowClear />
-        </Form.Item>
-      </Form>
-    </Modal >
+    <>
+      <Modal
+        closeIcon={ (
+          <Popconfirm
+            onCancel={ () => setDeleteConfirmVisible(false) }
+            onConfirm={ closeModal }
+            title="Zavřít formulář? Data ve formuláři budou ztracena"
+            visible={ deleteConfirmVisible }>
+            <CloseOutlined onClick={ () => {
+              if (form.isFieldsTouched()) {
+                setDeleteConfirmVisible(true)
+              } else {
+                closeModal()
+              }
+            } } />
+          </Popconfirm>
+        ) }
+        footer={ footerButtons }
+        title="Rezervační formulář"
+        visible={ isOpen }>
+        <Form
+          form={ form }
+          initialValues={ initialValues }
+          layout="vertical">
+          <Form.Item
+            label="Datum Rezervace"
+            name="dates"
+            required>
+            <DatePicker.RangePicker
+              format={ dateFormat }
+              showTime />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label="Host"
+            name="guest"
+            required
+            rules={ ReservationFormHelper.guestValidators(form) }>
+            <Select
+              filterOption={ (input, option): boolean => {
+                const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
+                return match !== undefined && match >= 0
+              } }
+              options={ guestOptions }
+              showSearch />
+          </Form.Item>
+          <Form.List name="roommates">
+            { (fields, { add, remove }) => (
+              <>
+                { fields.map(({ key, name, fieldKey, ...restField }) => (
+                  <Space
+                    align="baseline"
+                    className="roommate-list"
+                    key={ key }>
+                    <Form.Item
+                      hasFeedback
+                      { ...restField }
+                      fieldKey={ [ fieldKey, 'first' ] }
+                      name={ [ name, "id" ] }
+                      rules={ ReservationFormHelper.roommateValidators(form) }>
+                      <Select
+                        options={ guestOptions }
+                        showSearch />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={ () => {
+                      remove(name)
+                      form.validateFields()
+                    } } />
+                  </Space>
+                )) }
+                <Form.Item>
+                  <Button
+                    disabled={ fields.length >= guestOptions.length }
+                    type="dashed"
+                    onClick={ () => add() }
+                    block
+                    icon={ <PlusOutlined /> }>
+                    Přidat spolubydlícího
+                  </Button>
+                </Form.Item>
+              </>
+            ) }
+          </Form.List>
+          <Form.Item
+            hasFeedback
+            label="Typ Rezervace"
+            name="type"
+            required
+            rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
+            <Select
+              options={ ReservationFormHelper.reservationOptions } />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label="Strava"
+            name="meal"
+            required
+            rules={ [ FormHelper.requiredRule ] }>
+            <Select
+              options={ ReservationFormHelper.mealOptions } />
+          </Form.Item>
+          <Form.Item
+            label="Účel pobytu"
+            name="purpose">
+            <Input placeholder="účel pobytu" />
+          </Form.Item>
+          <Form.Item
+            label="Poznámky"
+            name="notes">
+            <Input.TextArea
+              placeholder="zadejte text"
+              allowClear />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <GuestDrawer
+        close={ () => setGuestDrawerOpen(false) }
+        reauthenticate={ reauthenticate }
+        addGuest={ addGuestOption }
+        visible={ guestDrawerOpen } />
+    </>
   )
 }

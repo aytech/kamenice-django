@@ -12,7 +12,6 @@ import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
 import { ApolloError } from "@apollo/client"
-import { GuestDrawer } from "../GuestDrawer"
 import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { useCallback } from "react"
@@ -36,7 +35,7 @@ export const Reservations = withRouter(({
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
+
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
 
@@ -211,14 +210,9 @@ export const Reservations = withRouter(({
         guests={ guests }
         isOpen={ reservationModalOpen }
         reauthenticate={ reauthenticate }
-        openGuestDrawer={ () => setGuestDrawerOpen(true) }
         removeReservation={ removeReservation }
         reservation={ reservation }
         updateReservationState={ updateReservationState } />
-      <GuestDrawer
-        close={ () => setGuestDrawerOpen(false) }
-        reauthenticate={ reauthenticate }
-        visible={ guestDrawerOpen } />
     </>
   ) : <Empty />
 })
