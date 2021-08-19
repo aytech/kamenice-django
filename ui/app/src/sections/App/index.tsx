@@ -134,7 +134,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
               <Suites
                 reauthenticate={ reauthenticate }
                 setPageTitle={ setPageTitle }
-                user={ user } />
+                suitesData={ data?.suites } />
             </Route>
             <Route exact path="/guests">
               <Guests
