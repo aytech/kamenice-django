@@ -2,7 +2,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Empty } from "antd"
+import { Empty, message } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
@@ -11,10 +11,14 @@ import { Reservations_reservations } from "../../lib/graphql/queries/Reservation
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
-import { ApolloError } from "@apollo/client"
+import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
-import { useCallback } from "react"
+import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
+import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { errorMessages } from "../../lib/Constants"
 
 interface Props {
   guests?: (HomePage_guests | null)[] | null
@@ -32,6 +36,10 @@ export const Reservations = withRouter(({
   setPageTitle,
   suitesData
 }: RouteComponentProps & Props) => {
+
+  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
+  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION)
+  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
@@ -80,27 +88,67 @@ export const Reservations = withRouter(({
     setReservation(undefined)
   }
 
-  const updateReservationState = useCallback((reservation?: Reservations_reservations | null) => {
-    const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
-    reservationsData?.forEach((cachedReservation: Reservations_reservations | null) => {
-      if (cachedReservation !== null) {
-        if (reservation !== undefined && reservation !== null && cachedReservation.id === reservation.id) {
-          reservationList.push(getTimelineReservationItem(reservation))
-        } else {
-          reservationList.push(getTimelineReservationItem(cachedReservation))
-        }
-      }
-    })
-    setItems(reservationList)
-  }, [ reservationsData ])
+  const updateReservationState = (reservation?: Reservations_reservations | null) => {
+    if (reservation !== undefined && reservation !== null) {
+      const reservations = items.filter(item => item.id !== reservation.id)
+      setItems(reservations.concat(getTimelineReservationItem(reservation)))
+    }
+  }
+
+  const errorHandler = (reason: ApolloError, callback: () => void) => {
+    if (reason.message === errorMessages.signatureExpired) {
+      reauthenticate(callback, (reason: ApolloError) => message.error(reason.message))
+    } else {
+      message.error(reason.message)
+    }
+  }
+
+  const removeReservationAction = (reservationId: string | number) => {
+    const handler = () => deleteReservation({ variables: { reservationId: String(reservationId) } })
+      .then((value: FetchResult<DeleteReservation>) => {
+        setReservationModalOpen(false)
+        removeReservation(value.data?.deleteReservation?.reservation?.id)
+        message.success("Rezervace byla odstraněna!")
+      })
+    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
+  }
+
+  const updateReservationAction = (reservationId: string, variables: any) => {
+    const submitUpdatedReservation =
+      () => updateReservation({ variables: { data: { ...variables, id: reservationId } } })
+        .then((value: FetchResult<UpdateReservation>) => {
+          setReservationModalOpen(false)
+          updateReservationState(value.data?.updateReservation?.reservation)
+          message.success("Rezervace byla aktualizována!")
+        })
+    submitUpdatedReservation()
+      .catch((reason: ApolloError) => errorHandler(reason, submitUpdatedReservation))
+  }
+
+  const newReservationAction = (variables: any) => {
+    const submitNewReservation = () => createReservation({ variables: { data: variables } })
+      .then((value: FetchResult<CreateReservation>) => {
+        setReservationModalOpen(false)
+        addReservation(value.data?.createReservation?.reservation)
+        message.success("Rezervace byla vytvořena!")
+      })
+    submitNewReservation()
+      .catch((reason: ApolloError) => errorHandler(reason, submitNewReservation))
+  }
 
   useEffect(() => {
     setPageTitle("Rezervace / Obsazenost")
   }, [ setPageTitle ])
 
   useEffect(() => {
-    updateReservationState()
-  }, [ reservationsData, updateReservationState ])
+    const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
+    reservationsData?.forEach((reservation: Reservations_reservations | null) => {
+      if (reservation !== null) {
+        reservationList.push(getTimelineReservationItem(reservation))
+      }
+    })
+    setItems(reservationList)
+  }, [ reservationsData ])
 
   useEffect(() => {
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
@@ -202,17 +250,17 @@ export const Reservations = withRouter(({
         </CursorMarker>
       </Timeline>
       <ReservationModal
-        addReservation={ addReservation }
         close={ () => {
           setReservation(undefined)
           setReservationModalOpen(false)
         } }
+        createReservation={ newReservationAction }
         guests={ guests }
         isOpen={ reservationModalOpen }
         reauthenticate={ reauthenticate }
-        removeReservation={ removeReservation }
+        removeReservation={ removeReservationAction }
         reservation={ reservation }
-        updateReservationState={ updateReservationState } />
+        updateReservation={ updateReservationAction } />
     </>
   ) : <Empty />
 })

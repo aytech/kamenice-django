@@ -1,48 +1,39 @@
 import { useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space } from "antd"
+import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError, FetchResult, useMutation } from "@apollo/client"
+import { ApolloError } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationTypeKey } from "../../lib/Types"
 import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
-import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
-import { dateFormat, errorMessages } from "../../lib/Constants"
-import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
-import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
+import { dateFormat } from "../../lib/Constants"
 import { GuestDrawer } from "../GuestDrawer"
 import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
-  addReservation: (reservation?: Reservations_reservations | null) => void
   close: () => void
+  createReservation: (variables: any) => void
   guests?: (Guests_guests | null)[] | null
   isOpen: boolean
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  removeReservation: (reservationId?: string | null) => void
+  removeReservation: (reservationId: string | number) => void
   reservation?: IReservation
-  updateReservationState: (reservation?: Reservations_reservations | null) => void
+  updateReservation: (reservationId: string, variables: any) => void
 }
 
 export const ReservationModal = ({
-  addReservation,
   close,
+  createReservation,
   guests,
   isOpen,
   reauthenticate,
   removeReservation,
   reservation,
-  updateReservationState
+  updateReservation
 }: Props) => {
-
-  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
-  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION)
-  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -79,47 +70,6 @@ export const ReservationModal = ({
     setGuestOptions(guestOptions.concat(getGuestOption(guest)))
   }
 
-  const errorHandler = (reason: ApolloError, callback: () => void) => {
-    if (reason.message === errorMessages.signatureExpired) {
-      reauthenticate(callback, (reason: ApolloError) => message.error(reason.message))
-    } else {
-      message.error(reason.message)
-    }
-  }
-
-  const removeReservationAction = () => {
-    const handler = () => deleteReservation({ variables: { reservationId: String(reservation?.id) } })
-      .then((value: FetchResult<DeleteReservation>) => {
-        removeReservation(value.data?.deleteReservation?.reservation?.id)
-        message.success("Rezervace byla odstraněna!")
-        closeModal()
-      })
-    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
-  }
-
-  const updateReservationAction = (reservationId: string, variables: any) => {
-    const submitUpdatedReservation =
-      () => updateReservation({ variables: { data: { ...variables, id: reservationId } } })
-        .then((value: FetchResult<UpdateReservation>) => {
-          message.success("Rezervace byla aktualizována!")
-          updateReservationState(value.data?.updateReservation?.reservation)
-          closeModal()
-        })
-    submitUpdatedReservation()
-      .catch((reason: ApolloError) => errorHandler(reason, submitUpdatedReservation))
-  }
-
-  const newReservationAction = (variables: any) => {
-    const submitNewReservation = () => createReservation({ variables: { data: variables } })
-      .then((value: FetchResult<CreateReservation>) => {
-        message.success("Rezervace byla vytvořena!")
-        addReservation(value.data?.createReservation?.reservation)
-        closeModal()
-      })
-    submitNewReservation()
-      .catch((reason: ApolloError) => errorHandler(reason, submitNewReservation))
-  }
-
   const submitForm = (): void => {
     const formData = form.getFieldsValue(true)
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
@@ -138,9 +88,9 @@ export const ReservationModal = ({
       type: formData.type
     }
     if (reservation !== undefined && reservation.id !== undefined) {
-      updateReservationAction(String(reservation.id), variables)
+      updateReservation(String(reservation.id), variables)
     } else {
-      newReservationAction(variables)
+      createReservation(variables)
     }
   }
 
@@ -150,7 +100,11 @@ export const ReservationModal = ({
         cancelText="Ne"
         key="remove"
         okText="Ano"
-        onConfirm={ removeReservationAction }
+        onConfirm={ () => {
+          if (reservation.id !== undefined) {
+            removeReservation(reservation.id)
+          }
+        } }
         title="Odstranit rezervaci?">
         <Button
           className="cancel-button"
