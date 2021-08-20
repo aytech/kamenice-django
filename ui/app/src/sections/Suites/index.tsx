@@ -6,7 +6,7 @@ import { SuiteDrawer } from "../SuiteDrawer"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
-import { ApolloError, FetchResult, useMutation } from "@apollo/client"
+import { ApolloError, useMutation } from "@apollo/client"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
@@ -15,12 +15,14 @@ import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/S
 
 interface Props {
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
+  refetchData: () => void
   setPageTitle: (title: string) => void
   suitesData?: (Suites_suites | null)[] | null
 }
 
 export const Suites = withRouter(({
   reauthenticate,
+  refetchData,
   setPageTitle,
   suitesData
 }: RouteComponentProps & Props) => {
@@ -33,23 +35,6 @@ export const Suites = withRouter(({
   const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE)
   const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
 
-  const addSuiteState = (suite?: Suites_suites | null): void => {
-    if (suite !== undefined && suite !== null) {
-      setSuites(suites.concat(suite))
-    }
-  }
-
-  const updateSuiteState = (suite?: Suites_suites | null): void => {
-    if (suite !== undefined && suite !== null) {
-      const suitesList = suites.filter(cachedSuite => cachedSuite.id !== suite.id)
-      setSuites(suitesList.concat(suite))
-    }
-  }
-
-  const removeSuiteState = (suiteId?: string): void => {
-    setSuites(suites.filter(suite => suite.id !== suiteId))
-  }
-
   const errorHandler = (reason: ApolloError, callback: () => void) => {
     if (reason.message === errorMessages.signatureExpired) {
       reauthenticate(callback, (reason: ApolloError) => message.error(reason.message))
@@ -61,9 +46,9 @@ export const Suites = withRouter(({
   const createSuiteAction = (variables: any) => {
     const handler =
       () => createSuite({ variables: { data: { ...variables } } })
-        .then((value: FetchResult<CreateSuite>) => {
+        .then(() => {
           setDrawerVisible(false)
-          addSuiteState(value.data?.createSuite?.suite)
+          refetchData()
           message.success("Apartmá byla vytvořena")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))
@@ -72,9 +57,9 @@ export const Suites = withRouter(({
   const updateSuiteAction = (suiteId: string, variables: any) => {
     const handler =
       () => updateSuite({ variables: { data: { id: suiteId, ...variables } } })
-        .then((value: FetchResult<UpdateSuite>) => {
+        .then(() => {
           setDrawerVisible(false)
-          updateSuiteState(value.data?.updateSuite?.suite)
+          refetchData()
           message.success("Apartmá byla aktualizována")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))
@@ -83,9 +68,9 @@ export const Suites = withRouter(({
   const deleteSuiteAction = (suiteId: string) => {
     const handler =
       () => deleteSuite({ variables: { suiteId } })
-        .then((value: FetchResult<DeleteSuite>) => {
+        .then(() => {
           setDrawerVisible(false)
-          removeSuiteState(value.data?.deleteSuite?.suite?.id)
+          refetchData()
           message.success("Apartmá byla odstraněna")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))

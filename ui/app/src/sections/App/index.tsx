@@ -133,6 +133,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
             <Route exact path="/apartma">
               <Suites
                 reauthenticate={ reauthenticate }
+                refetchData={ refetch }
                 setPageTitle={ setPageTitle }
                 suitesData={ data?.suites } />
             </Route>
