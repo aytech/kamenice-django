@@ -11,9 +11,9 @@ import { User } from "../../lib/Types"
 import "./styles.css"
 
 interface Props {
+  refetch: () => void
   setPageTitle: (title: string) => void
   setUser: (user: User) => void
-  user: User | undefined
 }
 
 const layout: FormProps = {
@@ -43,10 +43,9 @@ const tailLayout = {
 
 export const Login = withRouter(({
   history,
-  location,
+  refetch,
   setPageTitle,
-  setUser,
-  user
+  setUser
 }: RouteComponentProps & Props) => {
 
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
@@ -55,6 +54,7 @@ export const Login = withRouter(({
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
         setUser({ username: token.tokenAuth.payload.username })
+        refetch()
         // for debugging only
         localStorage.setItem("tokenExpiresIn", token.tokenAuth.payload.exp)
         localStorage.setItem("refreshTokenExpiresIn", token.tokenAuth.refreshExpiresIn.toString())

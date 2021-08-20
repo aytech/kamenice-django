@@ -78,7 +78,10 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
   const { loading, data, refetch } = useQuery<HomePage>(HOME_PAGE, {
     onCompleted: onDataFetch,
     onError: (reason: ApolloError) => {
-      if (reason.message.indexOf(errorMessages.signatureExpired) !== -1) {
+      if (
+        reason.message.indexOf(errorMessages.signatureExpired) !== -1 // auth token expired
+        || reason.message.indexOf(errorMessages.unauthorized) !== -1 // auth token not sent
+      ) {
         reauthenticate(() => refetch().then(onDataRefetch), (reason: ApolloError) => message.error(reason.message))
       } else {
         message.error(reason.message)
@@ -147,9 +150,9 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
             </Route>
             <Route exact path="/login">
               <Login
+                refetch={ refetch }
                 setPageTitle={ setPageTitle }
-                setUser={ setUser }
-                user={ user } />
+                setUser={ setUser } />
             </Route>
             <Route path="*">
               <NotFound />

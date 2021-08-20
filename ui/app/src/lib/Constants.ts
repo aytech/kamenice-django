@@ -5,7 +5,8 @@ export const dateFormat = "YYYY-MM-DD HH:mm"
 export const errorMessages = {
   invalidCredentials: "Please enter valid credentials",
   refreshTokenExpired: "Refresh token is expired",
-  signatureExpired: "Signature has expired"
+  signatureExpired: "Signature has expired",
+  unauthorized: "Unauthorized"
 }
 export const refreshTokenName: string = "refreshToken"
 export const tokenName: string = "token"
