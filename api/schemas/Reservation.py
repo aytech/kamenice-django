@@ -2,9 +2,12 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String
 from graphene_django import DjangoObjectType
+from graphql_jwt.decorators import user_passes_test
+
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
+from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
 class Reservation(DjangoObjectType):
@@ -18,27 +21,26 @@ class ReservationQuery(ObjectType):
     reservation = Field(Reservation, reservation_id=Int())
     reservations = List(Reservation)
 
-    @classmethod
-    def resolve_suite_reservations(cls, _query, info, suite_id):
-        if info.context.user.is_authenticated:
-            return ReservationModel.objects.filter(suite_id=suite_id, deleted=False)
-        raise Exception('Unauthorized')
-
-    @classmethod
-    def resolve_reservation(cls, _query, info, reservation_id):
-        if not info.context.user.is_authenticated:
-            raise Exception('Unauthorized')
-
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def resolve_suite_reservations(self, _info, suite_id):
         try:
-            return ReservationModel.objects.get(pk=reservation_id)
+            return ReservationModel.objects.get(suite_id=suite_id, deleted=False)
         except ObjectDoesNotExist:
             return None
 
-    @classmethod
-    def resolve_reservations(cls, _query, info):
-        if info.context.user.is_authenticated:
-            return ReservationModel.objects.filter(deleted=False)
-        raise Exception('Unauthorized')
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def resolve_reservation(self, _query, _info, reservation_id):
+        try:
+            return ReservationModel.objects.get(pk=reservation_id, deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def resolve_reservations(self, _query, _info):
+        try:
+            return ReservationModel.objects.get(deleted=False)
+        except ObjectDoesNotExist:
+            return None
 
 
 class ReservationInput(InputObjectType):
@@ -55,6 +57,7 @@ class ReservationInput(InputObjectType):
 
 
 class ReservationUtility:
+
     @staticmethod
     def get_duplicate(suite_id, instance):
         return ReservationModel.objects.filter(
@@ -88,11 +91,9 @@ class CreateReservation(Mutation):
 
     reservation = Field(Reservation)
 
-    @staticmethod
-    def mutate(_root, info, data=None):
-        if not info.context.user.is_authenticated:
-            raise Exception('Unauthorized')
-
+    @classmethod
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def mutate(cls, _root, _info, data=None):
         instance = ReservationModel(
             from_date=data.from_date,
             meal=data.meal,
@@ -139,11 +140,9 @@ class UpdateReservation(Mutation):
 
     reservation = Field(Reservation)
 
-    @staticmethod
-    def mutate(_root, info, data=None):
-        if not info.context.user.is_authenticated:
-            raise Exception('Unauthorized')
-
+    @classmethod
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def mutate(cls, _root, _info, data=None):
         try:
             instance = ReservationModel.objects.get(pk=data.id, deleted=False)
 
@@ -195,11 +194,9 @@ class DeleteReservation(Mutation):
 
     reservation = Field(Reservation)
 
-    @staticmethod
-    def mutate(_root, info, reservation_id):
-        if not info.context.user.is_authenticated:
-            raise Exception('Unauthorized')
-
+    @classmethod
+    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    def mutate(cls, _root, _info, reservation_id):
         try:
             instance = ReservationModel.objects.get(pk=reservation_id)
             if instance:
