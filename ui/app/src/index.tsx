@@ -4,12 +4,18 @@ import './index.css'
 import { getCookie } from "./lib/Cookie"
 import moment from 'moment'
 import 'moment/locale/cs'
-import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client'
+import { ApolloClient, ApolloError, ApolloLink, ApolloProvider, FetchResult, from, fromPromise, HttpLink, InMemoryCache } from '@apollo/client'
+import { onError } from '@apollo/client/link/error'
 import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
+import { errorMessages, refreshTokenName, tokenName } from './lib/Constants'
+import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/User/__generated__/RefreshToken'
+import { TOKEN_REFRESH } from './lib/graphql/mutations/User'
 
 moment.locale("cs")
+
+let apolloClient: any
 
 const httpLink = new HttpLink({
   uri: '/api'
@@ -27,7 +33,44 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 })
 
-const client = new ApolloClient({
+const refreshToken = () => {
+  return apolloClient
+    .mutate({ mutation: TOKEN_REFRESH, variables: { refreshToken: localStorage.getItem(refreshTokenName) } })
+    .then((value: FetchResult<RefreshToken>) => {
+      return value.data?.refreshToken
+    })
+}
+
+const errorLink = onError(
+  ({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+      for (let reason of graphQLErrors) {
+        switch (reason.message) {
+          case errorMessages.signatureExpired:
+            return fromPromise(
+              refreshToken()
+                .catch((reason: ApolloError) => console.error(reason))
+            )
+              .flatMap(authToken => {
+                const token = authToken as RefreshToken_refreshToken
+                localStorage.setItem(tokenName, token.token)
+                localStorage.setItem(refreshTokenName, token.refreshToken)
+                // for debugging only
+                localStorage.setItem("tokenExpiresIn", token.payload.exp.toString())
+                localStorage.setItem("refreshTokenExpiresIn", token.refreshExpiresIn.toString())
+                // --- / ---
+                return forward(operation)
+              })
+        }
+      }
+    }
+    if (networkError) {
+      console.error(networkError);
+    }
+  }
+)
+
+apolloClient = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
       Query: {
@@ -53,11 +96,15 @@ const client = new ApolloClient({
       }
     }
   }),
-  link: authMiddleware.concat(httpLink),
+  link: from([
+    errorLink,
+    authMiddleware,
+    httpLink
+  ]),
 })
 
 ReactDOM.render(
-  <ApolloProvider client={ client }>
+  <ApolloProvider client={ apolloClient }>
     <ConfigProvider locale={ csCZ }>
       <Router>
         <App />

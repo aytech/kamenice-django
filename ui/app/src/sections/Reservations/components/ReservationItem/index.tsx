@@ -4,7 +4,12 @@ import { ReactCalendarItemRendererProps, TimelineItem } from "react-calendar-tim
 import Text from "antd/lib/typography/Text"
 import { CustomItemFields } from "../../../../lib/Types"
 
-export const ReservationItem = ({ item, itemContext, getItemProps, getResizeProps }: ReactCalendarItemRendererProps<TimelineItem<CustomItemFields, Moment>>) => {
+export const ReservationItem = ({
+  item,
+  itemContext,
+  getItemProps,
+  getResizeProps
+}: ReactCalendarItemRendererProps<TimelineItem<CustomItemFields, Moment>>) => {
   const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
   return item.itemProps !== undefined ? (
     <div { ...getItemProps(item.itemProps) }>

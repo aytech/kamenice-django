@@ -89,7 +89,6 @@ export const Guests = withRouter(({
         addGuest={ addGuest }
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
-        reauthenticate={ reauthenticate }
         removeGuest={ removeGuest }
         updateGuestCache={ updateGuestState }
         visible={ drawerVisible } />

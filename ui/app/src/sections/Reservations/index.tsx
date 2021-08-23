@@ -2,44 +2,30 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Empty, message } from "antd"
+import { Skeleton } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, User } from "../../lib/Types"
 import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
-import { ApolloError, FetchResult, useMutation } from "@apollo/client"
-import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
+import { useQuery } from "@apollo/client"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
-import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
-import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { errorMessages } from "../../lib/Constants"
+import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
+import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface Props {
-  guests?: (HomePage_guests | null)[] | null
-  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  reservationsData?: (Reservations_reservations | null)[] | null
   setPageTitle: (title: string) => void
-  suitesData?: (Suites_suites | null)[] | null
+  setUser: (user: User) => void
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(({
-  guests,
-  reauthenticate,
-  reservationsData,
   setPageTitle,
-  suitesData
+  setUser
 }: RouteComponentProps & Props) => {
-
-  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
-  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION)
-  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
@@ -47,7 +33,7 @@ export const Reservations = withRouter(({
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
 
-  const getTimelineReservationItem = (reservation: Reservations_reservations): TimelineItem<CustomItemFields, Moment> => {
+  const getTimelineReservationItem = (reservation: SuitesWithReservations_reservations): TimelineItem<CustomItemFields, Moment> => {
     return {
       color: Colors.getReservationColor(reservation.type),
       end_time: moment(reservation.toDate),
@@ -72,68 +58,20 @@ export const Reservations = withRouter(({
     }
   }
 
-  const addReservation = (reservation?: Reservations_reservations | null) => {
+  const { loading: reservationsLoading, data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
+
+  const addOrUpdateReservation = (reservation?: Reservations_reservations | null) => {
     if (reservation !== undefined && reservation !== null) {
-      const existingReservation = items.find(item => item.id === reservation.id)
-      if (existingReservation === undefined) {
-        setItems(items.concat(getTimelineReservationItem(reservation)))
-      }
+      const existingReservations = items.filter(item => item.id !== reservation.id)
+      setItems(existingReservations.concat(getTimelineReservationItem(reservation)))
     }
   }
 
-  const removeReservation = (reservationId?: string | null) => {
+  const clearReservation = (reservationId?: string | null) => {
     if (reservationId !== undefined && reservationId !== null) {
       setItems(items.filter(item => item.id !== reservationId))
     }
     setReservation(undefined)
-  }
-
-  const updateReservationState = (reservation?: Reservations_reservations | null) => {
-    if (reservation !== undefined && reservation !== null) {
-      const reservations = items.filter(item => item.id !== reservation.id)
-      setItems(reservations.concat(getTimelineReservationItem(reservation)))
-    }
-  }
-
-  const errorHandler = (reason: ApolloError, callback: () => void) => {
-    if (reason.message === errorMessages.signatureExpired) {
-      reauthenticate(callback, (reason: ApolloError) => message.error(reason.message))
-    } else {
-      message.error(reason.message)
-    }
-  }
-
-  const removeReservationAction = (reservationId: string | number) => {
-    const handler = () => deleteReservation({ variables: { reservationId: String(reservationId) } })
-      .then((value: FetchResult<DeleteReservation>) => {
-        setReservationModalOpen(false)
-        removeReservation(value.data?.deleteReservation?.reservation?.id)
-        message.success("Rezervace byla odstraněna!")
-      })
-    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
-  }
-
-  const updateReservationAction = (reservationId: string, variables: any) => {
-    const submitUpdatedReservation =
-      () => updateReservation({ variables: { data: { ...variables, id: reservationId } } })
-        .then((value: FetchResult<UpdateReservation>) => {
-          setReservationModalOpen(false)
-          updateReservationState(value.data?.updateReservation?.reservation)
-          message.success("Rezervace byla aktualizována!")
-        })
-    submitUpdatedReservation()
-      .catch((reason: ApolloError) => errorHandler(reason, submitUpdatedReservation))
-  }
-
-  const newReservationAction = (variables: any) => {
-    const submitNewReservation = () => createReservation({ variables: { data: variables } })
-      .then((value: FetchResult<CreateReservation>) => {
-        setReservationModalOpen(false)
-        addReservation(value.data?.createReservation?.reservation)
-        message.success("Rezervace byla vytvořena!")
-      })
-    submitNewReservation()
-      .catch((reason: ApolloError) => errorHandler(reason, submitNewReservation))
   }
 
   useEffect(() => {
@@ -142,23 +80,23 @@ export const Reservations = withRouter(({
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
-    reservationsData?.forEach((reservation: Reservations_reservations | null) => {
+    const suiteList: TimelineGroup<CustomGroupFields>[] = []
+    reservationsData?.suites?.forEach((suite: Suites_suites | null) => {
+      if (suite !== null) {
+        suiteList.push(suite)
+      }
+    })
+    reservationsData?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
       if (reservation !== null) {
         reservationList.push(getTimelineReservationItem(reservation))
       }
     })
     setItems(reservationList)
-  }, [ reservationsData ])
-
-  useEffect(() => {
-    const suiteList: TimelineGroup<CustomGroupFields>[] = []
-    suitesData?.forEach((suite: Suites_suites | null) => {
-      if (suite !== null) {
-        suiteList.push({ ...suite, stackItems: true })
-      }
-    })
     setGroups(suiteList)
-  }, [ suitesData ])
+    if (reservationsData?.whoami?.username !== undefined) {
+      setUser({ username: reservationsData.whoami.username })
+    }
+  }, [ reservationsData, setUser ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
@@ -197,70 +135,72 @@ export const Reservations = withRouter(({
     }
   }
 
-  return reservationsData !== null ? (
+  return (
     <>
-      <Timeline
-        canChangeGroup={ false }
-        canMove={ false }
-        canResize={ false }
-        defaultTimeEnd={ moment().add(12, "day") }
-        defaultTimeStart={ moment().add(-12, "day") }
-        groupRenderer={ ({ group }) => {
-          return (
-            <>
-              <Title level={ 5 }>{ group.title }</Title>
-            </>
-          )
-        } }
-        groups={ groups }
-        itemRenderer={ props => <ReservationItem { ...props } /> }
-        items={ items }
-        lineHeight={ 60 }
-        onCanvasClick={ onCanvasClick }
-        onItemClick={ onItemClick }>
-        <TimelineHeaders>
-          <SidebarHeader>
-            { ({ getRootProps }) => {
-              return (
-                <div
-                  { ...getRootProps() }
-                  className="side-header" />
-              )
-            } }
-          </SidebarHeader>
-          <DateHeader unit="primaryHeader" />
-          <DateHeader
-            className="days"
-            unit="day" />
-        </TimelineHeaders>
-        <CursorMarker>
-          {
-            ({ styles, date }) => {
-              return (
-                <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
-                  <div className="rt-marker__label">
-                    <div className="rt-marker__content">
-                      { moment(date).format("DD MMM HH:mm") }
+      <Skeleton
+        active
+        loading={ reservationsLoading }
+        paragraph={ { rows: 5 } }>
+        <Timeline
+          canChangeGroup={ false }
+          canMove={ false }
+          canResize={ false }
+          defaultTimeEnd={ moment().add(12, "day") }
+          defaultTimeStart={ moment().add(-12, "day") }
+          groupRenderer={ ({ group }) => {
+            return (
+              <>
+                <Title level={ 5 }>{ group.title }</Title>
+              </>
+            )
+          } }
+          groups={ groups }
+          itemRenderer={ props => <ReservationItem { ...props } /> }
+          items={ items }
+          lineHeight={ 60 }
+          onCanvasClick={ onCanvasClick }
+          onItemClick={ onItemClick }>
+          <TimelineHeaders>
+            <SidebarHeader>
+              { ({ getRootProps }) => {
+                return (
+                  <div
+                    { ...getRootProps() }
+                    className="side-header" />
+                )
+              } }
+            </SidebarHeader>
+            <DateHeader unit="primaryHeader" />
+            <DateHeader
+              className="days"
+              unit="day" />
+          </TimelineHeaders>
+          <CursorMarker>
+            {
+              ({ styles, date }) => {
+                return (
+                  <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
+                    <div className="rt-marker__label">
+                      <div className="rt-marker__content">
+                        { moment(date).format("DD MMM HH:mm") }
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
+                )
+              }
             }
-          }
-        </CursorMarker>
-      </Timeline>
+          </CursorMarker>
+        </Timeline>
+      </Skeleton>
       <ReservationModal
+        addOrUpdateReservation={ addOrUpdateReservation }
         close={ () => {
           setReservation(undefined)
           setReservationModalOpen(false)
         } }
-        createReservation={ newReservationAction }
-        guests={ guests }
         isOpen={ reservationModalOpen }
-        reauthenticate={ reauthenticate }
-        removeReservation={ removeReservationAction }
-        reservation={ reservation }
-        updateReservation={ updateReservationAction } />
+        clearReservation={ clearReservation }
+        reservation={ reservation } />
     </>
-  ) : <Empty />
+  )
 })

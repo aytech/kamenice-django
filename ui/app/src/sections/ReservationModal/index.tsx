@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Space } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Skeleton, Space } from "antd"
 import { Moment } from "moment"
-import { ApolloError } from "@apollo/client"
+import { FetchResult, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -11,29 +11,34 @@ import { FormHelper } from "../../lib/components/FormHelper"
 import { ReservationInput } from "../../lib/graphql/globalTypes"
 import { dateFormat } from "../../lib/Constants"
 import { GuestDrawer } from "../GuestDrawer"
-import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { Guests, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { GUESTS } from "../../lib/graphql/queries/Guests"
+import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
+import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
+import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 
 interface Props {
+  addOrUpdateReservation: (reservation?: Reservations_reservations | null) => void
   close: () => void
-  createReservation: (variables: any) => void
-  guests?: (Guests_guests | null)[] | null
   isOpen: boolean
-  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  removeReservation: (reservationId: string | number) => void
+  clearReservation: (reservationId?: string | null) => void
   reservation?: IReservation
-  updateReservation: (reservationId: string, variables: any) => void
 }
 
 export const ReservationModal = ({
+  addOrUpdateReservation,
   close,
-  createReservation,
-  guests,
   isOpen,
-  reauthenticate,
-  removeReservation,
+  clearReservation,
   reservation,
-  updateReservation
 }: Props) => {
+
+  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
+  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
+  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION)
+  const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -52,12 +57,6 @@ export const ReservationModal = ({
     }),
     type: reservation.type
   } : { type: "NONBINDING" }
-
-  const closeModal = () => {
-    form.resetFields()
-    setDeleteConfirmVisible(false)
-    setTimeout(() => { close() })
-  }
 
   const getGuestOption = (guest: Guests_guests) => {
     return {
@@ -88,9 +87,19 @@ export const ReservationModal = ({
       type: formData.type
     }
     if (reservation !== undefined && reservation.id !== undefined) {
-      updateReservation(String(reservation.id), variables)
+      updateReservation({ variables: { data: { id: String(reservation.id), ...variables } } })
+        .then((value: FetchResult<UpdateReservation>) => {
+          addOrUpdateReservation(value.data?.updateReservation?.reservation)
+          message.success("Rezervace byla aktualizována!")
+          close()
+        })
     } else {
-      createReservation(variables)
+      createReservation({ variables: { data: { ...variables } } })
+        .then((value: FetchResult<CreateReservation>) => {
+          addOrUpdateReservation(value.data?.createReservation?.reservation)
+          message.success("Rezervace byla vytvořena!")
+          close()
+        })
     }
   }
 
@@ -102,7 +111,12 @@ export const ReservationModal = ({
         okText="Ano"
         onConfirm={ () => {
           if (reservation.id !== undefined) {
-            removeReservation(reservation.id)
+            deleteReservation({ variables: { reservationId: String(reservation.id) } })
+              .then((value: FetchResult<DeleteReservation>) => {
+                clearReservation(value.data?.deleteReservation?.reservation?.id)
+                message.success("Rezervace byla odstraněna!")
+                close()
+              })
           }
         } }
         title="Odstranit rezervaci?">
@@ -140,20 +154,21 @@ export const ReservationModal = ({
     // but the component is rendered only when modal is opened
     if (isOpen === true) {
       form.resetFields()
+      getGuests()
     }
-  }, [ form, isOpen, reservation ])
+  }, [ form, getGuests, isOpen, reservation ])
 
   useEffect(() => {
-    if (guests !== undefined && guests !== null) {
+    if (guestsData !== undefined && guestsData.guests !== null) {
       const options: OptionsType[] = []
-      guests.forEach((guest: Guests_guests | null) => {
+      guestsData.guests.forEach((guest: Guests_guests | null) => {
         if (guest !== null) {
           options.push(getGuestOption(guest))
         }
       })
       setGuestOptions(options)
     }
-  }, [ guests ])
+  }, [ guestsData ])
 
   return (
     <>
@@ -161,14 +176,15 @@ export const ReservationModal = ({
         closeIcon={ (
           <Popconfirm
             onCancel={ () => setDeleteConfirmVisible(false) }
-            onConfirm={ closeModal }
+            onConfirm={ close }
             title="Zavřít formulář? Data ve formuláři budou ztracena"
             visible={ deleteConfirmVisible }>
             <CloseOutlined onClick={ () => {
               if (form.isFieldsTouched()) {
                 setDeleteConfirmVisible(true)
               } else {
-                closeModal()
+                setDeleteConfirmVisible(false)
+                close()
               }
             } } />
           </Popconfirm>
@@ -176,104 +192,108 @@ export const ReservationModal = ({
         footer={ footerButtons }
         title="Rezervační formulář"
         visible={ isOpen }>
-        <Form
-          form={ form }
-          initialValues={ initialValues }
-          layout="vertical">
-          <Form.Item
-            label="Datum Rezervace"
-            name="dates"
-            required>
-            <DatePicker.RangePicker
-              format={ dateFormat }
-              showTime />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label="Host"
-            name="guest"
-            required
-            rules={ ReservationFormHelper.guestValidators(form) }>
-            <Select
-              filterOption={ (input, option): boolean => {
-                const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
-                return match !== undefined && match >= 0
-              } }
-              options={ guestOptions }
-              showSearch />
-          </Form.Item>
-          <Form.List name="roommates">
-            { (fields, { add, remove }) => (
-              <>
-                { fields.map(({ key, name, fieldKey, ...restField }) => (
-                  <Space
-                    align="baseline"
-                    className="roommate-list"
-                    key={ key }>
-                    <Form.Item
-                      hasFeedback
-                      { ...restField }
-                      fieldKey={ [ fieldKey, 'first' ] }
-                      name={ [ name, "id" ] }
-                      rules={ ReservationFormHelper.roommateValidators(form) }>
-                      <Select
-                        options={ guestOptions }
-                        showSearch />
-                    </Form.Item>
-                    <MinusCircleOutlined onClick={ () => {
-                      remove(name)
-                      form.validateFields()
-                    } } />
-                  </Space>
-                )) }
-                <Form.Item>
-                  <Button
-                    disabled={ fields.length >= guestOptions.length }
-                    type="dashed"
-                    onClick={ () => add() }
-                    block
-                    icon={ <PlusOutlined /> }>
-                    Přidat spolubydlícího
-                  </Button>
-                </Form.Item>
-              </>
-            ) }
-          </Form.List>
-          <Form.Item
-            hasFeedback
-            label="Typ Rezervace"
-            name="type"
-            required
-            rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
-            <Select
-              options={ ReservationFormHelper.reservationOptions } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label="Strava"
-            name="meal"
-            required
-            rules={ [ FormHelper.requiredRule ] }>
-            <Select
-              options={ ReservationFormHelper.mealOptions } />
-          </Form.Item>
-          <Form.Item
-            label="Účel pobytu"
-            name="purpose">
-            <Input placeholder="účel pobytu" />
-          </Form.Item>
-          <Form.Item
-            label="Poznámky"
-            name="notes">
-            <Input.TextArea
-              placeholder="zadejte text"
-              allowClear />
-          </Form.Item>
-        </Form>
+        <Skeleton
+          active
+          loading={ guestsLoading }
+          paragraph={ { rows: 5 } }>
+          <Form
+            form={ form }
+            initialValues={ initialValues }
+            layout="vertical">
+            <Form.Item
+              label="Datum Rezervace"
+              name="dates"
+              required>
+              <DatePicker.RangePicker
+                format={ dateFormat }
+                showTime />
+            </Form.Item>
+            <Form.Item
+              hasFeedback
+              label="Host"
+              name="guest"
+              required
+              rules={ ReservationFormHelper.guestValidators(form) }>
+              <Select
+                filterOption={ (input, option): boolean => {
+                  const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
+                  return match !== undefined && match >= 0
+                } }
+                options={ guestOptions }
+                showSearch />
+            </Form.Item>
+            <Form.List name="roommates">
+              { (fields, { add, remove }) => (
+                <>
+                  { fields.map(({ key, name, fieldKey, ...restField }) => (
+                    <Space
+                      align="baseline"
+                      className="roommate-list"
+                      key={ key }>
+                      <Form.Item
+                        hasFeedback
+                        { ...restField }
+                        fieldKey={ [ fieldKey, 'first' ] }
+                        name={ [ name, "id" ] }
+                        rules={ ReservationFormHelper.roommateValidators(form) }>
+                        <Select
+                          options={ guestOptions }
+                          showSearch />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={ () => {
+                        remove(name)
+                        form.validateFields()
+                      } } />
+                    </Space>
+                  )) }
+                  <Form.Item>
+                    <Button
+                      disabled={ fields.length >= guestOptions.length }
+                      type="dashed"
+                      onClick={ () => add() }
+                      block
+                      icon={ <PlusOutlined /> }>
+                      Přidat spolubydlícího
+                    </Button>
+                  </Form.Item>
+                </>
+              ) }
+            </Form.List>
+            <Form.Item
+              hasFeedback
+              label="Typ Rezervace"
+              name="type"
+              required
+              rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
+              <Select
+                options={ ReservationFormHelper.reservationOptions } />
+            </Form.Item>
+            <Form.Item
+              hasFeedback
+              label="Strava"
+              name="meal"
+              required
+              rules={ [ FormHelper.requiredRule ] }>
+              <Select
+                options={ ReservationFormHelper.mealOptions } />
+            </Form.Item>
+            <Form.Item
+              label="Účel pobytu"
+              name="purpose">
+              <Input placeholder="účel pobytu" />
+            </Form.Item>
+            <Form.Item
+              label="Poznámky"
+              name="notes">
+              <Input.TextArea
+                placeholder="zadejte text"
+                allowClear />
+            </Form.Item>
+          </Form>
+        </Skeleton>
       </Modal>
       <GuestDrawer
         close={ () => setGuestDrawerOpen(false) }
-        reauthenticate={ reauthenticate }
         addGuest={ addGuestOption }
         visible={ guestDrawerOpen } />
     </>

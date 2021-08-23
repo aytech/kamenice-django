@@ -44,5 +44,8 @@ export const SUITES_WITH_RESERVATIONS = gql`
       toDate
       type
     }
+    whoami {
+      username
+    }
   }
 `

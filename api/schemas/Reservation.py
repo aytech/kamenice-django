@@ -36,11 +36,8 @@ class ReservationQuery(ObjectType):
             return None
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
-    def resolve_reservations(self, _query, _info):
-        try:
-            return ReservationModel.objects.get(deleted=False)
-        except ObjectDoesNotExist:
-            return None
+    def resolve_reservations(self, _info):
+        return ReservationModel.objects.filter(deleted=False)
 
 
 class ReservationInput(InputObjectType):

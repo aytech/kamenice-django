@@ -7,6 +7,7 @@ export const CREATE_GUEST = gql`
         addressMunicipality
         addressPsc
         addressStreet
+        age
         citizenship
         email
         gender

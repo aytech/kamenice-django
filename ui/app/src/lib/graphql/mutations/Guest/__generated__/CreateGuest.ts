@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { GuestInput, GuestGender } from "./../../../globalTypes";
+import { GuestInput, GuestAge, GuestGender } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CreateGuest
@@ -14,6 +14,7 @@ export interface CreateGuest_createGuest_guest {
   addressMunicipality: string | null;
   addressPsc: number | null;
   addressStreet: string | null;
+  age: GuestAge | null;
   citizenship: string | null;
   email: string;
   gender: GuestGender | null;

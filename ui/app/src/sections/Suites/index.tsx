@@ -3,28 +3,28 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined } from "@ant-design/icons"
 import { Avatar, Button, List, message } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
-import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
-import { ApolloError, useMutation } from "@apollo/client"
+import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
 import { errorMessages } from "../../lib/Constants"
 import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
+import { User } from "../../lib/Types"
+import { SUITES } from "../../lib/graphql/queries/Suites"
 
 interface Props {
   reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
-  refetchData: () => void
   setPageTitle: (title: string) => void
-  suitesData?: (Suites_suites | null)[] | null
+  setUser: (user: User) => void
 }
 
 export const Suites = withRouter(({
   reauthenticate,
-  refetchData,
   setPageTitle,
-  suitesData
+  setUser
 }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
@@ -34,6 +34,9 @@ export const Suites = withRouter(({
   const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuite, CreateSuiteVariables>(CREATE_SUITE)
   const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE)
   const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
+  // const {loading: suitesLoading, data: suitesData, refetch} = useQuery<Suites>(SUITES, {
+    // onError: (reason: ApolloError)
+  // })
 
   const errorHandler = (reason: ApolloError, callback: () => void) => {
     if (reason.message === errorMessages.signatureExpired) {
@@ -48,7 +51,6 @@ export const Suites = withRouter(({
       () => createSuite({ variables: { data: { ...variables } } })
         .then(() => {
           setDrawerVisible(false)
-          refetchData()
           message.success("Apartmá byla vytvořena")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))
@@ -59,7 +61,6 @@ export const Suites = withRouter(({
       () => updateSuite({ variables: { data: { id: suiteId, ...variables } } })
         .then(() => {
           setDrawerVisible(false)
-          refetchData()
           message.success("Apartmá byla aktualizována")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))
@@ -70,7 +71,6 @@ export const Suites = withRouter(({
       () => deleteSuite({ variables: { suiteId } })
         .then(() => {
           setDrawerVisible(false)
-          refetchData()
           message.success("Apartmá byla odstraněna")
         })
     handler().catch((reason: ApolloError) => errorHandler(reason, handler))
@@ -80,15 +80,15 @@ export const Suites = withRouter(({
     setPageTitle("Apartmá")
   }, [ setPageTitle ])
 
-  useEffect(() => {
-    const suitesList: Suites_suites[] = []
-    suitesData?.forEach((suite: Suites_suites | null) => {
-      if (suite !== null) {
-        suitesList.push(suite)
-      }
-    })
-    setSuites(suitesList)
-  }, [ suitesData ])
+  // useEffect(() => {
+  //   const suitesList: Suites_suites[] = []
+  //   suitesData?.forEach((suite: Suites_suites | null) => {
+  //     if (suite !== null) {
+  //       suitesList.push(suite)
+  //     }
+  //   })
+  //   setSuites(suitesList)
+  // }, [ suitesData ])
 
   return (
     <>
@@ -105,6 +105,7 @@ export const Suites = withRouter(({
         }
         header={ <h4>Seznam apartmá</h4> }
         itemLayout="horizontal"
+        loading={true}
         renderItem={ suite => (
           <List.Item
             actions={ [

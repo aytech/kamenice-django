@@ -56,8 +56,17 @@ export interface SuitesWithReservations_reservations {
   type: ReservationType;
 }
 
+export interface SuitesWithReservations_whoami {
+  __typename: "UserType";
+  /**
+   * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+   */
+  username: string;
+}
+
 export interface SuitesWithReservations {
   guests: (SuitesWithReservations_guests | null)[] | null;
   suites: (SuitesWithReservations_suites | null)[] | null;
   reservations: (SuitesWithReservations_reservations | null)[] | null;
+  whoami: SuitesWithReservations_whoami | null;
 }

@@ -10,7 +10,7 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = '__all__'
+        fields = ('id', 'number', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -19,10 +19,7 @@ class SuitesQuery(ObjectType):
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     def resolve_suites(self, _info):
-        try:
-            return SuiteModel.objects.get(deleted=False)
-        except ObjectDoesNotExist:
-            return None
+        return SuiteModel.objects.filter(deleted=False)
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     def resolve_suite(self, _info, suite_id):

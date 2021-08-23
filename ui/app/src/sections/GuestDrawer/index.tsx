@@ -7,21 +7,19 @@ import { GuestForm } from "../../lib/Types"
 import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
-import { ApolloError, FetchResult, useMutation } from "@apollo/client"
+import { FetchResult, useMutation } from "@apollo/client"
 import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 import { GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
 import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
-import { errorMessages } from "../../lib/Constants"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 
 interface Props {
-  addGuest?: (guest: Guests_guests) => void
+  addGuest: (guest: Guests_guests) => void
   close: () => void
   guest?: GuestsFull_guests | null
-  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   removeGuest?: (guest: GuestsFull_guests) => void
   updateGuestCache?: (guest: Guests_guests) => void
   visible: boolean
@@ -31,7 +29,6 @@ export const GuestDrawer = ({
   addGuest,
   close,
   guest,
-  reauthenticate,
   removeGuest,
   updateGuestCache,
   visible
@@ -77,70 +74,70 @@ export const GuestDrawer = ({
     }
   }
 
-  const updateGuestAction = (guestId: string, variables: any) => {
-    const handler =
-      () => updateGuest({ variables: { data: { id: guestId, ...variables } } })
-        .then((value: FetchResult<UpdateGuest>) => {
-          if (value.data?.updateGuest !== undefined && value.data.updateGuest !== null) {
-            form.resetFields()
-            message.success("Hotovo!")
-            if (updateGuestCache !== undefined) {
-              updateGuestCache(value.data.updateGuest?.guest as Guests_guests)
-            }
-            close()
-          }
-        })
-    handler().catch((reason: ApolloError) => {
-      if (reason.message === errorMessages.signatureExpired) {
-        reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-      } else {
-        message.error(reason.message)
-      }
-    })
-  }
+  // const updateGuestAction = (guestId: string, variables: any) => {
+  //   const handler =
+  //     () => updateGuest({ variables: { data: { id: guestId, ...variables } } })
+  //       .then((value: FetchResult<UpdateGuest>) => {
+  //         if (value.data?.updateGuest !== undefined && value.data.updateGuest !== null) {
+  //           form.resetFields()
+  //           message.success(`Host ${ value.data.updateGuest.guest?.name } ${ value.data.updateGuest.guest?.surname } aktualizován!`)
+  //           if (updateGuestCache !== undefined) {
+  //             updateGuestCache(value.data.updateGuest?.guest as Guests_guests)
+  //           }
+  //           close()
+  //         }
+  //       })
+  //   handler().catch((reason: ApolloError) => {
+  //     if (reason.message === errorMessages.signatureExpired) {
+  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
+  //     } else {
+  //       message.error(reason.message)
+  //     }
+  //   })
+  // }
 
-  const createGuestAction = (variables: any) => {
-    const handler =
-      () => createGuest({ variables: { data: { ...variables } } })
-        .then((value: FetchResult<CreateGuest>) => {
-          if (value.data?.createGuest !== undefined && value.data.createGuest !== null) {
-            form.resetFields()
-            message.success("Hotovo!")
-            if (addGuest !== undefined) {
-              addGuest(value.data.createGuest?.guest as Guests_guests)
-            }
-            close()
-          }
-        })
-    handler().catch((reason: ApolloError) => {
-      if (reason.message === errorMessages.signatureExpired) {
-        reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-      } else {
-        message.error(reason.message)
-      }
-    })
-  }
+  // const createGuestAction = (variables: any) => {
+  //   const handler =
+  //     () => createGuest({ variables: { data: { ...variables } } })
+  //       .then((value: FetchResult<CreateGuest>) => {
+  //         if (value.data?.createGuest !== undefined && value.data.createGuest !== null) {
+  //           form.resetFields()
+  //           message.success(`Host ${ value.data.createGuest.guest?.name } ${ value.data.createGuest.guest?.surname } přidán!`)
+  //           if (addGuest !== undefined) {
+  //             addGuest(value.data.createGuest?.guest as Guests_guests)
+  //           }
+  //           close()
+  //         }
+  //       })
+  //   handler().catch((reason: ApolloError) => {
+  //     if (reason.message === errorMessages.signatureExpired) {
+  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
+  //     } else {
+  //       message.error(reason.message)
+  //     }
+  //   })
+  // }
 
-  const deleteGuestAction = (guestId: string) => {
-    const handler =
-      () => deleteGuest({ variables: { guestId } })
-        .then((value: FetchResult<DeleteGuest>) => {
-          if (value.data?.deleteGuest !== undefined && value.data?.deleteGuest !== null) {
-            message.success("Hotovo!")
-            if (removeGuest !== undefined) {
-              removeGuest(value.data.deleteGuest?.guest as Guests_guests)
-            }
-            close()
-          }
-        })
-    handler().catch((reason: ApolloError) => {
-      if (reason.message === errorMessages.signatureExpired) {
-        reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-      } else {
-        message.error(reason.message)
-      }
-    })
-  }
+  // const deleteGuestAction = (guestId: string) => {
+  //   const handler =
+  //     () => deleteGuest({ variables: { guestId } })
+  //       .then((value: FetchResult<DeleteGuest>) => {
+  //         if (value.data?.deleteGuest !== undefined && value.data?.deleteGuest !== null) {
+  //           message.success(`Host smazán!`)
+  //           if (removeGuest !== undefined) {
+  //             removeGuest(value.data.deleteGuest?.guest as Guests_guests)
+  //           }
+  //           close()
+  //         }
+  //       })
+  //   handler().catch((reason: ApolloError) => {
+  //     if (reason.message === errorMessages.signatureExpired) {
+  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
+  //     } else {
+  //       message.error(reason.message)
+  //     }
+  //   })
+  // }
 
   const submitForm = (): void => {
     form.validateFields()
@@ -161,9 +158,17 @@ export const GuestDrawer = ({
           visaNumber: formData.visa
         }
         if (guest === undefined || guest === null) {
-          createGuestAction(variables)
+          createGuest({ variables: { data: { ...variables } } })
+            .then((value: FetchResult<CreateGuest>) => {
+              const guest = value.data?.createGuest?.guest
+              if (guest !== undefined && guest !== null) {
+                addGuest(guest)
+                message.success(`Host ${ guest.name } ${ guest.surname } přidán!`)
+              }
+              close()
+            })
         } else {
-          updateGuestAction(guest.id, variables)
+          // updateGuestAction(guest.id, variables)
         }
       })
       .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
@@ -202,7 +207,8 @@ export const GuestDrawer = ({
               cancelText="Ne"
               icon={ <WarningOutlined /> }
               okText="Ano"
-              onConfirm={ () => deleteGuestAction(guest.id) }
+              onConfirm={ () => console.log("Deleting: ", guest.id) }
+              // onConfirm={ () => deleteGuestAction(guest.id) }
               title="opravdu odstranit?">
               <Button
                 danger
@@ -217,7 +223,7 @@ export const GuestDrawer = ({
           <Button
             onClick={ submitForm }
             type="primary">
-            { guest === null ? "Vytvořit" : "Upravit" }
+            { (guest === undefined || guest === null) ? "Vytvořit" : "Upravit" }
           </Button>
         </>
       }
