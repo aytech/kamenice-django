@@ -20,8 +20,7 @@ interface Props {
   addGuest: (guest: Guests_guests) => void
   close: () => void
   guest?: GuestsFull_guests | null
-  removeGuest?: (guest: GuestsFull_guests) => void
-  updateGuestCache?: (guest: Guests_guests) => void
+  removeGuest?: (guestId: string) => void
   visible: boolean
 }
 
@@ -30,7 +29,6 @@ export const GuestDrawer = ({
   close,
   guest,
   removeGuest,
-  updateGuestCache,
   visible
 }: Props) => {
 
@@ -66,79 +64,6 @@ export const GuestDrawer = ({
     </Form.Item>
   )
 
-  const closeDrawer = (): void => {
-    if (form.isFieldsTouched()) {
-      setConfirmClose(true)
-    } else {
-      close()
-    }
-  }
-
-  // const updateGuestAction = (guestId: string, variables: any) => {
-  //   const handler =
-  //     () => updateGuest({ variables: { data: { id: guestId, ...variables } } })
-  //       .then((value: FetchResult<UpdateGuest>) => {
-  //         if (value.data?.updateGuest !== undefined && value.data.updateGuest !== null) {
-  //           form.resetFields()
-  //           message.success(`Host ${ value.data.updateGuest.guest?.name } ${ value.data.updateGuest.guest?.surname } aktualizován!`)
-  //           if (updateGuestCache !== undefined) {
-  //             updateGuestCache(value.data.updateGuest?.guest as Guests_guests)
-  //           }
-  //           close()
-  //         }
-  //       })
-  //   handler().catch((reason: ApolloError) => {
-  //     if (reason.message === errorMessages.signatureExpired) {
-  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-  //     } else {
-  //       message.error(reason.message)
-  //     }
-  //   })
-  // }
-
-  // const createGuestAction = (variables: any) => {
-  //   const handler =
-  //     () => createGuest({ variables: { data: { ...variables } } })
-  //       .then((value: FetchResult<CreateGuest>) => {
-  //         if (value.data?.createGuest !== undefined && value.data.createGuest !== null) {
-  //           form.resetFields()
-  //           message.success(`Host ${ value.data.createGuest.guest?.name } ${ value.data.createGuest.guest?.surname } přidán!`)
-  //           if (addGuest !== undefined) {
-  //             addGuest(value.data.createGuest?.guest as Guests_guests)
-  //           }
-  //           close()
-  //         }
-  //       })
-  //   handler().catch((reason: ApolloError) => {
-  //     if (reason.message === errorMessages.signatureExpired) {
-  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-  //     } else {
-  //       message.error(reason.message)
-  //     }
-  //   })
-  // }
-
-  // const deleteGuestAction = (guestId: string) => {
-  //   const handler =
-  //     () => deleteGuest({ variables: { guestId } })
-  //       .then((value: FetchResult<DeleteGuest>) => {
-  //         if (value.data?.deleteGuest !== undefined && value.data?.deleteGuest !== null) {
-  //           message.success(`Host smazán!`)
-  //           if (removeGuest !== undefined) {
-  //             removeGuest(value.data.deleteGuest?.guest as Guests_guests)
-  //           }
-  //           close()
-  //         }
-  //       })
-  //   handler().catch((reason: ApolloError) => {
-  //     if (reason.message === errorMessages.signatureExpired) {
-  //       reauthenticate(handler, (reason: ApolloError) => message.error(reason.message))
-  //     } else {
-  //       message.error(reason.message)
-  //     }
-  //   })
-  // }
-
   const submitForm = (): void => {
     form.validateFields()
       .then(() => {
@@ -168,7 +93,15 @@ export const GuestDrawer = ({
               close()
             })
         } else {
-          // updateGuestAction(guest.id, variables)
+          updateGuest({ variables: { data: { id: String(guest.id), ...variables } } })
+            .then((value: FetchResult<UpdateGuest>) => {
+              const guest = value.data?.updateGuest?.guest
+              if (guest !== undefined && guest !== null) {
+                addGuest(guest)
+                message.success(`Host ${ guest.name } ${ guest.surname } aktualizován!`)
+              }
+              close()
+            })
         }
       })
       .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
@@ -193,7 +126,13 @@ export const GuestDrawer = ({
           placement="rightTop"
           title="Zavřít formulář? Data ve formuláři budou ztracena"
           visible={ confirmClose }>
-          <CloseOutlined onClick={ closeDrawer } />
+          <CloseOutlined onClick={ () => {
+            if (form.isFieldsTouched()) {
+              setConfirmClose(true)
+            } else {
+              close()
+            }
+          } } />
         </Popconfirm>
       ) }
       placement="left"
@@ -207,8 +146,17 @@ export const GuestDrawer = ({
               cancelText="Ne"
               icon={ <WarningOutlined /> }
               okText="Ano"
-              onConfirm={ () => console.log("Deleting: ", guest.id) }
-              // onConfirm={ () => deleteGuestAction(guest.id) }
+              onConfirm={ () => {
+                deleteGuest({ variables: { guestId: guest.id } })
+                  .then((value: FetchResult<DeleteGuest>) => {
+                    const guest = value.data?.deleteGuest?.guest
+                    if (removeGuest !== undefined && guest !== undefined && guest !== null) {
+                      removeGuest(guest.id)
+                      message.success("Host byl smazán")
+                      close()
+                    }
+                  })
+              } }
               title="opravdu odstranit?">
               <Button
                 danger

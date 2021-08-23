@@ -12,6 +12,7 @@ import { refreshTokenName, tokenName } from "../../lib/Constants"
 import { useCallback } from "react"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { User } from "../../lib/Types"
+import { Guests } from "../Guests"
 
 export const App = withRouter(({ history }: RouteComponentProps) => {
 
@@ -65,14 +66,11 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
                 setPageTitle={ setPageTitle }
                 setUser={ setUser } />
             </Route> */}
-            {/* <Route exact path="/guests">
+            <Route exact path="/guests">
               <Guests
-                guestsData={ data?.guests }
-                reauthenticate={ reauthenticate }
                 setPageTitle={ setPageTitle }
-                setUser={ setUser }
-                user={ user } />
-            </Route> */}
+                setUser={ setUser } />
+            </Route>
             {/* <Route exact path="/login">
               <Login
                 refetch={ refetch }

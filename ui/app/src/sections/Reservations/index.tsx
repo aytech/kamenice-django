@@ -27,6 +27,8 @@ export const Reservations = withRouter(({
   setUser
 }: RouteComponentProps & Props) => {
 
+  const { loading: reservationsLoading, data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
+
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
 
@@ -57,8 +59,6 @@ export const Reservations = withRouter(({
       type: reservation.type
     }
   }
-
-  const { loading: reservationsLoading, data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
 
   const addOrUpdateReservation = (reservation?: Reservations_reservations | null) => {
     if (reservation !== undefined && reservation !== null) {

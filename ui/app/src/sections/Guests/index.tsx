@@ -1,33 +1,29 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { Button, List } from "antd"
-import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
+import { GUESTS } from "../../lib/graphql/queries/Guests"
+import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { ApolloError } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
-import { User } from "../../lib/Types"
-import { HomePage_guests } from "../../lib/graphql/queries/App/__generated__/HomePage"
 
 interface Props {
-  guestsData?: (HomePage_guests | null)[] | null
-  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: Whoami_whoami | undefined) => void
-  user?: User
 }
 
 export const Guests = withRouter(({
-  guestsData,
-  reauthenticate,
   setPageTitle
 }: RouteComponentProps & Props) => {
 
+  const { loading: guestsLoading, data: guestsData } = useQuery<GuestsData>(GUESTS)
+
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
-  const [ guests, setGuests ] = useState<(Guests_guests)[]>([])
+  const [ guests, setGuests ] = useState<Guests_guests[]>([])
   const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
   useEffect(() => {
@@ -36,29 +32,23 @@ export const Guests = withRouter(({
 
   useEffect(() => {
     const guestsList: Guests_guests[] = []
-    guestsData?.forEach((guest: HomePage_guests | null) => {
-      if (guest !== null) {
-        guestsList.push(guest)
-      }
-    })
-    setGuests(guestsList)
+    if (guestsData !== undefined && guestsData?.guests !== null) {
+      guestsData.guests.forEach((guest: Guests_guests | null) => {
+        if (guest !== null) {
+          guestsList.push(guest)
+        }
+      })
+      setGuests(guestsList)
+    }
   }, [ guestsData ])
 
-  const addGuest = (guest: Guests_guests) => setGuests(guests.concat(guest))
-
-  const updateGuestState = (guest: Guests_guests) => {
-    setGuests(
-      Array.from(guests, (cachedGuest: Guests_guests) => {
-        if (cachedGuest.id === guest.id) {
-          return guest
-        }
-        return cachedGuest
-      })
-    )
+  const addOrRemoveGuest = (guest: Guests_guests) => {
+    const existingGuests = guests.filter(cachedGuest => cachedGuest.id !== guest.id)
+    setGuests(existingGuests.concat(guest))
   }
 
-  const removeGuest = (guest: Guests_guests) =>
-    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guest.id))
+  const removeGuest = (guestId: string) =>
+    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guestId))
 
   return (
     <>
@@ -79,6 +69,7 @@ export const Guests = withRouter(({
         }
         header={ <h4>Seznam hostů</h4> }
         itemLayout="horizontal"
+        loading={ guestsLoading }
         renderItem={ (guest: Guests_guests) => (
           <GuestItem
             guest={ guest }
@@ -86,11 +77,10 @@ export const Guests = withRouter(({
             selectGuest={ setSelectedGuest } />
         ) } />
       <GuestDrawer
-        addGuest={ addGuest }
+        addGuest={ addOrRemoveGuest }
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
         removeGuest={ removeGuest }
-        updateGuestCache={ updateGuestState }
         visible={ drawerVisible } />
     </>
   )
