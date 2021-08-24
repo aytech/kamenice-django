@@ -1,94 +1,51 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined } from "@ant-design/icons"
-import { Avatar, Button, List, message } from "antd"
+import { Avatar, Button, List } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
-import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
-import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
-import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
-import { errorMessages } from "../../lib/Constants"
-import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
+import { useQuery } from "@apollo/client"
 import { User } from "../../lib/Types"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 
 interface Props {
-  reauthenticate: (callback: () => void, errorHandler?: (reason: ApolloError) => void) => void
   setPageTitle: (title: string) => void
   setUser: (user: User) => void
 }
 
 export const Suites = withRouter(({
-  reauthenticate,
-  setPageTitle,
-  setUser
+  setPageTitle
 }: RouteComponentProps & Props) => {
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
-  const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuite, CreateSuiteVariables>(CREATE_SUITE)
-  const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE)
-  const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
-  // const {loading: suitesLoading, data: suitesData, refetch} = useQuery<Suites>(SUITES, {
-    // onError: (reason: ApolloError)
-  // })
+  const { loading: suitesLoading, data: suitesData } = useQuery<SuitesData>(SUITES)
 
-  const errorHandler = (reason: ApolloError, callback: () => void) => {
-    if (reason.message === errorMessages.signatureExpired) {
-      reauthenticate(callback, (reason: ApolloError) => message.error(reason.message))
-    } else {
-      message.error(reason.message)
-    }
+  const addOrUpdateSuite = (suite: Suites_suites) => {
+    setSuites(suites.filter(cachedSuite => cachedSuite.id !== suite.id).concat(suite))
   }
 
-  const createSuiteAction = (variables: any) => {
-    const handler =
-      () => createSuite({ variables: { data: { ...variables } } })
-        .then(() => {
-          setDrawerVisible(false)
-          message.success("Apartmá byla vytvořena")
-        })
-    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
-  }
-
-  const updateSuiteAction = (suiteId: string, variables: any) => {
-    const handler =
-      () => updateSuite({ variables: { data: { id: suiteId, ...variables } } })
-        .then(() => {
-          setDrawerVisible(false)
-          message.success("Apartmá byla aktualizována")
-        })
-    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
-  }
-
-  const deleteSuiteAction = (suiteId: string) => {
-    const handler =
-      () => deleteSuite({ variables: { suiteId } })
-        .then(() => {
-          setDrawerVisible(false)
-          message.success("Apartmá byla odstraněna")
-        })
-    handler().catch((reason: ApolloError) => errorHandler(reason, handler))
+  const clearSuite = (suiteId: string) => {
+    setSuites(suites.filter(suite => suite.id !== suiteId))
   }
 
   useEffect(() => {
     setPageTitle("Apartmá")
   }, [ setPageTitle ])
 
-  // useEffect(() => {
-  //   const suitesList: Suites_suites[] = []
-  //   suitesData?.forEach((suite: Suites_suites | null) => {
-  //     if (suite !== null) {
-  //       suitesList.push(suite)
-  //     }
-  //   })
-  //   setSuites(suitesList)
-  // }, [ suitesData ])
+  useEffect(() => {
+    const suitesList: Suites_suites[] = []
+    suitesData?.suites?.forEach((suite: Suites_suites | null) => {
+      if (suite !== null) {
+        suitesList.push(suite)
+      }
+    })
+    setSuites(suitesList)
+  }, [ suitesData ])
 
   return (
     <>
@@ -105,7 +62,7 @@ export const Suites = withRouter(({
         }
         header={ <h4>Seznam apartmá</h4> }
         itemLayout="horizontal"
-        loading={true}
+        loading={ suitesLoading }
         renderItem={ suite => (
           <List.Item
             actions={ [
@@ -130,12 +87,10 @@ export const Suites = withRouter(({
           </List.Item>
         ) } />
       <SuiteDrawer
+        addOrUpdateSuite={ addOrUpdateSuite }
+        clearSuite={ clearSuite }
         close={ () => setDrawerVisible(false) }
-        createSuite={ createSuiteAction }
-        deleteSuite={ deleteSuiteAction }
-        loading={ createLoading || updateLoading || deleteLoading }
         suite={ activeSuite }
-        updateSuite={ updateSuiteAction }
         visible={ drawerVisible } />
     </>
   )

@@ -1,30 +1,35 @@
 import { useEffect, useState } from "react"
-import { Button, Drawer, Form, Input, Popconfirm, Spin } from "antd"
+import { Button, Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
 import { SuiteForm } from "../../lib/Types"
+import { FetchResult, useMutation } from "@apollo/client"
+import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
+import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
+import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
+import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 
 interface Props {
+  addOrUpdateSuite: (suite: Suites_suites) => void
+  clearSuite: (suiteId: string) => void
   close: () => void
-  createSuite: (variables: any) => void
-  deleteSuite: (suiteId: string) => void
-  loading: boolean
   suite?: Suites_suites
-  updateSuite: (suiteId: string, variables: any) => void
   visible: boolean
 }
 
 export const SuiteDrawer = ({
+  addOrUpdateSuite,
+  clearSuite,
   close,
-  createSuite,
-  deleteSuite,
-  loading,
   suite,
-  updateSuite,
   visible
 }: Props) => {
+
+  const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuite, CreateSuiteVariables>(CREATE_SUITE)
+  const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE)
+  const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE)
 
   const [ form ] = Form.useForm()
 
@@ -35,12 +40,6 @@ export const SuiteDrawer = ({
     title: suite?.title
   }
 
-  useEffect(() => {
-    if (visible === true) {
-      form.resetFields()
-    }
-  }, [ form, visible ])
-
   const submitForm = () => {
     form.validateFields()
       .then(() => {
@@ -50,9 +49,25 @@ export const SuiteDrawer = ({
           title: formData.title
         }
         if (suite === undefined) {
-          createSuite(variables)
+          createSuite({ variables: { data: { ...variables } } })
+            .then((value: FetchResult<CreateSuite>) => {
+              const suite = value.data?.createSuite?.suite
+              if (suite !== undefined && suite !== null) {
+                addOrUpdateSuite(suite)
+                message.success("Apartmá byla vytvořena")
+                close()
+              }
+            })
         } else {
-          updateSuite(suite.id, variables)
+          updateSuite({ variables: { data: { id: suite.id, ...variables } } })
+            .then((value: FetchResult<UpdateSuite>) => {
+              const suite = value.data?.updateSuite?.suite
+              if (suite !== undefined && suite !== null) {
+                addOrUpdateSuite(suite)
+                message.success("Apartmá byla aktualizována")
+                close()
+              }
+            })
         }
       })
       .catch(() => {
@@ -67,6 +82,12 @@ export const SuiteDrawer = ({
       close()
     }
   }
+
+  useEffect(() => {
+    if (visible === true) {
+      form.resetFields()
+    }
+  }, [ form, visible ])
 
   return (
     <Drawer
@@ -90,7 +111,18 @@ export const SuiteDrawer = ({
               cancelText="Ne"
               icon={ <WarningOutlined /> }
               okText="Ano"
-              onConfirm={ () => deleteSuite(suite.id) }
+              onConfirm={ () => {
+                deleteSuite({ variables: { suiteId: suite.id } })
+                  .then((value: FetchResult<DeleteSuite>) => {
+                    const suiteId = value.data?.deleteSuite?.suite?.id
+                    if (suiteId !== undefined) {
+                      clearSuite(suiteId)
+                      message.success("Apartmá byla odstraněna")
+                      close()
+                    }
+                  })
+                console.log("Deleting suite: ", suite.id)
+              } }
               title="opravdu odstranit?">
               <Button
                 danger
@@ -118,7 +150,11 @@ export const SuiteDrawer = ({
       width={ 500 }>
       <Spin
         size="large"
-        spinning={ loading }
+        spinning={
+          createLoading
+          || deleteLoading
+          || updateLoading
+        }
         tip="Načítám...">
         <Form
           form={ form }

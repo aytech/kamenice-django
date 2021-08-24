@@ -13,6 +13,7 @@ import { useCallback } from "react"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { User } from "../../lib/Types"
 import { Guests } from "../Guests"
+import { Suites } from "../Suites"
 
 export const App = withRouter(({ history }: RouteComponentProps) => {
 
@@ -60,12 +61,11 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
                 setPageTitle={ setPageTitle }
                 setUser={ setUser } />
             </Route>
-            {/* <Route exact path="/apartma">
+            <Route exact path="/apartma">
               <Suites
-                reauthenticate={ reauthenticate }
                 setPageTitle={ setPageTitle }
                 setUser={ setUser } />
-            </Route> */}
+            </Route>
             <Route exact path="/guests">
               <Guests
                 setPageTitle={ setPageTitle }
