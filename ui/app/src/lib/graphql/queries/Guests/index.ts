@@ -19,23 +19,3 @@ export const GUESTS = gql`
     }
   }
 `
-
-export const GUESTS_FULL = gql`
-  query GuestsFull {
-    guests {
-      age
-      addressMunicipality
-      addressPsc
-      addressStreet
-      citizenship
-      email
-      gender
-      identity
-      id
-      name
-      phoneNumber
-      surname
-      visaNumber
-    }
-  }
-`

@@ -7,7 +7,6 @@ import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
-import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
@@ -58,7 +57,7 @@ export const Reservations = withRouter(({
     }
   }
 
-  const addOrUpdateReservation = (reservation?: Reservations_reservations | null) => {
+  const addOrUpdateReservation = (reservation?: SuitesWithReservations_reservations | null) => {
     if (reservation !== undefined && reservation !== null) {
       const existingReservations = items.filter(item => item.id !== reservation.id)
       setItems(existingReservations.concat(getTimelineReservationItem(reservation)))

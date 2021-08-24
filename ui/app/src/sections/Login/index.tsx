@@ -5,8 +5,8 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { errorMessages, refreshTokenName, tokenName, usernameKey } from "../../lib/Constants"
-import { TOKEN_AUTH } from "../../lib/graphql/mutations/User"
-import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/User/__generated__/TokenAuth"
+import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
+import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/Token/__generated__/TokenAuth"
 import "./styles.css"
 
 interface Props {

@@ -10,8 +10,8 @@ import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
 import { errorMessages, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
-import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/User/__generated__/RefreshToken'
-import { TOKEN_REFRESH } from './lib/graphql/mutations/User'
+import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/Token/__generated__/RefreshToken'
+import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
 
 moment.locale("cs")
 

@@ -15,12 +15,12 @@ import { Guests, Guests_guests } from "../../lib/graphql/queries/Guests/__genera
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface Props {
-  addOrUpdateReservation: (reservation?: Reservations_reservations | null) => void
+  addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
   close: () => void
   isOpen: boolean
   clearReservation: (reservationId?: string | null) => void

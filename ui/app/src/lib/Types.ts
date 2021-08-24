@@ -19,13 +19,7 @@ export const Reservation = {
   }
 }
 
-export type DrawerType = "guest" | "suite"
 export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
-
-export interface ReservationRange {
-  from: Moment
-  to: Moment
-}
 
 interface Address {
   municipality?: string
@@ -50,15 +44,6 @@ export interface GuestForm {
   phone: string
   surname: string
   visa?: string
-}
-
-export interface GuestErrorResponse {
-  email: Array<string>
-  gender: Array<string>
-  identity: Array<string>
-  name: Array<string>
-  phone_number: Array<string>
-  surname: Array<string>
 }
 
 export interface Guest {
@@ -110,8 +95,4 @@ export interface CustomItemFields {
   roommates: Guest[]
   suite: Suite
   type?: ReservationTypeKey
-}
-
-export interface User {
-  username: string
 }

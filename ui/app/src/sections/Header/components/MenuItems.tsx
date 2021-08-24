@@ -6,8 +6,8 @@ import { Link, RouteComponentProps, withRouter } from "react-router-dom"
 import { Colors } from "../../../lib/components/Colors"
 import { UrlHelper } from "../../../lib/components/UrlHelper"
 import { refreshTokenName, tokenName, usernameKey } from "../../../lib/Constants"
-import { TOKEN_REVOKE } from "../../../lib/graphql/mutations/User"
-import { RevokeToken, RevokeTokenVariables } from "../../../lib/graphql/mutations/User/__generated__/RevokeToken"
+import { TOKEN_REVOKE } from "../../../lib/graphql/mutations/Token"
+import { RevokeToken, RevokeTokenVariables } from "../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
 
 export const MenuItems = withRouter(({ history }: RouteComponentProps) => {
 

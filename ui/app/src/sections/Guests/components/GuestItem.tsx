@@ -1,11 +1,11 @@
 import { Avatar, Button, List } from "antd"
 import { Colors } from "../../../lib/components/Colors"
-import { Guest_guest } from "../../../lib/graphql/queries/Guest/__generated__/Guest"
+import { Guests_guests } from "../../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
-  guest: Guest_guest
+  guest: Guests_guests
   openGuestDrawer: () => void
-  selectGuest: (guest: Guest_guest) => void
+  selectGuest: (guest: Guests_guests) => void
 }
 
 export const GuestItem = ({
