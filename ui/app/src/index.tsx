@@ -9,7 +9,7 @@ import { onError } from '@apollo/client/link/error'
 import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
-import { errorMessages, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
+import { csrfTokenName, errorMessages, paths, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
 import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/Token/__generated__/RefreshToken'
 import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
 
@@ -21,8 +21,8 @@ const httpLink = new HttpLink({
   uri: '/api'
 });
 const authMiddleware = new ApolloLink((operation, forward) => {
-  const token = localStorage.getItem("token")
-  const csrftoken = getCookie("csrftoken")
+  const token = localStorage.getItem(tokenName)
+  const csrftoken = getCookie(csrfTokenName)
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
@@ -62,6 +62,8 @@ const errorLink = onError(
                 // --- / ---
                 return forward(operation)
               })
+          case errorMessages.unauthorized:
+            window.location.replace(paths.login)
         }
       }
     }

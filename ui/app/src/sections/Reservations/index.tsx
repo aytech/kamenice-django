@@ -2,7 +2,6 @@ import { RouteComponentProps, withRouter } from "react-router-dom"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
-import { Skeleton } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
@@ -14,6 +13,8 @@ import { useQuery } from "@apollo/client"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { Skeleton } from "antd"
+import { pageTitles } from "../../lib/Constants"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -24,13 +25,18 @@ export const Reservations = withRouter(({
   setPageTitle
 }: RouteComponentProps & Props) => {
 
-  const { loading: reservationsLoading, data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
-
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
+  const [ dataLoading, setDataLoading ] = useState<boolean>(true)
+
+  const { data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+    onCompleted: () => {
+      setPageTitle(pageTitles.home)
+      setDataLoading(false)
+    }
+  })
 
   const getTimelineReservationItem = (reservation: SuitesWithReservations_reservations): TimelineItem<CustomItemFields, Moment> => {
     return {
@@ -70,10 +76,6 @@ export const Reservations = withRouter(({
     }
     setReservation(undefined)
   }
-
-  useEffect(() => {
-    setPageTitle("Rezervace / Obsazenost")
-  }, [ setPageTitle ])
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
@@ -133,7 +135,7 @@ export const Reservations = withRouter(({
     <>
       <Skeleton
         active
-        loading={ reservationsLoading }
+        loading={ dataLoading }
         paragraph={ { rows: 5 } }>
         <Timeline
           canChangeGroup={ false }

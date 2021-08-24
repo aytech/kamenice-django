@@ -1,6 +1,6 @@
 import { Affix, Layout } from "antd"
 import { useState } from "react"
-import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom"
+import { Route, Switch } from "react-router-dom"
 import { Header } from "../Header"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
@@ -8,8 +8,9 @@ import Title from "antd/lib/typography/Title"
 import { Guests } from "../Guests"
 import { Suites } from "../Suites"
 import { Login } from "../Login"
+import { paths } from "../../lib/Constants"
 
-export const App = withRouter(({ history }: RouteComponentProps) => {
+export const App = () => {
 
   const [ pageTitle, setPageTitle ] = useState<string>("Načítám...")
 
@@ -23,19 +24,19 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
       </Layout.Header>
       <Layout.Content className="app-content">
         <Switch>
-          <Route exact path="/">
+          <Route exact path={ paths.root }>
             <Reservations
               setPageTitle={ setPageTitle } />
           </Route>
-          <Route exact path="/apartma">
+          <Route exact path={ paths.suites }>
             <Suites
               setPageTitle={ setPageTitle } />
           </Route>
-          <Route exact path="/guests">
+          <Route exact path={ paths.guests }>
             <Guests
               setPageTitle={ setPageTitle } />
           </Route>
-          <Route exact path="/login">
+          <Route exact path={ paths.login }>
             <Login
               setPageTitle={ setPageTitle } />
           </Route>
@@ -44,6 +45,6 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
           </Route>
         </Switch>
       </Layout.Content>
-    </Layout>
+    </Layout >
   )
-})
+}

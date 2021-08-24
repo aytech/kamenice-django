@@ -1,4 +1,5 @@
 export const apolloErrorUnauthorized: string = "Unauthorized"
+export const csrfTokenName: string = "csrftoken"
 export const defaultArrivalHour: number = 14
 export const defaultDepartureHour: number = 10
 export const dateFormat = "YYYY-MM-DD HH:mm"
@@ -7,6 +8,17 @@ export const errorMessages = {
   refreshTokenExpired: "Refresh token is expired",
   signatureExpired: "Signature has expired",
   unauthorized: "Unauthorized"
+}
+export const pageTitles = {
+  guests: "Hosté",
+  home: "Rezervace / Obsazenost",
+  suites: "Apartmá"
+}
+export const paths = {
+  guests: "/guests",
+  login: "/login",
+  root: "/",
+  suites: "/apartma"
 }
 export const refreshTokenName: string = "refreshToken"
 export const tokenName: string = "token"

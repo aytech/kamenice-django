@@ -121,7 +121,6 @@ export const SuiteDrawer = ({
                       close()
                     }
                   })
-                console.log("Deleting suite: ", suite.id)
               } }
               title="opravdu odstranit?">
               <Button
