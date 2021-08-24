@@ -9,11 +9,9 @@ import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
-import { Whoami_whoami } from "../../lib/graphql/queries/User/__generated__/Whoami"
 
 interface Props {
   setPageTitle: (title: string) => void
-  setUser: (user: Whoami_whoami | undefined) => void
 }
 
 export const Guests = withRouter(({

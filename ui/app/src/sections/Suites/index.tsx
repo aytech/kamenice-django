@@ -7,12 +7,10 @@ import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/S
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
 import { useQuery } from "@apollo/client"
-import { User } from "../../lib/Types"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 
 interface Props {
   setPageTitle: (title: string) => void
-  setUser: (user: User) => void
 }
 
 export const Suites = withRouter(({

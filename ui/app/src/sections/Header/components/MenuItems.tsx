@@ -1,38 +1,65 @@
 import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant-design/icons"
-import { Avatar, Menu } from "antd"
-import { Link } from "react-router-dom"
+import { useMutation } from "@apollo/client"
+import { Avatar, Menu, Spin } from "antd"
+import { useCallback } from "react"
+import { Link, RouteComponentProps, withRouter } from "react-router-dom"
 import { Colors } from "../../../lib/components/Colors"
-import { User } from "../../../lib/Types"
+import { UrlHelper } from "../../../lib/components/UrlHelper"
+import { refreshTokenName, tokenName, usernameKey } from "../../../lib/Constants"
+import { TOKEN_REVOKE } from "../../../lib/graphql/mutations/User"
+import { RevokeToken, RevokeTokenVariables } from "../../../lib/graphql/mutations/User/__generated__/RevokeToken"
 
-interface Props {
-  logout: () => void,
-  user: User
-}
+export const MenuItems = withRouter(({ history }: RouteComponentProps) => {
 
-export const MenuItems = ({ logout, user }: Props) => {
+  const username = localStorage.getItem(usernameKey)
 
-  const userAvatar = (
+  const [ revokeToken, { loading: revokeLoading } ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
+
+  const redirectToLogin = useCallback(() => {
+    localStorage.removeItem(usernameKey)
+    history.push(`/login?next=${ UrlHelper.getReferrer() }`)
+  }, [ history ])
+
+  const logout = (): void => {
+    const refreshToken = localStorage.getItem(refreshTokenName)
+    if (refreshToken !== null) {
+      revokeToken({ variables: { refreshToken } })
+        .then(() => {
+          localStorage.removeItem(tokenName)
+          localStorage.removeItem(refreshTokenName)
+        })
+        .finally(() => redirectToLogin())
+    } else {
+      redirectToLogin()
+    }
+  }
+
+  const userAvatar = username !== null ? (
     <Avatar
       size={ 32 }
       style={ {
         backgroundColor: Colors.getRandomColor()
       } }>
-      { user.username.substring(0, 1).toUpperCase() }
+      { username.substring(0, 1).toUpperCase() }
     </Avatar>
-  )
-  return (
+  ) : null
+
+  return username !== null ? (
     <>
-      <Menu mode="horizontal">
-        <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-          <Link to="/">Rezervace</Link>
-        </Menu.Item>
-        <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
-          <Link to="/guests">Hosté</Link>
-        </Menu.Item>
-        <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-          <Link to="/apartma">Apartmá</Link>
-        </Menu.Item>
-      </Menu >
+      <Spin
+        spinning={ revokeLoading }>
+        <Menu mode="horizontal">
+          <Menu.Item key="reservation" icon={ <BookOutlined /> }>
+            <Link to="/">Rezervace</Link>
+          </Menu.Item>
+          <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
+            <Link to="/guests">Hosté</Link>
+          </Menu.Item>
+          <Menu.Item key="suites" icon={ <HomeOutlined /> }>
+            <Link to="/apartma">Apartmá</Link>
+          </Menu.Item>
+        </Menu >
+      </Spin>
       <Menu className="user" mode="horizontal">
         <Menu.SubMenu
           key="user-sub"
@@ -46,5 +73,5 @@ export const MenuItems = ({ logout, user }: Props) => {
         </Menu.SubMenu>
       </Menu>
     </>
-  )
-}
+  ) : null
+})

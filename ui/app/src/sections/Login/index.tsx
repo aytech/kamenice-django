@@ -4,16 +4,13 @@ import { useEffect } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { FormHelper } from "../../lib/components/FormHelper"
 import { UrlHelper } from "../../lib/components/UrlHelper"
-import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
+import { errorMessages, refreshTokenName, tokenName, usernameKey } from "../../lib/Constants"
 import { TOKEN_AUTH } from "../../lib/graphql/mutations/User"
 import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/User/__generated__/TokenAuth"
-import { User } from "../../lib/Types"
 import "./styles.css"
 
 interface Props {
-  refetch: () => void
   setPageTitle: (title: string) => void
-  setUser: (user: User) => void
 }
 
 const layout: FormProps = {
@@ -43,9 +40,7 @@ const tailLayout = {
 
 export const Login = withRouter(({
   history,
-  refetch,
-  setPageTitle,
-  setUser
+  setPageTitle
 }: RouteComponentProps & Props) => {
 
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
@@ -53,8 +48,7 @@ export const Login = withRouter(({
       if (token.tokenAuth !== null) {
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
-        setUser({ username: token.tokenAuth.payload.username })
-        refetch()
+        localStorage.setItem(usernameKey, token.tokenAuth.payload.username)
         // for debugging only
         localStorage.setItem("tokenExpiresIn", token.tokenAuth.payload.exp)
         localStorage.setItem("refreshTokenExpiresIn", token.tokenAuth.refreshExpiresIn.toString())

@@ -9,7 +9,7 @@ import { onError } from '@apollo/client/link/error'
 import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
-import { errorMessages, refreshTokenName, tokenName } from './lib/Constants'
+import { errorMessages, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
 import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/User/__generated__/RefreshToken'
 import { TOKEN_REFRESH } from './lib/graphql/mutations/User'
 
@@ -55,6 +55,7 @@ const errorLink = onError(
                 const token = authToken as RefreshToken_refreshToken
                 localStorage.setItem(tokenName, token.token)
                 localStorage.setItem(refreshTokenName, token.refreshToken)
+                localStorage.setItem(usernameKey, token.payload.username)
                 // for debugging only
                 localStorage.setItem("tokenExpiresIn", token.payload.exp.toString())
                 localStorage.setItem("refreshTokenExpiresIn", token.refreshExpiresIn.toString())

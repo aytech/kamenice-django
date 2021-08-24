@@ -6,7 +6,7 @@ import { Skeleton } from "antd"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, User } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
 import { Reservations_reservations } from "../../lib/graphql/queries/Reservations/__generated__/Reservations"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
@@ -18,13 +18,11 @@ import { SuitesWithReservations, SuitesWithReservations_reservations } from "../
 
 interface Props {
   setPageTitle: (title: string) => void
-  setUser: (user: User) => void
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(({
-  setPageTitle,
-  setUser
+  setPageTitle
 }: RouteComponentProps & Props) => {
 
   const { loading: reservationsLoading, data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS)
@@ -93,10 +91,7 @@ export const Reservations = withRouter(({
     })
     setItems(reservationList)
     setGroups(suiteList)
-    if (reservationsData?.whoami?.username !== undefined) {
-      setUser({ username: reservationsData.whoami.username })
-    }
-  }, [ reservationsData, setUser ])
+  }, [ reservationsData ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
