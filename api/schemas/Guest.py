@@ -4,18 +4,21 @@ from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 
 from api.models.Guest import Guest as GuestModel
+from api.models.Reservation import Reservation
 from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
 class Guest(DjangoObjectType):
     class Meta:
         model = GuestModel
-        fields = "__all__"
+        fields = ('address_municipality', 'address_psc', 'address_street', 'age', 'citizenship', 'email', 'gender',
+                  'id', 'identity', 'name', 'phone_number', 'surname', 'visa_number')
 
 
 class GuestsQuery(ObjectType):
     guests = List(Guest)
     guest = Field(Guest, guest_id=Int())
+    reservation_guests = List(Guest, reservation_hash=String())
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     def resolve_guests(self, _info):
@@ -27,6 +30,16 @@ class GuestsQuery(ObjectType):
             return GuestModel.objects.get(pk=guest_id, deleted=False)
         except ObjectDoesNotExist:
             return None
+
+    @classmethod
+    def resolve_reservation_guests(cls, _root, _info, reservation_hash):
+        try:
+            reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
+            roommates = list(reservation.roommates.all())
+            roommates.append(reservation.guest)
+            return roommates
+        except ObjectDoesNotExist:
+            return GuestModel.objects.none()
 
 
 class GuestInput(InputObjectType):

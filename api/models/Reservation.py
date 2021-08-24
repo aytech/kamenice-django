@@ -1,3 +1,5 @@
+import random
+import string
 from datetime import datetime
 
 from django.db import models
@@ -5,6 +7,10 @@ from django.db import models
 from api.models.BaseModel import BaseModel
 from api.models.Guest import Guest
 from api.models.Suite import Suite
+
+
+def generate_reservation_hash():
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(10))
 
 
 class Reservation(BaseModel):
@@ -30,6 +36,7 @@ class Reservation(BaseModel):
         Guest,
         on_delete=models.DO_NOTHING,
     )
+    hash = models.CharField(blank=True, null=True, default=generate_reservation_hash, max_length=10)
     meal = models.CharField(blank=False, max_length=50, null=False, error_messages={
         'invalid_choice': 'Vyberte údaj Strava ze seznamu',
         'null': 'Vyberte údaj Strava ze seznamu',
