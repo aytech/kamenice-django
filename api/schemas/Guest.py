@@ -64,6 +64,10 @@ class GuestInput(InputObjectType):
     visa_number = String()
 
 
+class ReservationGuestInput(GuestInput):
+    hash = String()
+
+
 class CreateGuest(Mutation):
     class Arguments:
         data = GuestInput(required=True)
@@ -110,9 +114,9 @@ class UpdateGuest(Mutation):
 
     guest = Field(Guest)
 
-    @staticmethod
+    @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
-    def mutate(_root, _info, data=None):
+    def mutate(cls, _root, _info, data=None):
         try:
             instance = GuestModel.objects.get(pk=data.id, deleted=False)
 
@@ -138,6 +142,41 @@ class UpdateGuest(Mutation):
 
         except ObjectDoesNotExist:
             raise Exception('Host nebyl nalezen')
+
+
+class UpdateReservationGuest(Mutation):
+    class Arguments:
+        data = ReservationGuestInput(required=True)
+
+    guest = Field(Guest)
+
+    @classmethod
+    def mutate(cls, _root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            instance = reservation.guest if reservation.guest.id == int(data.id) \
+                else reservation.roommates.get(id=data.id)
+            if instance:
+                instance.age = data.age if data.age is not None else instance.age
+                instance.address_municipality = data.address_municipality if data.address_municipality is not None \
+                    else instance.address_municipality
+                instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc
+                instance.address_street = data.address_street if data.address_street is not None \
+                    else instance.address_street
+                instance.citizenship = data.citizenship if data.citizenship is not None else instance.citizenship
+                instance.email = data.email if data.email is not None else instance.email
+                instance.gender = data.gender if data.gender is not None else instance.gender
+                instance.identity = data.identity if data.identity is not None else instance.identity
+                instance.name = data.name if data.name is not None else instance.name
+                instance.phone_number = data.phone_number if data.phone_number is not None else instance.phone_number
+                instance.surname = data.surname if data.surname is not None else instance.surname
+                instance.visa_number = data.visa_number if data.visa_number is not None else instance.visa_number
+
+                instance.full_clean()
+                instance.save()
+            return UpdateGuest(guest=instance)
+        except ObjectDoesNotExist:
+            raise Exception('Hosta nelze aktualizovat')
 
 
 class DeleteGuest(Mutation):

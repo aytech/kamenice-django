@@ -129,6 +129,7 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
       <ReservationGuestDrawer
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
+        reservationHash={ hash }
         visible={ drawerVisible } />
     </>
   )

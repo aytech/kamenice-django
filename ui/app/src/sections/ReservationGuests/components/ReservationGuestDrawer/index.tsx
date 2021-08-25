@@ -1,4 +1,5 @@
 import { CloseOutlined, MailOutlined } from "@ant-design/icons"
+import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { Button, Drawer, Form, Input, message, Popconfirm, Select, Skeleton } from "antd"
 import { Store } from "antd/lib/form/interface"
 import Title from "antd/lib/typography/Title"
@@ -6,19 +7,25 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { GuestFormHelper } from "../../../../lib/components/GuestFormHelper"
+import { UPDATE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
+import { UpdateReservationGuest, UpdateReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/UpdateReservationGuest"
 import { GuestForm, ReservationGuest } from "../../../../lib/Types"
 
 interface Props {
   close: () => void
   guest?: ReservationGuest
+  reservationHash: string
   visible: boolean
 }
 
 export const ReservationGuestDrawer = ({
   close,
   guest,
+  reservationHash,
   visible
 }: Props) => {
+
+  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationGuest, UpdateReservationGuestVariables>(UPDATE_RESERVATON_GUEST)
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
@@ -66,7 +73,15 @@ export const ReservationGuestDrawer = ({
           surname: formData.surname,
           visaNumber: formData.visa
         }
-        console.log("Update guest", variables)
+        updateGuest({ variables: { data: { id: String(guest?.id), hash: reservationHash, ...variables } } })
+          .then((value: FetchResult<UpdateReservationGuest>) => {
+            const guest = value.data?.updateReservationGuest?.guest
+            if (guest !== undefined && guest !== null) {
+              message.success(`Host ${ guest.name } ${ guest.surname } aktualizován!`)
+            }
+            close()
+          })
+          .catch((reason: ApolloError) => message.error(reason.message))
       })
       .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
   }
@@ -116,7 +131,7 @@ export const ReservationGuestDrawer = ({
       } }>
       <Skeleton
         active
-        loading={ false }
+        loading={ updateLoading }
         paragraph={ { rows: 15 } }>
         <Form
           form={ form }

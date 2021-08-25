@@ -60,6 +60,23 @@ export interface GuestInput {
   visaNumber?: string | null;
 }
 
+export interface ReservationGuestInput {
+  age?: string | null;
+  addressMunicipality?: string | null;
+  addressPsc?: number | null;
+  addressStreet?: string | null;
+  citizenship?: string | null;
+  email?: string | null;
+  gender?: string | null;
+  id?: string | null;
+  identity?: string | null;
+  name?: string | null;
+  phoneNumber?: string | null;
+  surname?: string | null;
+  visaNumber?: string | null;
+  hash?: string | null;
+}
+
 export interface ReservationInput {
   fromDate?: string | null;
   guest?: number | null;
