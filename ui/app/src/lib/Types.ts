@@ -97,6 +97,31 @@ export interface CustomItemFields {
   type?: ReservationTypeKey
 }
 
+export enum GuestAge {
+  ADULT = "ADULT",
+  CHILD = "CHILD",
+  INFANT = "INFANT",
+  YOUNG = "YOUNG",
+}
+
+export enum GuestGender {
+  F = "F",
+  M = "M",
+}
+
 export interface ReservationGuest {
-  id?: string
+  __typename?: string;
+  age?: GuestAge | null;
+  addressMunicipality?: string | null;
+  addressPsc?: number | null;
+  addressStreet?: string | null;
+  citizenship?: string | null;
+  email?: string;
+  gender?: GuestGender | null;
+  identity?: string | null;
+  id?: number | string;
+  name: string;
+  phoneNumber?: string | null;
+  surname?: string;
+  visaNumber?: string | null;
 }
