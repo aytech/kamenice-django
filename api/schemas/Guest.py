@@ -15,10 +15,15 @@ class Guest(DjangoObjectType):
                   'id', 'identity', 'name', 'phone_number', 'surname', 'visa_number')
 
 
+class ReservationGuests(ObjectType):
+    guest = Field(Guest)
+    roommates = List(Guest)
+
+
 class GuestsQuery(ObjectType):
     guests = List(Guest)
     guest = Field(Guest, guest_id=Int())
-    reservation_guests = List(Guest, reservation_hash=String())
+    reservation_guests = Field(ReservationGuests, reservation_hash=String())
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     def resolve_guests(self, _info):
@@ -35,9 +40,10 @@ class GuestsQuery(ObjectType):
     def resolve_reservation_guests(cls, _root, _info, reservation_hash):
         try:
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
-            roommates = list(reservation.roommates.all())
-            roommates.append(reservation.guest)
-            return roommates
+            return ReservationGuests(
+                guest=reservation.guest,
+                roommates=reservation.roommates.all()
+            )
         except ObjectDoesNotExist:
             return GuestModel.objects.none()
 

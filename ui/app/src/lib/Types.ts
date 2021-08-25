@@ -96,3 +96,7 @@ export interface CustomItemFields {
   suite: Suite
   type?: ReservationTypeKey
 }
+
+export interface ReservationGuest {
+  id?: string
+}

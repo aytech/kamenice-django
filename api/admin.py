@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from api.models.Reservation import Reservation
+
+
+class ReservationAdmin(admin.ModelAdmin):
+    fields = ('from_date', 'to_date', 'guest', 'roommates', 'meal', 'notes', 'purpose', 'suite', 'type', 'hash',)
+    readonly_fields = ('hash',)
+
+
+admin.site.register(Reservation, ReservationAdmin)

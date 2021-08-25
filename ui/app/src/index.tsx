@@ -62,7 +62,11 @@ const errorLink = onError(
                 // --- / ---
                 return forward(operation)
               })
+          case errorMessages.refreshTokenExpired:
           case errorMessages.unauthorized:
+            localStorage.removeItem(tokenName)
+            localStorage.removeItem(refreshTokenName)
+            localStorage.removeItem(usernameKey)
             window.location.replace(paths.login)
         }
       }

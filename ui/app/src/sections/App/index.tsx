@@ -9,6 +9,7 @@ import { Guests } from "../Guests"
 import { Suites } from "../Suites"
 import { Login } from "../Login"
 import { paths } from "../../lib/Constants"
+import { ReservationGuests } from "../ReservationGuests"
 
 export const App = () => {
 
@@ -38,6 +39,10 @@ export const App = () => {
           </Route>
           <Route exact path={ paths.login }>
             <Login
+              setPageTitle={ setPageTitle } />
+          </Route>
+          <Route exact path={ paths.reservation_guests }>
+            <ReservationGuests
               setPageTitle={ setPageTitle } />
           </Route>
           <Route path="*">
