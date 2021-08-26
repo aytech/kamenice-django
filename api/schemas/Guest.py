@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from graphene import ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
@@ -44,7 +44,7 @@ class GuestsQuery(ObjectType):
                 guest=reservation.guest,
                 roommates=reservation.roommates.all()
             )
-        except ObjectDoesNotExist:
+        except (MultipleObjectsReturned, ObjectDoesNotExist):
             raise Exception('Rezervace nenalezena')
 
 
