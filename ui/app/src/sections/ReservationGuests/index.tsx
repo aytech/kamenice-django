@@ -64,11 +64,13 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
           loading={ dataLoading }
           openDrawer={ (reservationGuest: ReservationGuest) => {
             setSelectedGuest(reservationGuest)
+            setDrawerVisible(true)
           } } />
         <Roommates
           loading={ dataLoading }
           openDrawer={ (roommate: ReservationGuest) => {
             setSelectedGuest(roommate)
+            setDrawerVisible(true)
           } }
           roommates={ roommates } />
         <Error show={ showError } />
