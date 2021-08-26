@@ -12,5 +12,9 @@ def login(request):
     return render(request, 'index.html', {'token': get_token(request)})
 
 
-def page_not_found(request, _exception):
-    return render(request, 'index.html')
+def guest_view(request, reservation_hash):
+    return render(request, 'index.html', {'hash': reservation_hash})
+
+
+def page_not_found(request, path):
+    return render(request, 'index.html', {'path': path})

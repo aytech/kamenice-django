@@ -45,7 +45,7 @@ class GuestsQuery(ObjectType):
                 roommates=reservation.roommates.all()
             )
         except ObjectDoesNotExist:
-            return GuestModel.objects.none()
+            raise Exception('Rezervace nenalezena')
 
 
 class GuestInput(InputObjectType):

@@ -4,16 +4,16 @@ import { Route, Switch } from "react-router-dom"
 import { Header } from "../Header"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
-import Title from "antd/lib/typography/Title"
 import { Guests } from "../Guests"
 import { Suites } from "../Suites"
 import { Login } from "../Login"
 import { paths } from "../../lib/Constants"
 import { ReservationGuests } from "../ReservationGuests"
+import { PageTitle } from "./components/PageTitle"
 
 export const App = () => {
 
-  const [ pageTitle, setPageTitle ] = useState<string>("Načítám...")
+  const [ pageTitle, setPageTitle ] = useState<string | null>("Načítám...")
 
   return (
     <Layout id="app">
@@ -21,7 +21,7 @@ export const App = () => {
         <Header />
       </Affix>
       <Layout.Header>
-        <Title level={ 3 }>{ pageTitle }</Title>
+        <PageTitle title={ pageTitle } />
       </Layout.Header>
       <Layout.Content className="app-content">
         <Switch>

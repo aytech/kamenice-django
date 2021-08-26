@@ -30,6 +30,7 @@ urlpatterns = [
     re_path(r'^prehled$', ui.home, name='home'),
     re_path(r'^guests$', ui.home, name='home'),
     re_path(r'^apartma$', ui.home, name='home'),
+    re_path(r'^rezervace/(?P<reservation_hash>[A-Z]{10})/hoste$', ui.guest_view, name='guest view'),
     re_path(r'^login$', ui.login, name='login'),
 
     # Admin section
@@ -44,5 +45,5 @@ urlpatterns = [
     }),
 
     # Catch all
-    re_path(r'^.*$', ui.home, name='404'),
+    re_path(r'^(?P<path>.*)$', ui.page_not_found, name='404'),
 ]
