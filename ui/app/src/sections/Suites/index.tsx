@@ -8,7 +8,7 @@ import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
 import { useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
-import { pageTitles } from "../../lib/Constants"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -18,6 +18,8 @@ export const Suites = withRouter(({
   setPageTitle
 }: RouteComponentProps & Props) => {
 
+  const { t } = useTranslation()
+
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
@@ -26,7 +28,7 @@ export const Suites = withRouter(({
   const { data: suitesData } = useQuery<SuitesData>(SUITES, {
     onCompleted: () => {
       setDataLoading(false)
-      setPageTitle(pageTitles.suites)
+      setPageTitle(t("suites-title"))
     }
   })
 

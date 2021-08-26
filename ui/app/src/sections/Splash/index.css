@@ -1,0 +1,9 @@
+.splash-layout {
+  position: relative;
+  min-height: 100vh;
+  padding: 5em 3em;
+}
+
+.splash-skeleton {
+  margin-bottom: 5em;
+}

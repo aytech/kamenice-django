@@ -12,6 +12,9 @@ import csCZ from "antd/lib/locale/cs_CZ"
 import { csrfTokenName, errorMessages, paths, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
 import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/Token/__generated__/RefreshToken'
 import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
+import "./i18n"
+import { Suspense } from 'react'
+import { Splash } from './sections/Splash'
 
 moment.locale("cs")
 
@@ -111,12 +114,14 @@ apolloClient = new ApolloClient({
 })
 
 ReactDOM.render(
-  <ApolloProvider client={ apolloClient }>
-    <ConfigProvider locale={ csCZ }>
-      <Router>
-        <App />
-      </Router>
-    </ConfigProvider>
-  </ApolloProvider>,
+  <Suspense fallback={ <Splash /> }>
+    <ApolloProvider client={ apolloClient }>
+      <ConfigProvider locale={ csCZ }>
+        <Router>
+          <App />
+        </Router>
+      </ConfigProvider>
+    </ApolloProvider>
+  </Suspense>,
   document.getElementById('root')
 );

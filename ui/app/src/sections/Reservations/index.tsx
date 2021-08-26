@@ -14,7 +14,7 @@ import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Su
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { Skeleton } from "antd"
-import { pageTitles } from "../../lib/Constants"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -25,6 +25,8 @@ export const Reservations = withRouter(({
   setPageTitle
 }: RouteComponentProps & Props) => {
 
+  const { t } = useTranslation()
+
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservation, setReservation ] = useState<IReservation>()
@@ -33,7 +35,7 @@ export const Reservations = withRouter(({
 
   const { data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => {
-      setPageTitle(pageTitles.home)
+      setPageTitle(t("home-title"))
       setDataLoading(false)
     }
   })

@@ -9,7 +9,7 @@ import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
-import { pageTitles } from "../../lib/Constants"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -19,6 +19,8 @@ export const Guests = withRouter(({
   setPageTitle
 }: RouteComponentProps & Props) => {
 
+  const { t } = useTranslation()
+
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
@@ -27,7 +29,7 @@ export const Guests = withRouter(({
   const { data: guestsData } = useQuery<GuestsData>(GUESTS, {
     onCompleted: () => {
       setDataLoading(false)
-      setPageTitle(pageTitles.guests)
+      setPageTitle(t("guests-title"))
     }
   })
 

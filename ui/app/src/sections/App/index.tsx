@@ -10,10 +10,13 @@ import { Login } from "../Login"
 import { paths } from "../../lib/Constants"
 import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
+import { useTranslation } from "react-i18next"
 
 export const App = () => {
 
-  const [ pageTitle, setPageTitle ] = useState<string | null>("Načítám...")
+  const { t } = useTranslation()
+
+  const [ pageTitle, setPageTitle ] = useState<string | null>(`${ t("loading") }...`)
 
   return (
     <Layout id="app">

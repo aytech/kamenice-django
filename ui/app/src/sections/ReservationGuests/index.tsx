@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client"
 import { Spin } from "antd"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import { pageTitles } from "../../lib/Constants"
 import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { RESERVATION_GUESTS } from "../../lib/graphql/queries/ReservationGuests"
 import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables, ReservationGuests_reservationGuests_roommates } from "../../lib/graphql/queries/ReservationGuests/__generated__/ReservationGuests"
@@ -20,6 +20,8 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
 
   let { hash }: { hash: string } = useParams()
 
+  const { t } = useTranslation()
+
   const [ guest, setGuest ] = useState<ReservationGuest[]>()
   const [ roommates, setRoommates ] = useState<ReservationGuest[]>()
   const [ selectedGuest, setSelectedGuest ] = useState<ReservationGuest>()
@@ -29,7 +31,7 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   const { loading: dataLoading, data } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
     onCompleted: () => {
-      setPageTitle(pageTitles.reservation_guests_management)
+      setPageTitle(t("guest-view-title"))
       setShowError(false)
     },
     onError: () => {

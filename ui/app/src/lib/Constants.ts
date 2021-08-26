@@ -9,12 +9,6 @@ export const errorMessages = {
   signatureExpired: "Signature has expired",
   unauthorized: "Unauthorized"
 }
-export const pageTitles = {
-  guests: "Hosté",
-  home: "Rezervace / Obsazenost",
-  reservation_guests_management: "Správa hostů",
-  suites: "Apartmá"
-}
 export const paths = {
   guests: "/guests",
   login: "/login",
