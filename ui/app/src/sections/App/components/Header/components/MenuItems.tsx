@@ -3,15 +3,21 @@ import { useMutation } from "@apollo/client"
 import { Avatar, Menu, Spin } from "antd"
 import { useCallback } from "react"
 import { Link, RouteComponentProps, withRouter } from "react-router-dom"
-import { Colors } from "../../../lib/components/Colors"
-import { UrlHelper } from "../../../lib/components/UrlHelper"
-import { refreshTokenName, tokenName, usernameKey } from "../../../lib/Constants"
-import { TOKEN_REVOKE } from "../../../lib/graphql/mutations/Token"
-import { RevokeToken, RevokeTokenVariables } from "../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
+import { Colors } from "../../../../../lib/components/Colors"
+import { UrlHelper } from "../../../../../lib/components/UrlHelper"
+import { refreshTokenName, tokenName, usernameKey } from "../../../../../lib/Constants"
+import { TOKEN_REVOKE } from "../../../../../lib/graphql/mutations/Token"
+import { RevokeToken, RevokeTokenVariables } from "../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
+import { User } from "../../../../../lib/Types"
 
-export const MenuItems = withRouter(({ history }: RouteComponentProps) => {
+interface Props {
+  user: User | null
+}
 
-  const username = localStorage.getItem(usernameKey)
+export const MenuItems = withRouter(({
+  history,
+  user
+}: RouteComponentProps & Props) => {
 
   const [ revokeToken, { loading: revokeLoading } ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
 
@@ -34,17 +40,17 @@ export const MenuItems = withRouter(({ history }: RouteComponentProps) => {
     }
   }
 
-  const userAvatar = username !== null ? (
+  const userAvatar = user !== null ? (
     <Avatar
       size={ 32 }
       style={ {
         backgroundColor: Colors.getRandomColor()
       } }>
-      { username.substring(0, 1).toUpperCase() }
+      { user.username.substring(0, 1).toUpperCase() }
     </Avatar>
   ) : null
 
-  return username !== null ? (
+  return user !== null ? (
     <>
       <Spin
         spinning={ revokeLoading }>

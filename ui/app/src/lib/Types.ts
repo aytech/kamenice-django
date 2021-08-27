@@ -125,3 +125,7 @@ export interface ReservationGuest {
   surname?: string;
   visaNumber?: string | null;
 }
+
+export interface User {
+  username: string
+}
