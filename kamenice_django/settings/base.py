@@ -96,7 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'cs'
 
 TIME_ZONE = 'UTC'
 
@@ -115,6 +115,10 @@ STATIC_ASSETS = APP_DIR / 'static' / 'static'
 STATICFILES_DIRS = (
     BASE_DIR / 'ui' / 'app' / 'build',
 )
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
 
 GRAPHENE = {
     'SCHEMA': 'api.schema.schema',

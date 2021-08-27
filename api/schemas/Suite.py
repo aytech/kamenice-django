@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 
 from api.models.Suite import Suite as SuiteModel
+from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
@@ -18,6 +19,7 @@ class SuitesQuery(ObjectType):
     suite = Field(Suite, suite_id=Int())
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('view_suite'), exc=PermissionDenied)
     def resolve_suites(self, _info):
         return SuiteModel.objects.filter(deleted=False)
 

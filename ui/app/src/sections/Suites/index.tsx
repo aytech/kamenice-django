@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined } from "@ant-design/icons"
-import { Avatar, Button, List, Skeleton } from "antd"
+import { Avatar, Button, List, message, Skeleton } from "antd"
 import { SuiteDrawer } from "../SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
-import { useQuery } from "@apollo/client"
+import { ApolloError, useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
 
@@ -20,15 +20,23 @@ export const Suites = withRouter(({
 
   const { t } = useTranslation()
 
+  setPageTitle(t("suites-title"))
+
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
+  const [ hasAccess, setHasAccess ] = useState<boolean>(false)
 
   const { data: suitesData } = useQuery<SuitesData>(SUITES, {
     onCompleted: () => {
+      setHasAccess(true)
       setDataLoading(false)
-      setPageTitle(t("suites-title"))
+    },
+    onError: (reason: ApolloError) => {
+      message.error(reason.message)
+      setHasAccess(false)
+      setDataLoading(false)
     }
   })
 
@@ -62,6 +70,7 @@ export const Suites = withRouter(({
           dataSource={ suites }
           footer={
             <AddSuite
+              hasAccess={ hasAccess }
               onAdd={ () => {
                 setActiveSuite(undefined)
                 setDrawerVisible(true)
