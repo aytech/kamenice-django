@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { Button, List, Skeleton } from "antd"
+import { Button, List, message, Skeleton } from "antd"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { PlusCircleOutlined } from "@ant-design/icons"
-import { useQuery } from "@apollo/client"
+import { ApolloError, useQuery } from "@apollo/client"
 import { useEffect } from "react"
 import { GuestDrawer } from "../GuestDrawer"
 import "./styles.css"
@@ -21,6 +21,8 @@ export const Guests = withRouter(({
 
   const { t } = useTranslation()
 
+  setPageTitle(t("guests-title"))
+
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
@@ -29,8 +31,8 @@ export const Guests = withRouter(({
   const { data: guestsData } = useQuery<GuestsData>(GUESTS, {
     onCompleted: () => {
       setDataLoading(false)
-      setPageTitle(t("guests-title"))
-    }
+    },
+    onError: (reason: ApolloError) => message.error(reason.message)
   })
 
   useEffect(() => {

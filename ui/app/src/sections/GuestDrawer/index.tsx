@@ -7,7 +7,7 @@ import { GuestForm } from "../../lib/Types"
 import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
 import { FormHelper } from "../../lib/components/FormHelper"
 import "./styles.css"
-import { FetchResult, useMutation } from "@apollo/client"
+import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 import { GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
@@ -34,9 +34,17 @@ export const GuestDrawer = ({
 
   const [ form ] = Form.useForm()
 
-  const [ createGuest, { loading: createLoading } ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST)
-  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST)
-  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST)
+  const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
+
+  const [ createGuest, { loading: createLoading } ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
+    onError: networkErrorHandler
+  })
+  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {
+    onError: networkErrorHandler
+  })
+  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {
+    onError: networkErrorHandler
+  })
 
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)

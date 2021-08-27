@@ -19,11 +19,12 @@ class SuitesQuery(ObjectType):
     suite = Field(Suite, suite_id=Int())
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
-    @user_passes_test(lambda user: user.has_perm('view_suite'), exc=PermissionDenied)
+    @user_passes_test(lambda user: user.has_perm('api.view_suite'), exc=PermissionDenied)
     def resolve_suites(self, _info):
         return SuiteModel.objects.filter(deleted=False)
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_suite'), exc=PermissionDenied)
     def resolve_suite(self, _info, suite_id):
         try:
             return SuiteModel.objects.get(pk=suite_id, deleted=False)
@@ -45,6 +46,7 @@ class CreateSuite(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.add_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         instance = SuiteModel(
             title=data.title,
@@ -63,6 +65,7 @@ class UpdateSuite(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.change_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
             instance = SuiteModel.objects.get(pk=data.id)
@@ -84,6 +87,7 @@ class DeleteSuite(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.delete_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, suite_id):
         try:
             instance = SuiteModel.objects.get(pk=suite_id)

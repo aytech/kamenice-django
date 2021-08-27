@@ -5,6 +5,7 @@ from graphql_jwt.decorators import user_passes_test
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
+from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
@@ -26,10 +27,12 @@ class GuestsQuery(ObjectType):
     reservation_guests = Field(ReservationGuests, reservation_hash=String())
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guests(self, _info):
         return GuestModel.objects.filter(deleted=False)
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guest(self, _info, guest_id):
         try:
             return GuestModel.objects.get(pk=guest_id, deleted=False)
@@ -76,6 +79,7 @@ class CreateGuest(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.add_guest'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
             GuestModel.objects.get(email=data.email, deleted=False)
@@ -116,6 +120,7 @@ class UpdateGuest(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.change_guest'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
             instance = GuestModel.objects.get(pk=data.id, deleted=False)
@@ -187,6 +192,7 @@ class DeleteGuest(Mutation):
 
     @staticmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.delete_guest'), exc=PermissionDenied)
     def mutate(_root, _info, guest_id):
         try:
             instance = GuestModel.objects.get(pk=guest_id)
