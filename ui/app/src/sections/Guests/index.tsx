@@ -21,7 +21,7 @@ export const Guests = withRouter(({
 
   const { t } = useTranslation()
 
-  setPageTitle(t("guests-title"))
+  setPageTitle(t("guests.page-title"))
 
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
@@ -73,10 +73,10 @@ export const Guests = withRouter(({
                 setDrawerVisible(true)
               } }
               type="primary">
-              Přidat hosta
+              { t("guests.add") }
             </Button>
           }
-          header={ <h4>Seznam hostů</h4> }
+          header={ <h4>{ t("guests.list") }</h4> }
           itemLayout="horizontal"
           renderItem={ (guest: Guests_guests) => (
             <GuestItem

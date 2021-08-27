@@ -15,6 +15,7 @@ import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Gu
 import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
 import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   addGuest: (guest: Guests_guests) => void
@@ -32,6 +33,8 @@ export const GuestDrawer = ({
   visible
 }: Props) => {
 
+  const { t } = useTranslation()
+
   const [ form ] = Form.useForm()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
@@ -46,8 +49,8 @@ export const GuestDrawer = ({
     onError: networkErrorHandler
   })
 
-
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
+
   const initialValues: Store = {
     age: guest?.age,
     address: {
@@ -96,7 +99,7 @@ export const GuestDrawer = ({
               const guest = value.data?.createGuest?.guest
               if (guest !== undefined && guest !== null) {
                 addGuest(guest)
-                message.success(`Host ${ guest.name } ${ guest.surname } přidán!`)
+                message.success(t("guests.added", { name: guest.name, surname: guest.surname }))
               }
               close()
             })
@@ -106,13 +109,13 @@ export const GuestDrawer = ({
               const guest = value.data?.updateGuest?.guest
               if (guest !== undefined && guest !== null) {
                 addGuest(guest)
-                message.success(`Host ${ guest.name } ${ guest.surname } aktualizován!`)
+                message.success(t("guests.updated", { name: guest.name, surname: guest.surname }))
               }
               close()
             })
         }
       })
-      .catch(() => message.error("Formulář nelze odeslat, opravte prosím chyby"))
+      .catch(() => message.error(t("errors.invalid-form")))
   }
 
   useEffect(() => {
@@ -132,7 +135,7 @@ export const GuestDrawer = ({
             close()
           } }
           placement="rightTop"
-          title="Zavřít formulář? Data ve formuláři budou ztracena"
+          title={ t("forms.close-dirty") }
           visible={ confirmClose }>
           <CloseOutlined onClick={ () => {
             if (form.isFieldsTouched()) {
@@ -144,42 +147,42 @@ export const GuestDrawer = ({
         </Popconfirm>
       ) }
       placement="left"
-      title="Nový host"
+      title={ t("guests.name") }
       width={ 500 }
       visible={ visible }
       footer={
         <>
           { guest !== undefined && guest !== null &&
             <Popconfirm
-              cancelText="Ne"
+              cancelText={ t("no") }
               icon={ <WarningOutlined /> }
-              okText="Ano"
+              okText={ t("yes") }
               onConfirm={ () => {
                 deleteGuest({ variables: { guestId: guest.id } })
                   .then((value: FetchResult<DeleteGuest>) => {
                     const guest = value.data?.deleteGuest?.guest
                     if (removeGuest !== undefined && guest !== undefined && guest !== null) {
                       removeGuest(guest.id)
-                      message.success("Host byl smazán")
+                      message.success(t("guests.deleted"))
                       close()
                     }
                   })
               } }
-              title="opravdu odstranit?">
+              title={ t("forms.delete-confirm") }>
               <Button
                 danger
                 style={ {
                   float: "left"
                 } }
                 type="primary">
-                Odstranit
+                { t('forms.delete') }
               </Button>
             </Popconfirm>
           }
           <Button
             onClick={ submitForm }
             type="primary">
-            { (guest === undefined || guest === null) ? "Vytvořit" : "Upravit" }
+            { (guest === undefined || guest === null) ? t("forms.create") : t("forms.update") }
           </Button>
         </>
       }
@@ -196,97 +199,99 @@ export const GuestDrawer = ({
           initialValues={ initialValues }
           layout="vertical"
           name="guest">
-          <Title level={ 5 }>Osobní údaje</Title>
+          <Title level={ 5 }>
+            { t("forms.personal-data") }
+          </Title>
           <Form.Item
             hasFeedback
-            label="Jméno"
+            label={ t("name") }
             name="name"
             required
             rules={ GuestFormHelper.requiredAlphaRules }>
-            <Input placeholder="Vaše Jméno" />
+            <Input placeholder={ t('forms.your-name') } />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Příjmení"
+            label={ t("surname") }
             name="surname"
             required
             rules={ GuestFormHelper.requiredAlphaRules }>
-            <Input placeholder="Vaše Příjmení" />
+            <Input placeholder={ t("your-surname") } />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="E-Mail"
+            label={ t("email") }
             name="email"
             required
             rules={ [ FormHelper.requiredRule ] }>
             <Input
               addonBefore={ emailPrefixIcon }
-              placeholder="e-mail"
+              placeholder={ t("email") }
               type="email" />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Číslo OP"
+            label={ t("forms.id-number") }
             name="identity">
-            <Input placeholder="číslo občanského průkazu" />
+            <Input placeholder={ t("forms.id-number-full") } />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Telefonní Číslo"
+            label={ t("phone-number") }
             name="phone">
-            <Input placeholder="číslo" />
+            <Input placeholder={ t("number") } />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Věk"
+            label={ t("age") }
             name="age">
             <Select
               options={ GuestFormHelper.ageOptions }
-              placeholder="vyberte ze seznamu" />
+              placeholder={ t("forms.choose-from-list") } />
           </Form.Item>
           <Form.Item
-            label="Pohlaví"
+            label={ t("sex") }
             name="gender">
             <Select
-              placeholder="vyberte ze seznamu">
-              <Select.Option value="M">Muž</Select.Option>
-              <Select.Option value="F">Žena</Select.Option>
+              placeholder={ t("forms.choose-from-list") }>
+              <Select.Option value="M">{ t("man") }</Select.Option>
+              <Select.Option value="F">{ t("woman") }</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Číslo viza"
+            label={ t("forms.visa-number") }
             name="visa">
-            <Input placeholder="číslo visa" />
+            <Input placeholder={ t("forms.visa-number") } />
           </Form.Item>
-          <Title level={ 5 }>Trvalé bydliště</Title>
+          <Title level={ 5 }>{ t("forms.address") }</Title>
           <Form.Item
-            label="Ulice"
+            label={ t("forms.street") }
             name={ [ "address", "street" ] }>
-            <Input placeholder="ulice" />
+            <Input placeholder={ t("forms.street") } />
           </Form.Item>
           <Form.Item
-            label="PSČ/Obec">
+            label={ t("forms.psc-label") }>
             <Input.Group compact>
               <Form.Item
                 style={ { marginBottom: 0, width: "50%" } }
                 name={ [ "address", "psc" ] }>
-                <Input placeholder="PSČ" />
+                <Input placeholder={ t("forms.psc") } />
               </Form.Item>
               <Form.Item
                 style={ { marginBottom: 0, width: "50%" } }
                 name={ [ "address", "municipality" ] }>
-                <Input placeholder="Obec" />
+                <Input placeholder={ t("forms.municipality") } />
               </Form.Item>
             </Input.Group>
           </Form.Item>
           <Form.Item
-            label="Občanství">
+            label={ t("forms.citizenship") }>
             <Input.Group compact>
               <Form.Item
                 style={ { width: "50%" } }
                 name={ [ "citizenship", "selected" ] }>
-                <Select style={ { width: "100%" } } placeholder="ze seznamu">
+                <Select style={ { width: "100%" } } placeholder={ t("forms.from-list") }>
                   <Select.Option value="cze">CZE</Select.Option>
                   <Select.Option value="sk">SK</Select.Option>
                 </Select>
@@ -294,7 +299,7 @@ export const GuestDrawer = ({
               <Form.Item
                 style={ { width: "50%" } }
                 name={ [ "citizenship", "new" ] }>
-                <Input placeholder="ručně" />
+                <Input placeholder={ t("forms.by-hand") } />
               </Form.Item>
             </Input.Group>
           </Form.Item>

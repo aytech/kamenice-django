@@ -2,6 +2,7 @@ import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant
 import { useMutation } from "@apollo/client"
 import { Avatar, Menu, Spin } from "antd"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { Link, RouteComponentProps, withRouter } from "react-router-dom"
 import { Colors } from "../../../../../lib/components/Colors"
 import { UrlHelper } from "../../../../../lib/components/UrlHelper"
@@ -18,6 +19,8 @@ export const MenuItems = withRouter(({
   history,
   user
 }: RouteComponentProps & Props) => {
+
+  const { t } = useTranslation()
 
   const [ revokeToken, { loading: revokeLoading } ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
 
@@ -56,13 +59,13 @@ export const MenuItems = withRouter(({
         spinning={ revokeLoading }>
         <Menu mode="horizontal">
           <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-            <Link to="/">Rezervace</Link>
+            <Link to="/">{ t("reservation") }</Link>
           </Menu.Item>
           <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
-            <Link to="/guests">Hosté</Link>
+            <Link to="/guests">{ t("guests.name-pl") }</Link>
           </Menu.Item>
           <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-            <Link to="/apartma">Apartmá</Link>
+            <Link to="/apartma">{ t("rooms") }</Link>
           </Menu.Item>
         </Menu >
       </Spin>
@@ -74,7 +77,7 @@ export const MenuItems = withRouter(({
             key="logout"
             icon={ <LogoutOutlined /> }
             onClick={ logout }>
-            Odhlásit
+            { t("logout") }
           </Menu.Item>
         </Menu.SubMenu>
       </Menu>
