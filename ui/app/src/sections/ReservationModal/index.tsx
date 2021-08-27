@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Skeleton, Space } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Spin } from "antd"
 import { Moment } from "moment"
-import { FetchResult, useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
@@ -18,6 +18,7 @@ import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../.
 import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -35,10 +36,37 @@ export const ReservationModal = ({
   reservation,
 }: Props) => {
 
-  const [ createReservation ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION)
-  const [ deleteReservation ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION)
-  const [ updateReservation ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION)
-  const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS)
+  const { t } = useTranslation()
+
+  const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
+
+  const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
+    onCompleted: (data: CreateReservation) => {
+      addOrUpdateReservation(data.createReservation?.reservation)
+      message.success(t("reservation-created"))
+      close()
+    },
+    onError: networkErrorHandler
+  })
+  const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
+    onCompleted: (data: DeleteReservation) => {
+      clearReservation(data.deleteReservation?.reservation?.id)
+      message.success(t("reservation-deleted"))
+      close()
+    },
+    onError: networkErrorHandler
+  })
+  const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
+    onCompleted: (data: UpdateReservation) => {
+      addOrUpdateReservation(data.updateReservation?.reservation)
+      message.success(t("reservation-updated"))
+      close()
+    },
+    onError: networkErrorHandler
+  })
+  const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
+    onError: networkErrorHandler
+  })
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
@@ -88,18 +116,8 @@ export const ReservationModal = ({
     }
     if (reservation !== undefined && reservation.id !== undefined) {
       updateReservation({ variables: { data: { id: String(reservation.id), ...variables } } })
-        .then((value: FetchResult<UpdateReservation>) => {
-          addOrUpdateReservation(value.data?.updateReservation?.reservation)
-          message.success("Rezervace byla aktualizována!")
-          close()
-        })
     } else {
       createReservation({ variables: { data: { ...variables } } })
-        .then((value: FetchResult<CreateReservation>) => {
-          addOrUpdateReservation(value.data?.createReservation?.reservation)
-          message.success("Rezervace byla vytvořena!")
-          close()
-        })
     }
   }
 
@@ -112,11 +130,6 @@ export const ReservationModal = ({
         onConfirm={ () => {
           if (reservation.id !== undefined) {
             deleteReservation({ variables: { reservationId: String(reservation.id) } })
-              .then((value: FetchResult<DeleteReservation>) => {
-                clearReservation(value.data?.deleteReservation?.reservation?.id)
-                message.success("Rezervace byla odstraněna!")
-                close()
-              })
           }
         } }
         title="Odstranit rezervaci?">
@@ -192,10 +205,9 @@ export const ReservationModal = ({
         footer={ footerButtons }
         title="Rezervační formulář"
         visible={ isOpen }>
-        <Skeleton
-          active
-          loading={ guestsLoading }
-          paragraph={ { rows: 5 } }>
+        <Spin
+          spinning={ guestsLoading || createLoading || deleteLoading || updateLoading }
+          tip={ `${ t("loading") }...` }>
           <Form
             form={ form }
             initialValues={ initialValues }
@@ -290,7 +302,7 @@ export const ReservationModal = ({
                 allowClear />
             </Form.Item>
           </Form>
-        </Skeleton>
+        </Spin>
       </Modal>
       <GuestDrawer
         close={ () => setGuestDrawerOpen(false) }

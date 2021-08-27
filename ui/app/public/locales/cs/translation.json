@@ -3,5 +3,8 @@
   "guests-title": "Hosté",
   "home-title": "Rezervace / Obsazenost",
   "loading": "Načítám",
+  "reservation-created": "Rezervace byla vytvořena!",
+  "reservation-deleted": "Rezervace byla odstraněna!",
+  "reservation-updated": "Rezervace byla aktualizována!",
   "suites-title": "Apartmá"
 }

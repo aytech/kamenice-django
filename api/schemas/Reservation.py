@@ -7,6 +7,7 @@ from graphql_jwt.decorators import user_passes_test
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
+from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
@@ -22,6 +23,7 @@ class ReservationQuery(ObjectType):
     reservations = List(Reservation)
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_suite_reservations(self, _info, suite_id):
         try:
             return ReservationModel.objects.get(suite_id=suite_id, deleted=False)
@@ -29,6 +31,7 @@ class ReservationQuery(ObjectType):
             return None
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservation(self, _query, _info, reservation_id):
         try:
             return ReservationModel.objects.get(pk=reservation_id, deleted=False)
@@ -36,6 +39,7 @@ class ReservationQuery(ObjectType):
             return None
 
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservations(self, _info):
         return ReservationModel.objects.filter(deleted=False)
 
@@ -90,6 +94,7 @@ class CreateReservation(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         instance = ReservationModel(
             from_date=data.from_date,
@@ -139,6 +144,7 @@ class UpdateReservation(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.change_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
             instance = ReservationModel.objects.get(pk=data.id, deleted=False)
@@ -193,6 +199,7 @@ class DeleteReservation(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
+    @user_passes_test(lambda user: user.has_perm('api.delete_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, reservation_id):
         try:
             instance = ReservationModel.objects.get(pk=reservation_id)

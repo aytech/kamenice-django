@@ -9,11 +9,11 @@ import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Typ
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "../ReservationModal"
-import { useQuery } from "@apollo/client"
+import { ApolloError, useQuery } from "@apollo/client"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { Skeleton } from "antd"
+import { message, Skeleton } from "antd"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -27,6 +27,8 @@ export const Reservations = withRouter(({
 
   const { t } = useTranslation()
 
+  setPageTitle(t("home-title"))
+
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservation, setReservation ] = useState<IReservation>()
@@ -35,9 +37,9 @@ export const Reservations = withRouter(({
 
   const { data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => {
-      setPageTitle(t("home-title"))
       setDataLoading(false)
-    }
+    },
+    onError: (reason: ApolloError) => message.error(reason.message)
   })
 
   const getTimelineReservationItem = (reservation: SuitesWithReservations_reservations): TimelineItem<CustomItemFields, Moment> => {
