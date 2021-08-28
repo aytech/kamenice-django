@@ -27,8 +27,6 @@ export const Reservations = withRouter(({
 
   const { t } = useTranslation()
 
-  setPageTitle(t("home-title"))
-
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservation, setReservation ] = useState<IReservation>()
@@ -97,6 +95,10 @@ export const Reservations = withRouter(({
     setItems(reservationList)
     setGroups(suiteList)
   }, [ reservationsData ])
+
+  useEffect(() => {
+    setPageTitle(t("home-title"))
+  }, [ setPageTitle, t ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation

@@ -207,7 +207,10 @@ export const GuestDrawer = ({
             label={ t("name") }
             name="name"
             required
-            rules={ GuestFormHelper.requiredAlphaRules }>
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+            ] }>
             <Input placeholder={ t('forms.your-name') } />
           </Form.Item>
           <Form.Item
@@ -215,7 +218,10 @@ export const GuestDrawer = ({
             label={ t("surname") }
             name="surname"
             required
-            rules={ GuestFormHelper.requiredAlphaRules }>
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+            ] }>
             <Input placeholder={ t("your-surname") } />
           </Form.Item>
           <Form.Item
@@ -223,7 +229,7 @@ export const GuestDrawer = ({
             label={ t("email") }
             name="email"
             required
-            rules={ [ FormHelper.requiredRule ] }>
+            rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
             <Input
               addonBefore={ emailPrefixIcon }
               placeholder={ t("email") }

@@ -21,8 +21,6 @@ export const Guests = withRouter(({
 
   const { t } = useTranslation()
 
-  setPageTitle(t("guests.page-title"))
-
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
@@ -34,6 +32,14 @@ export const Guests = withRouter(({
     },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
+
+  const addOrRemoveGuest = (guest: Guests_guests) => {
+    const existingGuests = guests.filter(cachedGuest => cachedGuest.id !== guest.id)
+    setGuests(existingGuests.concat(guest))
+  }
+
+  const removeGuest = (guestId: string) =>
+    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guestId))
 
   useEffect(() => {
     const guestsList: Guests_guests[] = []
@@ -47,13 +53,9 @@ export const Guests = withRouter(({
     }
   }, [ guestsData ])
 
-  const addOrRemoveGuest = (guest: Guests_guests) => {
-    const existingGuests = guests.filter(cachedGuest => cachedGuest.id !== guest.id)
-    setGuests(existingGuests.concat(guest))
-  }
-
-  const removeGuest = (guestId: string) =>
-    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guestId))
+  useEffect(() => {
+    setPageTitle(t("guests.page-title"))
+  }, [ setPageTitle, t ])
 
   return (
     <>

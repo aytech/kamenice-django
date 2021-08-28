@@ -4,10 +4,7 @@ import { FormHelper } from "./FormHelper";
 
 interface IGuestFormHelper {
   ageOptions: OptionsType[]
-  getGuestResponseErrorList: (errorString: string) => Array<string>
-  phoneCodeRequiredRules: Rule[]
-  requiredAlphaRules: Rule[]
-  requiredNumericRules: Rule[]
+  requiredAlphaRule: (message: string) => Rule
 }
 
 export const GuestFormHelper: IGuestFormHelper = {
@@ -29,39 +26,11 @@ export const GuestFormHelper: IGuestFormHelper = {
       value: "ADULT"
     }
   ],
-  getGuestResponseErrorList: (errorString: string) => {
-    try {
-      return Array.from(
-        Object.values(
-          JSON.parse(errorString.replaceAll("'", "\""))
-        ), ((list: any) => list[ 0 ])
-      )
-    } catch (error) {
-      return [ "Chyba serveru, kontaktujte správce" ]
-    }
-  },
-  phoneCodeRequiredRules: [
-    FormHelper.requiredRule,
-    {
-      message: "zadejte kód ve formátu 420, +420 nebo (420)",
-      pattern: /^\+?\(?[0-9]*\)?$/,
-      transform: FormHelper.trim
-    }
-  ],
-  requiredAlphaRules: [
-    FormHelper.requiredRule,
-    {
-      message: "zadejte pouze text",
+  requiredAlphaRule: (message: string) => {
+    return {
+      message: message,
       pattern: /^([A-Za-z\sáÁčČďĎéÉěĚíÍňŇřŘšŠťŤúÚůŮýÝžŽóÓ])+$/,
       transform: FormHelper.trim
     }
-  ],
-  requiredNumericRules: [
-    FormHelper.requiredRule,
-    {
-      message: "zadejte pouze čísla",
-      pattern: /^[\d\s]+$/,
-      transform: FormHelper.trim
-    }
-  ]
+  }
 }

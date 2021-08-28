@@ -5,6 +5,7 @@ import { Store } from "antd/lib/form/interface"
 import Title from "antd/lib/typography/Title"
 import { useEffect } from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { GuestFormHelper } from "../../../../lib/components/GuestFormHelper"
 import { UPDATE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
@@ -24,6 +25,8 @@ export const ReservationGuestDrawer = ({
   reservationHash,
   visible
 }: Props) => {
+
+  const { t } = useTranslation()
 
   const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationGuest, UpdateReservationGuestVariables>(UPDATE_RESERVATON_GUEST)
 
@@ -144,7 +147,10 @@ export const ReservationGuestDrawer = ({
             label="Jméno"
             name="name"
             required
-            rules={ GuestFormHelper.requiredAlphaRules }>
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+            ] }>
             <Input placeholder="Vaše Jméno" />
           </Form.Item>
           <Form.Item
@@ -152,7 +158,10 @@ export const ReservationGuestDrawer = ({
             label="Příjmení"
             name="surname"
             required
-            rules={ GuestFormHelper.requiredAlphaRules }>
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+            ] }>
             <Input placeholder="Vaše Příjmení" />
           </Form.Item>
           <Form.Item
@@ -160,7 +169,7 @@ export const ReservationGuestDrawer = ({
             label="E-Mail"
             name="email"
             required
-            rules={ [ FormHelper.requiredRule ] }>
+            rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
             <Input
               addonBefore={ emailPrefixIcon }
               placeholder="e-mail"

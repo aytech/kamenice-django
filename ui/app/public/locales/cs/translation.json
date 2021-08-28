@@ -2,7 +2,9 @@
   "age": "Věk",
   "email": "E-Mail",
   "errors": {
-    "invalid-form": "Formulář nelze odeslat, opravte prosím chyby"
+    "404": "hledáme vaší stránku... ale nemůžeme ji najít..",
+    "invalid-form": "Formulář nelze odeslat, opravte prosím chyby",
+    "oops": "Jejda"
   },
   "forms": {
     "address": "Trvalé bydliště",
@@ -13,19 +15,28 @@
     "create": "Vytvořit",
     "delete": "Odstranit",
     "delete-confirm": "Opravdu odstranit?",
+    "enter-text": "Zadejte text",
+    "field-required": "Pole je povinné",
     "from-list": "Ze seznamu",
     "id-number": "Číslo OP",
     "id-number-full": "Číslo občanského průkazu",
+    "login": "Přihlásit",
     "municipality": "Obec",
+    "password": "Heslo",
     "personal-data": "Osobní údaje",
     "psc": "PSČ",
     "psc-label": "PSČ/Obec",
+    "reset": "Reset",
+    "save": "Uložit",
     "street": "Ulice",
     "update": "Upravit",
+    "user-name": "Uživatelské jméno",
     "visa-number": "Číslo viza",
     "your-name": "Vaše Jméno",
     "your-surname": "Vaše Příjmení"
   },
+  "generic-error": "Chyba serveru, kontaktujte správce",
+  "go-home": "Přejít na úvod",
   "guests": {
     "add": "Přidat hosta",
     "added": "Host {{ name }} {{ surname }} přidán!",
@@ -39,16 +50,34 @@
   },
   "home-title": "Rezervace / Obsazenost",
   "loading": "Načítám",
+  "login": {
+    "invalid-login": "Prosím zadejte platné přihlašovací údaje",
+    "in-progress": "Přihlašování"
+  },
   "logout": "Odhlásit",
   "man": "Muž",
   "name": "Jméno",
   "no": "Ne",
   "number": "Číslo",
+  "pages": {
+    "login": "Přihlášení"
+  },
   "phone-number": "Telefonní číslo",
-  "reservation": "Rezervace",
-  "reservation-created": "Rezervace byla vytvořena!",
-  "reservation-deleted": "Rezervace byla odstraněna!",
-  "reservation-updated": "Rezervace byla aktualizována!",
+  "reservations": {
+    "add-roommate": "Přidat spolubydlícího",
+    "choose-type": "Vyberte typ rezervace",
+    "created": "Rezervace byla vytvořena!",
+    "date": "Datum Rezervace",
+    "deleted": "Rezervace byla odstraněna!",
+    "form": "Rezervační formulář",
+    "meal": "Strava",
+    "name": "Rezervace",
+    "notes": "Poznámky",
+    "purpose": "Účel pobytu",
+    "remove": "Odstranit rezervaci",
+    "type": "Typ Rezervace",
+    "updated": "Rezervace byla aktualizována!"
+  },
   "rooms": "Apartmá",
   "sex": "Pohlaví",
   "suites-title": "Apartmá",

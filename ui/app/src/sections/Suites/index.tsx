@@ -20,8 +20,6 @@ export const Suites = withRouter(({
 
   const { t } = useTranslation()
 
-  setPageTitle(t("suites-title"))
-
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
@@ -57,6 +55,10 @@ export const Suites = withRouter(({
     })
     setSuites(suitesList)
   }, [ suitesData ])
+
+  useEffect(() => {
+    setPageTitle(t("suites-title"))
+  }, [ setPageTitle, t ])
 
   return (
     <>

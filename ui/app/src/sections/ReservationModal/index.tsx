@@ -124,20 +124,20 @@ export const ReservationModal = ({
   const getRemoveButton = () => {
     return reservation !== undefined && reservation.id !== undefined ? (
       <Popconfirm
-        cancelText="Ne"
+        cancelText={ t("no") }
         key="remove"
-        okText="Ano"
+        okText={ t("yes") }
         onConfirm={ () => {
           if (reservation.id !== undefined) {
             deleteReservation({ variables: { reservationId: String(reservation.id) } })
           }
         } }
-        title="Odstranit rezervaci?">
+        title={ `${ t("reservations.remove") }?` }>
         <Button
           className="cancel-button"
           danger
           icon={ <CloseCircleOutlined /> }>
-          Odstranit
+          { t("forms.delete") }
         </Button>
       </Popconfirm>
     ) : null
@@ -148,7 +148,7 @@ export const ReservationModal = ({
     <Button
       key="guest"
       onClick={ () => setGuestDrawerOpen(true) }>
-      Přidat hosta
+      { t("guests.add") }
     </Button>,
     <Button
       key="create"
@@ -158,7 +158,7 @@ export const ReservationModal = ({
           .then(submitForm)
       } }
       type="primary">
-      { (reservation !== undefined && reservation.id !== undefined) ? "Upravit" : "Uložit" }
+      { (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }
     </Button>
   ]
 
@@ -190,7 +190,7 @@ export const ReservationModal = ({
           <Popconfirm
             onCancel={ () => setDeleteConfirmVisible(false) }
             onConfirm={ close }
-            title="Zavřít formulář? Data ve formuláři budou ztracena"
+            title={ t("forms.close-dirty") }
             visible={ deleteConfirmVisible }>
             <CloseOutlined onClick={ () => {
               if (form.isFieldsTouched()) {
@@ -203,7 +203,7 @@ export const ReservationModal = ({
           </Popconfirm>
         ) }
         footer={ footerButtons }
-        title="Rezervační formulář"
+        title={ t("reservations.form") }
         visible={ isOpen }>
         <Spin
           spinning={ guestsLoading || createLoading || deleteLoading || updateLoading }
@@ -213,7 +213,7 @@ export const ReservationModal = ({
             initialValues={ initialValues }
             layout="vertical">
             <Form.Item
-              label="Datum Rezervace"
+              label={ t("reservations.date") }
               name="dates"
               required>
               <DatePicker.RangePicker
@@ -222,7 +222,7 @@ export const ReservationModal = ({
             </Form.Item>
             <Form.Item
               hasFeedback
-              label="Host"
+              label={ t("guests.name") }
               name="guest"
               required
               rules={ ReservationFormHelper.guestValidators(form) }>
@@ -265,7 +265,7 @@ export const ReservationModal = ({
                       onClick={ () => add() }
                       block
                       icon={ <PlusOutlined /> }>
-                      Přidat spolubydlícího
+                      { t("reservations.add-roommate") }
                     </Button>
                   </Form.Item>
                 </>
@@ -273,32 +273,32 @@ export const ReservationModal = ({
             </Form.List>
             <Form.Item
               hasFeedback
-              label="Typ Rezervace"
+              label={ t("reservations.type") }
               name="type"
               required
-              rules={ [ ReservationFormHelper.getRequiredRule("vyberte typ rezervace") ] }>
+              rules={ [ ReservationFormHelper.getRequiredRule(t("reservations.choose-type")) ] }>
               <Select
                 options={ ReservationFormHelper.reservationOptions } />
             </Form.Item>
             <Form.Item
               hasFeedback
-              label="Strava"
+              label={ t("reservations.meal") }
               name="meal"
               required
-              rules={ [ FormHelper.requiredRule ] }>
+              rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
               <Select
                 options={ ReservationFormHelper.mealOptions } />
             </Form.Item>
             <Form.Item
-              label="Účel pobytu"
+              label={ t("reservations.purpose") }
               name="purpose">
-              <Input placeholder="účel pobytu" />
+              <Input placeholder={ t("reservations.purpose") } />
             </Form.Item>
             <Form.Item
-              label="Poznámky"
+              label={ t("reservations.notes") }
               name="notes">
               <Input.TextArea
-                placeholder="zadejte text"
+                placeholder={ t("forms.enter-text") }
                 allowClear />
             </Form.Item>
           </Form>

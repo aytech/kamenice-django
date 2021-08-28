@@ -10,6 +10,7 @@ import { CreateSuite, CreateSuiteVariables } from "../../lib/graphql/mutations/S
 import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../lib/graphql/mutations/Suite"
 import { UpdateSuite, UpdateSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   addOrUpdateSuite: (suite: Suites_suites) => void
@@ -26,6 +27,8 @@ export const SuiteDrawer = ({
   suite,
   visible
 }: Props) => {
+
+  const { t } = useTranslation()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
@@ -173,7 +176,7 @@ export const SuiteDrawer = ({
             label="Název"
             name="title"
             required
-            rules={ [ FormHelper.requiredRule ] }>
+            rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
             <Input placeholder="název apartmá" />
           </Form.Item>
           <Form.Item
@@ -182,7 +185,7 @@ export const SuiteDrawer = ({
             name="number"
             required
             rules={ [
-              FormHelper.requiredRule,
+              FormHelper.requiredRule(t("forms.field-required")),
               {
                 message: "zadejte číslo",
                 pattern: /^[0-9]+$/
