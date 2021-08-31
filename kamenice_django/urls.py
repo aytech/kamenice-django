@@ -43,6 +43,10 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve, {
         'document_root': settings.STATIC_ROOT,
     }),
+    # UI locales
+    re_path(r'^locales/(?P<path>.*)$', serve, {
+        'document_root': settings.LOCALES_ROOT,
+    }),
 
     # Catch all
     re_path(r'^(?P<path>.*)$', ui.page_not_found, name='404'),
