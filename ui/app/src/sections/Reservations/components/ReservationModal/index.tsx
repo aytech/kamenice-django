@@ -236,14 +236,16 @@ export const ReservationModal = ({
         closeIcon={ (
           <Popconfirm
             onCancel={ () => setDeleteConfirmVisible(false) }
-            onConfirm={ close }
+            onConfirm={ () => {
+              setDeleteConfirmVisible(false)
+              setTimeout(close)
+            } }
             title={ t("forms.close-dirty") }
             visible={ deleteConfirmVisible }>
             <CloseOutlined onClick={ () => {
               if (form.isFieldsTouched()) {
                 setDeleteConfirmVisible(true)
               } else {
-                setDeleteConfirmVisible(false)
                 close()
               }
             } } />
