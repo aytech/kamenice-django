@@ -4,12 +4,12 @@ import { Avatar, Menu, Spin } from "antd"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, RouteComponentProps, withRouter } from "react-router-dom"
-import { Colors } from "../../../../../lib/components/Colors"
-import { UrlHelper } from "../../../../../lib/components/UrlHelper"
-import { refreshTokenName, tokenName, usernameKey } from "../../../../../lib/Constants"
-import { TOKEN_REVOKE } from "../../../../../lib/graphql/mutations/Token"
-import { RevokeToken, RevokeTokenVariables } from "../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
-import { User } from "../../../../../lib/Types"
+import { Colors } from "../../../../../../lib/components/Colors"
+import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
+import { refreshTokenName, tokenName, usernameKey } from "../../../../../../lib/Constants"
+import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
+import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
+import { User } from "../../../../../../lib/Types"
 
 interface Props {
   user: User | null
@@ -59,7 +59,7 @@ export const MenuItems = withRouter(({
         spinning={ revokeLoading }>
         <Menu mode="horizontal">
           <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-            <Link to="/">{ t("reservation") }</Link>
+            <Link to="/">{ t("reservations.name") }</Link>
           </Menu.Item>
           <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
             <Link to="/guests">{ t("guests.name-pl") }</Link>

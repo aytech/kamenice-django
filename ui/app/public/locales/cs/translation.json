@@ -10,6 +10,7 @@
     "address": "Trvalé bydliště",
     "by-hand": "ručně",
     "choose-from-list": "Vyberte ze seznamu",
+    "choose-guest": "Vyberte hosta",
     "citizenship": "Občanství",
     "close-dirty": "Zavřít formulář? Data ve formuláři budou ztracena",
     "create": "Vytvořit",
@@ -18,6 +19,9 @@
     "enter-text": "Zadejte text",
     "field-required": "Pole je povinné",
     "from-list": "Ze seznamu",
+    "guest-equals-roommate": "Spolubydlící nemůže být stejný jako host",
+    "guest-selected": "Spolubydlící je již vybrán",
+    "guest-duplicate": "Host nemůže být stejný jako spolubydlící",
     "id-number": "Číslo OP",
     "id-number-full": "Číslo občanského průkazu",
     "login": "Přihlásit",
@@ -35,6 +39,7 @@
     "your-name": "Vaše Jméno",
     "your-surname": "Vaše Příjmení"
   },
+  "from": "Od",
   "generic-error": "Chyba serveru, kontaktujte správce",
   "go-home": "Přejít na úvod",
   "guests": {
@@ -78,10 +83,17 @@
     "type": "Typ Rezervace",
     "updated": "Rezervace byla aktualizována!"
   },
+  "reservation-types": {
+    "ACCOMMODATED": "Aktuálně Ubytování",
+    "BINDING": "Závazná Rezervace",
+    "INHABITED": "Obydlený Termín",
+    "NONBINDING": "Nezávazná Rezervace"
+  },
   "rooms": "Apartmá",
   "sex": "Pohlaví",
   "suites-title": "Apartmá",
   "surname": "Příjmení",
+  "to": "Do",
   "woman": "Žena",
   "yes": "Ano"
 }

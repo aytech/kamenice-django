@@ -5,19 +5,19 @@ import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation, OptionsType, ReservationTypeKey } from "../../lib/Types"
-import { ReservationFormHelper } from "../../lib/components/ReservationFormHelper"
-import { FormHelper } from "../../lib/components/FormHelper"
-import { ReservationInput } from "../../lib/graphql/globalTypes"
-import { dateFormat } from "../../lib/Constants"
-import { GuestDrawer } from "../GuestDrawer"
-import { Guests, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../lib/graphql/queries/Guests"
-import { CreateReservation, CreateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { UpdateReservation, UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
-import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { IReservation, OptionsType, ReservationTypeKey } from "../../../../lib/Types"
+import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
+import { FormHelper } from "../../../../lib/components/FormHelper"
+import { ReservationInput } from "../../../../lib/graphql/globalTypes"
+import { dateFormat } from "../../../../lib/Constants"
+import { GuestDrawer } from "../../../GuestDrawer"
+import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { GUESTS } from "../../../../lib/graphql/queries/Guests"
+import { CreateReservation, CreateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
+import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
+import { UpdateReservation, UpdateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { SuitesWithReservations_reservations } from "../../../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -120,6 +120,53 @@ export const ReservationModal = ({
       createReservation({ variables: { data: { ...variables } } })
     }
   }
+
+  const guestValidator = [
+    {
+      message: t("forms.guest-duplicate"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        const roommates: Array<{ id: number }> = form.getFieldValue("roommates")
+        if (roommates === undefined || roommates.length === 0) {
+          return Promise.resolve()
+        }
+        const duplicate = roommates.filter((id: { id: number } | undefined) => {
+          return id !== undefined && id.id === value
+        })
+        if (duplicate === undefined || duplicate.length === 0) {
+          return Promise.resolve()
+        }
+        return Promise.reject(new Error("Fail guest validation, equals to roommate"))
+      }
+    },
+    {
+      message: t("forms.choose-guest"),
+      required: true
+    }
+  ]
+
+  const roommateValidator = [
+    {
+      message: t("forms.guest-selected"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        const duplicates: Array<{ id: number }> = form.getFieldValue("roommates").filter((id: { id: number } | undefined) => {
+          return id !== undefined && id.id === value
+        })
+        if (duplicates === undefined || duplicates.length <= 1) {
+          return Promise.resolve()
+        }
+        return Promise.reject(new Error("Fail roommate validation, duplicate value"))
+      }
+    },
+    {
+      message: t("forms.guest-equals-roommate"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        if (form.getFieldValue("guest") !== value) {
+          return Promise.resolve()
+        }
+        return Promise.reject(new Error("Fail roommate validation, equals to guest"))
+      }
+    }
+  ]
 
   const getRemoveButton = () => {
     return reservation !== undefined && reservation.id !== undefined ? (
@@ -225,7 +272,7 @@ export const ReservationModal = ({
               label={ t("guests.name") }
               name="guest"
               required
-              rules={ ReservationFormHelper.guestValidators(form) }>
+              rules={ guestValidator }>
               <Select
                 filterOption={ (input, option): boolean => {
                   const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
@@ -247,7 +294,7 @@ export const ReservationModal = ({
                         { ...restField }
                         fieldKey={ [ fieldKey, 'first' ] }
                         name={ [ name, "id" ] }
-                        rules={ ReservationFormHelper.roommateValidators(form) }>
+                        rules={ roommateValidator }>
                         <Select
                           options={ guestOptions }
                           showSearch />
