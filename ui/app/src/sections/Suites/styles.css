@@ -2,3 +2,7 @@
   background-color: #fff;
   margin: 0 auto 3em;
 }
+
+.suites-list .suite-item {
+  cursor: pointer;
+}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
 import { HomeOutlined } from "@ant-design/icons"
 import { Avatar, Button, List, message, Skeleton } from "antd"
-import { SuiteDrawer } from "../SuiteDrawer"
+import { SuiteDrawer } from "./components/SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
 import { AddSuite } from "./components/AddSuite"
@@ -46,6 +46,11 @@ export const Suites = withRouter(({
     setSuites(suites.filter(suite => suite.id !== suiteId))
   }
 
+  const openSuite = (suite: Suites_suites | undefined) => {
+    setActiveSuite(suite)
+    setDrawerVisible(true)
+  }
+
   useEffect(() => {
     const suitesList: Suites_suites[] = []
     suitesData?.suites?.forEach((suite: Suites_suites | null) => {
@@ -57,7 +62,7 @@ export const Suites = withRouter(({
   }, [ suitesData ])
 
   useEffect(() => {
-    setPageTitle(t("suites-title"))
+    setPageTitle(t("living-units"))
   }, [ setPageTitle, t ])
 
   return (
@@ -73,26 +78,22 @@ export const Suites = withRouter(({
           footer={
             <AddSuite
               hasAccess={ hasAccess }
-              onAdd={ () => {
-                setActiveSuite(undefined)
-                setDrawerVisible(true)
-              } } />
+              onAdd={ () => openSuite(undefined) } />
           }
-          header={ <h4>Seznam apartmá</h4> }
+          header={ <h4>{ t("living-units-list") }</h4> }
           itemLayout="horizontal"
           renderItem={ suite => (
             <List.Item
               actions={ [
                 <Button
                   key="edit"
-                  onClick={ () => {
-                    setActiveSuite(suite)
-                    setDrawerVisible(true)
-                  } }
+                  onClick={ () => openSuite(suite) }
                   type="link">
                   upravit
                 </Button>
-              ] }>
+              ] }
+              className="suite-item"
+              onClick={ () => openSuite(suite) }>
               <List.Item.Meta
                 avatar={
                   <Avatar gap={ 4 } size="large">

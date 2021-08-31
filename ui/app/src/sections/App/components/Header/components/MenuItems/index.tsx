@@ -65,7 +65,7 @@ export const MenuItems = withRouter(({
             <Link to="/guests">{ t("guests.name-pl") }</Link>
           </Menu.Item>
           <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-            <Link to="/apartma">{ t("rooms") }</Link>
+            <Link to="/apartma">{ t("living-units") }</Link>
           </Menu.Item>
         </Menu >
       </Spin>

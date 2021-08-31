@@ -54,6 +54,9 @@
     "updated": "Host {{ name }} {{ surname }} aktualizován!"
   },
   "home-title": "Rezervace / Obsazenost",
+  "living-unit-add": "Přidat místnost",
+  "living-units": "Místnosti",
+  "living-units-list": "Seznam místnosti",
   "loading": "Načítám",
   "login": {
     "invalid-login": "Prosím zadejte platné přihlašovací údaje",
@@ -89,9 +92,9 @@
     "INHABITED": "Obydlený Termín",
     "NONBINDING": "Nezávazná Rezervace"
   },
-  "rooms": "Apartmá",
+  "rooms": "Pokoje",
   "sex": "Pohlaví",
-  "suites-title": "Apartmá",
+  "suites": "Apartmá",
   "surname": "Příjmení",
   "to": "Do",
   "woman": "Žena",

@@ -168,7 +168,9 @@ export const Reservations = withRouter(({
                 return (
                   <div
                     { ...getRootProps() }
-                    className="side-header" />
+                    className="side-header">
+                    { t("living-units") }
+                  </div>
                 )
               } }
             </SidebarHeader>
