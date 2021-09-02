@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, MenuItemKey } from "../../lib/Types"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
@@ -18,11 +18,13 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   setPageTitle: (title: string) => void
+  setSelectedPage: (page: MenuItemKey) => void
 }
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(({
-  setPageTitle
+  setPageTitle,
+  setSelectedPage
 }: RouteComponentProps & Props) => {
 
   const { t } = useTranslation()
@@ -98,7 +100,8 @@ export const Reservations = withRouter(({
 
   useEffect(() => {
     setPageTitle(t("home-title"))
-  }, [ setPageTitle, t ])
+    setSelectedPage("reservation")
+  }, [ setPageTitle, setSelectedPage, t ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation

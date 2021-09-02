@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Button, Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
+import { Drawer, Form, Input, InputNumber, message, Popconfirm, Spin } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
+import { CloseOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
 import { SuiteForm } from "../../../../lib/Types"
@@ -11,6 +11,7 @@ import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../../../lib/graphq
 import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
 import { DeleteSuite, DeleteSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { useTranslation } from "react-i18next"
+import { RoomActions } from "./components/RoomActions"
 
 interface Props {
   addOrUpdateSuite: (suite: Suites_suites) => void
@@ -48,6 +49,10 @@ export const SuiteDrawer = ({
 
   const initialValues: Store = {
     number: suite?.number,
+    price_base: 0,
+    price_child: 0,
+    price_extra: 0,
+    price_infant: 0,
     title: suite?.title
   }
 
@@ -65,7 +70,7 @@ export const SuiteDrawer = ({
               const suite = value.data?.createSuite?.suite
               if (suite !== undefined && suite !== null) {
                 addOrUpdateSuite(suite)
-                message.success("Apartmá byla vytvořena")
+                message.success(t("rooms.created"))
                 close()
               }
             })
@@ -75,7 +80,7 @@ export const SuiteDrawer = ({
               const suite = value.data?.updateSuite?.suite
               if (suite !== undefined && suite !== null) {
                 addOrUpdateSuite(suite)
-                message.success("Apartmá byla aktualizována")
+                message.success(t("rooms.updated"))
                 close()
               }
             })
@@ -83,6 +88,18 @@ export const SuiteDrawer = ({
       })
       .catch(() => {
         console.error("Form validation failed");
+      })
+  }
+
+  const deleteSuiteHandle = (suiteId: string) => {
+    deleteSuite({ variables: { suiteId } })
+      .then((value: FetchResult<DeleteSuite>) => {
+        const suiteId = value.data?.deleteSuite?.suite?.id
+        if (suiteId !== undefined) {
+          clearSuite(suiteId)
+          message.success(t("rooms.deleted"))
+          close()
+        }
       })
   }
 
@@ -110,52 +127,22 @@ export const SuiteDrawer = ({
             close()
           } }
           placement="rightTop"
-          title="Zavřít formulář? Data ve formuláři budou ztracena"
+          title={ t("forms.close-dirty") }
           visible={ confirmClose }>
           <CloseOutlined onClick={ closeDrawer } />
         </Popconfirm>
       ) }
       footer={
-        <>
-          { suite !== undefined &&
-            <Popconfirm
-              cancelText="Ne"
-              icon={ <WarningOutlined /> }
-              okText="Ano"
-              onConfirm={ () => {
-                deleteSuite({ variables: { suiteId: suite.id } })
-                  .then((value: FetchResult<DeleteSuite>) => {
-                    const suiteId = value.data?.deleteSuite?.suite?.id
-                    if (suiteId !== undefined) {
-                      clearSuite(suiteId)
-                      message.success("Apartmá byla odstraněna")
-                      close()
-                    }
-                  })
-              } }
-              title="opravdu odstranit?">
-              <Button
-                danger
-                style={ {
-                  float: "left"
-                } }
-                type="primary">
-                Odstranit
-              </Button>
-            </Popconfirm>
-          }
-          <Button
-            onClick={ submitForm }
-            type="primary">
-            { suite === undefined ? "Vytvořit" : "Upravit" }
-          </Button>
-        </>
+        <RoomActions
+          deleteSuite={ deleteSuiteHandle }
+          submitForm={ submitForm }
+          suite={ suite } />
       }
       footerStyle={ {
         textAlign: "right"
       } }
       placement="left"
-      title="Nové apartmá"
+      title={ t("rooms.new") }
       visible={ visible }
       width={ 500 }>
       <Spin
@@ -165,7 +152,7 @@ export const SuiteDrawer = ({
           || deleteLoading
           || updateLoading
         }
-        tip="Načítám...">
+        tip={ `${ t("loading") }...` }>
         <Form
           form={ form }
           initialValues={ initialValues }
@@ -173,25 +160,73 @@ export const SuiteDrawer = ({
           name="suite">
           <Form.Item
             hasFeedback
-            label="Název"
+            label={ t("forms.name") }
             name="title"
             required
             rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
-            <Input placeholder="název apartmá" />
+            <Input placeholder={ t("rooms.name") } />
           </Form.Item>
           <Form.Item
             hasFeedback
-            label="Číslo"
+            label={ t("number") }
             name="number"
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
               {
-                message: "zadejte číslo",
+                message: t("forms.enter-number"),
                 pattern: /^[0-9]+$/
               }
             ] }>
-            <Input placeholder="číslo apartmá" type="number" />
+            <Input placeholder={ t("rooms.number") } type="number" />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.price-base") }
+            name="price_base"
+            rules={ [
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <InputNumber addonAfter={ t("rooms.currency") } />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.price-child") }
+            name="price_child"
+            rules={ [
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <InputNumber addonAfter={ t("rooms.currency") } />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.price-infant") }
+            name="price_infant"
+            rules={ [
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <InputNumber addonAfter={ t("rooms.currency") } />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.price-extra") }
+            name="price_extra"
+            rules={ [
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <InputNumber addonAfter={ t("rooms.currency") } />
           </Form.Item>
         </Form>
       </Spin>

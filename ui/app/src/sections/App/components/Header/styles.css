@@ -15,10 +15,6 @@
   width: 36px;
 }
 
-.ant-page-header-content .ant-menu.user {
-  margin-left: auto;
-}
-
 .ant-page-header-content .ant-menu-submenu, .ant-page-header-content .ant-menu-submenu .ant-menu-title-content {
   display: flex;
 }

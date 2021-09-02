@@ -9,13 +9,16 @@ import { AddSuite } from "./components/AddSuite"
 import { ApolloError, useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
+import { MenuItemKey } from "../../lib/Types"
 
 interface Props {
   setPageTitle: (title: string) => void
+  setSelectedPage: (page: MenuItemKey) => void
 }
 
 export const Suites = withRouter(({
-  setPageTitle
+  setPageTitle,
+  setSelectedPage
 }: RouteComponentProps & Props) => {
 
   const { t } = useTranslation()
@@ -63,7 +66,8 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     setPageTitle(t("living-units"))
-  }, [ setPageTitle, t ])
+    setSelectedPage("suites")
+  }, [ setPageTitle, setSelectedPage, t ])
 
   return (
     <>

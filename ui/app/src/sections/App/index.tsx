@@ -11,13 +11,14 @@ import { paths, usernameKey } from "../../lib/Constants"
 import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
 import { useTranslation } from "react-i18next"
-import { User } from "../../lib/Types"
+import { MenuItemKey, User } from "../../lib/Types"
 
 export const App = () => {
 
   const { t } = useTranslation()
 
   const [ pageTitle, setPageTitle ] = useState<string | null>(`${ t("loading") }...`)
+  const [ selectedPage, setSelectedPage ] = useState<MenuItemKey>("user")
 
   const getUser = (): User | null => {
     const username = localStorage.getItem(usernameKey)
@@ -29,7 +30,9 @@ export const App = () => {
   return (
     <Layout id="app">
       <Affix offsetTop={ 0 } className="app__affix-header">
-        <Header user={ getUser() } />
+        <Header
+          selectedPage={ selectedPage }
+          user={ getUser() } />
       </Affix>
       <Layout.Header>
         <PageTitle title={ pageTitle } />
@@ -38,15 +41,18 @@ export const App = () => {
         <Switch>
           <Route exact path={ paths.root }>
             <Reservations
-              setPageTitle={ setPageTitle } />
+              setPageTitle={ setPageTitle }
+              setSelectedPage={ setSelectedPage } />
           </Route>
           <Route exact path={ paths.suites }>
             <Suites
-              setPageTitle={ setPageTitle } />
+              setPageTitle={ setPageTitle }
+              setSelectedPage={ setSelectedPage } />
           </Route>
           <Route exact path={ paths.guests }>
             <Guests
-              setPageTitle={ setPageTitle } />
+              setPageTitle={ setPageTitle }
+              setSelectedPage={ setSelectedPage } />
           </Route>
           <Route exact path={ paths.login }>
             <Login

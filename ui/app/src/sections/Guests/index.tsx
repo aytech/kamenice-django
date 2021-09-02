@@ -10,13 +10,16 @@ import { GuestDrawer } from "../GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
+import { MenuItemKey } from "../../lib/Types"
 
 interface Props {
   setPageTitle: (title: string) => void
+  setSelectedPage: (page: MenuItemKey) => void
 }
 
 export const Guests = withRouter(({
-  setPageTitle
+  setPageTitle,
+  setSelectedPage
 }: RouteComponentProps & Props) => {
 
   const { t } = useTranslation()
@@ -55,7 +58,8 @@ export const Guests = withRouter(({
 
   useEffect(() => {
     setPageTitle(t("guests.page-title"))
-  }, [ setPageTitle, t ])
+    setSelectedPage("guests")
+  }, [ setPageTitle, setSelectedPage, t ])
 
   return (
     <>

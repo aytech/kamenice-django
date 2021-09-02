@@ -1,6 +1,6 @@
 import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant-design/icons"
 import { useMutation } from "@apollo/client"
-import { Avatar, Menu, Spin } from "antd"
+import { Avatar, Menu } from "antd"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, RouteComponentProps, withRouter } from "react-router-dom"
@@ -9,20 +9,23 @@ import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
 import { refreshTokenName, tokenName, usernameKey } from "../../../../../../lib/Constants"
 import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
 import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
-import { User } from "../../../../../../lib/Types"
+import { MenuItemKey, User } from "../../../../../../lib/Types"
+import "./styles.css"
 
 interface Props {
+  selectedPage: MenuItemKey
   user: User | null
 }
 
 export const MenuItems = withRouter(({
   history,
+  selectedPage,
   user
 }: RouteComponentProps & Props) => {
 
   const { t } = useTranslation()
 
-  const [ revokeToken, { loading: revokeLoading } ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
+  const [ revokeToken ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
 
   const redirectToLogin = useCallback(() => {
     localStorage.removeItem(usernameKey)
@@ -55,23 +58,26 @@ export const MenuItems = withRouter(({
 
   return user !== null ? (
     <>
-      <Spin
-        spinning={ revokeLoading }>
-        <Menu mode="horizontal">
-          <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-            <Link to="/">{ t("reservations.name") }</Link>
-          </Menu.Item>
-          <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
-            <Link to="/guests">{ t("guests.name-pl") }</Link>
-          </Menu.Item>
-          <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-            <Link to="/apartma">{ t("living-units") }</Link>
-          </Menu.Item>
-        </Menu >
-      </Spin>
-      <Menu className="user" mode="horizontal">
+      <Menu
+        mode="horizontal"
+        className="navigation-items"
+        selectedKeys={ [ selectedPage ] }>
+        <Menu.Item key="reservation" icon={ <BookOutlined /> }>
+          <Link to="/">{ t("reservations.name") }</Link>
+        </Menu.Item>
+        <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
+          <Link to="/guests">{ t("guests.name-pl") }</Link>
+        </Menu.Item>
+        <Menu.Item key="suites" icon={ <HomeOutlined /> }>
+          <Link to="/apartma">{ t("living-units") }</Link>
+        </Menu.Item>
+      </Menu >
+      <Menu
+        className="user"
+        mode="horizontal"
+        selectedKeys={ [ selectedPage ] }>
         <Menu.SubMenu
-          key="user-sub"
+          key="user"
           title={ userAvatar }>
           <Menu.Item
             key="logout"

@@ -3,13 +3,17 @@ import './styles.css'
 import logo from './assets/mill.svg'
 import { MenuItems } from './components/MenuItems'
 import { PageHeader } from 'antd'
-import { User } from '../../../../lib/Types'
+import { MenuItemKey, User } from '../../../../lib/Types'
 
 interface Props {
+  selectedPage: MenuItemKey
   user: User | null
 }
 
-export const Header = ({ user }: Props) => {
+export const Header = ({
+  selectedPage,
+  user
+}: Props) => {
 
   const logoImage = (
     <img
@@ -27,7 +31,9 @@ export const Header = ({ user }: Props) => {
   return (
     <PageHeader>
       { homeLink() }
-      <MenuItems user={ user } />
+      <MenuItems
+        selectedPage={ selectedPage }
+        user={ user } />
     </PageHeader>
   )
 }
