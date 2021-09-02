@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { HomeOutlined } from "@ant-design/icons"
-import { Avatar, Button, List, message, Skeleton } from "antd"
+import { List, message, Skeleton } from "antd"
 import { SuiteDrawer } from "./components/SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import "./styles.css"
@@ -10,6 +9,7 @@ import { ApolloError, useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
 import { MenuItemKey } from "../../lib/Types"
+import { SuiteItem } from "./components/SuiteItem"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -87,26 +87,9 @@ export const Suites = withRouter(({
           header={ <h4>{ t("living-units-list") }</h4> }
           itemLayout="horizontal"
           renderItem={ suite => (
-            <List.Item
-              actions={ [
-                <Button
-                  key="edit"
-                  onClick={ () => openSuite(suite) }
-                  type="link">
-                  upravit
-                </Button>
-              ] }
-              className="suite-item"
-              onClick={ () => openSuite(suite) }>
-              <List.Item.Meta
-                avatar={
-                  <Avatar gap={ 4 } size="large">
-                    <HomeOutlined />
-                  </Avatar>
-                }
-                description={ `číslo pokoje - ${ suite.number }` }
-                title={ suite.title } />
-            </List.Item>
+            <SuiteItem
+              openSuite={ openSuite }
+              suite={ suite } />
           ) } />
       </Skeleton>
       <SuiteDrawer

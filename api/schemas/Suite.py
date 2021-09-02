@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID
+from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID, Decimal
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 
@@ -11,7 +11,7 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('id', 'number', 'title',)
+        fields = ('id', 'number', 'price_base', 'price_child', 'price_extra', 'price_infant', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -35,6 +35,10 @@ class SuitesQuery(ObjectType):
 class SuiteInput(InputObjectType):
     id = ID()
     number = Int()
+    price_base = Decimal()
+    price_child = Decimal()
+    price_extra = Decimal()
+    price_infant = Decimal()
     title = String()
 
 
@@ -49,8 +53,12 @@ class CreateSuite(Mutation):
     @user_passes_test(lambda user: user.has_perm('api.add_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         instance = SuiteModel(
-            title=data.title,
             number=data.number,
+            price_base=data.price_base,
+            price_child=data.price_child,
+            price_extra=data.price_extra,
+            price_infant=data.price_infant,
+            title=data.title,
         )
         instance.full_clean()
         instance.save()
@@ -70,8 +78,12 @@ class UpdateSuite(Mutation):
         try:
             instance = SuiteModel.objects.get(pk=data.id)
             if instance:
-                instance.title = data.title if data.title is not None else instance.title
                 instance.number = data.number if data.number is not None else instance.number
+                instance.price_base = data.price_base if data.price_base is not None else instance.price_base
+                instance.price_child = data.price_child if data.price_child is not None else instance.price_child
+                instance.price_extra = data.price_extra if data.price_extra is not None else instance.price_extra
+                instance.price_infant = data.price_infant if data.price_infant is not None else instance.price_infant
+                instance.title = data.title if data.title is not None else instance.title
                 instance.full_clean()
                 instance.save()
             return UpdateSuite(suite=instance)

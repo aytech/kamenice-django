@@ -96,7 +96,7 @@
   },
   "rooms": {
     "created": "Místnost byla vytvořena",
-    "currency": "CZK",
+    "currency": "Kč",
     "deleted": "Místnost byla odstraněna",
     "name": "Název místnosti",
     "new": "Nová místnost",
@@ -106,6 +106,7 @@
     "price-child": "Cena za dítě",
     "price-extra": "Cena za přistýlku",
     "price-infant": "Cena za dítě (do 3 let)",
+    "prices-title": "Ceny (za den)",
     "suites": "Apartmá",
     "updated": "Místnost byla aktualizována"
   },

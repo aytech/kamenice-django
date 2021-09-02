@@ -38,3 +38,7 @@
   margin-bottom: 0;
   text-align: center;
 }
+
+.low-case {
+  text-transform: lowercase;
+}

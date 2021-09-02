@@ -12,6 +12,7 @@ import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutat
 import { DeleteSuite, DeleteSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { useTranslation } from "react-i18next"
 import { RoomActions } from "./components/RoomActions"
+import Title from "antd/lib/typography/Title"
 
 interface Props {
   addOrUpdateSuite: (suite: Suites_suites) => void
@@ -180,6 +181,7 @@ export const SuiteDrawer = ({
             ] }>
             <Input placeholder={ t("rooms.number") } type="number" />
           </Form.Item>
+          <Title level={ 5 }>{ t("rooms.prices-title") }</Title>
           <Form.Item
             hasFeedback
             label={ t("rooms.price-base") }
