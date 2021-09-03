@@ -73,12 +73,16 @@ export interface IReservation {
 }
 
 export interface SuiteForm {
-  number: number,
+  number: number
+  price_base: number
+  price_child: number
+  price_extra: number
+  price_infant: number
   title: string
 }
 
 export interface OptionsType {
-  label: string,
+  label: string
   value: string | number
 }
 

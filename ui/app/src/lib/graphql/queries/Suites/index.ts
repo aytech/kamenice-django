@@ -4,8 +4,12 @@ export const SUITES = gql`
   query Suites {
     suites {
       id
-      title
       number
+      priceBase
+      priceChild
+      priceExtra
+      priceInfant
+      title
     }
   }
 `
@@ -20,6 +24,10 @@ export const SUITES_WITH_RESERVATIONS = gql`
     suites {
       id
       number
+      priceBase
+      priceChild
+      priceExtra
+      priceInfant
       title
     }
     reservations {

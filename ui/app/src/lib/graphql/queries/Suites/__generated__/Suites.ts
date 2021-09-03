@@ -10,8 +10,12 @@
 export interface Suites_suites {
   __typename: "Suite";
   id: string;
-  title: string;
   number: number | null;
+  priceBase: any;
+  priceChild: any;
+  priceExtra: any;
+  priceInfant: any;
+  title: string;
 }
 
 export interface Suites {

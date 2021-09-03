@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID, Decimal
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
@@ -60,8 +60,14 @@ class CreateSuite(Mutation):
             price_infant=data.price_infant,
             title=data.title,
         )
-        instance.full_clean()
+
+        try:
+            instance.full_clean()
+        except ValidationError as errors:
+            raise Exception(errors.messages[0])
+
         instance.save()
+
         return CreateSuite(suite=instance)
 
 

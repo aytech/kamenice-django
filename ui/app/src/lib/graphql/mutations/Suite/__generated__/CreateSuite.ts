@@ -13,6 +13,10 @@ export interface CreateSuite_createSuite_suite {
   __typename: "Suite";
   id: string;
   number: number | null;
+  priceBase: any;
+  priceChild: any;
+  priceExtra: any;
+  priceInfant: any;
   title: string;
 }
 

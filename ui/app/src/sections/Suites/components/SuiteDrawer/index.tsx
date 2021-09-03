@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Drawer, Form, Input, InputNumber, message, Popconfirm, Spin } from "antd"
+import { Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { CloseOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
@@ -50,10 +50,10 @@ export const SuiteDrawer = ({
 
   const initialValues: Store = {
     number: suite?.number,
-    price_base: 0,
-    price_child: 0,
-    price_extra: 0,
-    price_infant: 0,
+    price_base: suite?.priceBase,
+    price_child: suite?.priceChild,
+    price_extra: suite?.priceExtra,
+    price_infant: suite?.priceInfant,
     title: suite?.title
   }
 
@@ -63,6 +63,10 @@ export const SuiteDrawer = ({
         const formData: SuiteForm = form.getFieldsValue(true)
         const variables = {
           number: formData.number,
+          priceBase: formData.price_base,
+          priceChild: formData.price_child,
+          priceExtra: formData.price_extra,
+          priceInfant: formData.price_infant,
           title: formData.title
         }
         if (suite === undefined) {
@@ -189,10 +193,10 @@ export const SuiteDrawer = ({
             rules={ [
               {
                 message: t("forms.enter-number"),
-                pattern: /^[0-9]+$/
+                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
             ] }>
-            <InputNumber addonAfter={ t("rooms.currency") } />
+            <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -201,10 +205,10 @@ export const SuiteDrawer = ({
             rules={ [
               {
                 message: t("forms.enter-number"),
-                pattern: /^[0-9]+$/
+                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
             ] }>
-            <InputNumber addonAfter={ t("rooms.currency") } />
+            <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -213,10 +217,10 @@ export const SuiteDrawer = ({
             rules={ [
               {
                 message: t("forms.enter-number"),
-                pattern: /^[0-9]+$/
+                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
             ] }>
-            <InputNumber addonAfter={ t("rooms.currency") } />
+            <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -225,10 +229,10 @@ export const SuiteDrawer = ({
             rules={ [
               {
                 message: t("forms.enter-number"),
-                pattern: /^[0-9]+$/
+                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
             ] }>
-            <InputNumber addonAfter={ t("rooms.currency") } />
+            <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
         </Form>
       </Spin>

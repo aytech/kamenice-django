@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-27 08:44+0200\n"
+"POT-Creation-Date: 2021-09-03 22:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: .\api\models\Suite.py:14
+msgid "Base price is required field"
+msgstr "Základní cena je povinný údaj"
+
+#: .\api\models\Suite.py:17 .\api\models\Suite.py:23
+msgid "Price for child is required field"
+msgstr "Cena za dítě je povinný údaj"
+
+#: .\api\models\Suite.py:20
+msgid "Price for extra bed is required field"
+msgstr "Cena za přistýlku je povinný údaj"
 
 #: .\api\schemas\exceptions\PermissionDenied.py:6
 msgid ""

@@ -20,6 +20,10 @@ export interface SuitesWithReservations_suites {
   __typename: "Suite";
   id: string;
   number: number | null;
+  priceBase: any;
+  priceChild: any;
+  priceExtra: any;
+  priceInfant: any;
   title: string;
 }
 

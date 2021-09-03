@@ -97,6 +97,10 @@ export interface ReservationInput {
 export interface SuiteInput {
   id?: string | null;
   number?: number | null;
+  priceBase?: any | null;
+  priceChild?: any | null;
+  priceExtra?: any | null;
+  priceInfant?: any | null;
   title?: string | null;
 }
 
