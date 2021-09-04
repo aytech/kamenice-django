@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Mlýn Kamenice - potvrzení rezervace</title>
+  <style>
+    #message {
+      border: 2px solid #eeeeee;
+      border-radius: 5px;
+      margin: 2rem;
+      padding: 2rem;
+    }
+
+    .align-center {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="message">
+    <div class="align-center">
+      <img src="cid:logo" />
+    </div>
+    <h3 class="align-center">Mlýn Kamenice - potvrzení rezervace</h3>
+    <p>
+      Dobrý den
+    </p>
+    <p>
+      Tímto potvrzujeme Vaši nezávaznou rezervaci s následujícími údaji
+    </p>
+    <ul>
+      <li>
+        Datum rezervace: od <strong>#reservation_date_from</strong> do <strong>#reservation_date_to</strong>
+      </li>
+      <li>
+        Počet hostů: #number_of_guests
+      </li>
+      <li>
+        Typ Rezervace: #reservation_type
+      </li>
+      <li>
+        Strava: #reservation_meal
+      </li>
+    </ul>
+    <p>
+      <strong>Celková cena: #reservation_price</strong>
+    </p>
+    <p>
+      Prosím o kontrolu a doplnění osobních údajů hostů na <a href="#guests_url"><strong>této adrese</strong></a>
+    </p>
+    <p>
+      S přátelským pozdravem,
+    </p>
+    <p>
+      Mlýn Kamenice
+    </p>
+  </div>
+</body>
+
+</html>

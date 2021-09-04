@@ -31,7 +31,7 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   const { loading: dataLoading, data } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
     onCompleted: () => {
-      setPageTitle(t("guest-view-title"))
+      setPageTitle(t("guests.page-title"))
       setShowError(false)
     },
     onError: () => {

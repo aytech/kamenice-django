@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-03 22:23+0200\n"
+"POT-Creation-Date: 2021-09-04 17:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: .\api\management\commands\sendreservationemail.py:44
+msgid "Currently accommodated"
+msgstr "Aktuálně ubytování"
+
+#: .\api\management\commands\sendreservationemail.py:45
+msgid "Binding reservation"
+msgstr "Závazná rezervace"
+
+#: .\api\management\commands\sendreservationemail.py:46
+msgid "Occupied term"
+msgstr "Obydlený termín"
+
+#: .\api\management\commands\sendreservationemail.py:47
+msgid "Non-binding reservation"
+msgstr "Nezávazná rezervace"
+
+#: .\api\management\commands\sendreservationemail.py:54
+msgid "Breakfast included"
+msgstr "Jen Snídaně"
+
+#: .\api\management\commands\sendreservationemail.py:55
+msgid "Half board"
+msgstr "Polopenze"
+
+#: .\api\management\commands\sendreservationemail.py:56
+msgid "Food not included"
+msgstr "Bez Stravy"
 
 #: .\api\models\Suite.py:14
 msgid "Base price is required field"

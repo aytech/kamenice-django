@@ -1,5 +1,8 @@
 import mimetypes
 from .base import *
+from datetime import timedelta
+
+APP_URL = 'http://kamenice.pythonanywhere.com'
 
 mimetypes.add_type("text/javascript", ".js", True)
 
@@ -15,3 +18,7 @@ GRAPHQL_JWT = {
 }
 
 DEBUG = False
+
+REPLY_TO_EMAIL_ADDRESS = 'Oleg Yapparov <oyapparov@gmail.com>'
+TO_EMAIL_RECIPIENTS = ['Oleg Yapparov <oyapparov@gmail.com>']
+BCC_EMAIL_RECIPIENTS = ['Oleg Yapparov <oyapparov@gmail.com>']

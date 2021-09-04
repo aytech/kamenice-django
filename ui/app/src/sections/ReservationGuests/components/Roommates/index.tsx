@@ -13,7 +13,7 @@ export const Roommates = ({
   openDrawer,
   roommates
 }: Props) => {
-  return roommates === undefined ? null : (
+  return roommates === undefined || roommates.length === 0 ? null : (
     <List
       bordered={ true }
       className="guests-list"

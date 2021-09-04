@@ -26,6 +26,7 @@ class Reservation(BaseModel):
         ('BREAKFAST', 'Jen Snídaně'),
         ('HALFBOARD', 'Polopenze')
     ]
+    confirmation_sent = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.BooleanField(default=False)
     from_date = models.DateTimeField(blank=False, null=False, error_messages={
