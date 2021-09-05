@@ -9,6 +9,7 @@ from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import BaseCommand, CommandError
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -71,7 +72,7 @@ class Command(BaseCommand):
 
         if not credentials or not credentials.valid:
             if credentials and credentials.expired and credentials.refresh_token:
-                print('Need to refresh token')
+                credentials.refresh(Request())
             else:
                 self.logger.error('Looks like token.json file was not found, please re-authorize')
                 raise CommandError('Client is not authorized')
@@ -113,6 +114,8 @@ class Command(BaseCommand):
                             .send(userId='me',
                                   body={'raw': base64.urlsafe_b64encode(
                                       message.as_string().encode('utf-8')).decode()})).execute()
+            reservation.confirmation_sent = True
+            reservation.save()
             self.logger.info('Reservation email successfully sent with ID %s'.format(sent_message['id']))
         except HttpError as reason:
             self.logger.error('Error sending reservation email with error: {}'.format(reason))
