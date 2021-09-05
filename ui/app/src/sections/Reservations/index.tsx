@@ -29,11 +29,12 @@ export const Reservations = withRouter(({
 
   const { t } = useTranslation()
 
+  const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ dataLoading, setDataLoading ] = useState<boolean>(true)
+  const [ selectedSuite, setSelectedSuite ] = useState<Suites_suites>()
 
   const { data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => {
@@ -108,6 +109,10 @@ export const Reservations = withRouter(({
   const onCanvasClick = (groupId: number, time: number) => {
     const selectedGroup = groups.find(group => group.id === groupId)
     if (selectedGroup !== undefined) {
+      const suite = reservationsData?.suites?.find(suite => suite?.id === selectedGroup.id)
+      if (suite !== null) {
+        setSelectedSuite(suite)
+      }
       setReservation({
         fromDate: moment(time),
         suite: { ...selectedGroup },
@@ -124,6 +129,10 @@ export const Reservations = withRouter(({
   const onItemClick = (itemId: number) => {
     const timelineItem = items.find(item => item.id === itemId)
     if (timelineItem !== undefined) {
+      const suite = reservationsData?.suites?.find(suite => suite?.id === timelineItem.suite.id)
+      if (suite !== null) {
+        setSelectedSuite(suite)
+      }
       setReservation({
         fromDate: moment(timelineItem.start_time),
         guest: timelineItem.guest,
@@ -207,7 +216,8 @@ export const Reservations = withRouter(({
         } }
         isOpen={ reservationModalOpen }
         clearReservation={ clearReservation }
-        reservation={ reservation } />
+        reservation={ reservation }
+        suite={ selectedSuite } />
     </>
   )
 })

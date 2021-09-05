@@ -49,6 +49,7 @@ export const SuiteDrawer = ({
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
   const initialValues: Store = {
+    beds: suite?.numberBeds,
     number: suite?.number,
     price_base: suite?.priceBase,
     price_child: suite?.priceChild,
@@ -63,6 +64,7 @@ export const SuiteDrawer = ({
         const formData: SuiteForm = form.getFieldsValue(true)
         const variables = {
           number: formData.number,
+          numberBeds: formData.beds,
           priceBase: formData.price_base,
           priceChild: formData.price_child,
           priceExtra: formData.price_extra,
@@ -170,6 +172,20 @@ export const SuiteDrawer = ({
             required
             rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
             <Input placeholder={ t("rooms.name") } />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.number-beds") }
+            name="beds"
+            required
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <Input placeholder={ t("rooms.number-beds") } type="number" />
           </Form.Item>
           <Form.Item
             hasFeedback

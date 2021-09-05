@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Spin } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
@@ -19,6 +19,8 @@ import { UpdateReservation, UpdateReservationVariables } from "../../../../lib/g
 import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { SuitesWithReservations_reservations } from "../../../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { useTranslation } from "react-i18next"
+import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
+import { Prices } from "../../../../lib/Prices"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -26,6 +28,7 @@ interface Props {
   isOpen: boolean
   clearReservation: (reservationId?: string | null) => void
   reservation?: IReservation
+  suite?: Suites_suites
 }
 
 export const ReservationModal = ({
@@ -34,6 +37,7 @@ export const ReservationModal = ({
   isOpen,
   clearReservation,
   reservation,
+  suite
 }: Props) => {
 
   const { t } = useTranslation()
@@ -43,7 +47,7 @@ export const ReservationModal = ({
   const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (data: CreateReservation) => {
       addOrUpdateReservation(data.createReservation?.reservation)
-      message.success(t("reservation-created"))
+      message.success(t("reservations.created"))
       close()
     },
     onError: networkErrorHandler
@@ -51,7 +55,7 @@ export const ReservationModal = ({
   const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
     onCompleted: (data: DeleteReservation) => {
       clearReservation(data.deleteReservation?.reservation?.id)
-      message.success(t("reservation-deleted"))
+      message.success(t("reservations.deleted"))
       close()
     },
     onError: networkErrorHandler
@@ -59,7 +63,7 @@ export const ReservationModal = ({
   const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: (data: UpdateReservation) => {
       addOrUpdateReservation(data.updateReservation?.reservation)
-      message.success(t("reservation-updated"))
+      message.success(t("reservations.updated"))
       close()
     },
     onError: networkErrorHandler
@@ -74,18 +78,6 @@ export const ReservationModal = ({
 
   const [ form ] = Form.useForm()
 
-  const initialValues: Store & { type?: ReservationTypeKey } = reservation !== undefined ? {
-    dates: [ reservation.fromDate, reservation.toDate ],
-    guest: reservation.guest === undefined ? null : reservation.guest.id,
-    meal: reservation.meal,
-    notes: reservation.notes,
-    purpose: reservation.purpose,
-    roommates: Array.from(reservation.roommates, roommate => {
-      return { id: roommate.id }
-    }),
-    type: reservation.type
-  } : { type: "NONBINDING" }
-
   const getGuestOption = (guest: Guests_guests) => {
     return {
       label: `${ guest.name } ${ guest.surname }`,
@@ -96,6 +88,19 @@ export const ReservationModal = ({
   const addGuestOption = (guest: Guests_guests) => {
     setGuestOptions(guestOptions.concat(getGuestOption(guest)))
   }
+
+  const initialValues: Store & { type?: ReservationTypeKey } = reservation !== undefined ? {
+    dates: [ reservation.fromDate, reservation.toDate ],
+    guest: reservation.guest === undefined ? null : reservation.guest.id,
+    meal: reservation.meal,
+    notes: reservation.notes,
+    price: "0.00",
+    purpose: reservation.purpose,
+    roommates: Array.from(reservation.roommates, roommate => {
+      return { id: roommate.id }
+    }),
+    type: reservation.type
+  } : { type: "NONBINDING" }
 
   const submitForm = (): void => {
     const formData = form.getFieldsValue(true)
@@ -209,6 +214,12 @@ export const ReservationModal = ({
     </Button>
   ]
 
+  const updatePrice = useCallback(() => {
+    if (suite !== undefined && reservation !== undefined) {
+      form.setFieldsValue({ price: Prices.calculatePrice(suite, reservation) })
+    }
+  }, [ form, reservation, suite ])
+
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
@@ -227,8 +238,9 @@ export const ReservationModal = ({
         }
       })
       setGuestOptions(options)
+      updatePrice()
     }
-  }, [ guestsData ])
+  }, [ guestsData, updatePrice ])
 
   return (
     <>
@@ -267,6 +279,7 @@ export const ReservationModal = ({
               required>
               <DatePicker.RangePicker
                 format={ dateFormat }
+                onChange={ updatePrice }
                 showTime />
             </Form.Item>
             <Form.Item
@@ -349,6 +362,12 @@ export const ReservationModal = ({
               <Input.TextArea
                 placeholder={ t("forms.enter-text") }
                 allowClear />
+            </Form.Item>
+            <Form.Item
+              label={ <strong>{ t("price") }</strong> }
+              name="price"
+              tooltip="Text se připravuje">
+              <Input type="number" addonBefore={ t("rooms.currency") } />
             </Form.Item>
           </Form>
         </Spin>
