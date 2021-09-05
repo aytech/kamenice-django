@@ -10,6 +10,7 @@ class Suite(BaseModel):
         'null': 'Název apartmá je povinný údaj',
     })
     number = models.IntegerField(blank=True, null=True)
+    number_beds = models.IntegerField(blank=False, null=False, default=2)
     price_base = models.DecimalField(null=False, blank=False, max_digits=6, decimal_places=2, error_messages={
         'null': _('Base price is required field')
     })

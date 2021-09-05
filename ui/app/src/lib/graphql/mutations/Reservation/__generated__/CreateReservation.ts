@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationInput, ReservationMeal, ReservationType } from "./../../../globalTypes";
+import { ReservationInput, ReservationMeal, GuestAge, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CreateReservation
@@ -18,6 +18,7 @@ export interface CreateReservation_createReservation_reservation_guest {
 
 export interface CreateReservation_createReservation_reservation_roommates {
   __typename: "Guest";
+  age: GuestAge | null;
   id: string;
   name: string;
   surname: string;

@@ -1,5 +1,6 @@
 {
   "age": "Věk",
+  "price": "Cena",
   "email": "E-Mail",
   "errors": {
     "404": "hledáme vaší stránku... ale nemůžeme ji najít..",
@@ -101,7 +102,7 @@
     "name": "Název místnosti",
     "new": "Nová místnost",
     "number": "Číslo místnosti",
-    "price": "Cena",
+    "number-beds": "Počet lůžek",
     "price-base": "Základní cena",
     "price-child": "Cena za dítě",
     "price-extra": "Cena za přistýlku",

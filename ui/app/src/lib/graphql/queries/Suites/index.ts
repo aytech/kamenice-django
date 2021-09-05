@@ -5,6 +5,7 @@ export const SUITES = gql`
     suites {
       id
       number
+      numberBeds
       priceBase
       priceChild
       priceExtra
@@ -24,6 +25,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
     suites {
       id
       number
+      numberBeds
       priceBase
       priceChild
       priceExtra
@@ -42,6 +44,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
       notes
       purpose
       roommates {
+        age
         id
         name
         surname

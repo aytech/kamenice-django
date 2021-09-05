@@ -59,6 +59,10 @@ export interface Suite {
   title?: string
 }
 
+export interface Roommate extends Guest {
+  age: string | null
+}
+
 export interface IReservation {
   fromDate: Moment
   guest?: Guest
@@ -66,13 +70,14 @@ export interface IReservation {
   id?: number | string
   notes?: string | null
   purpose?: string | null
-  roommates: Array<Guest>
+  roommates: Array<Roommate>
   suite: Suite
   toDate: Moment
   type?: ReservationTypeKey
 }
 
 export interface SuiteForm {
+  beds: number
   number: number
   price_base: number
   price_child: number
@@ -97,7 +102,7 @@ export interface CustomItemFields {
   meal: ReservationMeal
   notes: string | null
   purpose: string | null
-  roommates: Guest[]
+  roommates: Roommate[]
   suite: Suite
   type?: ReservationTypeKey
 }

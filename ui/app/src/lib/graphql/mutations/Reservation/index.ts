@@ -15,6 +15,7 @@ export const CREATE_RESERVATION = gql`
         notes
         purpose
         roommates {
+          age
           id
           name
           surname
@@ -56,6 +57,7 @@ export const UPDATE_RESERVATION = gql`
         notes
         purpose
         roommates {
+          age
           id
           name
           surname

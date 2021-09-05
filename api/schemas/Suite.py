@@ -11,7 +11,7 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('id', 'number', 'price_base', 'price_child', 'price_extra', 'price_infant', 'title',)
+        fields = ('id', 'number', 'number_beds', 'price_base', 'price_child', 'price_extra', 'price_infant', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -35,6 +35,7 @@ class SuitesQuery(ObjectType):
 class SuiteInput(InputObjectType):
     id = ID()
     number = Int()
+    number_beds = Int()
     price_base = Decimal()
     price_child = Decimal()
     price_extra = Decimal()
@@ -54,6 +55,7 @@ class CreateSuite(Mutation):
     def mutate(cls, _root, _info, data=None):
         instance = SuiteModel(
             number=data.number,
+            number_beds=data.number_beds,
             price_base=data.price_base,
             price_child=data.price_child,
             price_extra=data.price_extra,
@@ -85,6 +87,7 @@ class UpdateSuite(Mutation):
             instance = SuiteModel.objects.get(pk=data.id)
             if instance:
                 instance.number = data.number if data.number is not None else instance.number
+                instance.number_beds = data.number_beds if data.number_beds is not None else instance.number_beds
                 instance.price_base = data.price_base if data.price_base is not None else instance.price_base
                 instance.price_child = data.price_child if data.price_child is not None else instance.price_child
                 instance.price_extra = data.price_extra if data.price_extra is not None else instance.price_extra

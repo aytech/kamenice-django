@@ -6,6 +6,7 @@ export const CREATE_SUITE = gql`
       suite {
         id
         number
+        numberBeds
         priceBase
         priceChild
         priceExtra
@@ -22,6 +23,7 @@ export const UPDATE_SUITE = gql`
       suite {
         id
         number
+        numberBeds
         priceBase
         priceChild
         priceExtra
