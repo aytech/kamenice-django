@@ -38,6 +38,7 @@ export interface UpdateReservation_updateReservation_reservation {
   guest: UpdateReservation_updateReservation_reservation_guest;
   meal: ReservationMeal;
   notes: string | null;
+  price: any;
   purpose: string | null;
   roommates: UpdateReservation_updateReservation_reservation_roommates[];
   suite: UpdateReservation_updateReservation_reservation_suite;

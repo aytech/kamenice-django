@@ -59,6 +59,7 @@ export const Reservations = withRouter(({
       },
       meal: reservation.meal,
       notes: reservation.notes,
+      price: reservation.price,
       purpose: reservation.purpose,
       roommates: reservation.roommates,
       start_time: moment(reservation.fromDate),
@@ -116,6 +117,7 @@ export const Reservations = withRouter(({
       setReservation({
         fromDate: moment(time),
         suite: { ...selectedGroup },
+        price: 0.00,
         roommates: [],
         toDate: moment(time).add(1, "day"),
         type: "NONBINDING"
@@ -139,6 +141,7 @@ export const Reservations = withRouter(({
         id: timelineItem.id,
         meal: timelineItem.meal,
         notes: timelineItem.notes,
+        price: timelineItem.price,
         purpose: timelineItem.purpose,
         roommates: timelineItem.roommates,
         suite: timelineItem.suite,

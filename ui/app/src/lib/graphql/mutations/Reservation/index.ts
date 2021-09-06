@@ -13,6 +13,7 @@ export const CREATE_RESERVATION = gql`
         }
         meal
         notes
+        price
         purpose
         roommates {
           age
@@ -55,6 +56,7 @@ export const UPDATE_RESERVATION = gql`
         }
         meal
         notes
+        price
         purpose
         roommates {
           age

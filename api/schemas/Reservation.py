@@ -1,8 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
-from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String
+from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String, Decimal
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
+from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
@@ -50,6 +51,7 @@ class ReservationInput(InputObjectType):
     id = ID()
     meal = String()
     notes = String()
+    price = Decimal()
     purpose = String()
     roommates = List(Int)
     suite = Int()
@@ -100,23 +102,24 @@ class CreateReservation(Mutation):
             from_date=data.from_date,
             meal=data.meal,
             notes=data.notes,
+            price=data.price,
             purpose=data.purpose,
             to_date=data.to_date,
             type=data.type,
         )
 
         if ReservationUtility.get_duplicate(data.suite, instance=instance).count() > 0:
-            raise Exception('Apartmá je rezervováno pro tuto dobu')
+            raise Exception(_('The room is already reserved for this period of time'))
 
         try:
             instance.guest = Guest.objects.get(pk=data.guest)
         except ObjectDoesNotExist:
-            raise Exception('Prosím vyberte hosta ze seznamu')
+            raise Exception(_('Please select guest from the list'))
 
         try:
             instance.suite = Suite.objects.get(pk=data.suite)
         except ObjectDoesNotExist:
-            raise Exception('Apartmá nebylo nalezeno')
+            raise Exception(_('Room not found'))
 
         try:
             instance.full_clean()
@@ -156,17 +159,18 @@ class UpdateReservation(Mutation):
                 duplicate = ReservationUtility.get_duplicate(data.suite, instance=instance)
 
                 if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
-                    raise Exception('Apartmá je rezervováno pro tuto dobu')
+                    raise Exception(_('The room is already reserved for this period of time'))
 
                 instance.meal = data.meal if data.meal is not None else instance.meal
                 instance.notes = data.notes if data.notes is not None else instance.notes
+                instance.price = data.price if data.price is not None else instance.price
                 instance.purpose = data.purpose if data.purpose is not None else instance.purpose
                 instance.type = data.type if data.type is not None else instance.type
 
                 try:
                     instance.guest = Guest.objects.get(pk=data.guest)
                 except ObjectDoesNotExist:
-                    raise Exception('Prosím vyberte hosta ze seznamu')
+                    raise Exception(_('Please select guest from the list'))
 
                 # Roommates are recreated from scratch
                 for roommate_id in instance.roommates.all():
@@ -188,7 +192,7 @@ class UpdateReservation(Mutation):
                 return UpdateReservation(reservation=instance)
 
         except ObjectDoesNotExist:
-            raise Exception('Rezervace nebyla nalezena')
+            raise Exception(_('Reservation not found'))
 
 
 class DeleteReservation(Mutation):

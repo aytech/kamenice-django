@@ -55,6 +55,7 @@ export interface SuitesWithReservations_reservations {
   guest: SuitesWithReservations_reservations_guest;
   meal: ReservationMeal;
   notes: string | null;
+  price: any;
   purpose: string | null;
   roommates: SuitesWithReservations_reservations_roommates[];
   suite: SuitesWithReservations_reservations_suite;

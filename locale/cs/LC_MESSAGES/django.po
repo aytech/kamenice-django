@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-04 17:58+0200\n"
+"POT-Creation-Date: 2021-09-05 13:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,17 +47,37 @@ msgstr "Polopenze"
 msgid "Food not included"
 msgstr "Bez Stravy"
 
-#: .\api\models\Suite.py:14
+#: .\api\models\Reservation.py:49
+msgid "Price is required field"
+msgstr "Cena je povinný údaj"
+
+#: .\api\models\Suite.py:15
 msgid "Base price is required field"
 msgstr "Základní cena je povinný údaj"
 
-#: .\api\models\Suite.py:17 .\api\models\Suite.py:23
+#: .\api\models\Suite.py:18 .\api\models\Suite.py:24
 msgid "Price for child is required field"
 msgstr "Cena za dítě je povinný údaj"
 
-#: .\api\models\Suite.py:20
+#: .\api\models\Suite.py:21
 msgid "Price for extra bed is required field"
 msgstr "Cena za přistýlku je povinný údaj"
+
+#: .\api\schemas\Reservation.py:112 .\api\schemas\Reservation.py:165
+msgid "The room is already reserved for this period of time"
+msgstr "Místnost je rezervováno pro tuto dobu"
+
+#: .\api\schemas\Reservation.py:118 .\api\schemas\Reservation.py:176
+msgid "Please select guest from the list"
+msgstr "Prosím vyberte hosta ze seznamu"
+
+#: .\api\schemas\Reservation.py:124
+msgid "Room not found"
+msgstr "Místnost nebyla nalezena"
+
+#: .\api\schemas\Reservation.py:198
+msgid "Reservation not found"
+msgstr "Rezervace nenalezena"
 
 #: .\api\schemas\exceptions\PermissionDenied.py:6
 msgid ""

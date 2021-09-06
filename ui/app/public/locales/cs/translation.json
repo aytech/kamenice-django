@@ -84,6 +84,7 @@
     "meal": "Strava",
     "name": "Rezervace",
     "notes": "Poznámky",
+    "price-tooltip": "Základní cena * počet dní + obecní poplatek 21 Kč za osobu. Pokud je pobyt delší než 3 dny, je uplatněna sleva 12%. ",
     "purpose": "Účel pobytu",
     "remove": "Odstranit rezervaci",
     "type": "Typ Rezervace",

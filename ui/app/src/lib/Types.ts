@@ -21,6 +21,7 @@ export const Reservation = {
 }
 
 export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
+export type GuestsAge = "ADULT" | "CHILD" | "INFANT" | "YOUNG"
 
 interface Address {
   municipality?: string
@@ -69,6 +70,7 @@ export interface IReservation {
   meal?: ReservationMeal
   id?: number | string
   notes?: string | null
+  price: number
   purpose?: string | null
   roommates: Array<Roommate>
   suite: Suite
@@ -101,6 +103,7 @@ export interface CustomItemFields {
   guest: Guest
   meal: ReservationMeal
   notes: string | null
+  price: number
   purpose: string | null
   roommates: Roommate[]
   suite: Suite

@@ -94,7 +94,7 @@ export const ReservationModal = ({
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
     notes: reservation.notes,
-    price: "0.00",
+    price: reservation.price,
     purpose: reservation.purpose,
     roommates: Array.from(reservation.roommates, roommate => {
       return { id: roommate.id }
@@ -102,23 +102,27 @@ export const ReservationModal = ({
     type: reservation.type
   } : { type: "NONBINDING" }
 
-  const submitForm = (): void => {
+  const getReservationInput = useCallback((): ReservationInput => {
     const formData = form.getFieldsValue(true)
     const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
     const roommates = formData.roommates === undefined ? [] :
       Array.from(formData.roommates, (data: { id: number }) => data.id)
-
-    const variables: ReservationInput = {
+    return {
       fromDate: from.format(dateFormat),
       guest: formData.guest,
       meal: formData.meal,
       notes: formData.notes,
+      price: formData.price,
       purpose: formData.purpose,
       roommates: roommates,
       suite: reservation !== undefined ? +reservation.suite.id : null,
       toDate: to.format(dateFormat),
       type: formData.type
     }
+  }, [ form, reservation ])
+
+  const submitForm = (): void => {
+    const variables: ReservationInput = getReservationInput()
     if (reservation !== undefined && reservation.id !== undefined) {
       updateReservation({ variables: { data: { id: String(reservation.id), ...variables } } })
     } else {
@@ -216,9 +220,9 @@ export const ReservationModal = ({
 
   const updatePrice = useCallback(() => {
     if (suite !== undefined && reservation !== undefined) {
-      form.setFieldsValue({ price: Prices.calculatePrice(suite, reservation) })
+      form.setFieldsValue({ price: Prices.calculatePrice(suite, getReservationInput()) })
     }
-  }, [ form, reservation, suite ])
+  }, [ form, getReservationInput, reservation, suite ])
 
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
@@ -238,9 +242,8 @@ export const ReservationModal = ({
         }
       })
       setGuestOptions(options)
-      updatePrice()
     }
-  }, [ guestsData, updatePrice ])
+  }, [ guestsData ])
 
   return (
     <>
@@ -311,12 +314,15 @@ export const ReservationModal = ({
                         name={ [ name, "id" ] }
                         rules={ roommateValidator }>
                         <Select
+                          onChange={ () => console.log(fields) }
                           options={ guestOptions }
                           showSearch />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
                         remove(name)
                         form.validateFields()
+                        console.log(fields)
+                        // updatePrice()
                       } } />
                     </Space>
                   )) }
@@ -366,7 +372,7 @@ export const ReservationModal = ({
             <Form.Item
               label={ <strong>{ t("price") }</strong> }
               name="price"
-              tooltip="Text se připravuje">
+              tooltip={ t("reservations.price-tooltip") }>
               <Input type="number" addonBefore={ t("rooms.currency") } />
             </Form.Item>
           </Form>

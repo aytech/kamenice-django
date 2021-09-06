@@ -4,6 +4,8 @@ from datetime import datetime
 
 from django.db import models
 
+from django.utils.translation import gettext_lazy as _
+
 from api.models.BaseModel import BaseModel
 from api.models.Guest import Guest
 from api.models.Suite import Suite
@@ -43,6 +45,9 @@ class Reservation(BaseModel):
         'null': 'Vyberte údaj Strava ze seznamu',
     }, choices=MEAL_CHOICES)
     notes = models.TextField(blank=True, null=True)
+    price = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Price is required field')
+    })
     purpose = models.CharField(blank=True, max_length=100, null=True)
     roommates = models.ManyToManyField(
         Guest,

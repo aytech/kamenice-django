@@ -42,6 +42,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
       }
       meal
       notes
+      price
       purpose
       roommates {
         age
