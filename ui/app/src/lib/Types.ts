@@ -142,3 +142,10 @@ export interface ReservationGuest {
 export interface User {
   username: string
 }
+
+export interface PriceInfo {
+  accomodation: number
+  meal: number
+  municipality: number
+  total: number
+}

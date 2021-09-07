@@ -1,7 +1,15 @@
-.cancel-button {
+.reservation-modal .ant-btn-dashed {
+  border-color: green;
+}
+
+.reservation-modal .ant-modal-title {
+  text-align: center;
+}
+
+.reservation-modal .cancel-button {
   float: left
 }
 
-.roommate-list, .roommate-list>.ant-space-item:first-child {
+.reservation-modal .roommate-list, .reservation-modal .roommate-list>.ant-space-item:first-child {
   width: 100%
 }

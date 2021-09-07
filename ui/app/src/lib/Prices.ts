@@ -1,18 +1,30 @@
 import moment from "moment";
 import { ReservationInput } from "./graphql/globalTypes";
 import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites";
-import { GuestsAge, ReservationMeal } from "./Types";
+import { GuestsAge, PriceInfo, ReservationMeal } from "./Types";
 
 interface IPrices {
-  calculatePrice: (suite: Suites_suites, reservationInput: ReservationInput) => string
-  getDailyPricePerGuest: (basePrice: number, mealOption: ReservationMeal) => number
+  calculatePrice: (suite: Suites_suites, reservationInput: ReservationInput) => PriceInfo
+  getDailyPricePerGuest: (basePrice: number, mealOption?: ReservationMeal | null) => number
   getDailyPricePerRoommate: (basePrice: number, age: GuestsAge, mealOption: ReservationMeal) => number
-
 }
 
 export const Prices: IPrices = {
-  getDailyPricePerGuest: (basePrice: number, mealOption: ReservationMeal) => {
-    let guestPrice = 0
+  getDailyPricePerGuest: (basePrice: number, mealOption?: ReservationMeal | null) => {
+    let guestPrice = basePrice
+
+    const breakfastPrice: number = 80 // @TODO: make configurable
+    const halfBoardPrice: number = 200 // TODO: make configurable
+
+    switch (mealOption) {
+      case "BREAKFAST":
+        guestPrice += breakfastPrice
+        break
+      case "HALFBOARD":
+        guestPrice += halfBoardPrice
+        break
+    }
+
     return guestPrice
   },
   getDailyPricePerRoommate: (basePrice: number, age: GuestsAge, mealOption: ReservationMeal) => {
@@ -63,8 +75,16 @@ export const Prices: IPrices = {
   calculatePrice: (suite: Suites_suites, reservationInput: ReservationInput) => {
     let finalPrice: number = 0
     let numberOfDays: number = 0
-    const municipalityFee: number = 21 // replace with number from administration
+    let numberOfGuests = 1 // There will always be guest
+
+    const municipalityFee: number = 21 // @TODO: make configurable
+
+    if (reservationInput.roommates?.length !== undefined) {
+      numberOfGuests += reservationInput.roommates.length
+    }
+
     console.log('Input: ', reservationInput);
+    console.log('Suite: ', suite);
 
     if (reservationInput.toDate !== undefined && reservationInput.toDate !== null) {
       const endDate = moment(reservationInput.toDate)
@@ -72,7 +92,8 @@ export const Prices: IPrices = {
       numberOfDays = Math.ceil(moment.duration(endDate.diff(startDate)).asDays())
     }
 
-    console.log(numberOfDays);
+    // Add price for guest with meal, without discounts
+    finalPrice += Prices.getDailyPricePerGuest(suite.priceBase, reservationInput.meal as ReservationMeal) * numberOfDays
 
     // Steps:
     // 1. Calculate base price for a room.
@@ -110,6 +131,14 @@ export const Prices: IPrices = {
     //    - Just breakfast - + 80 Kc per person
     //    - Polopenze - 200 Kc per person
     //    - Deti - 40% sleva
-    return String(finalPrice)
+
+    finalPrice += (numberOfGuests * municipalityFee) * numberOfDays
+
+    return {
+      accomodation: 0,
+      meal: 0,
+      municipality: 0,
+      total: 0
+    }
   }
 }

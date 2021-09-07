@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Spin } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Spin, Typography } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { CloseCircleOutlined, CloseOutlined, EditOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
@@ -75,6 +75,8 @@ export const ReservationModal = ({
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
+  const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
+  const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
 
   const [ form ] = Form.useForm()
 
@@ -94,7 +96,10 @@ export const ReservationModal = ({
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
     notes: reservation.notes,
-    price: reservation.price,
+    priceAccommodation: "0.00", // @TODO: calculate
+    priceMeal: "0.00", // @TODO: calculate
+    priceMunicipality: "0.00", // @TODO: calculate
+    priceTotal: reservation.price,
     purpose: reservation.purpose,
     roommates: Array.from(reservation.roommates, roommate => {
       return { id: roommate.id }
@@ -220,7 +225,7 @@ export const ReservationModal = ({
 
   const updatePrice = useCallback(() => {
     if (suite !== undefined && reservation !== undefined) {
-      form.setFieldsValue({ price: Prices.calculatePrice(suite, getReservationInput()) })
+      form.setFieldsValue(Prices.calculatePrice(suite, getReservationInput()))
     }
   }, [ form, getReservationInput, reservation, suite ])
 
@@ -245,9 +250,19 @@ export const ReservationModal = ({
     }
   }, [ guestsData ])
 
+  const formLayout = {
+    labelCol: {
+      span: 8
+    },
+    wrapperCol: {
+      span: 16
+    }
+  }
+
   return (
     <>
       <Modal
+        className="reservation-modal"
         closeIcon={ (
           <Popconfirm
             onCancel={ () => setDeleteConfirmVisible(false) }
@@ -275,7 +290,7 @@ export const ReservationModal = ({
           <Form
             form={ form }
             initialValues={ initialValues }
-            layout="vertical">
+            { ...formLayout }>
             <Form.Item
               label={ t("reservations.date") }
               name="dates"
@@ -311,6 +326,7 @@ export const ReservationModal = ({
                         hasFeedback
                         { ...restField }
                         fieldKey={ [ fieldKey, 'first' ] }
+                        label={ t("reservations.roommate") }
                         name={ [ name, "id" ] }
                         rules={ roommateValidator }>
                         <Select
@@ -326,7 +342,7 @@ export const ReservationModal = ({
                       } } />
                     </Space>
                   )) }
-                  <Form.Item>
+                  <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
                     <Button
                       disabled={ fields.length >= guestOptions.length }
                       type="dashed"
@@ -358,22 +374,70 @@ export const ReservationModal = ({
                 options={ ReservationFormHelper.mealOptions } />
             </Form.Item>
             <Form.Item
+              hidden={ !additionalInfoVisible }
               label={ t("reservations.purpose") }
               name="purpose">
               <Input placeholder={ t("reservations.purpose") } />
             </Form.Item>
             <Form.Item
+              hidden={ !additionalInfoVisible }
               label={ t("reservations.notes") }
               name="notes">
               <Input.TextArea
                 placeholder={ t("forms.enter-text") }
                 allowClear />
             </Form.Item>
+            <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
+              <Button
+                block
+                onClick={ () => setAdditionalInfoVisible(!additionalInfoVisible) }
+                type="dashed"
+                icon={ additionalInfoVisible ? <EyeInvisibleOutlined /> : <EyeOutlined /> }>
+                { additionalInfoVisible ? t("reservations.hide-info") : t("reservations.show-info") }
+              </Button>
+            </Form.Item>
+            {/* @TODO: add tooltips explaining price calculation */}
             <Form.Item
-              label={ <strong>{ t("price") }</strong> }
-              name="price"
-              tooltip={ t("reservations.price-tooltip") }>
-              <Input type="number" addonBefore={ t("rooms.currency") } />
+              hidden={ !pricesVisible }
+              label={ t("reservations.price-room") }>
+              <Typography.Text>
+                <strong>
+                  { suite?.priceBase } { t("rooms.currency") }
+                </strong>
+              </Typography.Text>
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              label={ t("reservations.price-accommodation") }
+              name="priceAccommodation">
+              <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              label={ t("reservations.price-meal") }
+              name="priceMeal">
+              <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              label={ t("reservations.price-municipality") }
+              name="priceMunicipality">
+              <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              label={ <strong>{ t("reservations.price-total") }</strong> }
+              name="priceTotal">
+              <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
+              <Button
+                block
+                onClick={ () => setPricesVisible(!pricesVisible) }
+                type="dashed"
+                icon={ pricesVisible ? <EyeInvisibleOutlined /> : <EyeOutlined /> }>
+                { pricesVisible ? t("reservations.hide-prices") : t("reservations.show-prices") }
+              </Button>
             </Form.Item>
           </Form>
         </Spin>
