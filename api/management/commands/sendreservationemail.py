@@ -122,7 +122,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            reservation = Reservation.objects.get(confirmation_sent=False, deleted=False)
-            self.send_confirmation_email(reservation)
+            reservation = Reservation.objects.filter(confirmation_sent=False, deleted=False)
+            if reservation.count() > 0:
+                self.send_confirmation_email(reservation[0])
         except ObjectDoesNotExist:
             pass
