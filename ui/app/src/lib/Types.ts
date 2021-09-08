@@ -70,7 +70,11 @@ export interface IReservation {
   meal?: ReservationMeal
   id?: number | string
   notes?: string | null
-  price: number
+  priceAccommodation: string | null
+  priceExtra: string | null
+  priceMeal: string | null
+  priceMunicipality: string | null
+  priceTotal: string | null
   purpose?: string | null
   roommates: Array<Roommate>
   suite: Suite
@@ -103,7 +107,11 @@ export interface CustomItemFields {
   guest: Guest
   meal: ReservationMeal
   notes: string | null
-  price: number
+  priceAccommodation: string | null
+  priceExtra: string | null
+  priceMeal: string | null
+  priceMunicipality: string | null
+  priceTotal: string | null
   purpose: string | null
   roommates: Roommate[]
   suite: Suite
@@ -144,8 +152,8 @@ export interface User {
 }
 
 export interface PriceInfo {
-  accomodation: number
-  meal: number
-  municipality: number
-  total: number
+  priceAccommodation?: number
+  meal?: number
+  municipality?: number
+  total?: number
 }

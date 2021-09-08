@@ -13,7 +13,11 @@ export const CREATE_RESERVATION = gql`
         }
         meal
         notes
-        price
+        priceAccommodation
+        priceExtra
+        priceMeal
+        priceMunicipality
+        priceTotal
         purpose
         roommates {
           age
@@ -56,7 +60,11 @@ export const UPDATE_RESERVATION = gql`
         }
         meal
         notes
-        price
+        priceAccommodation
+        priceExtra
+        priceMeal
+        priceMunicipality
+        priceTotal
         purpose
         roommates {
           age

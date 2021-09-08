@@ -42,7 +42,11 @@ export const SUITES_WITH_RESERVATIONS = gql`
       }
       meal
       notes
-      price
+      priceAccommodation
+      priceExtra
+      priceMeal
+      priceMunicipality
+      priceTotal
       purpose
       roommates {
         age

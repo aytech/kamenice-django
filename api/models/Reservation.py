@@ -45,8 +45,20 @@ class Reservation(BaseModel):
         'null': 'Vyberte údaj Strava ze seznamu',
     }, choices=MEAL_CHOICES)
     notes = models.TextField(blank=True, null=True)
-    price = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Price is required field')
+    price_accommodation = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Price for accommodation is required field')
+    })
+    price_extra = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Price for extra bed(s) is required field')
+    })
+    price_meal = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Price for meal is required field')
+    })
+    price_municipality = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Municipality fee is required field')
+    })
+    price_total = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
+        'null': _('Total price is required field')
     })
     purpose = models.CharField(blank=True, max_length=100, null=True)
     roommates = models.ManyToManyField(

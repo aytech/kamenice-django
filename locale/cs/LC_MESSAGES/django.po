@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-05 13:36+0200\n"
+"POT-Creation-Date: 2021-09-08 08:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,8 +48,26 @@ msgid "Food not included"
 msgstr "Bez Stravy"
 
 #: .\api\models\Reservation.py:49
-msgid "Price is required field"
-msgstr "Cena je povinný údaj"
+msgid "Price for accommodation is required field"
+msgstr "Cena za ubytování je povinný údaj"
+
+#: .\api\models\Reservation.py:52
+msgid "Price for extra bed(s) is required field"
+msgstr "Cena za přistýlky je povinný údaj"
+
+#: .\api\models\Reservation.py:55
+msgid "Price for meal is required field"
+msgstr "Cena za stravování je povinný údaj"
+
+#: .\api\models\Reservation.py:58
+msgid "Municipality fee is required field"
+msgstr "Obecní poplatek je povinný údaj"
+
+#: .\api\models\Reservation.py:61
+#, fuzzy
+#| msgid "Base price is required field"
+msgid "Total price is required field"
+msgstr "Celková cena je povinný údaj"
 
 #: .\api\models\Suite.py:15
 msgid "Base price is required field"
@@ -63,19 +81,19 @@ msgstr "Cena za dítě je povinný údaj"
 msgid "Price for extra bed is required field"
 msgstr "Cena za přistýlku je povinný údaj"
 
-#: .\api\schemas\Reservation.py:112 .\api\schemas\Reservation.py:165
+#: .\api\schemas\Reservation.py:112 .\api\schemas\Reservation.py:162
 msgid "The room is already reserved for this period of time"
 msgstr "Místnost je rezervováno pro tuto dobu"
 
-#: .\api\schemas\Reservation.py:118 .\api\schemas\Reservation.py:176
+#: .\api\schemas\Reservation.py:117 .\api\schemas\Reservation.py:173
 msgid "Please select guest from the list"
 msgstr "Prosím vyberte hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:124
+#: .\api\schemas\Reservation.py:122
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:198
+#: .\api\schemas\Reservation.py:195
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 

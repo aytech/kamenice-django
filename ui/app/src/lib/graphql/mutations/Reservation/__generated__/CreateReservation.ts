@@ -38,7 +38,11 @@ export interface CreateReservation_createReservation_reservation {
   guest: CreateReservation_createReservation_reservation_guest;
   meal: ReservationMeal;
   notes: string | null;
-  price: any;
+  priceAccommodation: any;
+  priceExtra: any;
+  priceMeal: any;
+  priceMunicipality: any;
+  priceTotal: any;
   purpose: string | null;
   roommates: CreateReservation_createReservation_reservation_roommates[];
   suite: CreateReservation_createReservation_reservation_suite;

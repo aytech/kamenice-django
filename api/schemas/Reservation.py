@@ -51,7 +51,11 @@ class ReservationInput(InputObjectType):
     id = ID()
     meal = String()
     notes = String()
-    price = Decimal()
+    price_accommodation = Decimal()
+    price_extra = Decimal()
+    price_meal = Decimal()
+    price_municipality = Decimal()
+    price_total = Decimal()
     purpose = String()
     roommates = List(Int)
     suite = Int()
@@ -102,7 +106,11 @@ class CreateReservation(Mutation):
             from_date=data.from_date,
             meal=data.meal,
             notes=data.notes,
-            price=data.price,
+            price_accommodation=data.price_accommodation,
+            price_extra=data.price_extra,
+            price_meal=data.price_meal,
+            price_municipality=data.price_municipality,
+            price_total=data.price_total,
             purpose=data.purpose,
             to_date=data.to_date,
             type=data.type,
@@ -163,7 +171,13 @@ class UpdateReservation(Mutation):
 
                 instance.meal = data.meal if data.meal is not None else instance.meal
                 instance.notes = data.notes if data.notes is not None else instance.notes
-                instance.price = data.price if data.price is not None else instance.price
+                instance.price_accommodation = data.price_accommodation \
+                    if data.price_accommodation is not None else instance.price_accommodation
+                instance.price_extra = data.price_extra if data.price_extra is not None else instance.price_extra
+                instance.price_meal = data.price_meal if data.price_meal is not None else instance.price_meal
+                instance.price_municipality = data.price_municipality \
+                    if data.price_municipality is not None else instance.price_municipality
+                instance.price_total = data.price_total if data.price_total is not None else instance.price_total
                 instance.purpose = data.purpose if data.purpose is not None else instance.purpose
                 instance.type = data.type if data.type is not None else instance.type
 

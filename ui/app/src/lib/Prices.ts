@@ -7,9 +7,13 @@ interface IPrices {
   calculatePrice: (suite: Suites_suites, reservationInput: ReservationInput) => PriceInfo
   getDailyPricePerGuest: (basePrice: number, mealOption?: ReservationMeal | null) => number
   getDailyPricePerRoommate: (basePrice: number, age: GuestsAge, mealOption: ReservationMeal) => number
+  municipalityFee: number
 }
 
 export const Prices: IPrices = {
+
+  municipalityFee: 21, // @TODO: make configurable
+
   getDailyPricePerGuest: (basePrice: number, mealOption?: ReservationMeal | null) => {
     let guestPrice = basePrice
 
@@ -27,10 +31,12 @@ export const Prices: IPrices = {
 
     return guestPrice
   },
+
   getDailyPricePerRoommate: (basePrice: number, age: GuestsAge, mealOption: ReservationMeal) => {
     let roomamatePrice = 0
     return roomamatePrice
   },
+
   // calculateMealPricePerDay: (meal: ReservationMeal | undefined, guest: Guest | undefined, roommates: Roommate[]) => {
   //   let mealPrice = 0
   //   if (meal === undefined || guest === undefined) {
@@ -73,18 +79,9 @@ export const Prices: IPrices = {
   //    - 4x room apartment, 3 adults, 1 child/infant?
   //    - 4x room apartment, 1 adult, 1 child/infant?
   calculatePrice: (suite: Suites_suites, reservationInput: ReservationInput) => {
-    let finalPrice: number = 0
+    let accomodationPrice: number = suite.priceBase
     let numberOfDays: number = 0
-    let numberOfGuests = 1 // There will always be guest
-
-    const municipalityFee: number = 21 // @TODO: make configurable
-
-    if (reservationInput.roommates?.length !== undefined) {
-      numberOfGuests += reservationInput.roommates.length
-    }
-
-    console.log('Input: ', reservationInput);
-    console.log('Suite: ', suite);
+    let municipalityFee: number = 0
 
     if (reservationInput.toDate !== undefined && reservationInput.toDate !== null) {
       const endDate = moment(reservationInput.toDate)
@@ -92,8 +89,13 @@ export const Prices: IPrices = {
       numberOfDays = Math.ceil(moment.duration(endDate.diff(startDate)).asDays())
     }
 
-    // Add price for guest with meal, without discounts
-    finalPrice += Prices.getDailyPricePerGuest(suite.priceBase, reservationInput.meal as ReservationMeal) * numberOfDays
+    if (numberOfDays < 3) {
+      accomodationPrice = suite.priceBase * numberOfDays
+    } else {
+      accomodationPrice = (suite.priceBase * numberOfDays) - ((suite.priceBase * numberOfDays) * .12) // 12% discount. @TODO: make percent configurable
+    }
+
+    municipalityFee = Prices.municipalityFee * numberOfDays
 
     // Steps:
     // 1. Calculate base price for a room.
@@ -103,18 +105,6 @@ export const Prices: IPrices = {
     // 3. Apply discount if stay is longer than 3 days
     // 4. Add meal price
     // 5. Add municipality fee. For children also? ask
-
-    // const numberOfGuests: number = 1 + reservation.roommates.length // guest + roommates
-    // if (numberOfDays > 0) {
-    //   finalPrice = numberOfDays * suite.priceBase
-    // }
-    // if (numberOfDays >= 3) {
-    //   finalPrice -= ((numberOfDays * suite.priceBase) / 100) * 12
-    // }
-    // // Calculate municipality fee
-    // finalPrice += (numberOfGuests * municipalityFee) * numberOfDays
-    // finalPrice += Prices.calculateMealPricePerDay(reservation.meal, reservation.guest, reservation.roommates)
-    // console.log(reservation);
 
     // @TODO
     // 1. Calculate price per roommate with scenarios:
@@ -132,13 +122,12 @@ export const Prices: IPrices = {
     //    - Polopenze - 200 Kc per person
     //    - Deti - 40% sleva
 
-    finalPrice += (numberOfGuests * municipalityFee) * numberOfDays
+    // finalPrice += (numberOfGuests * municipalityFee) * numberOfDays
 
     return {
-      accomodation: 0,
-      meal: 0,
-      municipality: 0,
-      total: 0
+      priceAccommodation: accomodationPrice,
+      priceMunicipality: municipalityFee,
+      priceTotal: accomodationPrice + municipalityFee
     }
   }
 }

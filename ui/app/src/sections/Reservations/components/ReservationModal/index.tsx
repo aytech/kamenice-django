@@ -99,7 +99,7 @@ export const ReservationModal = ({
     priceAccommodation: "0.00", // @TODO: calculate
     priceMeal: "0.00", // @TODO: calculate
     priceMunicipality: "0.00", // @TODO: calculate
-    priceTotal: reservation.price,
+    priceTotal: reservation.priceTotal,
     purpose: reservation.purpose,
     roommates: Array.from(reservation.roommates, roommate => {
       return { id: roommate.id }
@@ -117,7 +117,11 @@ export const ReservationModal = ({
       guest: formData.guest,
       meal: formData.meal,
       notes: formData.notes,
-      price: formData.price,
+      priceAccommodation: formData.priceAccommodation,
+      priceExtra: formData.priceExtra,
+      priceMeal: formData.priceMeal,
+      priceMunicipality: formData.priceMunicipality,
+      priceTotal: formData.priceTotal,
       purpose: formData.purpose,
       roommates: roommates,
       suite: reservation !== undefined ? +reservation.suite.id : null,
@@ -410,6 +414,12 @@ export const ReservationModal = ({
               hidden={ !pricesVisible }
               label={ t("reservations.price-accommodation") }
               name="priceAccommodation">
+              <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              label={ t("reservations.price-extra") }
+              name="priceExtra">
               <Input addonBefore={ t("rooms.currency") } type="number" />
             </Form.Item>
             <Form.Item
