@@ -97,6 +97,7 @@ export const ReservationModal = ({
     meal: reservation.meal,
     notes: reservation.notes,
     priceAccommodation: "0.00", // @TODO: calculate
+    priceExtra: "0.00", // @TODO: calculate
     priceMeal: "0.00", // @TODO: calculate
     priceMunicipality: "0.00", // @TODO: calculate
     priceTotal: reservation.priceTotal,
