@@ -1,9 +1,7 @@
-from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
 from django.shortcuts import render
 
 
-@login_required(login_url='/login')
 def home(request):
     return render(request, 'index.html')
 
