@@ -83,7 +83,7 @@ export interface ReservationGuestInput {
 
 export interface ReservationInput {
   fromDate?: string | null;
-  guest?: number | null;
+  guestId?: number | null;
   id?: string | null;
   meal?: string | null;
   notes?: string | null;
@@ -93,8 +93,8 @@ export interface ReservationInput {
   priceMunicipality?: any | null;
   priceTotal?: any | null;
   purpose?: string | null;
-  roommates?: (number | null)[] | null;
-  suite?: number | null;
+  roommatesIds?: (number | null)[] | null;
+  suiteId?: number | null;
   toDate?: string | null;
   type?: string | null;
 }

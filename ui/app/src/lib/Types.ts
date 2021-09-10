@@ -1,4 +1,6 @@
 import { Moment } from "moment"
+import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
+import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
@@ -152,8 +154,15 @@ export interface User {
 }
 
 export interface PriceInfo {
-  priceAccommodation?: number
-  meal?: number
-  municipality?: number
-  total?: number
+  priceAccommodation: number
+  priceExtra: number
+  priceMeal: number
+  priceMunicipality?: number
+  priceTotal?: number
+}
+
+export interface ReservationInputExtended {
+  guest?: Guests_guests | null
+  roommates?: Guests_guests[]
+  suite?: Suites_suites
 }

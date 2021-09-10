@@ -2,6 +2,7 @@ import base64
 import logging
 import os
 import re
+from email.header import Header
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -82,7 +83,6 @@ class Command(BaseCommand):
         message = MIMEMultipart()
         message['to'] = ','.join(settings.TO_EMAIL_RECIPIENTS)
         message['bcc'] = ','.join(settings.BCC_EMAIL_RECIPIENTS)
-        message['from'] = settings.REPLY_TO_EMAIL_ADDRESS
         message['subject'] = 'Mlýn Kamenice - potvrzení rezervace'
         message.add_header('reply-to', settings.REPLY_TO_EMAIL_ADDRESS)
 
@@ -95,7 +95,7 @@ class Command(BaseCommand):
             message_body = re.sub(r'#number_of_guests', str(1 + reservation.roommates.count()), message_body)
             message_body = re.sub(r'#reservation_type', Command.get_reservation_type(reservation.type), message_body)
             message_body = re.sub(r'#reservation_meal', Command.get_reservation_meal(reservation.meal), message_body)
-            message_body = re.sub(r'#reservation_price', "1400 Kč", message_body)
+            message_body = re.sub(r'#reservation_price', str(reservation.price_total), message_body)
             message_body = re.sub(r'#guests_url', '{}/rezervace/{}/hoste'.format(settings.APP_URL, reservation.hash),
                                   message_body)
 
@@ -112,11 +112,12 @@ class Command(BaseCommand):
                             .users()
                             .messages()
                             .send(userId='me',
-                                  body={'raw': base64.urlsafe_b64encode(
-                                      message.as_string().encode('utf-8')).decode()})).execute()
+                                  body={
+                                      'raw': base64.urlsafe_b64encode(
+                                          message.as_string().encode('utf-8')).decode()})).execute()
             reservation.confirmation_sent = True
             reservation.save()
-            self.logger.info('Reservation email successfully sent with ID %s'.format(sent_message['id']))
+            self.logger.info('Reservation email successfully sent with ID {}'.format(sent_message['id']))
         except HttpError as reason:
             self.logger.error('Error sending reservation email with error: {}'.format(reason))
 

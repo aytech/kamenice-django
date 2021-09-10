@@ -2276,7 +2276,7 @@
             "deprecationReason": null
           },
           {
-            "name": "guest",
+            "name": "guestId",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -2396,7 +2396,7 @@
             "deprecationReason": null
           },
           {
-            "name": "roommates",
+            "name": "roommatesIds",
             "description": null,
             "type": {
               "kind": "LIST",
@@ -2412,7 +2412,7 @@
             "deprecationReason": null
           },
           {
-            "name": "suite",
+            "name": "suiteId",
             "description": null,
             "type": {
               "kind": "SCALAR",

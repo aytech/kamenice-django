@@ -5,7 +5,7 @@ import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
 import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation, OptionsType, ReservationTypeKey } from "../../../../lib/Types"
+import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
@@ -115,7 +115,7 @@ export const ReservationModal = ({
       Array.from(formData.roommates, (data: { id: number }) => data.id)
     return {
       fromDate: from.format(dateFormat),
-      guest: formData.guest,
+      guestId: formData.guest,
       meal: formData.meal,
       notes: formData.notes,
       priceAccommodation: formData.priceAccommodation,
@@ -124,8 +124,8 @@ export const ReservationModal = ({
       priceMunicipality: formData.priceMunicipality,
       priceTotal: formData.priceTotal,
       purpose: formData.purpose,
-      roommates: roommates,
-      suite: reservation !== undefined ? +reservation.suite.id : null,
+      roommatesIds: roommates,
+      suiteId: reservation !== undefined ? +reservation.suite.id : null,
       toDate: to.format(dateFormat),
       type: formData.type
     }
@@ -230,9 +230,23 @@ export const ReservationModal = ({
 
   const updatePrice = useCallback(() => {
     if (suite !== undefined && reservation !== undefined) {
-      form.setFieldsValue(Prices.calculatePrice(suite, getReservationInput()))
+      const input: ReservationInput & ReservationInputExtended = getReservationInput()
+      input.suite = suite
+      input.roommates = []
+      if (input.guestId !== undefined && input.guestId !== null) {
+        input.guest = guestsData?.guests?.find(guest => guest?.id === input.guestId)
+      }
+      if (input.roommatesIds !== undefined && input.roommatesIds !== null && input.roommatesIds.length > 0) {
+        input.roommatesIds.forEach(id => {
+          const roommate = guestsData?.guests?.find(guest => guest?.id === String(id))
+          if (roommate !== undefined && roommate !== null) {
+            input.roommates?.push(roommate)
+          }
+        })
+      }
+      form.setFieldsValue(Prices.calculatePrice(input))
     }
-  }, [ form, getReservationInput, reservation, suite ])
+  }, [ form, getReservationInput, guestsData, reservation, suite ])
 
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
@@ -240,8 +254,9 @@ export const ReservationModal = ({
     if (isOpen === true) {
       form.resetFields()
       getGuests()
+      updatePrice()
     }
-  }, [ form, getGuests, isOpen, reservation ])
+  }, [ form, getGuests, isOpen, reservation, updatePrice ])
 
   useEffect(() => {
     if (guestsData !== undefined && guestsData.guests !== null) {
@@ -316,6 +331,7 @@ export const ReservationModal = ({
                   const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
                   return match !== undefined && match >= 0
                 } }
+                onChange={ updatePrice }
                 options={ guestOptions }
                 showSearch />
             </Form.Item>
@@ -335,15 +351,14 @@ export const ReservationModal = ({
                         name={ [ name, "id" ] }
                         rules={ roommateValidator }>
                         <Select
-                          onChange={ () => console.log(fields) }
+                          onChange={ updatePrice }
                           options={ guestOptions }
                           showSearch />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
                         remove(name)
                         form.validateFields()
-                        console.log(fields)
-                        // updatePrice()
+                        updatePrice()
                       } } />
                     </Space>
                   )) }
@@ -376,6 +391,7 @@ export const ReservationModal = ({
               required
               rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
               <Select
+                onChange={ updatePrice }
                 options={ ReservationFormHelper.mealOptions } />
             </Form.Item>
             <Form.Item
@@ -401,7 +417,7 @@ export const ReservationModal = ({
                 { additionalInfoVisible ? t("reservations.hide-info") : t("reservations.show-info") }
               </Button>
             </Form.Item>
-            {/* @TODO: add tooltips explaining price calculation */}
+            {/* @TODO: add tooltips explaining price calculation */ }
             <Form.Item
               hidden={ !pricesVisible }
               label={ t("reservations.price-room") }>

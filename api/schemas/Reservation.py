@@ -47,7 +47,7 @@ class ReservationQuery(ObjectType):
 
 class ReservationInput(InputObjectType):
     from_date = String()
-    guest = Int()
+    guest_id = Int()
     id = ID()
     meal = String()
     notes = String()
@@ -57,8 +57,8 @@ class ReservationInput(InputObjectType):
     price_municipality = Decimal()
     price_total = Decimal()
     purpose = String()
-    roommates = List(Int)
-    suite = Int()
+    roommates_ids = List(Int)
+    suite_id = Int()
     to_date = String()
     type = String()
 
@@ -116,16 +116,16 @@ class CreateReservation(Mutation):
             type=data.type,
         )
 
-        if ReservationUtility.get_duplicate(data.suite, instance=instance).count() > 0:
+        if ReservationUtility.get_duplicate(data.suite_id, instance=instance).count() > 0:
             raise Exception(_('The room is already reserved for this period of time'))
 
         try:
-            instance.guest = Guest.objects.get(pk=data.guest)
+            instance.guest = Guest.objects.get(pk=data.guest_id)
         except ObjectDoesNotExist:
             raise Exception(_('Please select guest from the list'))
 
         try:
-            instance.suite = Suite.objects.get(pk=data.suite)
+            instance.suite = Suite.objects.get(pk=data.suite_id)
         except ObjectDoesNotExist:
             raise Exception(_('Room not found'))
 
@@ -137,7 +137,7 @@ class CreateReservation(Mutation):
         instance.save()
 
         try:
-            for roommate_id in data.roommates:
+            for roommate_id in data.roommates_ids:
                 instance.roommates.add(Guest.objects.get(pk=roommate_id))
         except ObjectDoesNotExist as ex:
             print('Failed to add roommate', ex)
@@ -182,7 +182,7 @@ class UpdateReservation(Mutation):
                 instance.type = data.type if data.type is not None else instance.type
 
                 try:
-                    instance.guest = Guest.objects.get(pk=data.guest)
+                    instance.guest = Guest.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
                     raise Exception(_('Please select guest from the list'))
 
@@ -191,7 +191,7 @@ class UpdateReservation(Mutation):
                     instance.roommates.remove(roommate_id)
 
                 try:
-                    for roommate_id in data.roommates:
+                    for roommate_id in data.roommates_ids:
                         instance.roommates.add(Guest.objects.get(pk=roommate_id))
                 except ObjectDoesNotExist as ex:
                     print('Failed to add roommate', ex)

@@ -17,5 +17,5 @@ GRAPHQL_JWT = {
 DEBUG = True
 
 REPLY_TO_EMAIL_ADDRESS = 'Oleg Yapparov <oyapparov@gmail.com>'
-TO_EMAIL_RECIPIENTS = ['Oleg Yapparov <oyapparov@gmail.com>']
-BCC_EMAIL_RECIPIENTS = ['Oleg Yapparov <oyapparov@gmail.com>']
+TO_EMAIL_RECIPIENTS = ['oyapparov@gmail.com']
+BCC_EMAIL_RECIPIENTS = ['oyapparov@gmail.com']
