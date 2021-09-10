@@ -116,13 +116,12 @@ export const Prices: IPrices = {
   //    - 4x room apartment, 1 adult, 1 child/infant?
   calculatePrice: (reservationInput: ReservationInput & ReservationInputExtended) => {
 
-    const priceMunicipality: number = Prices.getMunicipalityFee(reservationInput.guest, reservationInput.roommates)
-
     let priceAccommodation: number = 0
-    let numberOfDays: number = 0
     let priceMeal: number = 0
     let priceExtra: number = 0
+    let priceMunicipality: number = 0
     let priceTotal: number = 0
+    let numberOfDays: number = 0
 
     if (reservationInput.toDate !== undefined && reservationInput.toDate !== null) {
       const endDate = moment(reservationInput.toDate)
@@ -145,6 +144,10 @@ export const Prices: IPrices = {
 
     if (priceExtra > 0) {
       priceExtra *= numberOfDays
+    }
+
+    if (numberOfDays > 0) {
+      priceMunicipality = Prices.getMunicipalityFee(reservationInput.guest, reservationInput.roommates)
     }
 
     priceTotal += (priceExtra + priceMunicipality)
@@ -173,8 +176,6 @@ export const Prices: IPrices = {
     //    - Just breakfast - + 80 Kc per person
     //    - Polopenze - 200 Kc per person
     //    - Deti - 40% sleva
-
-    // finalPrice += (numberOfGuests * municipalityFee) * numberOfDays
 
     return { priceAccommodation, priceExtra, priceMeal, priceMunicipality, priceTotal }
   }

@@ -21,6 +21,7 @@ import { SuitesWithReservations_reservations } from "../../../../lib/graphql/que
 import { useTranslation } from "react-i18next"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../lib/Prices"
+import moment from "moment"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -110,7 +111,17 @@ export const ReservationModal = ({
 
   const getReservationInput = useCallback((): ReservationInput => {
     const formData = form.getFieldsValue(true)
-    const [ from, to ]: Array<Moment> = form.getFieldValue("dates")
+    const formDates: Array<Moment> = form.getFieldValue("dates")
+    let from, to: Moment
+
+    if (formDates === null) {
+      from = moment()
+      to = moment()
+    } else {
+      from = formDates[ 0 ]
+      to = formDates[ 1 ]
+    }
+
     const roommates = formData.roommates === undefined ? [] :
       Array.from(formData.roommates, (data: { id: number }) => data.id)
     return {
