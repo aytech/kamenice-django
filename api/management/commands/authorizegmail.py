@@ -11,7 +11,8 @@ class Command(BaseCommand):
     CREDENTIALS_FILE_NAME = 'credentials.json'
     TOKEN_FILE_NAME = 'token.json'
     # If modifying these scopes, delete the file token.json
-    SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+    SCOPES = ['https://www.googleapis.com/auth/gmail.send',
+              'https://www.googleapis.com/auth/gmail.compose']
 
     def handle(self, *args, **options):
         credentials = None

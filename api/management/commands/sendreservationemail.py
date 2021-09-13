@@ -27,7 +27,8 @@ class Command(BaseCommand):
     TOKEN_FILE_NAME = 'token.json'
     CONFIRMATION_EMAIL_FILE_NAME = 'confirmation_email.html'
     LOGO_FILE_NAME = 'logo.png'
-    SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+    SCOPES = ['https://www.googleapis.com/auth/gmail.send',
+              'https://www.googleapis.com/auth/gmail.compose']
 
     def __init__(self):
         super().__init__()
@@ -84,7 +85,7 @@ class Command(BaseCommand):
         message['to'] = ','.join(settings.TO_EMAIL_RECIPIENTS)
         message['bcc'] = ','.join(settings.BCC_EMAIL_RECIPIENTS)
         message['subject'] = 'Mlýn Kamenice - potvrzení rezervace'
-        message.add_header('reply-to', settings.REPLY_TO_EMAIL_ADDRESS)
+        message.add_header('From', settings.FROM_EMAIL_ADDRESS)
 
         with open(self.SCRIPT_PATH / self.CONFIRMATION_EMAIL_FILE_NAME, 'r', encoding='utf-8') as message_reader:
             message_body = message_reader.read()
