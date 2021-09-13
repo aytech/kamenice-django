@@ -1,6 +1,7 @@
 **/__pycache__/
 **/node_modules/
 .idea
+ui/app/build
 kamenice_django/static
 venv
 db.sqlite3
