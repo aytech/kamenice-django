@@ -23,7 +23,6 @@ APP_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$1jf*%c)m9ob*j=f2i_=^q=1r%cv*i23icig)5p0(0b1=2ii28'
 
 INSTALLED_APPS = [
-    'api',
     'graphene_django',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -32,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'api',
     'ui',
 ]
 
