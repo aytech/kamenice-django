@@ -18,31 +18,30 @@ def generate_reservation_hash():
 class Reservation(BaseModel):
     year = datetime.now().year
     TYPE_CHOICES = [
-        ('ACCOMMODATED', 'Aktuálně Ubytování'),
-        ('BINDING', 'Závazná Rezervace'),
-        ('INHABITED', 'Obydlený Termín'),
-        ('NONBINDING', 'Nezávazná Rezervace'),
+        ('ACCOMMODATED', _('Currently accommodated')),
+        ('BINDING', _('Binding reservation')),
+        ('INHABITED', _('Occupied term')),
+        ('NONBINDING', _('Non-binding reservation')),
     ]
     MEAL_CHOICES = [
-        ('NOMEAL', 'Bez Stravy'),
-        ('BREAKFAST', 'Jen Snídaně'),
-        ('HALFBOARD', 'Polopenze')
+        ('NOMEAL', _('Meal not included')),
+        ('BREAKFAST', _('Breakfast included')),
+        ('HALFBOARD', _('Half board'))
     ]
-    confirmation_sent = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.BooleanField(default=False)
     from_date = models.DateTimeField(blank=False, null=False, error_messages={
-        'invalid': 'Zadejte platný datum začátku rezervace',
-        'null': 'Zadejte platný datum začátku rezervace',
+        'invalid': _('Enter valid date for the reservation start date'),
+        'null': _('Enter valid date for the reservation start date'),
     })
     guest = models.ForeignKey(
         Guest,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     hash = models.CharField(blank=True, null=True, default=generate_reservation_hash, max_length=10)
     meal = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        'invalid_choice': 'Vyberte údaj Strava ze seznamu',
-        'null': 'Vyberte údaj Strava ze seznamu',
+        'invalid_choice': _('Select Meal from the list'),
+        'null': _('Select Meal from the list'),
     }, choices=MEAL_CHOICES)
     notes = models.TextField(blank=True, null=True)
     price_accommodation = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
@@ -61,21 +60,17 @@ class Reservation(BaseModel):
         'null': _('Total price is required field')
     })
     purpose = models.CharField(blank=True, max_length=100, null=True)
-    roommates = models.ManyToManyField(
-        Guest,
-        related_name='+',
-    )
     suite = models.ForeignKey(
         Suite,
-        on_delete=models.CASCADE
+        on_delete=models.DO_NOTHING
     )
     to_date = models.DateTimeField(blank=False, null=False, error_messages={
-        'invalid': 'Zadejte platný datum konce rezervace',
-        'null': 'Zadejte platný datum konce rezervace',
+        'invalid': _('Enter valid date for the reservation end date'),
+        'null': _('Enter valid date for the reservation end date'),
     })
     type = models.CharField(blank=False, max_length=50, null=False, error_messages={
-        'invalid_choice': 'Vyberte údaj Typ Rezervace ze seznamu',
-        'null': 'Vyberte údaj Typ Rezervace ze seznamu',
+        'invalid_choice': _('Select reservation type from the list'),
+        'null': _('Select reservation type from the list'),
     }, choices=TYPE_CHOICES)
     updated = models.DateTimeField(auto_now=True)
 
