@@ -8,3 +8,4 @@ psycopg2==2.9.1
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+sendgrid==6.8.1

@@ -1,9 +1,13 @@
+import logging
+import os
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String, Decimal
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
+from sendgrid import SendGridAPIClient, Mail
 
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
@@ -216,7 +220,6 @@ class DeleteReservation(Mutation):
     reservation = Field(Reservation)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.delete_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, reservation_id):
         try:
@@ -227,3 +230,45 @@ class DeleteReservation(Mutation):
             return DeleteReservation(reservation=instance)
         except ObjectDoesNotExist:
             return DeleteReservation(reservation=None)
+
+
+class SendConfirmationEmail(Mutation):
+    class Arguments:
+        reservation_id = ID()
+
+    reservation = Field(Reservation)
+
+    @classmethod
+    @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
+    def mutate(cls, _root, _info, reservation_id):
+        try:
+            instance = ReservationModel.objects.get(pk=reservation_id, deleted=False)
+            env = os.environ['DJANGO_SETTINGS_MODULE']
+
+            if env == 'kamenice_django.settings.development':
+                from kamenice_django.settings import development as settings
+            else:
+                from kamenice_django.settings import production as settings
+
+            message = Mail(
+                from_email=settings.FROM_EMAIL_ADDRESS,
+                to_emails=','.join([instance.guest.email]))
+            message.dynamic_template_data = {
+                'from': str(instance.from_date),
+                'guests': 1,
+                'meal': instance.meal,
+                'price': str(instance.price_total),
+                'to': str(instance.to_date),
+                'type': instance.type,
+                'url': '{}/rezervace/{}/hoste'.format(settings.APP_URL, instance.hash)
+            }
+            message.template_id = settings.EMAIL_TEMPLATE_ID
+
+            SendGridAPIClient(os.environ['EMAIL_API_KEY']).send(message)
+            
+            logging.getLogger('kamenice').info('Reservation confirmation sent to {}'.format(instance.guest))
+        except ObjectDoesNotExist:
+            raise Exception(_('Reservation not found'))
+        except Exception as ex:
+            logging.getLogger('kamenice').error('Reservation confirmation could not be sent: {}'.format(ex))
+            raise Exception(_('Could not send confirmation email'))
