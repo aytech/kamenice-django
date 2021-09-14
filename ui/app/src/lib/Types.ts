@@ -78,7 +78,6 @@ export interface IReservation {
   priceMunicipality: string | null
   priceTotal: string | null
   purpose?: string | null
-  roommates: Array<Roommate>
   suite: Suite
   toDate: Moment
   type?: ReservationTypeKey
@@ -115,7 +114,6 @@ export interface CustomItemFields {
   priceMunicipality: string | null
   priceTotal: string | null
   purpose: string | null
-  roommates: Roommate[]
   suite: Suite
   type?: ReservationTypeKey
 }

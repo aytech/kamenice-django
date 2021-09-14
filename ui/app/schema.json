@@ -441,22 +441,6 @@
             "deprecationReason": null
           },
           {
-            "name": "confirmationSent",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "created",
             "description": "",
             "args": [],
@@ -648,30 +632,6 @@
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "roommates",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Guest",
-                    "ofType": null
-                  }
-                }
-              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1053,25 +1013,25 @@
         "enumValues": [
           {
             "name": "ACCOMMODATED",
-            "description": "Aktuálně Ubytování",
+            "description": "Aktuálně ubytování",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "BINDING",
-            "description": "Závazná Rezervace",
+            "description": "Závazná rezervace",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "INHABITED",
-            "description": "Obydlený Termín",
+            "description": "Obydlený termín",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "NONBINDING",
-            "description": "Nezávazná Rezervace",
+            "description": "Nezávazná rezervace",
             "isDeprecated": false,
             "deprecationReason": null
           }

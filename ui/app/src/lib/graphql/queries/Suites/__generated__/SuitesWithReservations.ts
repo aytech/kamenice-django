@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationMeal, GuestAge, ReservationType } from "./../../../globalTypes";
+import { ReservationMeal, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL query operation: SuitesWithReservations
@@ -35,14 +35,6 @@ export interface SuitesWithReservations_reservations_guest {
   surname: string;
 }
 
-export interface SuitesWithReservations_reservations_roommates {
-  __typename: "Guest";
-  age: GuestAge | null;
-  id: string;
-  name: string;
-  surname: string;
-}
-
 export interface SuitesWithReservations_reservations_suite {
   __typename: "Suite";
   id: string;
@@ -61,7 +53,6 @@ export interface SuitesWithReservations_reservations {
   priceMunicipality: any;
   priceTotal: any;
   purpose: string | null;
-  roommates: SuitesWithReservations_reservations_roommates[];
   suite: SuitesWithReservations_reservations_suite;
   toDate: any;
   type: ReservationType;

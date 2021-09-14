@@ -51,10 +51,10 @@ export const SuiteDrawer = ({
   const initialValues: Store = {
     beds: suite?.numberBeds,
     number: suite?.number,
-    price_base: suite?.priceBase,
-    price_child: suite?.priceChild,
-    price_extra: suite?.priceExtra,
-    price_infant: suite?.priceInfant,
+    price_base: suite === undefined ? "0.00" : suite.priceBase,
+    price_child: suite === undefined ? "0.00" : suite.priceChild,
+    price_extra: suite === undefined ? "0.00" : suite.priceExtra,
+    price_infant: suite === undefined ? "0.00" : suite.priceInfant,
     title: suite?.title
   }
 

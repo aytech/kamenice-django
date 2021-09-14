@@ -103,9 +103,7 @@ export const ReservationModal = ({
     priceMunicipality: "0.00", // @TODO: calculate
     priceTotal: reservation.priceTotal,
     purpose: reservation.purpose,
-    roommates: Array.from(reservation.roommates, roommate => {
-      return { id: roommate.id }
-    }),
+    roommates: [],
     type: reservation.type
   } : { type: "NONBINDING" }
 

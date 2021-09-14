@@ -19,12 +19,6 @@ export const CREATE_RESERVATION = gql`
         priceMunicipality
         priceTotal
         purpose
-        roommates {
-          age
-          id
-          name
-          surname
-        }
         suite {
           id
           number
@@ -66,12 +60,6 @@ export const UPDATE_RESERVATION = gql`
         priceMunicipality
         priceTotal
         purpose
-        roommates {
-          age
-          id
-          name
-          surname
-        }
         suite {
           id
           number

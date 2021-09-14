@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationInput, ReservationMeal, GuestAge, ReservationType } from "./../../../globalTypes";
+import { ReservationInput, ReservationMeal, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CreateReservation
@@ -11,14 +11,6 @@ import { ReservationInput, ReservationMeal, GuestAge, ReservationType } from "./
 
 export interface CreateReservation_createReservation_reservation_guest {
   __typename: "Guest";
-  id: string;
-  name: string;
-  surname: string;
-}
-
-export interface CreateReservation_createReservation_reservation_roommates {
-  __typename: "Guest";
-  age: GuestAge | null;
   id: string;
   name: string;
   surname: string;
@@ -44,7 +36,6 @@ export interface CreateReservation_createReservation_reservation {
   priceMunicipality: any;
   priceTotal: any;
   purpose: string | null;
-  roommates: CreateReservation_createReservation_reservation_roommates[];
   suite: CreateReservation_createReservation_reservation_suite;
   toDate: any;
   type: ReservationType;

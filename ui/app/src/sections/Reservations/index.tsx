@@ -65,7 +65,6 @@ export const Reservations = withRouter(({
       priceMunicipality: reservation.priceMunicipality,
       priceTotal: reservation.priceTotal,
       purpose: reservation.purpose,
-      roommates: reservation.roommates,
       start_time: moment(reservation.fromDate),
       suite: reservation.suite,
       title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
@@ -121,7 +120,6 @@ export const Reservations = withRouter(({
       setReservation({
         fromDate: moment(time),
         meal: "NOMEAL",
-        roommates: [],
         suite: { ...selectedGroup },
         priceAccommodation: "0.00",
         priceExtra: "0.00",
@@ -156,7 +154,6 @@ export const Reservations = withRouter(({
         priceMunicipality: timelineItem.priceMunicipality,
         priceTotal: timelineItem.priceTotal,
         purpose: timelineItem.purpose,
-        roommates: timelineItem.roommates,
         suite: timelineItem.suite,
         toDate: moment(timelineItem.end_time),
         type: timelineItem.type
