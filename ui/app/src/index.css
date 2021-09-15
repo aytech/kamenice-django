@@ -29,11 +29,7 @@
   margin: 0;
 }
 
-.ant-list-footer {
-  text-align: center;
-}
-
-.ant-list-bordered .ant-list-header h4 {
+.ant-list-bordered .ant-list-header h2, .ant-list-bordered .ant-list-header h4 {
   color: rgb(254, 127, 45);
   margin-bottom: 0;
   text-align: center;

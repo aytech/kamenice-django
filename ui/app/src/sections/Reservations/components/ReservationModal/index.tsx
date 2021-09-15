@@ -3,7 +3,7 @@ import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Sp
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
@@ -76,6 +76,7 @@ export const ReservationModal = ({
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
+  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
 
@@ -314,7 +315,12 @@ export const ReservationModal = ({
         title={ t("reservations.form") }
         visible={ isOpen }>
         <Spin
-          spinning={ guestsLoading || createLoading || deleteLoading || updateLoading }
+          spinning={
+            guestsLoading
+            || createLoading
+            || deleteLoading
+            || updateLoading
+          }
           tip={ `${ t("loading") }...` }>
           <Form
             form={ form }
@@ -361,7 +367,7 @@ export const ReservationModal = ({
                         rules={ roommateValidator }>
                         <Select
                           onChange={ updatePrice }
-                          options={ guestOptions }
+                          options={ roommateOptions }
                           showSearch />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
@@ -373,11 +379,11 @@ export const ReservationModal = ({
                   )) }
                   <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
                     <Button
-                      disabled={ fields.length >= guestOptions.length }
+                      disabled={ fields.length >= roommateOptions.length }
                       type="dashed"
                       onClick={ () => add() }
                       block
-                      icon={ <PlusOutlined /> }>
+                      icon={ <UsergroupAddOutlined /> }>
                       { t("reservations.add-roommate") }
                     </Button>
                   </Form.Item>

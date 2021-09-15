@@ -265,7 +265,7 @@ class SendConfirmationEmail(Mutation):
             message.template_id = settings.EMAIL_TEMPLATE_ID
 
             SendGridAPIClient(os.environ['EMAIL_API_KEY']).send(message)
-            
+
             logging.getLogger('kamenice').info('Reservation confirmation sent to {}'.format(instance.guest))
         except ObjectDoesNotExist:
             raise Exception(_('Reservation not found'))

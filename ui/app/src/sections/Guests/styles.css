@@ -1,4 +1,8 @@
-.guests-list {
+.guests {
   background-color: #fff;
   margin: 0 auto 3em;
+}
+
+.guests .ant-list-footer {
+  text-align: end;
 }
