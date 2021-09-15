@@ -6,12 +6,13 @@ import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/G
 import { UserAddOutlined } from "@ant-design/icons"
 import { ApolloError, useQuery } from "@apollo/client"
 import { useEffect } from "react"
-import { GuestDrawer } from "../GuestDrawer"
+import { GuestDrawer } from "./components/GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
 import { MenuItemKey } from "../../lib/Types"
 import Text from "antd/lib/typography/Text"
+import { RoommatesDrawer } from "./components/RoommatesDrawer"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -28,6 +29,7 @@ export const Guests = withRouter(({
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
+  const [ roommateDrawerVisible, setRoommateDrawerVisible ] = useState<boolean>(false)
   const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
   const { data: guestsData } = useQuery<GuestsData>(GUESTS, {
@@ -73,7 +75,7 @@ export const Guests = withRouter(({
           className="guests"
           dataSource={ guests }
           footer={
-            <Text disabled>&reg;{t("company-name")}</Text>
+            <Text disabled>&reg;{ t("company-name") }</Text>
           }
           header={ (
             <Row>
@@ -98,6 +100,7 @@ export const Guests = withRouter(({
             <GuestItem
               guest={ guest }
               openGuestDrawer={ () => setDrawerVisible(true) }
+              openRoommateDrawer={ () => setRoommateDrawerVisible(true) }
               roommates={ guests }
               selectGuest={ setSelectedGuest } />
           ) } />
@@ -108,6 +111,10 @@ export const Guests = withRouter(({
         guest={ selectedGuest }
         removeGuest={ removeGuest }
         visible={ drawerVisible } />
+      <RoommatesDrawer
+        close={ () => setRoommateDrawerVisible(false) }
+        guest={ selectedGuest }
+        visible={ roommateDrawerVisible } />
     </>
   )
 })

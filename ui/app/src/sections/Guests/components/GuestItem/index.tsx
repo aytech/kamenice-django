@@ -8,6 +8,7 @@ import { Roommates } from "../Roommates"
 interface Props {
   guest: Guests_guests
   openGuestDrawer: () => void
+  openRoommateDrawer: () => void
   roommates: Guests_guests[]
   selectGuest: (guest: Guests_guests) => void
 }
@@ -15,6 +16,7 @@ interface Props {
 export const GuestItem = ({
   guest,
   openGuestDrawer,
+  openRoommateDrawer,
   roommates,
   selectGuest
 }: Props) => {
@@ -61,6 +63,10 @@ export const GuestItem = ({
       </List.Item>
       <Roommates
         guest={ guest }
+        openDrawer={ () => {
+          selectGuest(guest)
+          openRoommateDrawer()
+        } }
         roommates={ roommates }
         show={ showRoommates } />
     </>

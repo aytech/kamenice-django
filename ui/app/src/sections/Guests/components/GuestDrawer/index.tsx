@@ -3,24 +3,23 @@ import { Button, Drawer, Form, Input, message, Popconfirm, Select, Skeleton } fr
 import { CloseOutlined, MailOutlined, WarningOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
-import { GuestForm } from "../../lib/Types"
-import { GuestFormHelper } from "../../lib/components/GuestFormHelper"
-import { FormHelper } from "../../lib/components/FormHelper"
+import { GuestForm } from "../../../../lib/Types"
+import { GuestFormHelper } from "../../../../lib/components/GuestFormHelper"
+import { FormHelper } from "../../../../lib/components/FormHelper"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
-import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../lib/graphql/mutations/Guest"
-import { CreateGuest, CreateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
-import { GuestsFull_guests } from "../../lib/graphql/queries/Guests/__generated__/GuestsFull"
-import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { UpdateGuest, UpdateGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
+import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
+import { CreateGuest, CreateGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
+import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { UpdateGuest, UpdateGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
-import { DeleteGuest, DeleteGuestVariables } from "../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
+import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   addGuest: (guest: Guests_guests) => void
   close: () => void
-  guest?: GuestsFull_guests | null
+  guest?: Guests_guests | null
   removeGuest?: (guestId: string) => void
   visible: boolean
 }

@@ -55,6 +55,7 @@
     "new": "Nový host",
     "name-pl": "Hosté",
     "page-title": "Správa hostů",
+    "roommate": "Další host",
     "roommates": "Další hosté",
     "updated": "Host {{ name }} {{ surname }} aktualizován!"
   },

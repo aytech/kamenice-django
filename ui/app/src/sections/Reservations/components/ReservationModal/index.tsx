@@ -10,7 +10,7 @@ import { ReservationFormHelper } from "../../../../lib/components/ReservationFor
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat } from "../../../../lib/Constants"
-import { GuestDrawer } from "../../../GuestDrawer"
+import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
 import { CreateReservation, CreateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"

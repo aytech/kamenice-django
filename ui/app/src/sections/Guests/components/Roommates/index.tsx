@@ -7,12 +7,14 @@ import './styles.css'
 
 interface Props {
   guest: Guests_guests
+  openDrawer: () => void
   roommates: Guests_guests[]
   show: boolean
 }
 
 export const Roommates = ({
   guest,
+  openDrawer,
   roommates,
   show
 }: Props) => {
@@ -32,7 +34,7 @@ export const Roommates = ({
           <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
             <Tooltip title={ t("guests.add") }>
               <Button
-                onClick={ () => console.log("Open roommates drawer") }>
+                onClick={ openDrawer }>
                 <UsergroupAddOutlined />
               </Button>
             </Tooltip>

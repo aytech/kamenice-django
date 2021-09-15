@@ -1,3 +1,3 @@
 export * from './App/components/Header'
-export * from './GuestDrawer'
+export * from './Guests/components/GuestDrawer'
 export * from './Reservations'
