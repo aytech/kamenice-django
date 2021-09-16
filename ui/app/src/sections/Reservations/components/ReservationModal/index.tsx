@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
-import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Spin, Typography } from "antd"
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Spin, Typography } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
+import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, PlusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
@@ -22,6 +22,10 @@ import { useTranslation } from "react-i18next"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../lib/Prices"
 import moment from "moment"
+import { Roommates, RoommatesVariables, Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
+import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates"
+import { RoommatesDrawer } from "../../../Guests/components/RoommatesDrawer"
+import { Roommates as RoommatesItem } from "./components/Roommates"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -72,17 +76,21 @@ export const ReservationModal = ({
   const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
     onError: networkErrorHandler
   })
+  const [ getRoommates, { loading: roommatesLoading, data: roommatesData } ] = useLazyQuery<Roommates, RoommatesVariables>(ROOMMATES, {
+    onError: networkErrorHandler
+  })
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
+  const [ roommateDrawerOpen, setRoommateDrawerOpen ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
-  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
+  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
 
   const [ form ] = Form.useForm()
 
-  const getGuestOption = (guest: Guests_guests) => {
+  const getGuestOption = (guest: Guests_guests | Roommates_roommates) => {
     return {
       label: `${ guest.name } ${ guest.surname }`,
       value: guest.id
@@ -120,7 +128,6 @@ export const ReservationModal = ({
       from = formDates[ 0 ]
       to = formDates[ 1 ]
     }
-
     const roommates = formData.roommates === undefined ? [] :
       Array.from(formData.roommates, (data: { id: number }) => data.id)
     return {
@@ -173,30 +180,6 @@ export const ReservationModal = ({
     }
   ]
 
-  const roommateValidator = [
-    {
-      message: t("forms.guest-selected"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        const duplicates: Array<{ id: number }> = form.getFieldValue("roommates").filter((id: { id: number } | undefined) => {
-          return id !== undefined && id.id === value
-        })
-        if (duplicates === undefined || duplicates.length <= 1) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, duplicate value"))
-      }
-    },
-    {
-      message: t("forms.guest-equals-roommate"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        if (form.getFieldValue("guest") !== value) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, equals to guest"))
-      }
-    }
-  ]
-
   const getRemoveButton = () => {
     return reservation !== undefined && reservation.id !== undefined ? (
       <Popconfirm
@@ -237,6 +220,14 @@ export const ReservationModal = ({
       { (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }
     </Button>
   ]
+
+  const selectGuest = (guestId: string) => {
+    const guest = guestsData?.guests?.find(guest => guest?.id === guestId)
+    if (guest !== undefined && guest !== null) {
+      setSelectedGuest(guest)
+      getRoommates({ variables: { guestId: guest.id } })
+    }
+  }
 
   const updatePrice = useCallback(() => {
     if (suite !== undefined && reservation !== undefined) {
@@ -280,6 +271,10 @@ export const ReservationModal = ({
     }
   }, [ guestsData ])
 
+  useEffect(() => {
+    console.log('Roommates: ', roommatesData)
+  }, [ roommatesData ])
+
   const formLayout = {
     labelCol: {
       span: 8
@@ -317,6 +312,7 @@ export const ReservationModal = ({
         <Spin
           spinning={
             guestsLoading
+            || roommatesLoading
             || createLoading
             || deleteLoading
             || updateLoading
@@ -346,50 +342,26 @@ export const ReservationModal = ({
                   const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
                   return match !== undefined && match >= 0
                 } }
-                onChange={ updatePrice }
+                onChange={ (guestId: string) => {
+                  updatePrice()
+                  selectGuest(guestId)
+
+                } }
                 options={ guestOptions }
                 showSearch />
             </Form.Item>
-            <Form.List name="roommates">
-              { (fields, { add, remove }) => (
-                <>
-                  { fields.map(({ key, name, fieldKey, ...restField }) => (
-                    <Space
-                      align="baseline"
-                      className="roommate-list"
-                      key={ key }>
-                      <Form.Item
-                        hasFeedback
-                        { ...restField }
-                        fieldKey={ [ fieldKey, 'first' ] }
-                        label={ t("reservations.roommate") }
-                        name={ [ name, "id" ] }
-                        rules={ roommateValidator }>
-                        <Select
-                          onChange={ updatePrice }
-                          options={ roommateOptions }
-                          showSearch />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={ () => {
-                        remove(name)
-                        form.validateFields()
-                        updatePrice()
-                      } } />
-                    </Space>
-                  )) }
-                  <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
-                    <Button
-                      disabled={ fields.length >= roommateOptions.length }
-                      type="dashed"
-                      onClick={ () => add() }
-                      block
-                      icon={ <UsergroupAddOutlined /> }>
-                      { t("reservations.add-roommate") }
-                    </Button>
-                  </Form.Item>
-                </>
-              ) }
-            </Form.List>
+            <RoommatesItem
+              roommates={ roommatesData } />
+            <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
+              <Button
+                block
+                disabled={ selectedGuest === undefined }
+                icon={ <UsergroupAddOutlined /> }
+                onClick={ () => setRoommateDrawerOpen(true) }
+                type="dashed">
+                { t("reservations.add-roommate") }
+              </Button>
+            </Form.Item>
             <Form.Item
               hasFeedback
               label={ t("reservations.type") }
@@ -488,6 +460,10 @@ export const ReservationModal = ({
         close={ () => setGuestDrawerOpen(false) }
         addGuest={ addGuestOption }
         visible={ guestDrawerOpen } />
+      <RoommatesDrawer
+        close={ () => setRoommateDrawerOpen(false) }
+        guest={ selectedGuest }
+        visible={ roommateDrawerOpen } />
     </>
   )
 }

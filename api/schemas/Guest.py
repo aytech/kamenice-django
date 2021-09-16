@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError, Multiple
 from graphene import ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
+from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
@@ -78,7 +79,6 @@ class CreateGuest(Mutation):
     guest = Field(Guest)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.add_guest'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
@@ -119,7 +119,6 @@ class UpdateGuest(Mutation):
     guest = Field(Guest)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.change_guest'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
@@ -146,7 +145,7 @@ class UpdateGuest(Mutation):
             return UpdateGuest(guest=instance)
 
         except ObjectDoesNotExist:
-            raise Exception('Host nebyl nalezen')
+            raise Exception(_('Guest not found'))
 
 
 class UpdateReservationGuest(Mutation):
@@ -191,7 +190,6 @@ class DeleteGuest(Mutation):
     guest = Field(Guest)
 
     @staticmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.delete_guest'), exc=PermissionDenied)
     def mutate(_root, _info, guest_id):
         try:

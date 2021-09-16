@@ -5,6 +5,7 @@ from api.schemas.Contact import CreateContactMessage
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
     SendConfirmationEmail
+from api.schemas.Roommate import RoommateQuery, CreateRoommate, DeleteRoommate, UpdateRoommate
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
 from api.schemas.User import UserQuery, ObtainJSONWebToken
 
@@ -12,6 +13,7 @@ from api.schemas.User import UserQuery, ObtainJSONWebToken
 class Query(
     GuestsQuery,
     ReservationQuery,
+    RoommateQuery,
     SuitesQuery,
     UserQuery,
     graphene.ObjectType
@@ -28,6 +30,10 @@ class Mutation(graphene.ObjectType):
     create_guest = CreateGuest.Field()
     delete_guest = DeleteGuest.Field()
     update_guest = UpdateGuest.Field()
+
+    create_roommate = CreateRoommate.Field()
+    delete_roommate = DeleteRoommate.Field()
+    update_roommate = UpdateRoommate.Field()
 
     update_reservation_guest = UpdateReservationGuest.Field()
     create_reservation = CreateReservation.Field()

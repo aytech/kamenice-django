@@ -19,7 +19,9 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Reservation(DjangoObjectType):
     class Meta:
         model = ReservationModel
-        fields = '__all__'
+        fields = (
+            'from_date', 'guest', 'id', 'meal', 'notes', 'price_accommodation', 'price_extra', 'price_meal',
+            'price_municipality', 'price_total', 'purpose', 'suite', 'to_date', 'type')
 
 
 class ReservationQuery(ObjectType):
@@ -27,7 +29,6 @@ class ReservationQuery(ObjectType):
     reservation = Field(Reservation, reservation_id=Int())
     reservations = List(Reservation)
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_suite_reservations(self, _info, suite_id):
         try:
@@ -35,7 +36,6 @@ class ReservationQuery(ObjectType):
         except ObjectDoesNotExist:
             return None
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservation(self, _query, _info, reservation_id):
         try:
@@ -43,7 +43,6 @@ class ReservationQuery(ObjectType):
         except ObjectDoesNotExist:
             return None
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservations(self, _info):
         return ReservationModel.objects.filter(deleted=False)
@@ -140,12 +139,6 @@ class CreateReservation(Mutation):
 
         instance.save()
 
-        try:
-            for roommate_id in data.roommates_ids:
-                instance.roommates.add(Guest.objects.get(pk=roommate_id))
-        except ObjectDoesNotExist as ex:
-            print('Failed to add roommate', ex)
-
         instance.save()
 
         return CreateReservation(reservation=instance)
@@ -158,7 +151,6 @@ class UpdateReservation(Mutation):
     reservation = Field(Reservation)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.change_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
@@ -189,16 +181,6 @@ class UpdateReservation(Mutation):
                     instance.guest = Guest.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
                     raise Exception(_('Please select guest from the list'))
-
-                # Roommates are recreated from scratch
-                for roommate_id in instance.roommates.all():
-                    instance.roommates.remove(roommate_id)
-
-                try:
-                    for roommate_id in data.roommates_ids:
-                        instance.roommates.add(Guest.objects.get(pk=roommate_id))
-                except ObjectDoesNotExist as ex:
-                    print('Failed to add roommate', ex)
 
                 try:
                     instance.full_clean()

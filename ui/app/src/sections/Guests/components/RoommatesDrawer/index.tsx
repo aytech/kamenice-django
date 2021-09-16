@@ -6,7 +6,7 @@ import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generate
 
 interface Props {
   close: () => void
-  guest: Guests_guests | null
+  guest?: Guests_guests | null
   roommate?: Guests_guests | null
   visible: boolean
 }
