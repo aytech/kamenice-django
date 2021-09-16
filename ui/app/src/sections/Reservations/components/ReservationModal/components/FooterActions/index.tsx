@@ -60,6 +60,7 @@ export const SendConfirmationButton = ({
   const { t } = useTranslation()
 
   const [ sendConfirmation, { loading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
+    onCompleted: () => message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email })),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
@@ -74,7 +75,6 @@ export const SendConfirmationButton = ({
         onClick={ () => {
           if (reservation.id !== undefined) {
             sendConfirmation({ variables: { reservationId: String(reservation.id) } })
-              .then(() => message.success(t("reservations.confirmation-sent", reservation.guest?.email)))
           }
         } } />
     </Tooltip>

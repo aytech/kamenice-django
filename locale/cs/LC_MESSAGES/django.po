@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-16 09:04+0200\n"
+"POT-Creation-Date: 2021-09-16 21:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,28 +148,29 @@ msgstr "Cena za dítě je povinný údaj"
 msgid "Price for extra bed is required field"
 msgstr "Cena za přistýlku je povinný údaj"
 
-#: .\api\schemas\Guest.py:148 .\api\schemas\Roommate.py:90
-#: .\api\schemas\Roommate.py:127
-msgid "Guest not found"
-msgstr "Host nenalezen"
-
-#: .\api\schemas\Reservation.py:123 .\api\schemas\Reservation.py:166
-msgid "The room is already reserved for this period of time"
-msgstr "Místnost je rezervováno pro tuto dobu"
-
-#: .\api\schemas\Reservation.py:128 .\api\schemas\Reservation.py:183
-msgid "Please select guest from the list"
-msgstr "Prosím vyberte hosta ze seznamu"
-
-#: .\api\schemas\Reservation.py:133
-msgid "Room not found"
-msgstr "Místnost nebyla nalezena"
-
-#: .\api\schemas\Reservation.py:195 .\api\schemas\Reservation.py:253
+#: .\api\schemas\Guest.py:50 .\api\schemas\Reservation.py:196
+#: .\api\schemas\Reservation.py:258
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
-#: .\api\schemas\Reservation.py:256
+#: .\api\schemas\Guest.py:146 .\api\schemas\Roommate.py:88
+#: .\api\schemas\Roommate.py:125
+msgid "Guest not found"
+msgstr "Host nenalezen"
+
+#: .\api\schemas\Reservation.py:124 .\api\schemas\Reservation.py:167
+msgid "The room is already reserved for this period of time"
+msgstr "Místnost je rezervováno pro tuto dobu"
+
+#: .\api\schemas\Reservation.py:129 .\api\schemas\Reservation.py:184
+msgid "Please select guest from the list"
+msgstr "Prosím vyberte hosta ze seznamu"
+
+#: .\api\schemas\Reservation.py:134
+msgid "Room not found"
+msgstr "Místnost nebyla nalezena"
+
+#: .\api\schemas\Reservation.py:261
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 
@@ -178,3 +179,51 @@ msgid ""
 "You do not have permission to access this feature, please contact "
 "administrator"
 msgstr "K této funkci nemáte oprávnění, prosím kontaktujte správce"
+
+#: .\api\schemas\helpers\DateHelper.py:6
+msgid "January"
+msgstr "Leden"
+
+#: .\api\schemas\helpers\DateHelper.py:7
+msgid "February"
+msgstr "Únor"
+
+#: .\api\schemas\helpers\DateHelper.py:8
+msgid "March"
+msgstr "Březen"
+
+#: .\api\schemas\helpers\DateHelper.py:9
+msgid "April"
+msgstr "Duben"
+
+#: .\api\schemas\helpers\DateHelper.py:10
+msgid "May"
+msgstr "Květen"
+
+#: .\api\schemas\helpers\DateHelper.py:11
+msgid "June"
+msgstr "Červen"
+
+#: .\api\schemas\helpers\DateHelper.py:12
+msgid "July"
+msgstr "Červenec"
+
+#: .\api\schemas\helpers\DateHelper.py:13
+msgid "August"
+msgstr "Srpen"
+
+#: .\api\schemas\helpers\DateHelper.py:14
+msgid "September"
+msgstr "Září"
+
+#: .\api\schemas\helpers\DateHelper.py:15
+msgid "October"
+msgstr "Říjen"
+
+#: .\api\schemas\helpers\DateHelper.py:16
+msgid "November"
+msgstr "Listopad"
+
+#: .\api\schemas\helpers\DateHelper.py:17
+msgid "December"
+msgstr "Prosinec"

@@ -74,5 +74,17 @@ class Reservation(BaseModel):
     }, choices=TYPE_CHOICES)
     updated = models.DateTimeField(auto_now=True)
 
+    def read_meal(self, meal_key):
+        for meal_choice in self.MEAL_CHOICES:
+            if meal_choice[0] == meal_key:
+                return str(meal_choice[1])
+        return meal_key
+
+    def read_type(self, type_key):
+        for type_choice in self.TYPE_CHOICES:
+            if type_choice[0] == type_key:
+                return str(type_choice[1])
+        return type_key
+
     def __str__(self):
         return str(self.guest)

@@ -14,6 +14,7 @@ from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
+from api.schemas.helpers.DateHelper import DateHelper
 
 
 class Reservation(DjangoObjectType):
@@ -224,7 +225,6 @@ class SendConfirmationEmail(Mutation):
     @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, _info, reservation_id):
         try:
-            instance = ReservationModel.objects.get(pk=reservation_id, deleted=False)
             env = os.environ['DJANGO_SETTINGS_MODULE']
 
             if env == 'kamenice_django.settings.development':
@@ -232,16 +232,18 @@ class SendConfirmationEmail(Mutation):
             else:
                 from kamenice_django.settings import production as settings
 
+            instance = ReservationModel.objects.get(pk=reservation_id, deleted=False)
+
             message = Mail(
                 from_email=settings.FROM_EMAIL_ADDRESS,
                 to_emails=','.join([instance.guest.email]))
             message.dynamic_template_data = {
-                'from': str(instance.from_date),
-                'guests': 1,
-                'meal': instance.meal,
+                'from': DateHelper.get_formatted_date(instance.from_date),
+                'guests': 1 + instance.guest.roommate_set.count(),
+                'meal': instance.read_meal(instance.meal),
                 'price': str(instance.price_total),
-                'to': str(instance.to_date),
-                'type': instance.type,
+                'to': DateHelper.get_formatted_date(instance.to_date),
+                'type': instance.read_type(instance.type),
                 'url': '{}/rezervace/{}/hoste'.format(settings.APP_URL, instance.hash)
             }
             message.template_id = os.environ['EMAIL_TEMPLATE_ID']
