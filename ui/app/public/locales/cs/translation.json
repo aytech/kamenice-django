@@ -3,6 +3,12 @@
   "company-name": "Penzion Mlýn Kamenice",
   "edit": "Upravit",
   "email": "E-Mail",
+  "enums": {
+    "ADULT": "Dospělý",
+    "CHILD": "3-12 let",
+    "INFANT": "Do 3 let",
+    "YOUNG": "12+ let"
+  },
   "errors": {
     "404": "hledáme vaší stránku... ale nemůžeme ji najít..",
     "invalid-form": "Formulář nelze odeslat, opravte prosím chyby",

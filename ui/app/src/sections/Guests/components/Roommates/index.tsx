@@ -1,64 +1,108 @@
 import { UsergroupAddOutlined } from "@ant-design/icons";
-import { Avatar, Button, Col, List, Row, Tooltip } from "antd";
+import { ApolloError, useLazyQuery } from "@apollo/client";
+import { Avatar, Button, Col, List, message, Row, Tooltip } from "antd";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors } from "../../../../lib/components/Colors";
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests";
+import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates";
+import { Roommates as RoommatesData, RoommatesVariables, Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates";
+import { RoommatesDrawer } from "../RoommatesDrawer";
 import './styles.css'
 
 interface Props {
   guest: Guests_guests
-  openDrawer: () => void
-  roommates: Guests_guests[]
   show: boolean
 }
 
 export const Roommates = ({
   guest,
-  openDrawer,
-  roommates,
   show
 }: Props) => {
 
   const { t } = useTranslation()
 
-  return show === true ? (
-    <List
-      bordered={ true }
-      className="roommates"
-      dataSource={ roommates }
-      header={
-        <Row>
-          <Col lg={ 23 } md={ 22 } sm={ 20 } xs={ 20 }>
-            <h4>{ guest.name } { guest.surname } - { t("guests.roommates") }</h4>
-          </Col>
-          <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
-            <Tooltip title={ t("guests.add") }>
-              <Button
-                onClick={ openDrawer }>
-                <UsergroupAddOutlined />
-              </Button>
-            </Tooltip>
-          </Col>
-        </Row>
+  const [ roommates, setRoommates ] = useState<Roommates_roommates[]>([])
+  const [ roommateDrawerVisible, setRoommateDrawerVisible ] = useState<boolean>(false)
+  const [ selectedRoommate, setSelectedRoommate ] = useState<Roommates_roommates>()
+
+  const [ getRoommates, { data, loading, refetch } ] = useLazyQuery<RoommatesData, RoommatesVariables>(ROOMMATES, {
+    variables: { guestId: guest.id },
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
+
+  useEffect(() => {
+    if (show === true) {
+      getRoommates()
+    }
+  }, [ getRoommates, show ])
+
+  useEffect(() => {
+    const guestRoommates: Roommates_roommates[] = []
+    data?.roommates?.forEach(roommate => {
+      if (roommate !== null) {
+        guestRoommates.push(roommate)
       }
-      renderItem={ (guest: Guests_guests) => (
-        <List.Item
-          actions={ [
-          ] }>
-          <List.Item.Meta
-            avatar={
-              <Avatar
-                gap={ 4 }
-                size="large"
-                style={ {
-                  backgroundColor: Colors.getRandomColor()
-                } }>
-                { guest.name.substring(0, 1).toUpperCase() }
-              </Avatar>
-            }
-            description={ guest.email }
-            title={ `${ guest.name } ${ guest.surname }` } />
-        </List.Item>
-      ) } />
+    })
+    setRoommates(guestRoommates)
+  }, [ data ])
+
+  return show === true ? (
+    <>
+      <List
+        bordered={ true }
+        className="roommates"
+        dataSource={ roommates }
+        header={
+          <Row>
+            <Col lg={ 23 } md={ 22 } sm={ 20 } xs={ 20 }>
+              <h4>{ guest.name } { guest.surname } - { t("guests.roommates") }</h4>
+            </Col>
+            <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
+              <Tooltip title={ t("guests.add") }>
+                <Button
+                  onClick={ () => setRoommateDrawerVisible(true) }>
+                  <UsergroupAddOutlined />
+                </Button>
+              </Tooltip>
+            </Col>
+          </Row>
+        }
+        loading={ loading }
+        renderItem={ (roommate: Roommates_roommates) => (
+          <List.Item
+            actions={ [
+              <Button
+                key="edit"
+                onClick={ () => {
+                  setSelectedRoommate(roommate)
+                  setRoommateDrawerVisible(true)
+                } }
+                type="link">
+                { t("edit") }
+              </Button>
+            ] }>
+            <List.Item.Meta
+              avatar={
+                <Avatar
+                  gap={ 4 }
+                  size="large"
+                  style={ {
+                    backgroundColor: Colors.getRandomColor()
+                  } }>
+                  { roommate.name.substring(0, 1).toUpperCase() }
+                </Avatar>
+              }
+              description={ roommate.age !== null ? t(`enums.${ roommate.age }`) : null }
+              title={ `${ roommate.name } ${ roommate.surname }` } />
+          </List.Item>
+        ) } />
+      <RoommatesDrawer
+        close={ () => setRoommateDrawerVisible(false) }
+        guest={ guest }
+        refetch={ refetch }
+        roommate={ selectedRoommate }
+        visible={ roommateDrawerVisible } />
+    </>
   ) : null
 }

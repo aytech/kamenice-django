@@ -6,16 +6,19 @@ import Title from "antd/lib/typography/Title"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { CREATE_ROOMMATE } from "../../../../lib/graphql/mutations/Roommate"
+import { CREATE_ROOMMATE, DELETE_ROOMMATE, UPDATE_ROOMMATE } from "../../../../lib/graphql/mutations/Roommate"
 import { CreateRoommate, CreateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/CreateRoommate"
+import { DeleteRoommate, DeleteRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/DeleteRoommate"
+import { UpdateRoommate, UpdateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/UpdateRoommate"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
 import { GuestForm } from "../../../../lib/Types"
 
 interface Props {
   close: () => void
   guest?: Guests_guests | null
   refetch?: () => any
-  roommate?: Guests_guests | null
+  roommate?: Roommates_roommates | null
   visible: boolean
 }
 
@@ -30,6 +33,12 @@ export const RoommatesDrawer = ({
   const { t } = useTranslation()
 
   const [ createRoommate, { loading: createLoading } ] = useMutation<CreateRoommate, CreateRoommateVariables>(CREATE_ROOMMATE, {
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
+  const [ deleteRoommate, { loading: deleteLoading } ] = useMutation<DeleteRoommate, DeleteRoommateVariables>(DELETE_ROOMMATE, {
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
+  const [ updateRoommate, { loading: updateLoading } ] = useMutation<UpdateRoommate, UpdateRoommateVariables>(UPDATE_ROOMMATE, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
@@ -49,16 +58,27 @@ export const RoommatesDrawer = ({
         const formData: GuestForm = form.getFieldsValue(true)
         const variables = {
           age: formData.age,
-          guestId: guest?.id,
           name: formData.name,
           surname: formData.surname
         }
         if (roommate === undefined || roommate === null) {
-          createRoommate({ variables: { data: { ...variables } } })
+          createRoommate({ variables: { data: { guestId: guest?.id, ...variables } } })
             .then((result: FetchResult<CreateRoommate>) => {
               const roommate = result.data?.createRoommate?.roommate
               if (roommate !== undefined && roommate !== null) {
                 message.success(t("guests.added", { name: roommate.name, surname: roommate.surname }))
+              }
+              if (refetch !== undefined) {
+                refetch()
+              }
+              close()
+            })
+        } else {
+          updateRoommate({ variables: { data: { id: roommate.id, ...variables } } })
+            .then((result: FetchResult<UpdateRoommate>) => {
+              const roommate = result.data?.updateRoommate?.roommate
+              if (roommate !== undefined && roommate !== null) {
+                message.success(t("guests.updated", { name: roommate.name, surname: roommate.surname }))
               }
               if (refetch !== undefined) {
                 refetch()
@@ -108,16 +128,14 @@ export const RoommatesDrawer = ({
               icon={ <WarningOutlined /> }
               okText={ t("yes") }
               onConfirm={ () => {
-                console.log("Delete roommate")
-                // deleteGuest({ variables: { guestId: guest.id } })
-                //   .then((value: FetchResult<DeleteGuest>) => {
-                //     const guest = value.data?.deleteGuest?.guest
-                //     if (removeGuest !== undefined && guest !== undefined && guest !== null) {
-                //       removeGuest(guest.id)
-                //       message.success(t("guests.deleted"))
-                //       close()
-                //     }
-                //   })
+                deleteRoommate({ variables: { roommateId: roommate.id } })
+                  .then(() => {
+                    message.success(t("guests.deleted"))
+                    if (refetch !== undefined) {
+                      refetch()
+                    }
+                    close()
+                  })
               } }
               title={ t("forms.delete-confirm") }>
               <Button
@@ -144,7 +162,10 @@ export const RoommatesDrawer = ({
       } }>
       <Skeleton
         active
-        loading={ createLoading }
+        loading={
+          createLoading
+          || deleteLoading
+          || updateLoading }
         paragraph={ { rows: 15 } }>
         <Form
           form={ form }

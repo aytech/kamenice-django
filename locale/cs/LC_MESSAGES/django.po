@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-16 08:08+0200\n"
+"POT-Creation-Date: 2021-09-16 09:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,6 +53,22 @@ msgstr "Polopenze"
 #: .\api\models\Reservation.py:27
 msgid "Meal not included"
 msgstr "Bez Stravy"
+
+#: .\api\models\BaseModel.py:10
+msgid "Up to 3 years"
+msgstr "Do 3 let"
+
+#: .\api\models\BaseModel.py:11
+msgid "3-12 years"
+msgstr "3-12 let"
+
+#: .\api\models\BaseModel.py:12
+msgid "12+ years"
+msgstr "12+ let"
+
+#: .\api\models\BaseModel.py:13
+msgid "Adult"
+msgstr "Dospělý"
 
 #: .\api\models\Guest.py:15 .\api\models\Roommate.py:16
 msgid "Choose age from the list"

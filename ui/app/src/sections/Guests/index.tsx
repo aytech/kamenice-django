@@ -12,7 +12,6 @@ import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
 import { MenuItemKey } from "../../lib/Types"
 import Text from "antd/lib/typography/Text"
-import { RoommatesDrawer } from "./components/RoommatesDrawer"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -29,7 +28,7 @@ export const Guests = withRouter(({
   const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
-  const [ roommateDrawerVisible, setRoommateDrawerVisible ] = useState<boolean>(false)
+
   const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
   const { data: guestsData } = useQuery<GuestsData>(GUESTS, {
@@ -100,8 +99,6 @@ export const Guests = withRouter(({
             <GuestItem
               guest={ guest }
               openGuestDrawer={ () => setDrawerVisible(true) }
-              openRoommateDrawer={ () => setRoommateDrawerVisible(true) }
-              roommates={ guests }
               selectGuest={ setSelectedGuest } />
           ) } />
       </Skeleton>
@@ -111,10 +108,6 @@ export const Guests = withRouter(({
         guest={ selectedGuest }
         removeGuest={ removeGuest }
         visible={ drawerVisible } />
-      <RoommatesDrawer
-        close={ () => setRoommateDrawerVisible(false) }
-        guest={ selectedGuest }
-        visible={ roommateDrawerVisible } />
     </>
   )
 })

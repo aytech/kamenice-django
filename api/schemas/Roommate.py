@@ -137,9 +137,9 @@ class DeleteRoommate(Mutation):
 
     @staticmethod
     @user_passes_test(lambda user: user.has_perm('api.delete_guest'), exc=PermissionDenied)
-    def mutate(_root, _info, guest_id):
+    def mutate(_root, _info, roommate_id):
         try:
-            instance = RoommateModel.objects.get(pk=guest_id)
+            instance = RoommateModel.objects.get(pk=roommate_id, deleted=False)
             if instance:
                 instance.deleted = True
                 instance.save()

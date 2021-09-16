@@ -1,3 +1,4 @@
+import { EditOutlined, EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons"
 import { Avatar, Button, List } from "antd"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -8,16 +9,12 @@ import { Roommates } from "../Roommates"
 interface Props {
   guest: Guests_guests
   openGuestDrawer: () => void
-  openRoommateDrawer: () => void
-  roommates: Guests_guests[]
   selectGuest: (guest: Guests_guests) => void
 }
 
 export const GuestItem = ({
   guest,
   openGuestDrawer,
-  openRoommateDrawer,
-  roommates,
   selectGuest
 }: Props) => {
 
@@ -33,6 +30,7 @@ export const GuestItem = ({
         actions={ [
           <Button
             key="edit"
+            icon={ <EditOutlined /> }
             onClick={ () => {
               selectGuest(guest)
               openGuestDrawer()
@@ -42,6 +40,7 @@ export const GuestItem = ({
           </Button>,
           <Button
             key="roommates"
+            icon={ showRoommates === true ? <EyeInvisibleOutlined /> : <EyeOutlined /> }
             onClick={ toggleShowRoommates }
             type="link">
             { t("guests.roommates") }
@@ -63,11 +62,6 @@ export const GuestItem = ({
       </List.Item>
       <Roommates
         guest={ guest }
-        openDrawer={ () => {
-          selectGuest(guest)
-          openRoommateDrawer()
-        } }
-        roommates={ roommates }
         show={ showRoommates } />
     </>
   )
