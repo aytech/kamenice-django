@@ -3,7 +3,7 @@ import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Sp
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { CloseCircleOutlined, CloseOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, PlusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
+import { CloseOutlined, EyeInvisibleOutlined, EyeOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
@@ -26,6 +26,7 @@ import { Roommates, RoommatesVariables, Roommates_roommates } from "../../../../
 import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates"
 import { RoommatesDrawer } from "../../../Guests/components/RoommatesDrawer"
 import { Roommates as RoommatesItem } from "./components/Roommates"
+import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -180,47 +181,6 @@ export const ReservationModal = ({
     }
   ]
 
-  const getRemoveButton = () => {
-    return reservation !== undefined && reservation.id !== undefined ? (
-      <Popconfirm
-        cancelText={ t("no") }
-        key="remove"
-        okText={ t("yes") }
-        onConfirm={ () => {
-          if (reservation.id !== undefined) {
-            deleteReservation({ variables: { reservationId: String(reservation.id) } })
-          }
-        } }
-        title={ `${ t("reservations.remove") }?` }>
-        <Button
-          className="cancel-button"
-          danger
-          icon={ <CloseCircleOutlined /> }>
-          { t("forms.delete") }
-        </Button>
-      </Popconfirm>
-    ) : null
-  }
-
-  const footerButtons = [
-    getRemoveButton(),
-    <Button
-      key="guest"
-      onClick={ () => setGuestDrawerOpen(true) }>
-      { t("guests.add") }
-    </Button>,
-    <Button
-      key="create"
-      icon={ reservation === undefined ? <PlusCircleOutlined /> : <EditOutlined /> }
-      onClick={ () => {
-        form.validateFields()
-          .then(submitForm)
-      } }
-      type="primary">
-      { (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }
-    </Button>
-  ]
-
   const selectGuest = (guestId: string) => {
     const guest = guestsData?.guests?.find(guest => guest?.id === guestId)
     if (guest !== undefined && guest !== null) {
@@ -302,7 +262,22 @@ export const ReservationModal = ({
             } } />
           </Popconfirm>
         ) }
-        footer={ footerButtons }
+        footer={ [
+          <RemoveButton
+            deleteReservation={ (reservationId: string) => {
+              deleteReservation({ variables: { reservationId } })
+            } }
+            reservation={ reservation } />,
+          <SendConfirmationButton
+            reservation={ reservation } />,
+          <AddGuestButton
+            openGuestDrawer={ () => setGuestDrawerOpen(true) } />,
+          <SubmitButton
+            reservation={ reservation }
+            submit={ () => {
+              form.validateFields().then(submitForm)
+            } } />
+        ] }
         title={ t("reservations.form") }
         visible={ isOpen }>
         <Spin

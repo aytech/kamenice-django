@@ -160,7 +160,7 @@ class UpdateReservation(Mutation):
                 instance.from_date = data.from_date if data.from_date is not None else instance.from_date
                 instance.to_date = data.to_date if data.to_date is not None else instance.to_date
 
-                duplicate = ReservationUtility.get_duplicate(data.suite, instance=instance)
+                duplicate = ReservationUtility.get_duplicate(data.suite_id, instance=instance)
 
                 if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
                     raise Exception(_('The room is already reserved for this period of time'))
@@ -249,6 +249,8 @@ class SendConfirmationEmail(Mutation):
             SendGridAPIClient(os.environ['EMAIL_API_KEY']).send(message)
 
             logging.getLogger('kamenice').info('Reservation confirmation sent to {}'.format(instance.guest))
+
+            return SendConfirmationEmail(reservation=instance)
         except ObjectDoesNotExist:
             raise Exception(_('Reservation not found'))
         except Exception as ex:

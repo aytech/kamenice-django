@@ -16,6 +16,6 @@ GRAPHQL_JWT = {
 
 DEBUG = True
 
-FROM_EMAIL_ADDRESS = '"Mlýn Kamenice" <info@penzionkamenice.cz>'
+FROM_EMAIL_ADDRESS = '"Penzion Mlýn Kamenice" <info@penzionkamenice.cz>'
 TO_EMAIL_RECIPIENTS = ['"Oleg Yapparov" <oyapparov@gmail.com>']
 BCC_EMAIL_RECIPIENTS = ['"Oleg Yapparov" <oyapparov@gmail.com>']
