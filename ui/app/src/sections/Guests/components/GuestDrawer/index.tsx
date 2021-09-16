@@ -4,7 +4,6 @@ import { CloseOutlined, MailOutlined, WarningOutlined } from "@ant-design/icons"
 import Title from "antd/lib/typography/Title"
 import { Store } from "rc-field-form/lib/interface"
 import { GuestForm } from "../../../../lib/Types"
-import { GuestFormHelper } from "../../../../lib/components/GuestFormHelper"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
@@ -208,9 +207,9 @@ export const GuestDrawer = ({
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
-              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+              FormHelper.requiredAlphaRule(t("forms.enter-text"))
             ] }>
-            <Input placeholder={ t('forms.your-name') } />
+            <Input placeholder={ t('name') } />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -219,9 +218,9 @@ export const GuestDrawer = ({
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
-              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+              FormHelper.requiredAlphaRule(t("forms.enter-text"))
             ] }>
-            <Input placeholder={ t("your-surname") } />
+            <Input placeholder={ t("surname") } />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -251,7 +250,7 @@ export const GuestDrawer = ({
             label={ t("age") }
             name="age">
             <Select
-              options={ GuestFormHelper.ageOptions }
+              options={ FormHelper.guestAgeOptions }
               placeholder={ t("forms.choose-from-list") } />
           </Form.Item>
           <Form.Item

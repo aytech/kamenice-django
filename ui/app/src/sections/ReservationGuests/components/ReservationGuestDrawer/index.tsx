@@ -7,7 +7,6 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { GuestFormHelper } from "../../../../lib/components/GuestFormHelper"
 import { UPDATE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
 import { UpdateReservationGuest, UpdateReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/UpdateReservationGuest"
 import { GuestForm, ReservationGuest } from "../../../../lib/Types"
@@ -149,7 +148,7 @@ export const ReservationGuestDrawer = ({
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
-              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+              FormHelper.requiredAlphaRule(t("forms.enter-text"))
             ] }>
             <Input placeholder="Vaše Jméno" />
           </Form.Item>
@@ -160,7 +159,7 @@ export const ReservationGuestDrawer = ({
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
-              GuestFormHelper.requiredAlphaRule(t("forms.enter-text"))
+              FormHelper.requiredAlphaRule(t("forms.enter-text"))
             ] }>
             <Input placeholder="Vaše Příjmení" />
           </Form.Item>
@@ -192,7 +191,7 @@ export const ReservationGuestDrawer = ({
             label="Věk"
             name="age">
             <Select
-              options={ GuestFormHelper.ageOptions }
+              options={ FormHelper.guestAgeOptions }
               placeholder="vyberte ze seznamu" />
           </Form.Item>
           <Form.Item

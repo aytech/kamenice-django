@@ -40,12 +40,12 @@ export interface GuestForm {
   age: string,
   address?: Address
   citizenship?: Citizenship
-  email: string
+  email?: string
   gender?: string
   id?: number
   name: string
-  identity: string
-  phone: string
+  identity?: string
+  phone?: string
   surname: string
   visa?: string
 }

@@ -124,7 +124,7 @@ class UpdateRoommate(Mutation):
                 instance.save()
             return UpdateRoommate(roommate=instance)
         except ObjectDoesNotExist:
-            raise Exception(_('Roommate not found'))
+            raise Exception(_('Guest not found'))
         except ValidationError as errors:
             raise Exception(errors.messages[0])
 

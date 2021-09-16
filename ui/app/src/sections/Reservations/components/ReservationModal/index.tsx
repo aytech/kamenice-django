@@ -76,7 +76,7 @@ export const ReservationModal = ({
   const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
     onError: networkErrorHandler
   })
-  const [ getRoommates, { loading: roommatesLoading, data: roommatesData } ] = useLazyQuery<Roommates, RoommatesVariables>(ROOMMATES, {
+  const [ getRoommates, { loading: roommatesLoading, data: roommatesData, refetch: refetchRoommates } ] = useLazyQuery<Roommates, RoommatesVariables>(ROOMMATES, {
     onError: networkErrorHandler
   })
 
@@ -271,10 +271,6 @@ export const ReservationModal = ({
     }
   }, [ guestsData ])
 
-  useEffect(() => {
-    console.log('Roommates: ', roommatesData)
-  }, [ roommatesData ])
-
   const formLayout = {
     labelCol: {
       span: 8
@@ -463,6 +459,7 @@ export const ReservationModal = ({
       <RoommatesDrawer
         close={ () => setRoommateDrawerOpen(false) }
         guest={ selectedGuest }
+        refetch={ refetchRoommates }
         visible={ roommateDrawerOpen } />
     </>
   )

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 08:27+0200\n"
+"POT-Creation-Date: 2021-09-16 08:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,38 +19,38 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: .\api\management\commands\sendreservationemail.py:47
+#: .\api\management\commands\sendreservationemail.py:46
 #: .\api\models\Reservation.py:21
 msgid "Currently accommodated"
 msgstr "Aktuálně ubytování"
 
-#: .\api\management\commands\sendreservationemail.py:48
-#: .\api\models\Reservation.py:23
+#: .\api\management\commands\sendreservationemail.py:47
+#: .\api\models\Reservation.py:22
 msgid "Binding reservation"
 msgstr "Závazná rezervace"
 
-#: .\api\management\commands\sendreservationemail.py:49
-#: .\api\models\Reservation.py:25
+#: .\api\management\commands\sendreservationemail.py:48
+#: .\api\models\Reservation.py:23
 msgid "Occupied term"
 msgstr "Obydlený termín"
 
-#: .\api\management\commands\sendreservationemail.py:50
-#: .\api\models\Reservation.py:27
+#: .\api\management\commands\sendreservationemail.py:49
+#: .\api\models\Reservation.py:24
 msgid "Non-binding reservation"
 msgstr "Nezávazná rezervace"
 
-#: .\api\management\commands\sendreservationemail.py:57
-#: .\api\models\Reservation.py:33
+#: .\api\management\commands\sendreservationemail.py:56
+#: .\api\models\Reservation.py:28
 msgid "Breakfast included"
 msgstr "Jen Snídaně"
 
-#: .\api\management\commands\sendreservationemail.py:58
-#: .\api\models\Reservation.py:35
+#: .\api\management\commands\sendreservationemail.py:57
+#: .\api\models\Reservation.py:29
 msgid "Half board"
 msgstr "Polopenze"
 
-#: .\api\management\commands\sendreservationemail.py:59
-#: .\api\models\Reservation.py:31
+#: .\api\management\commands\sendreservationemail.py:58
+#: .\api\models\Reservation.py:27
 msgid "Meal not included"
 msgstr "Bez Stravy"
 
@@ -58,65 +58,65 @@ msgstr "Bez Stravy"
 msgid "Choose age from the list"
 msgstr "Vyberte věk ze seznamu"
 
-#: .\api\models\Guest.py:20 .\api\models\Guest.py:24
+#: .\api\models\Guest.py:19 .\api\models\Guest.py:21
 msgid "E-Mail is required field"
 msgstr "E-Mail je povinný údaj"
 
-#: .\api\models\Guest.py:22 .\api\models\Roommate.py:20
+#: .\api\models\Guest.py:20 .\api\models\Roommate.py:20
 msgid "Enter valid email address"
 msgstr "Zadejte platnou e-mailovou adresu"
 
-#: .\api\models\Guest.py:25
+#: .\api\models\Guest.py:22
 msgid "User with this email already exists"
 msgstr "Uživatel s tímto e-mailem již existuje"
 
-#: .\api\models\Guest.py:29 .\api\models\Roommate.py:23
+#: .\api\models\Guest.py:25 .\api\models\Roommate.py:23
 msgid "Choose gender from the list"
 msgstr "Vyberte údaj Pohlaví ze seznamu"
 
-#: .\api\models\Guest.py:34 .\api\models\Guest.py:35
+#: .\api\models\Guest.py:29 .\api\models\Guest.py:30
 #: .\api\models\Roommate.py:28 .\api\models\Roommate.py:29
 msgid "Name is required field"
 msgstr "Jméno je povinný údaj"
 
-#: .\api\models\Guest.py:40 .\api\models\Guest.py:41
+#: .\api\models\Guest.py:34 .\api\models\Guest.py:35
 #: .\api\models\Roommate.py:33 .\api\models\Roommate.py:34
 msgid "Surname is required field"
 msgstr "Příjmení je povinný údaj"
 
-#: .\api\models\Reservation.py:41 .\api\models\Reservation.py:43
+#: .\api\models\Reservation.py:34 .\api\models\Reservation.py:35
 msgid "Enter valid date for the reservation start date"
 msgstr "Zadejte platný datum začátku rezervace"
 
-#: .\api\models\Reservation.py:51 .\api\models\Reservation.py:53
+#: .\api\models\Reservation.py:43 .\api\models\Reservation.py:44
 msgid "Select Meal from the list"
 msgstr "Vyberte údaj Strava ze seznamu"
 
-#: .\api\models\Reservation.py:57
+#: .\api\models\Reservation.py:48
 msgid "Price for accommodation is required field"
 msgstr "Cena za ubytování je povinný údaj"
 
-#: .\api\models\Reservation.py:60
+#: .\api\models\Reservation.py:51
 msgid "Price for extra bed(s) is required field"
 msgstr "Cena za přistýlky je povinný údaj"
 
-#: .\api\models\Reservation.py:63
+#: .\api\models\Reservation.py:54
 msgid "Price for meal is required field"
 msgstr "Cena za stravování je povinný údaj"
 
-#: .\api\models\Reservation.py:66
+#: .\api\models\Reservation.py:57
 msgid "Municipality fee is required field"
 msgstr "Obecní poplatek je povinný údaj"
 
-#: .\api\models\Reservation.py:69
+#: .\api\models\Reservation.py:60
 msgid "Total price is required field"
 msgstr "Celková cena je povinný údaj"
 
-#: .\api\models\Reservation.py:77 .\api\models\Reservation.py:79
+#: .\api\models\Reservation.py:68 .\api\models\Reservation.py:69
 msgid "Enter valid date for the reservation end date"
 msgstr "Zadejte platný datum konce rezervace"
 
-#: .\api\models\Reservation.py:82 .\api\models\Reservation.py:84
+#: .\api\models\Reservation.py:72 .\api\models\Reservation.py:73
 msgid "Select reservation type from the list"
 msgstr "Vyberte údaj Typ Rezervace ze seznamu"
 
@@ -132,21 +132,30 @@ msgstr "Cena za dítě je povinný údaj"
 msgid "Price for extra bed is required field"
 msgstr "Cena za přistýlku je povinný údaj"
 
-#: .\api\schemas\Reservation.py:120 .\api\schemas\Reservation.py:170
+#: .\api\schemas\Guest.py:148 .\api\schemas\Roommate.py:90
+#: .\api\schemas\Roommate.py:127
+msgid "Guest not found"
+msgstr "Host nenalezen"
+
+#: .\api\schemas\Reservation.py:123 .\api\schemas\Reservation.py:166
 msgid "The room is already reserved for this period of time"
 msgstr "Místnost je rezervováno pro tuto dobu"
 
-#: .\api\schemas\Reservation.py:125 .\api\schemas\Reservation.py:187
+#: .\api\schemas\Reservation.py:128 .\api\schemas\Reservation.py:183
 msgid "Please select guest from the list"
 msgstr "Prosím vyberte hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:130
+#: .\api\schemas\Reservation.py:133
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:209
+#: .\api\schemas\Reservation.py:195 .\api\schemas\Reservation.py:253
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
+
+#: .\api\schemas\Reservation.py:256
+msgid "Could not send confirmation email"
+msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 
 #: .\api\schemas\exceptions\PermissionDenied.py:6
 msgid ""

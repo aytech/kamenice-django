@@ -55,7 +55,7 @@ class Command(BaseCommand):
         meals = {
             'BREAKFAST': _('Breakfast included'),
             'HALFBOARD': _('Half board'),
-            'NOMEAL': _('Food not included'),
+            'NOMEAL': _('Meal not included'),
         }
         return str(meals[meal])
 

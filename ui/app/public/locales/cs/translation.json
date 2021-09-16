@@ -37,9 +37,7 @@
     "street": "Ulice",
     "update": "Upravit",
     "user-name": "Uživatelské jméno",
-    "visa-number": "Číslo viza",
-    "your-name": "Vaše Jméno",
-    "your-surname": "Vaše Příjmení"
+    "visa-number": "Číslo viza"
   },
   "from": "Od",
   "generic-error": "Chyba serveru, kontaktujte správce",
