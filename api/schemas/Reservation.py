@@ -244,7 +244,7 @@ class SendConfirmationEmail(Mutation):
                 'type': instance.type,
                 'url': '{}/rezervace/{}/hoste'.format(settings.APP_URL, instance.hash)
             }
-            message.template_id = settings.EMAIL_TEMPLATE_ID
+            message.template_id = os.environ['EMAIL_TEMPLATE_ID']
 
             SendGridAPIClient(os.environ['EMAIL_API_KEY']).send(message)
 

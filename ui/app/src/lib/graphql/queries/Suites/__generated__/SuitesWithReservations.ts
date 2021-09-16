@@ -30,6 +30,7 @@ export interface SuitesWithReservations_suites {
 
 export interface SuitesWithReservations_reservations_guest {
   __typename: "Guest";
+  email: string;
   id: string;
   name: string;
   surname: string;

@@ -1,26 +1,31 @@
 import { Avatar, Button, List } from "antd"
+import { useTranslation } from "react-i18next"
 import { Colors } from "../../../../lib/components/Colors"
-import { ReservationGuest } from "../../../../lib/Types"
+import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
-  guest?: ReservationGuest[]
+  guest?: Guests_guests | null
   loading: boolean
-  openDrawer: (guest: ReservationGuest) => void
+  openDrawer: (guest: Guests_guests) => void
 }
 
-export const Host = ({
+export const Guest = ({
   guest,
   loading,
   openDrawer
 }: Props) => {
-  return guest === undefined ? null : (
+
+  const { t } = useTranslation()
+
+  return guest === undefined
+    || guest === null ? null : (
     <List
       bordered={ true }
-      className="guests-list"
-      dataSource={ guest }
-      header={ <h4>Host</h4> }
+      className="guests"
+      dataSource={ [ guest ] }
+      header={ <h4>{ t("guests.name") }</h4> }
       itemLayout="horizontal"
-      renderItem={ (guest: ReservationGuest) => (
+      renderItem={ (guest: Guests_guests) => (
         <List.Item
           key={ guest.id }
           actions={
@@ -29,11 +34,9 @@ export const Host = ({
                 key="edit"
                 onClick={ () => {
                   openDrawer(guest)
-                  // setSelectedGuest(guest)
-                  // setDrawerVisible(true)
                 } }
                 type="link">
-                upravit
+                { t("edit") }
               </Button>,
             ]
           }>

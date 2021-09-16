@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { RESERVATION_GUESTS } from "../../lib/graphql/queries/ReservationGuests"
-import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables, ReservationGuests_reservationGuests_roommates } from "../../lib/graphql/queries/ReservationGuests/__generated__/ReservationGuests"
-import { ReservationGuest } from "../../lib/Types"
+import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables } from "../../lib/graphql/queries/ReservationGuests/__generated__/ReservationGuests"
+import { Roommates_roommates } from "../../lib/graphql/queries/Roommates/__generated__/Roommates"
 import { Error } from "./components/Error"
-import { Host } from "./components/Host"
+import { Guest } from "./components/Guest"
 import { ReservationGuestDrawer } from "./components/ReservationGuestDrawer"
+import { ReservationRoommateDrawer } from "./components/ReservationRoommateDrawer"
 import { Roommates } from "./components/Roommates"
 
 interface Props {
@@ -22,18 +23,16 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
 
   const { t } = useTranslation()
 
-  const [ guest, setGuest ] = useState<ReservationGuest[]>()
-  const [ roommates, setRoommates ] = useState<ReservationGuest[]>()
-  const [ selectedGuest, setSelectedGuest ] = useState<ReservationGuest>()
-  const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
+  const [ roommates, setRoommates ] = useState<Roommates_roommates[]>()
+  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
+  const [ selectedRoommate, setSelectedRoommate ] = useState<Roommates_roommates>()
+  const [ guestDrawerVisible, setGuestDrawerVisible ] = useState<boolean>(false)
+  const [ roommateDrawerVisible, setRoommateDrawerVisible ] = useState<boolean>(false)
   const [ showError, setShowError ] = useState<boolean>(false)
 
   const { loading: dataLoading, data } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
-    onCompleted: () => {
-      setPageTitle(t("guests.page-title"))
-      setShowError(false)
-    },
+    onCompleted: () => setPageTitle(t("guests.page-title")), // Set page title only on successful fetch, otherwise error element will be shown
     onError: () => {
       setPageTitle(null)
       setShowError(true)
@@ -41,47 +40,46 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   })
 
   useEffect(() => {
-    const roommateList: Guests_guests[] = []
-    const guest = data?.reservationGuests?.guest
-    const roommates = data?.reservationGuests?.roommates
-    if (guest !== undefined && guest !== null) {
-      setGuest([ guest ])
-    }
-    if (roommates !== undefined && roommates !== null) {
-      roommates.forEach((roommate: ReservationGuests_reservationGuests_roommates | null) => {
-        if (roommate !== null) {
-          roommateList.push(roommate)
-        }
-      })
-      setRoommates(roommateList)
-    }
+    const roommateList: Roommates_roommates[] = []
+    data?.reservationGuests?.roommates?.forEach(roommate => {
+      if (roommate !== null) {
+        roommateList.push(roommate)
+      }
+    })
+    setRoommates(roommateList)
   }, [ data ])
 
   return (
     <>
       <Spin
         spinning={ dataLoading }>
-        <Host
-          guest={ guest }
+        <Guest
+          guest={ data?.reservationGuests?.guest }
           loading={ dataLoading }
-          openDrawer={ (reservationGuest: ReservationGuest) => {
+          openDrawer={ (reservationGuest: Guests_guests) => {
             setSelectedGuest(reservationGuest)
-            setDrawerVisible(true)
+            setGuestDrawerVisible(true)
           } } />
         <Roommates
+          guest={ data?.reservationGuests?.guest }
           loading={ dataLoading }
-          openDrawer={ (roommate: ReservationGuest) => {
-            setSelectedGuest(roommate)
-            setDrawerVisible(true)
+          openDrawer={ (roommate: Roommates_roommates) => {
+            setSelectedRoommate(roommate)
+            setRoommateDrawerVisible(true)
           } }
           roommates={ roommates } />
         <Error show={ showError } />
       </Spin>
       <ReservationGuestDrawer
-        close={ () => setDrawerVisible(false) }
+        close={ () => setGuestDrawerVisible(false) }
         guest={ selectedGuest }
         reservationHash={ hash }
-        visible={ drawerVisible } />
+        visible={ guestDrawerVisible } />
+      <ReservationRoommateDrawer
+        close={ () => setRoommateDrawerVisible(false) }
+        guest={ data?.reservationGuests?.guest }
+        roommate={ selectedRoommate }
+        visible={ roommateDrawerVisible } />
     </>
   )
 }

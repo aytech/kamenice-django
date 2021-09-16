@@ -7,6 +7,7 @@ export const CREATE_RESERVATION = gql`
         fromDate
         id
         guest {
+          email
           id
           name
           surname
@@ -48,6 +49,7 @@ export const UPDATE_RESERVATION = gql`
         fromDate
         id
         guest {
+          email
           id
           name
           surname
@@ -67,6 +69,16 @@ export const UPDATE_RESERVATION = gql`
         }
         toDate
         type
+      }
+    }
+  }
+`
+
+export const SEND_CONFIRMATION = gql`
+  mutation SendConfirmation($reservationId: ID!) {
+    sendConfirmation(reservationId: $reservationId) {
+      reservation {
+        id
       }
     }
   }

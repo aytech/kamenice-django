@@ -11,6 +11,7 @@ import { ReservationInput, ReservationMeal, ReservationType } from "./../../../g
 
 export interface CreateReservation_createReservation_reservation_guest {
   __typename: "Guest";
+  email: string;
   id: string;
   name: string;
   surname: string;

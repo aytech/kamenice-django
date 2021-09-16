@@ -51,6 +51,7 @@ export interface GuestForm {
 }
 
 export interface Guest {
+  email: string
   id?: number | string
   name: string
   surname: string
@@ -133,18 +134,11 @@ export enum GuestGender {
 export interface ReservationGuest {
   __typename?: string;
   age?: GuestAge | null;
-  addressMunicipality?: string | null;
-  addressPsc?: number | null;
-  addressStreet?: string | null;
-  citizenship?: string | null;
-  email?: string;
   gender?: GuestGender | null;
   identity?: string | null;
   id?: number | string;
   name: string;
-  phoneNumber?: string | null;
   surname?: string;
-  visaNumber?: string | null;
 }
 
 export interface User {

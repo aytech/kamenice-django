@@ -1,6 +1,9 @@
 import { CloseCircleOutlined, NotificationOutlined, SaveOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Tooltip } from "antd";
+import { ApolloError, useMutation } from "@apollo/client";
+import { Button, message, Popconfirm, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
+import { SEND_CONFIRMATION } from "../../../../../../lib/graphql/mutations/Reservation";
+import { SendConfirmation, SendConfirmationVariables } from "../../../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation";
 import { IReservation } from "../../../../../../lib/Types";
 
 interface RemoveProps {
@@ -31,7 +34,6 @@ export const RemoveButton = ({
   return reservation !== undefined && reservation.id !== undefined ? (
     <Popconfirm
       cancelText={ t("no") }
-      key="remove"
       okText={ t("yes") }
       onConfirm={ () => {
         if (reservation.id !== undefined) {
@@ -57,17 +59,26 @@ export const SendConfirmationButton = ({
 
   const { t } = useTranslation()
 
-  return (
+  const [ sendConfirmation, { loading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
+
+  return reservation !== undefined && reservation.id !== undefined ? (
     <Tooltip
       placement="top"
       title={ t("reservations.send-confirmation") }>
       <Button
         className="action confirm"
-        key="confirmation"
         icon={ <NotificationOutlined /> }
-        onClick={ () => console.log('sending confirmation for ', reservation) } />
+        loading={ loading }
+        onClick={ () => {
+          if (reservation.id !== undefined) {
+            sendConfirmation({ variables: { reservationId: String(reservation.id) } })
+              .then(() => message.success(t("reservations.confirmation-sent", reservation.guest?.email)))
+          }
+        } } />
     </Tooltip>
-  )
+  ) : null
 }
 
 export const AddGuestButton = ({
@@ -82,7 +93,6 @@ export const AddGuestButton = ({
       title={ t("guests.add") }>
       <Button
         className="action add"
-        key="guest"
         icon={ <UserAddOutlined /> }
         onClick={ openGuestDrawer } />
     </Tooltip>
@@ -102,7 +112,6 @@ export const SubmitButton = ({
       title={ (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }>
       <Button
         className="action submit"
-        key="create"
         icon={ <SaveOutlined /> }
         onClick={ submit }
         type="primary" />

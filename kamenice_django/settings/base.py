@@ -191,5 +191,3 @@ LOGGING = {
         }
     }
 }
-
-EMAIL_TEMPLATE_ID = 'd-a203c43145ab479b91e8e64f6579073e'

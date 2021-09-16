@@ -36,6 +36,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
       fromDate
       id
       guest {
+        email
         id
         name
         surname

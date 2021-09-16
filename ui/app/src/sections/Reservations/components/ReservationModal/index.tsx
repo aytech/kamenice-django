@@ -216,8 +216,11 @@ export const ReservationModal = ({
       form.resetFields()
       getGuests()
       updatePrice()
+      if (reservation?.guest?.id !== undefined) {
+        getRoommates({ variables: { guestId: String(reservation.guest.id) } })
+      }
     }
-  }, [ form, getGuests, isOpen, reservation, updatePrice ])
+  }, [ form, getGuests, getRoommates, isOpen, reservation, updatePrice ])
 
   useEffect(() => {
     if (guestsData !== undefined && guestsData.guests !== null) {
@@ -267,12 +270,16 @@ export const ReservationModal = ({
             deleteReservation={ (reservationId: string) => {
               deleteReservation({ variables: { reservationId } })
             } }
+            key="remove"
             reservation={ reservation } />,
           <SendConfirmationButton
+            key="confirmation"
             reservation={ reservation } />,
           <AddGuestButton
+            key="guest"
             openGuestDrawer={ () => setGuestDrawerOpen(true) } />,
           <SubmitButton
+            key="create"
             reservation={ reservation }
             submit={ () => {
               form.validateFields().then(submitForm)
@@ -330,7 +337,7 @@ export const ReservationModal = ({
                 icon={ <UsergroupAddOutlined /> }
                 onClick={ () => setRoommateDrawerOpen(true) }
                 type="dashed">
-                { t("reservations.add-roommate") }
+                { t("guests.roommate") }
               </Button>
             </Form.Item>
             <Form.Item

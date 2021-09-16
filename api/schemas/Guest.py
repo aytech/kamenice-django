@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
+from api.schemas.Roommate import Roommate
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
-from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
 class Guest(DjangoObjectType):
@@ -19,7 +19,7 @@ class Guest(DjangoObjectType):
 
 class ReservationGuests(ObjectType):
     guest = Field(Guest)
-    roommates = List(Guest)
+    roommates = List(Roommate)
 
 
 class GuestsQuery(ObjectType):
@@ -27,12 +27,10 @@ class GuestsQuery(ObjectType):
     guest = Field(Guest, guest_id=Int())
     reservation_guests = Field(ReservationGuests, reservation_hash=String())
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guests(self, _info):
         return GuestModel.objects.filter(deleted=False)
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guest(self, _info, guest_id):
         try:
@@ -46,10 +44,10 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.roommates.all()
+                roommates=reservation.guest.roommate_set.all()
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
-            raise Exception('Rezervace nenalezena')
+            raise Exception(_('Reservation not found'))
 
 
 class GuestInput(InputObjectType):
