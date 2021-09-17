@@ -65,19 +65,24 @@ export const SendConfirmationButton = ({
   })
 
   return reservation !== undefined && reservation.id !== undefined ? (
-    <Tooltip
-      placement="top"
-      title={ t("reservations.send-confirmation") }>
-      <Button
-        className="action confirm"
-        icon={ <NotificationOutlined /> }
-        loading={ loading }
-        onClick={ () => {
-          if (reservation.id !== undefined) {
-            sendConfirmation({ variables: { reservationId: String(reservation.id) } })
-          }
-        } } />
-    </Tooltip>
+    <Popconfirm
+      cancelText={ t("no") }
+      okText={ t("yes") }
+      onConfirm={ () => {
+        if (reservation.id !== undefined) {
+          sendConfirmation({ variables: { reservationId: String(reservation.id) } })
+        }
+      } }
+      title={ t("reservations.send-confirmation-confirm", { email: reservation.guest?.email }) }>
+      <Tooltip
+        placement="top"
+        title={ t("reservations.send-confirmation-tooltip") }>
+        <Button
+          className="action confirm"
+          icon={ <NotificationOutlined /> }
+          loading={ loading } />
+      </Tooltip>
+    </Popconfirm>
   ) : null
 }
 
