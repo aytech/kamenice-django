@@ -1,3 +1,4 @@
+import { EditOutlined } from "@ant-design/icons"
 import { Avatar, Button, List } from "antd"
 import { useTranslation } from "react-i18next"
 import { Colors } from "../../../../lib/components/Colors"
@@ -32,10 +33,10 @@ export const Guest = ({
             loading ? [] : [
               <Button
                 key="edit"
+                icon={ <EditOutlined /> }
                 onClick={ () => {
                   openDrawer(guest)
-                } }
-                type="link">
+                } }>
                 { t("edit") }
               </Button>,
             ]

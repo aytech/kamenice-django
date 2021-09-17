@@ -28,12 +28,19 @@ export interface ReservationGuests_reservationGuests_guest {
 
 export interface ReservationGuests_reservationGuests_roommates {
   __typename: "Roommate";
+  addressMunicipality: string | null;
+  addressPsc: number | null;
+  addressStreet: string | null;
   age: RoommateAge | null;
+  citizenship: string | null;
+  email: string | null;
   gender: RoommateGender | null;
   identity: string | null;
   id: string;
   name: string;
+  phoneNumber: string | null;
   surname: string;
+  visaNumber: string | null;
 }
 
 export interface ReservationGuests_reservationGuests {

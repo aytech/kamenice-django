@@ -12,7 +12,9 @@ from api.schemas.exceptions.PermissionDenied import PermissionDenied
 class Roommate(DjangoObjectType):
     class Meta:
         model = RoommateModel
-        fields = ('age', 'gender', 'id', 'identity', 'name', 'surname',)
+        fields = (
+            'address_municipality', 'address_psc', 'address_street', 'age', 'citizenship', 'email', 'gender', 'id',
+            'identity', 'name', 'phone_number', 'surname', 'visa_number')
 
 
 class RoommateQuery(ObjectType):
@@ -35,10 +37,10 @@ class RoommateQuery(ObjectType):
 
 
 class RoommateInput(InputObjectType):
-    age = String()
     address_municipality = String()
     address_psc = Int()
     address_street = String()
+    age = String()
     citizenship = String()
     email = String()
     gender = String()

@@ -19,12 +19,19 @@ export const RESERVATION_GUESTS = gql`
         visaNumber
       }
       roommates {
+        addressMunicipality
+        addressPsc
+        addressStreet
         age
+        citizenship
+        email
         gender
         identity
         id
         name
+        phoneNumber
         surname
+        visaNumber
       }
     }
   }

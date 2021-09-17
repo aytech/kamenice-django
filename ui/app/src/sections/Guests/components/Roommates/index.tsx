@@ -1,12 +1,13 @@
-import { EditOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { ApolloError, useLazyQuery } from "@apollo/client";
-import { Avatar, Button, Col, List, message, Row, Tooltip } from "antd";
+import { Avatar, Button, List, message } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors } from "../../../../lib/components/Colors";
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests";
 import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates";
 import { Roommates as RoommatesData, RoommatesVariables, Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates";
+import { GuestsListHeader } from "../GuestsListHeader";
 import { RoommatesDrawer } from "../RoommatesDrawer";
 import './styles.css'
 
@@ -55,22 +56,12 @@ export const Roommates = ({
         className="roommates"
         dataSource={ roommates }
         header={
-          <Row>
-            <Col lg={ 23 } md={ 22 } sm={ 20 } xs={ 20 }>
-              <h4>{ guest.name } { guest.surname } - { t("guests.roommates") }</h4>
-            </Col>
-            <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
-              <Tooltip title={ t("guests.add") }>
-                <Button
-                  onClick={ () => {
-                    setSelectedRoommate(undefined)
-                    setRoommateDrawerVisible(true)
-                  } }>
-                  <UsergroupAddOutlined />
-                </Button>
-              </Tooltip>
-            </Col>
-          </Row>
+          <GuestsListHeader
+            action={ () => {
+              setSelectedRoommate(undefined)
+              setRoommateDrawerVisible(true)
+            } }
+            title={ `${ guest.name } ${ guest.surname } - ${ t("guests.roommates") }` } />
         }
         loading={ loading }
         renderItem={ (roommate: Roommates_roommates) => (

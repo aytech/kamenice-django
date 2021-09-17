@@ -1,10 +1,6 @@
 import { useState } from "react"
-import { Button, Drawer, Form, Input, message, Popconfirm, Select, Skeleton } from "antd"
-import { CloseOutlined, MailOutlined, WarningOutlined } from "@ant-design/icons"
-import Title from "antd/lib/typography/Title"
-import { Store } from "rc-field-form/lib/interface"
-import { GuestForm } from "../../../../lib/Types"
-import { FormHelper } from "../../../../lib/components/FormHelper"
+import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
+import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
@@ -14,6 +10,8 @@ import { UpdateGuest, UpdateGuestVariables } from "../../../../lib/graphql/mutat
 import { useEffect } from "react"
 import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import { useTranslation } from "react-i18next"
+import { GuestForm } from "../GuestForm"
+import { IGuestForm } from "../../../../lib/Types"
 
 interface Props {
   addGuest: (guest: Guests_guests) => void
@@ -49,34 +47,10 @@ export const GuestDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
-  const initialValues: Store = {
-    age: guest?.age,
-    address: {
-      municipality: guest?.addressMunicipality,
-      psc: guest?.addressPsc,
-      street: guest?.addressStreet
-    },
-    citizenship: {
-      selected: guest?.citizenship
-    },
-    email: guest?.email,
-    gender: guest?.gender,
-    identity: guest?.identity,
-    name: guest?.name,
-    phone: guest?.phoneNumber,
-    surname: guest?.surname,
-    visa: guest?.visaNumber
-  }
-  const emailPrefixIcon = (
-    <Form.Item name="email-prefix" noStyle>
-      <MailOutlined />
-    </Form.Item>
-  )
-
   const submitForm = (): void => {
     form.validateFields()
       .then(() => {
-        const formData: GuestForm = form.getFieldsValue(true)
+        const formData: IGuestForm = form.getFieldsValue(true)
         const variables = {
           age: formData.age,
           addressMunicipality: formData.address?.municipality,
@@ -192,122 +166,10 @@ export const GuestDrawer = ({
         active
         loading={ createLoading || updateLoading || deleteLoading }
         paragraph={ { rows: 15 } }>
-        <Form
+        <GuestForm
+          emailRequired={ true }
           form={ form }
-          initialValues={ initialValues }
-          layout="vertical"
-          name="guest">
-          <Title level={ 5 }>
-            { t("forms.personal-data") }
-          </Title>
-          <Form.Item
-            hasFeedback
-            label={ t("name") }
-            name="name"
-            required
-            rules={ [
-              FormHelper.requiredRule(t("forms.field-required")),
-              FormHelper.requiredAlphaRule(t("forms.enter-text"))
-            ] }>
-            <Input placeholder={ t('name') } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("surname") }
-            name="surname"
-            required
-            rules={ [
-              FormHelper.requiredRule(t("forms.field-required")),
-              FormHelper.requiredAlphaRule(t("forms.enter-text"))
-            ] }>
-            <Input placeholder={ t("surname") } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("email") }
-            name="email"
-            required
-            rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
-            <Input
-              addonBefore={ emailPrefixIcon }
-              placeholder={ t("email") }
-              type="email" />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("forms.id-number") }
-            name="identity">
-            <Input placeholder={ t("forms.id-number-full") } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("phone-number") }
-            name="phone">
-            <Input placeholder={ t("number") } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("age") }
-            name="age">
-            <Select
-              options={ FormHelper.guestAgeOptions }
-              placeholder={ t("forms.choose-from-list") } />
-          </Form.Item>
-          <Form.Item
-            label={ t("sex") }
-            name="gender">
-            <Select
-              placeholder={ t("forms.choose-from-list") }>
-              <Select.Option value="M">{ t("man") }</Select.Option>
-              <Select.Option value="F">{ t("woman") }</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("forms.visa-number") }
-            name="visa">
-            <Input placeholder={ t("forms.visa-number") } />
-          </Form.Item>
-          <Title level={ 5 }>{ t("forms.address") }</Title>
-          <Form.Item
-            label={ t("forms.street") }
-            name={ [ "address", "street" ] }>
-            <Input placeholder={ t("forms.street") } />
-          </Form.Item>
-          <Form.Item
-            label={ t("forms.psc-label") }>
-            <Input.Group compact>
-              <Form.Item
-                style={ { marginBottom: 0, width: "50%" } }
-                name={ [ "address", "psc" ] }>
-                <Input placeholder={ t("forms.psc") } />
-              </Form.Item>
-              <Form.Item
-                style={ { marginBottom: 0, width: "50%" } }
-                name={ [ "address", "municipality" ] }>
-                <Input placeholder={ t("forms.municipality") } />
-              </Form.Item>
-            </Input.Group>
-          </Form.Item>
-          <Form.Item
-            label={ t("forms.citizenship") }>
-            <Input.Group compact>
-              <Form.Item
-                style={ { width: "50%" } }
-                name={ [ "citizenship", "selected" ] }>
-                <Select style={ { width: "100%" } } placeholder={ t("forms.from-list") }>
-                  <Select.Option value="cze">CZE</Select.Option>
-                  <Select.Option value="sk">SK</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                style={ { width: "50%" } }
-                name={ [ "citizenship", "new" ] }>
-                <Input placeholder={ t("forms.by-hand") } />
-              </Form.Item>
-            </Input.Group>
-          </Form.Item>
-        </Form>
+          guest={ guest } />
       </Skeleton>
     </Drawer>
   )

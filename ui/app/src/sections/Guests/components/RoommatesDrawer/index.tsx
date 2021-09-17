@@ -1,18 +1,16 @@
 import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
-import { Button, Drawer, Form, Input, message, Popconfirm, Select, Skeleton } from "antd"
-import { Store } from "antd/lib/form/interface"
-import Title from "antd/lib/typography/Title"
+import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FormHelper } from "../../../../lib/components/FormHelper"
 import { CREATE_ROOMMATE, DELETE_ROOMMATE, UPDATE_ROOMMATE } from "../../../../lib/graphql/mutations/Roommate"
 import { CreateRoommate, CreateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/CreateRoommate"
 import { DeleteRoommate, DeleteRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/DeleteRoommate"
 import { UpdateRoommate, UpdateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/UpdateRoommate"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
-import { GuestForm } from "../../../../lib/Types"
+import { IGuestForm } from "../../../../lib/Types"
+import { GuestForm } from "../GuestForm"
 
 interface Props {
   close: () => void
@@ -44,18 +42,12 @@ export const RoommatesDrawer = ({
 
   const [ form ] = Form.useForm()
 
-  const initialValues: Store = {
-    age: roommate?.age,
-    name: roommate?.name,
-    surname: roommate?.surname
-  }
-
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
   const submitForm = (): void => {
     form.validateFields()
       .then(() => {
-        const formData: GuestForm = form.getFieldsValue(true)
+        const formData: IGuestForm = form.getFieldsValue(true)
         const variables = {
           age: formData.age,
           name: formData.name,
@@ -173,45 +165,10 @@ export const RoommatesDrawer = ({
           || deleteLoading
           || updateLoading }
         paragraph={ { rows: 15 } }>
-        <Form
+        <GuestForm
+          emailRequired={ false }
           form={ form }
-          initialValues={ initialValues }
-          layout="vertical"
-          name="roommates">
-          <Title level={ 5 }>
-            { t("forms.personal-data") }
-          </Title>
-          <Form.Item
-            hasFeedback
-            label={ t("name") }
-            name="name"
-            required
-            rules={ [
-              FormHelper.requiredRule(t("forms.field-required")),
-              FormHelper.requiredAlphaRule(t("forms.enter-text"))
-            ] }>
-            <Input placeholder={ t('name') } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("surname") }
-            name="surname"
-            required
-            rules={ [
-              FormHelper.requiredRule(t("forms.field-required")),
-              FormHelper.requiredAlphaRule(t("forms.enter-text"))
-            ] }>
-            <Input placeholder={ t("surname") } />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("age") }
-            name="age">
-            <Select
-              options={ FormHelper.guestAgeOptions }
-              placeholder={ t("forms.choose-from-list") } />
-          </Form.Item>
-        </Form>
+          guest={ roommate } />
       </Skeleton>
     </Drawer>
   )

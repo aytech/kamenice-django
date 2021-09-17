@@ -118,10 +118,10 @@ export interface ReservationInput {
 }
 
 export interface RoommateInput {
-  age?: string | null;
   addressMunicipality?: string | null;
   addressPsc?: number | null;
   addressStreet?: string | null;
+  age?: string | null;
   citizenship?: string | null;
   email?: string | null;
   gender?: string | null;

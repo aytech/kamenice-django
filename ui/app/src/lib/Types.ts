@@ -36,7 +36,7 @@ interface Citizenship {
   selected?: string
 }
 
-export interface GuestForm {
+export interface IGuestForm {
   age: string,
   address?: Address
   citizenship?: Citizenship
@@ -48,6 +48,22 @@ export interface GuestForm {
   phone?: string
   surname: string
   visa?: string
+}
+
+export interface IGuestData {
+  age: string,
+  addressMunicipality?: string
+  addressPsc?: number
+  addressStreet?: string
+  citizenship?: string
+  email?: string
+  gender?: string
+  id?: number
+  name: string
+  identity?: string
+  phoneNumber?: string
+  surname: string
+  visaNumber?: string
 }
 
 export interface Guest {
