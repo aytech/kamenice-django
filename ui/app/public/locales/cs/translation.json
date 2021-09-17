@@ -53,6 +53,7 @@
     "add": "Přidat hosta",
     "added": "Host {{ name }} {{ surname }} přidán!",
     "deleted": "Host byl smazán",
+    "deleted-extended": "Host {{ name }} {{ surname }} byl smazán",
     "list": "Seznam hostů",
     "name": "Host",
     "new": "Nový host",

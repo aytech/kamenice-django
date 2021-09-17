@@ -1,5 +1,6 @@
 import { EditOutlined } from "@ant-design/icons"
 import { Avatar, Button, List } from "antd"
+import Text from "antd/lib/typography/Text"
 import { useTranslation } from "react-i18next"
 import { Colors } from "../../../../lib/components/Colors"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
@@ -24,6 +25,9 @@ export const Guest = ({
       bordered={ true }
       className="guests"
       dataSource={ [ guest ] }
+      footer={
+        <Text disabled>&reg;{ t("company-name") }</Text>
+      }
       header={ <h4>{ t("guests.name") }</h4> }
       itemLayout="horizontal"
       renderItem={ (guest: Guests_guests) => (

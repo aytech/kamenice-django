@@ -44,7 +44,7 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.guest.roommate_set.all()
+                roommates=reservation.guest.roommate_set.filter(deleted=False).all()
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
             raise Exception(_('Reservation not found'))
@@ -156,9 +156,8 @@ class UpdateReservationGuest(Mutation):
     def mutate(cls, _root, _info, data=None):
         try:
             reservation = Reservation.objects.get(hash=data.hash, deleted=False)
-            instance = reservation.guest if reservation.guest.id == int(data.id) \
-                else reservation.roommates.get(id=data.id)
-            if instance:
+            instance = reservation.guest
+            if instance.id == int(data.id):
                 instance.age = data.age if data.age is not None else instance.age
                 instance.address_municipality = data.address_municipality if data.address_municipality is not None \
                     else instance.address_municipality
@@ -178,7 +177,7 @@ class UpdateReservationGuest(Mutation):
                 instance.save()
             return UpdateGuest(guest=instance)
         except ObjectDoesNotExist:
-            raise Exception('Hosta nelze aktualizovat')
+            raise Exception(_('Guest cannot be updated'))
 
 
 class DeleteGuest(Mutation):

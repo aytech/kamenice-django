@@ -117,6 +117,24 @@ export interface ReservationInput {
   type?: string | null;
 }
 
+export interface ReservationRoommateInput {
+  addressMunicipality?: string | null;
+  addressPsc?: number | null;
+  addressStreet?: string | null;
+  age?: string | null;
+  citizenship?: string | null;
+  email?: string | null;
+  gender?: string | null;
+  guestId?: string | null;
+  id?: string | null;
+  identity?: string | null;
+  name?: string | null;
+  phoneNumber?: string | null;
+  surname?: string | null;
+  visaNumber?: string | null;
+  hash?: string | null;
+}
+
 export interface RoommateInput {
   addressMunicipality?: string | null;
   addressPsc?: number | null;

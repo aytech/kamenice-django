@@ -30,7 +30,7 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   const [ roommateDrawerVisible, setRoommateDrawerVisible ] = useState<boolean>(false)
   const [ showError, setShowError ] = useState<boolean>(false)
 
-  const { loading: dataLoading, data } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
+  const { loading, data, refetch } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
     onCompleted: () => setPageTitle(t("guests.page-title")), // Set page title only on successful fetch, otherwise error element will be shown
     onError: () => {
@@ -52,18 +52,18 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   return (
     <>
       <Spin
-        spinning={ dataLoading }>
+        spinning={ loading }>
         <Guest
           guest={ data?.reservationGuests?.guest }
-          loading={ dataLoading }
+          loading={ loading }
           openDrawer={ (reservationGuest: Guests_guests) => {
             setSelectedGuest(reservationGuest)
             setGuestDrawerVisible(true)
           } } />
         <Roommates
           guest={ data?.reservationGuests?.guest }
-          loading={ dataLoading }
-          openDrawer={ (roommate: Roommates_roommates) => {
+          loading={ loading }
+          openDrawer={ (roommate?: Roommates_roommates) => {
             setSelectedRoommate(roommate)
             setRoommateDrawerVisible(true)
           } }
@@ -78,6 +78,8 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
       <ReservationRoommateDrawer
         close={ () => setRoommateDrawerVisible(false) }
         guest={ data?.reservationGuests?.guest }
+        refetch={ refetch }
+        reservationHash={ hash }
         roommate={ selectedRoommate }
         visible={ roommateDrawerVisible } />
     </>

@@ -5,6 +5,7 @@ from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest
+from api.models.Reservation import Reservation
 from api.models.Roommate import Roommate as RoommateModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 
@@ -53,6 +54,10 @@ class RoommateInput(InputObjectType):
     visa_number = String()
 
 
+class ReservationRoommateInput(RoommateInput):
+    hash = String()
+
+
 class CreateRoommate(Mutation):
     class Arguments:
         data = RoommateInput(required=True)
@@ -86,6 +91,44 @@ class CreateRoommate(Mutation):
                 instance.save()
 
                 return CreateRoommate(roommate=instance)
+        except ObjectDoesNotExist:
+            raise Exception(_('Guest not found'))
+        except ValidationError as errors:
+            raise Exception(errors.messages[0])
+
+
+class CreateReservationRoommate(Mutation):
+    class Arguments:
+        data = ReservationRoommateInput(required=True)
+
+    roommate = Field(Roommate)
+
+    @classmethod
+    def mutate(cls, _root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+
+            if reservation:
+                instance = RoommateModel(
+                    age=data.age,
+                    address_municipality=data.address_municipality,
+                    address_psc=data.address_psc,
+                    address_street=data.address_street,
+                    citizenship=data.citizenship,
+                    email=data.email,
+                    gender=data.gender,
+                    guest=reservation.guest,
+                    identity=data.identity,
+                    name=data.name,
+                    phone_number=data.phone_number,
+                    surname=data.surname,
+                    visa_number=data.visa_number
+                )
+
+                instance.full_clean()
+                instance.save()
+
+                return CreateReservationRoommate(roommate=instance)
         except ObjectDoesNotExist:
             raise Exception(_('Guest not found'))
         except ValidationError as errors:
@@ -129,6 +172,40 @@ class UpdateRoommate(Mutation):
             raise Exception(errors.messages[0])
 
 
+class UpdateReservationRoommate(Mutation):
+    class Arguments:
+        data = ReservationRoommateInput(required=True)
+
+    roommate = Field(Roommate)
+
+    @classmethod
+    def mutate(cls, _root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            instance = reservation.guest.roommate_set.filter(pk=data.id).get()
+            if instance:
+                instance.address_municipality = data.address_municipality if data.address_municipality is not None \
+                    else instance.address_municipality
+                instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc
+                instance.address_street = data.address_street if data.address_street is not None \
+                    else instance.address_street
+                instance.age = data.age if data.age is not None else instance.age
+                instance.citizenship = data.citizenship if data.citizenship is not None else instance.citizenship
+                instance.email = data.email if data.email is not None else instance.email
+                instance.gender = data.gender if data.gender is not None else instance.gender
+                instance.identity = data.identity if data.identity is not None else instance.identity
+                instance.name = data.name if data.name is not None else instance.name
+                instance.phone_number = data.phone_number if data.phone_number is not None else instance.phone_number
+                instance.surname = data.surname if data.surname is not None else instance.surname
+                instance.visa_number = data.visa_number if data.visa_number is not None else instance.visa_number
+
+                instance.full_clean()
+                instance.save()
+            return UpdateReservationRoommate(roommate=instance)
+        except ObjectDoesNotExist:
+            raise Exception(_('Guest cannot be updated'))
+
+
 class DeleteRoommate(Mutation):
     class Arguments:
         roommate_id = ID()
@@ -146,3 +223,22 @@ class DeleteRoommate(Mutation):
             return DeleteRoommate(roommate=instance)
         except ObjectDoesNotExist:
             return DeleteRoommate(roommate=None)
+
+
+class DeleteReservationRoommate(Mutation):
+    class Arguments:
+        data = ReservationRoommateInput(required=True)
+
+    roommate = Field(Roommate)
+
+    @staticmethod
+    def mutate(_root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            instance = reservation.guest.roommate_set.filter(pk=data.id).get()
+            if instance:
+                instance.deleted = True
+                instance.save()
+            return DeleteReservationRoommate(roommate=instance)
+        except ObjectDoesNotExist:
+            return DeleteReservationRoommate(roommate=None)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-16 21:27+0200\n"
+"POT-Creation-Date: 2021-09-17 23:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,14 +149,18 @@ msgid "Price for extra bed is required field"
 msgstr "Cena za přistýlku je povinný údaj"
 
 #: .\api\schemas\Guest.py:50 .\api\schemas\Reservation.py:196
-#: .\api\schemas\Reservation.py:258
+#: .\api\schemas\Reservation.py:257
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
-#: .\api\schemas\Guest.py:146 .\api\schemas\Roommate.py:88
-#: .\api\schemas\Roommate.py:125
+#: .\api\schemas\Guest.py:146 .\api\schemas\Roommate.py:95
+#: .\api\schemas\Roommate.py:133 .\api\schemas\Roommate.py:170
 msgid "Guest not found"
 msgstr "Host nenalezen"
+
+#: .\api\schemas\Guest.py:180 .\api\schemas\Roommate.py:206
+msgid "Guest cannot be updated"
+msgstr "Hosta nelze aktualizovat"
 
 #: .\api\schemas\Reservation.py:124 .\api\schemas\Reservation.py:167
 msgid "The room is already reserved for this period of time"
@@ -170,7 +174,7 @@ msgstr "Prosím vyberte hosta ze seznamu"
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:261
+#: .\api\schemas\Reservation.py:260
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 
