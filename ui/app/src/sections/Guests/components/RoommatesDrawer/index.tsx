@@ -3,7 +3,7 @@ import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { Button, Drawer, Form, Input, message, Popconfirm, Select, Skeleton } from "antd"
 import { Store } from "antd/lib/form/interface"
 import Title from "antd/lib/typography/Title"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { CREATE_ROOMMATE, DELETE_ROOMMATE, UPDATE_ROOMMATE } from "../../../../lib/graphql/mutations/Roommate"
@@ -89,6 +89,12 @@ export const RoommatesDrawer = ({
       })
       .catch(() => message.error(t("errors.invalid-form")))
   }
+
+  useEffect(() => {
+    if (visible === true) {
+      form.resetFields()
+    }
+  }, [ form, roommate, visible ])
 
   return (
     <Drawer

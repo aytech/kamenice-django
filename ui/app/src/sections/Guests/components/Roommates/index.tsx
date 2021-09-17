@@ -1,4 +1,4 @@
-import { UsergroupAddOutlined } from "@ant-design/icons";
+import { EditOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { ApolloError, useLazyQuery } from "@apollo/client";
 import { Avatar, Button, Col, List, message, Row, Tooltip } from "antd";
 import { useEffect, useState } from "react";
@@ -44,6 +44,7 @@ export const Roommates = ({
         guestRoommates.push(roommate)
       }
     })
+    setSelectedRoommate(undefined)
     setRoommates(guestRoommates)
   }, [ data ])
 
@@ -61,7 +62,10 @@ export const Roommates = ({
             <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
               <Tooltip title={ t("guests.add") }>
                 <Button
-                  onClick={ () => setRoommateDrawerVisible(true) }>
+                  onClick={ () => {
+                    setSelectedRoommate(undefined)
+                    setRoommateDrawerVisible(true)
+                  } }>
                   <UsergroupAddOutlined />
                 </Button>
               </Tooltip>
@@ -74,11 +78,11 @@ export const Roommates = ({
             actions={ [
               <Button
                 key="edit"
+                icon={ <EditOutlined /> }
                 onClick={ () => {
                   setSelectedRoommate(roommate)
                   setRoommateDrawerVisible(true)
-                } }
-                type="link">
+                } }>
                 { t("edit") }
               </Button>
             ] }>
