@@ -1,4 +1,4 @@
-import { HomeOutlined } from "@ant-design/icons"
+import { EditOutlined, HomeOutlined } from "@ant-design/icons"
 import { Avatar, Button, List } from "antd"
 import { useTranslation } from "react-i18next"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
@@ -19,10 +19,9 @@ export const SuiteItem = ({
     <List.Item
       actions={ [
         <Button
-          className="low-case"
           key="edit"
-          onClick={ () => openSuite(suite) }
-          type="link">
+          icon={ <EditOutlined /> }
+          onClick={ () => openSuite(suite) }>
           { t("forms.update") }
         </Button>
       ] }

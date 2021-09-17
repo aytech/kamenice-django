@@ -1,4 +1,5 @@
 import { RouteComponentProps, withRouter } from "react-router-dom"
+import Text from "antd/lib/typography/Text"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
@@ -13,7 +14,7 @@ import { ApolloError, useQuery } from "@apollo/client"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { message, Skeleton } from "antd"
+import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -168,58 +169,63 @@ export const Reservations = withRouter(({
         active
         loading={ dataLoading }
         paragraph={ { rows: 5 } }>
-        <Timeline
-          canChangeGroup={ false }
-          canMove={ false }
-          canResize={ false }
-          defaultTimeEnd={ moment().add(12, "day") }
-          defaultTimeStart={ moment().add(-12, "day") }
-          groupRenderer={ ({ group }) => {
-            return (
-              <>
-                <Title level={ 5 }>{ group.title }</Title>
-              </>
-            )
-          } }
-          groups={ groups }
-          itemRenderer={ props => <ReservationItem { ...props } /> }
-          items={ items }
-          lineHeight={ 60 }
-          onCanvasClick={ onCanvasClick }
-          onItemClick={ onItemClick }>
-          <TimelineHeaders>
-            <SidebarHeader>
-              { ({ getRootProps }) => {
-                return (
-                  <div
-                    { ...getRootProps() }
-                    className="side-header">
-                    { t("living-units") }
-                  </div>
-                )
-              } }
-            </SidebarHeader>
-            <DateHeader unit="primaryHeader" />
-            <DateHeader
-              className="days"
-              unit="day" />
-          </TimelineHeaders>
-          <CursorMarker>
-            {
-              ({ styles, date }) => {
-                return (
-                  <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
-                    <div className="rt-marker__label">
-                      <div className="rt-marker__content">
-                        { moment(date).format("DD MMM HH:mm") }
+        <div id="app-timeline">
+          <Timeline
+            canChangeGroup={ false }
+            canMove={ false }
+            canResize={ false }
+            defaultTimeEnd={ moment().add(12, "day") }
+            defaultTimeStart={ moment().add(-12, "day") }
+            groupRenderer={ ({ group }) => {
+              return (
+                <>
+                  <Title level={ 5 }>{ group.title }</Title>
+                </>
+              )
+            } }
+            groups={ groups }
+            itemRenderer={ props => <ReservationItem { ...props } /> }
+            items={ items }
+            lineHeight={ 60 }
+            onCanvasClick={ onCanvasClick }
+            onItemClick={ onItemClick }>
+            <TimelineHeaders>
+              <SidebarHeader>
+                { ({ getRootProps }) => {
+                  return (
+                    <div
+                      { ...getRootProps() }
+                      className="side-header">
+                      { t("living-units") }
+                    </div>
+                  )
+                } }
+              </SidebarHeader>
+              <DateHeader unit="primaryHeader" />
+              <DateHeader
+                className="days"
+                unit="day" />
+            </TimelineHeaders>
+            <CursorMarker>
+              {
+                ({ styles, date }) => {
+                  return (
+                    <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
+                      <div className="rt-marker__label">
+                        <div className="rt-marker__content">
+                          { moment(date).format("DD MMM HH:mm") }
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
+                  )
+                }
               }
-            }
-          </CursorMarker>
-        </Timeline>
+            </CursorMarker>
+          </Timeline>
+          <Space align="end" className="app-footer">
+            <Text disabled>&reg;{ t("company-name") }</Text>
+          </Space>
+        </div>
       </Skeleton>
       <ReservationModal
         addOrUpdateReservation={ addOrUpdateReservation }

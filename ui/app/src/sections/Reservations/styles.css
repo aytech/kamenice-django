@@ -1,5 +1,15 @@
+#app-timeline {
+  background-color: #fff;
+}
+
 #chart {
   margin-top: 2em;
+}
+
+.app-footer {
+  justify-content: end;
+  padding: 12px 24px;
+  width: 100%;
 }
 
 .react-calendar-timeline {

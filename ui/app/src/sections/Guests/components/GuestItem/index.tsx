@@ -34,15 +34,13 @@ export const GuestItem = ({
             onClick={ () => {
               selectGuest(guest)
               openGuestDrawer()
-            } }
-            type="link">
+            } }>
             { t("edit") }
           </Button>,
           <Button
             key="roommates"
             icon={ showRoommates === true ? <EyeInvisibleOutlined /> : <EyeOutlined /> }
-            onClick={ toggleShowRoommates }
-            type="link">
+            onClick={ toggleShowRoommates }>
             { t("guests.roommates") }
           </Button>
         ] }>

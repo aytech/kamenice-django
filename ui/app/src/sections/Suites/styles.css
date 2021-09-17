@@ -1,8 +1,12 @@
-.suites-list {
+.suites {
   background-color: #fff;
   margin: 0 auto 3em;
 }
 
-.suites-list .suite-item {
+.suites .suite-item {
   cursor: pointer;
+}
+
+.suites .ant-list-footer {
+  text-align: end;
 }
