@@ -47,7 +47,7 @@ export const GuestDrawer = ({
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
   const actionCallback = (callback: (newGuest: any) => void, newGuest?: any | null) => {
-    if (newGuest !== undefined || newGuest !== null) {
+    if (newGuest !== undefined && newGuest !== null) {
       callback(newGuest)
     }
     if (refetch !== undefined) {

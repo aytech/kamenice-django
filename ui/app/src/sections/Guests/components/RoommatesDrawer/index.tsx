@@ -46,7 +46,7 @@ export const RoommatesDrawer = ({
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
   const actionCallback = (callback: (newRoommate: any) => void, newRoommate?: any | null) => {
-    if (newRoommate !== undefined || newRoommate !== null) {
+    if (newRoommate !== undefined && newRoommate !== null) {
       callback(newRoommate)
     }
     if (refetch !== undefined) {

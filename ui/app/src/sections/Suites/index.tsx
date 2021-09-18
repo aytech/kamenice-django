@@ -28,17 +28,9 @@ export const Suites = withRouter(({
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
-  const { data: suitesData, loading } = useQuery<SuitesData>(SUITES, {
+  const { loading, data, refetch } = useQuery<SuitesData>(SUITES, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-
-  const addOrUpdateSuite = (suite: Suites_suites) => {
-    setSuites(suites.filter(cachedSuite => cachedSuite.id !== suite.id).concat(suite))
-  }
-
-  const clearSuite = (suiteId: string) => {
-    setSuites(suites.filter(suite => suite.id !== suiteId))
-  }
 
   const openSuite = (suite: Suites_suites | undefined) => {
     setActiveSuite(suite)
@@ -47,13 +39,13 @@ export const Suites = withRouter(({
 
   useEffect(() => {
     const suitesList: Suites_suites[] = []
-    suitesData?.suites?.forEach((suite: Suites_suites | null) => {
+    data?.suites?.forEach((suite: Suites_suites | null) => {
       if (suite !== null) {
         suitesList.push(suite)
       }
     })
     setSuites(suitesList)
-  }, [ suitesData ])
+  }, [ data ])
 
   useEffect(() => {
     setPageTitle(t("living-units"))
@@ -96,9 +88,8 @@ export const Suites = withRouter(({
           ) } />
       </Skeleton>
       <SuiteDrawer
-        addOrUpdateSuite={ addOrUpdateSuite }
-        clearSuite={ clearSuite }
         close={ () => setDrawerVisible(false) }
+        refetch={ refetch }
         suite={ activeSuite }
         visible={ drawerVisible } />
     </>

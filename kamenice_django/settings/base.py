@@ -191,3 +191,5 @@ LOGGING = {
         }
     }
 }
+
+FROM_EMAIL_ADDRESS = '"Penzion Mlýn Kamenice" <info@penzionkamenice.cz>'

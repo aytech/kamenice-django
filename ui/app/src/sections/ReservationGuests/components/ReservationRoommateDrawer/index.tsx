@@ -43,7 +43,7 @@ export const ReservationRoommateDrawer = ({
   const [ form ] = Form.useForm()
 
   const actionCallback = (callback: (roommate: any) => void, roommate?: any | null) => {
-    if (roommate !== undefined || roommate !== null) {
+    if (roommate !== undefined && roommate !== null) {
       callback(roommate)
     }
     if (refetch !== undefined) {

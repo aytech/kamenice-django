@@ -15,17 +15,15 @@ import { RoomActions } from "./components/RoomActions"
 import Title from "antd/lib/typography/Title"
 
 interface Props {
-  addOrUpdateSuite: (suite: Suites_suites) => void
-  clearSuite: (suiteId: string) => void
   close: () => void
+  refetch: () => void
   suite?: Suites_suites
   visible: boolean
 }
 
 export const SuiteDrawer = ({
-  addOrUpdateSuite,
-  clearSuite,
   close,
+  refetch,
   suite,
   visible
 }: Props) => {
@@ -58,6 +56,16 @@ export const SuiteDrawer = ({
     title: suite?.title
   }
 
+  const actionCallback = (callback: () => void, newSuite?: any | null) => {
+    if (newSuite !== undefined && newSuite !== null) {
+      callback()
+    }
+    if (refetch !== undefined) {
+      refetch()
+    }
+    close()
+  }
+
   const submitForm = () => {
     form.validateFields()
       .then(() => {
@@ -74,22 +82,16 @@ export const SuiteDrawer = ({
         if (suite === undefined) {
           createSuite({ variables: { data: { ...variables } } })
             .then((value: FetchResult<CreateSuite>) => {
-              const suite = value.data?.createSuite?.suite
-              if (suite !== undefined && suite !== null) {
-                addOrUpdateSuite(suite)
+              actionCallback(() => {
                 message.success(t("rooms.created"))
-                close()
-              }
+              }, value.data?.createSuite?.suite)
             })
         } else {
           updateSuite({ variables: { data: { id: suite.id, ...variables } } })
             .then((value: FetchResult<UpdateSuite>) => {
-              const suite = value.data?.updateSuite?.suite
-              if (suite !== undefined && suite !== null) {
-                addOrUpdateSuite(suite)
+              actionCallback(() => {
                 message.success(t("rooms.updated"))
-                close()
-              }
+              }, value.data?.updateSuite?.suite)
             })
         }
       })
@@ -101,12 +103,9 @@ export const SuiteDrawer = ({
   const deleteSuiteHandle = (suiteId: string) => {
     deleteSuite({ variables: { suiteId } })
       .then((value: FetchResult<DeleteSuite>) => {
-        const suiteId = value.data?.deleteSuite?.suite?.id
-        if (suiteId !== undefined) {
-          clearSuite(suiteId)
+        actionCallback(() => {
           message.success(t("rooms.deleted"))
-          close()
-        }
+        }, value.data?.deleteSuite?.suite)
       })
   }
 

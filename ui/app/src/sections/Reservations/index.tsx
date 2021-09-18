@@ -30,17 +30,13 @@ export const Reservations = withRouter(({
 
   const { t } = useTranslation()
 
-  const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ reservation, setReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedSuite, setSelectedSuite ] = useState<Suites_suites>()
 
-  const { data: reservationsData } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
-    onCompleted: () => {
-      setDataLoading(false)
-    },
+  const { loading, data } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
@@ -90,19 +86,19 @@ export const Reservations = withRouter(({
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
-    reservationsData?.suites?.forEach((suite: Suites_suites | null) => {
+    data?.suites?.forEach((suite: Suites_suites | null) => {
       if (suite !== null) {
         suiteList.push(suite)
       }
     })
-    reservationsData?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
+    data?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
       if (reservation !== null) {
         reservationList.push(getTimelineReservationItem(reservation))
       }
     })
     setItems(reservationList)
     setGroups(suiteList)
-  }, [ reservationsData ])
+  }, [ data ])
 
   useEffect(() => {
     setPageTitle(t("home-title"))
@@ -114,7 +110,7 @@ export const Reservations = withRouter(({
   const onCanvasClick = (groupId: number, time: number) => {
     const selectedGroup = groups.find(group => group.id === groupId)
     if (selectedGroup !== undefined) {
-      const suite = reservationsData?.suites?.find(suite => suite?.id === selectedGroup.id)
+      const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
       if (suite !== null) {
         setSelectedSuite(suite)
       }
@@ -139,7 +135,7 @@ export const Reservations = withRouter(({
   const onItemClick = (itemId: number) => {
     const timelineItem = items.find(item => item.id === itemId)
     if (timelineItem !== undefined) {
-      const suite = reservationsData?.suites?.find(suite => suite?.id === timelineItem.suite.id)
+      const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
         setSelectedSuite(suite)
       }
@@ -167,7 +163,7 @@ export const Reservations = withRouter(({
     <>
       <Skeleton
         active
-        loading={ dataLoading }
+        loading={ loading }
         paragraph={ { rows: 5 } }>
         <div id="app-timeline">
           <Timeline
