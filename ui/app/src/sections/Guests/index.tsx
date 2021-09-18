@@ -25,38 +25,26 @@ export const Guests = withRouter(({
 
   const { t } = useTranslation()
 
-  const [ dataLoading, setDataLoading ] = useState<boolean>(true)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
 
   const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
-  const { data: guestsData } = useQuery<GuestsData>(GUESTS, {
-    onCompleted: () => {
-      setDataLoading(false)
-    },
+  const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
-  const addOrRemoveGuest = (guest: Guests_guests) => {
-    const existingGuests = guests.filter(cachedGuest => cachedGuest.id !== guest.id)
-    setGuests(existingGuests.concat(guest))
-  }
-
-  const removeGuest = (guestId: string) =>
-    setGuests(guests.filter(cachedGuest => cachedGuest.id !== guestId))
-
   useEffect(() => {
     const guestsList: Guests_guests[] = []
-    if (guestsData !== undefined && guestsData?.guests !== null) {
-      guestsData.guests.forEach((guest: Guests_guests | null) => {
+    if (data !== undefined && data?.guests !== null) {
+      data.guests.forEach((guest: Guests_guests | null) => {
         if (guest !== null) {
           guestsList.push(guest)
         }
       })
       setGuests(guestsList)
     }
-  }, [ guestsData ])
+  }, [ data ])
 
   useEffect(() => {
     setPageTitle(t("guests.page-title"))
@@ -67,7 +55,7 @@ export const Guests = withRouter(({
     <>
       <Skeleton
         active
-        loading={ dataLoading }
+        loading={ loading }
         paragraph={ { rows: 5 } }>
         <List
           bordered={ true }
@@ -103,10 +91,9 @@ export const Guests = withRouter(({
           ) } />
       </Skeleton>
       <GuestDrawer
-        addGuest={ addOrRemoveGuest }
         close={ () => setDrawerVisible(false) }
         guest={ selectedGuest }
-        removeGuest={ removeGuest }
+        refetch={ refetch }
         visible={ drawerVisible } />
     </>
   )

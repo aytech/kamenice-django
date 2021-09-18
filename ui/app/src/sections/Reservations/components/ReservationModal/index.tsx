@@ -436,7 +436,7 @@ export const ReservationModal = ({
       </Modal>
       <GuestDrawer
         close={ () => setGuestDrawerOpen(false) }
-        addGuest={ addGuestOption }
+        refetch={ (guest: Guests_guests) => addGuestOption(guest) }
         visible={ guestDrawerOpen } />
       <RoommatesDrawer
         close={ () => setRoommateDrawerOpen(false) }

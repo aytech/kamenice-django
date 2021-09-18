@@ -3,10 +3,11 @@ import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { FormHelper } from "../../../../lib/components/FormHelper"
 import { CREATE_ROOMMATE, DELETE_ROOMMATE, UPDATE_ROOMMATE } from "../../../../lib/graphql/mutations/Roommate"
-import { CreateRoommate, CreateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/CreateRoommate"
-import { DeleteRoommate, DeleteRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/DeleteRoommate"
-import { UpdateRoommate, UpdateRoommateVariables } from "../../../../lib/graphql/mutations/Roommate/__generated__/UpdateRoommate"
+import { CreateRoommate, CreateRoommateVariables, CreateRoommate_createRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/CreateRoommate"
+import { DeleteRoommate, DeleteRoommateVariables, DeleteRoommate_deleteRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/DeleteRoommate"
+import { UpdateRoommate, UpdateRoommateVariables, UpdateRoommate_updateRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/UpdateRoommate"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
 import { IGuestForm } from "../../../../lib/Types"
@@ -44,38 +45,47 @@ export const RoommatesDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
+  const actionCallback = (callback: (newRoommate: any) => void, newRoommate?: any | null) => {
+    if (newRoommate !== undefined || newRoommate !== null) {
+      callback(newRoommate)
+    }
+    if (refetch !== undefined) {
+      refetch()
+    }
+    close()
+  }
+
   const submitForm = (): void => {
     form.validateFields()
       .then(() => {
         const formData: IGuestForm = form.getFieldsValue(true)
         const variables = {
           age: formData.age,
+          addressMunicipality: formData.address?.municipality,
+          addressPsc: formData.address?.psc,
+          addressStreet: formData.address?.street,
+          citizenship: FormHelper.getGuestCitizenship(formData),
+          email: formData.email,
+          gender: formData.gender,
+          identity: formData.identity,
           name: formData.name,
-          surname: formData.surname
+          phoneNumber: formData.phone,
+          surname: formData.surname,
+          visaNumber: formData.visa
         }
         if (roommate === undefined || roommate === null) {
           createRoommate({ variables: { data: { guestId: guest?.id, ...variables } } })
-            .then((result: FetchResult<CreateRoommate>) => {
-              const roommate = result.data?.createRoommate?.roommate
-              if (roommate !== undefined && roommate !== null) {
-                message.success(t("guests.added", { name: roommate.name, surname: roommate.surname }))
-              }
-              if (refetch !== undefined) {
-                refetch()
-              }
-              close()
+            .then((value: FetchResult<CreateRoommate>) => {
+              actionCallback((newRoommate: CreateRoommate_createRoommate_roommate) => {
+                message.success(t("guests.added", { name: newRoommate.name, surname: newRoommate.surname }))
+              }, value.data?.createRoommate?.roommate)
             })
         } else {
           updateRoommate({ variables: { data: { id: roommate.id, ...variables } } })
-            .then((result: FetchResult<UpdateRoommate>) => {
-              const roommate = result.data?.updateRoommate?.roommate
-              if (roommate !== undefined && roommate !== null) {
-                message.success(t("guests.updated", { name: roommate.name, surname: roommate.surname }))
-              }
-              if (refetch !== undefined) {
-                refetch()
-              }
-              close()
+            .then((value: FetchResult<UpdateRoommate>) => {
+              actionCallback((newRoommate: UpdateRoommate_updateRoommate_roommate) => {
+                message.success(t("guests.updated", { name: newRoommate.name, surname: newRoommate.surname }))
+              }, value.data?.updateRoommate?.roommate)
             })
         }
       })
@@ -111,11 +121,7 @@ export const RoommatesDrawer = ({
         </Popconfirm>
       ) }
       placement="left"
-      title={
-        <>
-          { guest?.name } { guest?.surname } - <span className="low-case">{ t("guests.roommate") }</span>
-        </>
-      }
+      title={ t("guests.roommate") }
       width={ 500 }
       visible={ visible }
       footer={
@@ -127,12 +133,10 @@ export const RoommatesDrawer = ({
               okText={ t("yes") }
               onConfirm={ () => {
                 deleteRoommate({ variables: { roommateId: roommate.id } })
-                  .then(() => {
-                    message.success(t("guests.deleted"))
-                    if (refetch !== undefined) {
-                      refetch()
-                    }
-                    close()
+                  .then((value: FetchResult<DeleteRoommate>) => {
+                    actionCallback((deletedRoommate: DeleteRoommate_deleteRoommate_roommate) => {
+                      message.success(t("guests.deleted", { name: deletedRoommate.name, surname: deletedRoommate.surname }))
+                    }, value.data?.deleteRoommate?.roommate)
                   })
               } }
               title={ t("forms.delete-confirm") }>

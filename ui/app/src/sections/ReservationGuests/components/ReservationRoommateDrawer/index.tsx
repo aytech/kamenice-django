@@ -138,7 +138,7 @@ export const ReservationRoommateDrawer = ({
             deleteRoommate({ variables: { data: { id: roommate?.id, hash: reservationHash } } })
               .then((value: FetchResult<DeleteReservationRoommate>) => {
                 actionCallback((roommate: DeleteReservationRoommate_deleteReservationRoommate_roommate) => {
-                  message.success(t("guests.deleted-extended", { name: roommate.name, surname: roommate.surname }))
+                  message.success(t("guests.deleted", { name: roommate.name, surname: roommate.surname }))
                 }, value.data?.deleteReservationRoommate?.roommate)
               })
           } }
