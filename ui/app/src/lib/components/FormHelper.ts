@@ -1,13 +1,23 @@
 import { Rule } from "antd/lib/form"
-import { OptionsType } from "../Types"
+import { IGuestForm, OptionsType } from "../Types"
 
 interface IFormHelper {
+  getGuestCitizenship: (formData: IGuestForm) => string | null
   guestAgeOptions: OptionsType[]
   requiredAlphaRule: (message: string) => Rule
   requiredRule: (message: string) => Rule
   trim: (value: string | undefined) => string | undefined
 }
 export const FormHelper: IFormHelper = {
+  getGuestCitizenship: (formData: IGuestForm) => {
+    if (formData.citizenship?.new !== undefined) {
+      return formData.citizenship.new
+    }
+    if (formData.citizenship?.selected !== undefined) {
+      return formData.citizenship.selected
+    }
+    return null
+  },
   guestAgeOptions: [
     {
       label: "12+",

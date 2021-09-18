@@ -10,6 +10,8 @@
 export interface DeleteGuest_deleteGuest_guest {
   __typename: "Guest";
   id: string;
+  name: string;
+  surname: string;
 }
 
 export interface DeleteGuest_deleteGuest {

@@ -160,9 +160,19 @@ export const GuestForm = ({
           <Form.Item
             style={ { width: "50%" } }
             name={ [ "citizenship", "selected" ] }>
-            <Select style={ { width: "100%" } } placeholder={ t("forms.from-list") }>
-              <Select.Option value="cze">CZE</Select.Option>
-              <Select.Option value="sk">SK</Select.Option>
+            <Select
+              options={ [
+                {
+                  label: t("citizenship.cze"),
+                  value: "cze"
+                },
+                {
+                  label: t("citizenship.sk"),
+                  value: "sk"
+                }
+              ] }
+              placeholder={ t("forms.from-list") }
+              style={ { width: "100%" } } >
             </Select>
           </Form.Item>
           <Form.Item

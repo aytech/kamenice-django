@@ -4,28 +4,27 @@ import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
-import { CreateGuest, CreateGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
+import { CreateGuest, CreateGuestVariables, CreateGuest_createGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { UpdateGuest, UpdateGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
+import { UpdateGuest, UpdateGuestVariables, UpdateGuest_updateGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
-import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
+import { DeleteGuest, DeleteGuestVariables, DeleteGuest_deleteGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import { useTranslation } from "react-i18next"
 import { GuestForm } from "../GuestForm"
 import { IGuestForm } from "../../../../lib/Types"
+import { FormHelper } from "../../../../lib/components/FormHelper"
 
 interface Props {
-  addGuest: (guest: Guests_guests) => void
   close: () => void
   guest?: Guests_guests | null
-  removeGuest?: (guestId: string) => void
+  refetch?: (guest?: any) => void
   visible: boolean
 }
 
 export const GuestDrawer = ({
-  addGuest,
   close,
   guest,
-  removeGuest,
+  refetch,
   visible
 }: Props) => {
 
@@ -47,6 +46,16 @@ export const GuestDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
+  const actionCallback = (callback: (newGuest: any) => void, newGuest?: any | null) => {
+    if (newGuest !== undefined || newGuest !== null) {
+      callback(newGuest)
+    }
+    if (refetch !== undefined) {
+      refetch(newGuest)
+    }
+    close()
+  }
+
   const submitForm = (): void => {
     form.validateFields()
       .then(() => {
@@ -56,7 +65,7 @@ export const GuestDrawer = ({
           addressMunicipality: formData.address?.municipality,
           addressPsc: formData.address?.psc,
           addressStreet: formData.address?.street,
-          citizenship: formData.citizenship?.selected === undefined ? formData.citizenship?.new : formData.citizenship.selected,
+          citizenship: FormHelper.getGuestCitizenship(formData),
           email: formData.email,
           gender: formData.gender,
           identity: formData.identity,
@@ -68,22 +77,16 @@ export const GuestDrawer = ({
         if (guest === undefined || guest === null) {
           createGuest({ variables: { data: { ...variables } } })
             .then((value: FetchResult<CreateGuest>) => {
-              const guest = value.data?.createGuest?.guest
-              if (guest !== undefined && guest !== null) {
-                addGuest(guest)
-                message.success(t("guests.added", { name: guest.name, surname: guest.surname }))
-              }
-              close()
+              actionCallback((newGuest: CreateGuest_createGuest_guest) => {
+                message.success(t("guests.added", { name: newGuest.name, surname: newGuest.surname }))
+              }, value.data?.createGuest?.guest)
             })
         } else {
           updateGuest({ variables: { data: { id: String(guest.id), ...variables } } })
             .then((value: FetchResult<UpdateGuest>) => {
-              const guest = value.data?.updateGuest?.guest
-              if (guest !== undefined && guest !== null) {
-                addGuest(guest)
-                message.success(t("guests.updated", { name: guest.name, surname: guest.surname }))
-              }
-              close()
+              actionCallback((newGuest: UpdateGuest_updateGuest_guest) => {
+                message.success(t("guests.updated", { name: newGuest.name, surname: newGuest.surname }))
+              }, value.data?.updateGuest?.guest)
             })
         }
       })
@@ -132,12 +135,9 @@ export const GuestDrawer = ({
               onConfirm={ () => {
                 deleteGuest({ variables: { guestId: guest.id } })
                   .then((value: FetchResult<DeleteGuest>) => {
-                    const guest = value.data?.deleteGuest?.guest
-                    if (removeGuest !== undefined && guest !== undefined && guest !== null) {
-                      removeGuest(guest.id)
-                      message.success(t("guests.deleted"))
-                      close()
-                    }
+                    actionCallback((deletedGuest: DeleteGuest_deleteGuest_guest) => {
+                      message.success(t("deleted-extended", { name: deletedGuest.name, surname: deletedGuest.surname }))
+                    }, value.data?.deleteGuest?.guest)
                   })
               } }
               title={ t("forms.delete-confirm") }>

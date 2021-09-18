@@ -49,6 +49,8 @@ export const DELETE_GUEST = gql`
     deleteGuest(guestId: $guestId) {
       guest {
         id
+        name
+        surname
       }
     }
   }

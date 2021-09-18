@@ -10,6 +10,8 @@
 export interface DeleteRoommate_deleteRoommate_roommate {
   __typename: "Roommate";
   id: string;
+  name: string;
+  surname: string;
 }
 
 export interface DeleteRoommate_deleteRoommate {

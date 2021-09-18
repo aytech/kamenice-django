@@ -49,6 +49,8 @@ export const DELETE_ROOMMATE = gql`
     deleteRoommate(roommateId: $roommateId) {
       roommate {
         id
+        name
+        surname
       }
     }
   }
