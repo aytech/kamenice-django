@@ -13,11 +13,10 @@ import { dateFormat } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
-import { CreateReservation, CreateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
+import { CreateReservation, CreateReservationVariables, CreateReservation_createReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { CREATE_RESERVATION, DELETE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
-import { UpdateReservation, UpdateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { UpdateReservation, UpdateReservationVariables, UpdateReservation_updateReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { SuitesWithReservations_reservations } from "../../../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { useTranslation } from "react-i18next"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../lib/Prices"
@@ -31,19 +30,17 @@ import { Confirmation } from "./components/Confirmation"
 import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 
 interface Props {
-  addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
   close: () => void
   isOpen: boolean
-  clearReservation: (reservationId?: string | null) => void
+  refetch?: (selected?: IReservation) => void
   reservation?: IReservation
   suite?: Suites_suites
 }
 
 export const ReservationModal = ({
-  addOrUpdateReservation,
   close,
   isOpen,
-  clearReservation,
+  refetch,
   reservation,
   suite
 }: Props) => {
@@ -64,29 +61,45 @@ export const ReservationModal = ({
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
+  const closeModal = () => {
+    setReservationConfirmationMessage(undefined)
+    setReservationConfirmationVisible(false)
+    close()
+  }
+
+  const actionCallback = (callback: (newReservation: any) => void, newReservation?: any | null) => {
+    if (newReservation !== undefined && newReservation !== null) {
+      callback(newReservation)
+    }
+    if (refetch !== undefined) {
+      refetch(newReservation)
+    }
+  }
+
   const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (data: CreateReservation) => {
-      addOrUpdateReservation(data.createReservation?.reservation)
-      setReservationConfirmationMessage(t("reservations.updated-info", { email: data.createReservation?.reservation?.guest.email }))
-      setReservationConfirmationVisible(true)
-      message.success(t("reservations.created"))
+      actionCallback((newReservation: CreateReservation_createReservation_reservation) => {
+        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest.email }))
+        setReservationConfirmationVisible(true)
+        message.success(t("reservations.created"))
+      }, data.createReservation?.reservation)
     },
     onError: networkErrorHandler
   })
   const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
-    onCompleted: (data: DeleteReservation) => {
-      clearReservation(data.deleteReservation?.reservation?.id)
-      message.success(t("reservations.deleted"))
-      close()
+    onCompleted: () => {
+      actionCallback(() => message.success(t("reservations.deleted")))
+      closeModal()
     },
     onError: networkErrorHandler
   })
   const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: (data: UpdateReservation) => {
-      addOrUpdateReservation(data.updateReservation?.reservation)
-      setReservationConfirmationMessage(t("reservations.updated-info", { email: data.updateReservation?.reservation?.guest.email }))
-      setReservationConfirmationVisible(true)
-      message.success(t("reservations.updated"))
+      actionCallback((newReservation: UpdateReservation_updateReservation_reservation) => {
+        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest.email }))
+        setReservationConfirmationVisible(true)
+        message.success(t("reservations.updated"))
+      }, data.updateReservation?.reservation)
     },
     onError: networkErrorHandler
   })
@@ -168,8 +181,7 @@ export const ReservationModal = ({
       sendConfirmation({ variables: { reservationId: String(reservation.id) } })
         .then(() => {
           message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email }))
-          setReservationConfirmationVisible(false)
-          close()
+          closeModal()
         })
     }
   }
@@ -248,7 +260,7 @@ export const ReservationModal = ({
             onCancel={ () => setDeleteConfirmVisible(false) }
             onConfirm={ () => {
               setDeleteConfirmVisible(false)
-              setTimeout(close)
+              setTimeout(closeModal)
             } }
             title={ t("forms.close-dirty") }
             visible={ deleteConfirmVisible }>
@@ -256,7 +268,7 @@ export const ReservationModal = ({
               if (form.isFieldsTouched()) {
                 setDeleteConfirmVisible(true)
               } else {
-                close()
+                closeModal()
               }
             } } />
           </Popconfirm>
@@ -295,11 +307,7 @@ export const ReservationModal = ({
           }
           tip={ `${ t("loading") }...` }>
           <Confirmation
-            cancel={ () => {
-              setReservationConfirmationMessage(undefined)
-              setReservationConfirmationVisible(false)
-              close()
-            } }
+            cancel={ closeModal }
             message={ reservationConfirmationMessage }
             reservation={ reservation }
             send={ sendReservationConfirmation }

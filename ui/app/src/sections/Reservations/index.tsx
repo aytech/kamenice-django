@@ -36,7 +36,7 @@ export const Reservations = withRouter(({
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedSuite, setSelectedSuite ] = useState<Suites_suites>()
 
-  const { loading, data } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+  const { loading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
@@ -69,37 +69,24 @@ export const Reservations = withRouter(({
     }
   }
 
-  const addOrUpdateReservation = (reservation?: SuitesWithReservations_reservations | null) => {
-    if (reservation !== undefined && reservation !== null) {
-      const existingReservations = items.filter(item => item.id !== reservation.id)
-      setItems(existingReservations.concat(getTimelineReservationItem(reservation)))
-      console.log({ ...reservation, fromDate: moment(reservation.fromDate) })
-      setSelectedReservation({ ...reservation, fromDate: moment(reservation.fromDate), toDate: moment(reservation.toDate) })
-    }
-  }
-
-  const clearReservation = (reservationId?: string | null) => {
-    if (reservationId !== undefined && reservationId !== null) {
-      setItems(items.filter(item => item.id !== reservationId))
-    }
-    setSelectedReservation(undefined)
-  }
-
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
-    data?.suites?.forEach((suite: Suites_suites | null) => {
+
+    data?.suites?.forEach(suite => {
       if (suite !== null) {
         suiteList.push(suite)
       }
     })
-    data?.reservations?.forEach((reservation: SuitesWithReservations_reservations | null) => {
+    setGroups(suiteList)
+
+    data?.reservations?.forEach(reservation => {
       if (reservation !== null) {
         reservationList.push(getTimelineReservationItem(reservation))
       }
     })
     setItems(reservationList)
-    setGroups(suiteList)
+
   }, [ data ])
 
   useEffect(() => {
@@ -224,13 +211,21 @@ export const Reservations = withRouter(({
         </div>
       </Skeleton>
       <ReservationModal
-        addOrUpdateReservation={ addOrUpdateReservation }
         close={ () => {
           setSelectedReservation(undefined)
           setReservationModalOpen(false)
         } }
         isOpen={ reservationModalOpen }
-        clearReservation={ clearReservation }
+        refetch={ (selected?: IReservation) => {
+          if (selected !== undefined) {
+            setSelectedReservation({
+              ...selected,
+              fromDate: moment(selected.fromDate),
+              toDate: moment(selected.toDate)
+            })
+          }
+          refetch()
+        } }
         reservation={ selectedReservation }
         suite={ selectedSuite } />
     </>
