@@ -32,7 +32,7 @@ export const Reservations = withRouter(({
 
   const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ reservation, setReservation ] = useState<IReservation>()
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
   const [ selectedSuite, setSelectedSuite ] = useState<Suites_suites>()
 
@@ -73,6 +73,8 @@ export const Reservations = withRouter(({
     if (reservation !== undefined && reservation !== null) {
       const existingReservations = items.filter(item => item.id !== reservation.id)
       setItems(existingReservations.concat(getTimelineReservationItem(reservation)))
+      console.log({ ...reservation, fromDate: moment(reservation.fromDate) })
+      setSelectedReservation({ ...reservation, fromDate: moment(reservation.fromDate), toDate: moment(reservation.toDate) })
     }
   }
 
@@ -80,7 +82,7 @@ export const Reservations = withRouter(({
     if (reservationId !== undefined && reservationId !== null) {
       setItems(items.filter(item => item.id !== reservationId))
     }
-    setReservation(undefined)
+    setSelectedReservation(undefined)
   }
 
   useEffect(() => {
@@ -114,7 +116,7 @@ export const Reservations = withRouter(({
       if (suite !== null) {
         setSelectedSuite(suite)
       }
-      setReservation({
+      setSelectedReservation({
         fromDate: moment(time),
         meal: "NOMEAL",
         suite: { ...selectedGroup },
@@ -139,7 +141,7 @@ export const Reservations = withRouter(({
       if (suite !== null) {
         setSelectedSuite(suite)
       }
-      setReservation({
+      setSelectedReservation({
         fromDate: moment(timelineItem.start_time),
         guest: timelineItem.guest,
         id: timelineItem.id,
@@ -174,9 +176,7 @@ export const Reservations = withRouter(({
             defaultTimeStart={ moment().add(-12, "day") }
             groupRenderer={ ({ group }) => {
               return (
-                <>
-                  <Title level={ 5 }>{ group.title }</Title>
-                </>
+                <Title level={ 5 }>{ group.title }</Title>
               )
             } }
             groups={ groups }
@@ -226,12 +226,12 @@ export const Reservations = withRouter(({
       <ReservationModal
         addOrUpdateReservation={ addOrUpdateReservation }
         close={ () => {
-          setReservation(undefined)
+          setSelectedReservation(undefined)
           setReservationModalOpen(false)
         } }
         isOpen={ reservationModalOpen }
         clearReservation={ clearReservation }
-        reservation={ reservation }
+        reservation={ selectedReservation }
         suite={ selectedSuite } />
     </>
   )

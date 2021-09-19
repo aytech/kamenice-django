@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Spin, Typography } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { Store } from "rc-field-form/lib/interface"
-import { CloseOutlined, EyeInvisibleOutlined, EyeOutlined, UsergroupAddOutlined } from "@ant-design/icons"
+import { CalculatorOutlined, CloseOutlined, EyeInvisibleOutlined, EyeOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../lib/Types"
 import { ReservationFormHelper } from "../../../../lib/components/ReservationFormHelper"
@@ -14,7 +14,7 @@ import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
 import { CreateReservation, CreateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { CREATE_RESERVATION, DELETE_RESERVATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
+import { CREATE_RESERVATION, DELETE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
 import { UpdateReservation, UpdateReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { SuitesWithReservations_reservations } from "../../../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
@@ -27,6 +27,8 @@ import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates"
 import { RoommatesDrawer } from "../../../Guests/components/RoommatesDrawer"
 import { Roommates as RoommatesItem } from "./components/Roommates"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
+import { Confirmation } from "./components/Confirmation"
+import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 
 interface Props {
   addOrUpdateReservation: (reservation?: SuitesWithReservations_reservations | null) => void
@@ -48,13 +50,26 @@ export const ReservationModal = ({
 
   const { t } = useTranslation()
 
+  const [ form ] = Form.useForm()
+
+  const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
+  const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
+  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
+  const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
+  const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
+  const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
+  const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
+  const [ roommateDrawerOpen, setRoommateDrawerOpen ] = useState<boolean>(false)
+  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
+
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
   const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
     onCompleted: (data: CreateReservation) => {
       addOrUpdateReservation(data.createReservation?.reservation)
+      setReservationConfirmationMessage(t("reservations.updated-info", { email: data.createReservation?.reservation?.guest.email }))
+      setReservationConfirmationVisible(true)
       message.success(t("reservations.created"))
-      close()
     },
     onError: networkErrorHandler
   })
@@ -69,10 +84,14 @@ export const ReservationModal = ({
   const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
     onCompleted: (data: UpdateReservation) => {
       addOrUpdateReservation(data.updateReservation?.reservation)
+      setReservationConfirmationMessage(t("reservations.updated-info", { email: data.updateReservation?.reservation?.guest.email }))
+      setReservationConfirmationVisible(true)
       message.success(t("reservations.updated"))
-      close()
     },
     onError: networkErrorHandler
+  })
+  const [ sendConfirmation, { loading: confirmationLoading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
+    onError: (reason: ApolloError) => message.error(reason.message)
   })
   const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
     onError: networkErrorHandler
@@ -81,16 +100,6 @@ export const ReservationModal = ({
     onError: networkErrorHandler
   })
 
-  const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
-  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
-  const [ roommateDrawerOpen, setRoommateDrawerOpen ] = useState<boolean>(false)
-  const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
-  const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
-  const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
-  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
-
-  const [ form ] = Form.useForm()
-
   const getGuestOption = (guest: Guests_guests | Roommates_roommates) => {
     return {
       label: `${ guest.name } ${ guest.surname }`,
@@ -98,26 +107,22 @@ export const ReservationModal = ({
     }
   }
 
-  const addGuestOption = (guest: Guests_guests) => {
-    setGuestOptions(guestOptions.concat(getGuestOption(guest)))
-  }
-
   const initialValues: Store & { type?: ReservationTypeKey } = reservation !== undefined ? {
     dates: [ reservation.fromDate, reservation.toDate ],
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
     notes: reservation.notes,
-    priceAccommodation: "0.00", // @TODO: calculate
-    priceExtra: "0.00", // @TODO: calculate
-    priceMeal: "0.00", // @TODO: calculate
-    priceMunicipality: "0.00", // @TODO: calculate
+    priceAccommodation: reservation.priceAccommodation,
+    priceExtra: reservation.priceAccommodation,
+    priceMeal: reservation.priceMeal,
+    priceMunicipality: reservation.priceMunicipality,
     priceTotal: reservation.priceTotal,
     purpose: reservation.purpose,
     roommates: [],
     type: reservation.type
   } : { type: "NONBINDING" }
 
-  const getReservationInput = useCallback((): ReservationInput => {
+  const getReservationInput = (): ReservationInput => {
     const formData = form.getFieldsValue(true)
     const formDates: Array<Moment> = form.getFieldValue("dates")
     let from, to: Moment
@@ -147,7 +152,7 @@ export const ReservationModal = ({
       toDate: to.format(dateFormat),
       type: formData.type
     }
-  }, [ form, reservation ])
+  }
 
   const submitForm = (): void => {
     const variables: ReservationInput = getReservationInput()
@@ -158,28 +163,16 @@ export const ReservationModal = ({
     }
   }
 
-  const guestValidator = [
-    {
-      message: t("forms.guest-duplicate"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        const roommates: Array<{ id: number }> = form.getFieldValue("roommates")
-        if (roommates === undefined || roommates.length === 0) {
-          return Promise.resolve()
-        }
-        const duplicate = roommates.filter((id: { id: number } | undefined) => {
-          return id !== undefined && id.id === value
+  const sendReservationConfirmation = (reservation?: IReservation) => {
+    if (reservation !== undefined && reservation.id !== undefined) {
+      sendConfirmation({ variables: { reservationId: String(reservation.id) } })
+        .then(() => {
+          message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email }))
+          setReservationConfirmationVisible(false)
+          close()
         })
-        if (duplicate === undefined || duplicate.length === 0) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail guest validation, equals to roommate"))
-      }
-    },
-    {
-      message: t("forms.choose-guest"),
-      required: true
     }
-  ]
+  }
 
   const selectGuest = (guestId: string) => {
     const guest = guestsData?.guests?.find(guest => guest?.id === guestId)
@@ -189,7 +182,11 @@ export const ReservationModal = ({
     }
   }
 
-  const updatePrice = useCallback(() => {
+  const addGuestOption = (guest: Guests_guests) => {
+    setGuestOptions(guestOptions.concat(getGuestOption(guest)))
+  }
+
+  const calculatePrices = () => {
     if (suite !== undefined && reservation !== undefined) {
       const input: ReservationInput & ReservationInputExtended = getReservationInput()
       input.suite = suite
@@ -207,7 +204,7 @@ export const ReservationModal = ({
       }
       form.setFieldsValue(Prices.calculatePrice(input))
     }
-  }, [ form, getReservationInput, guestsData, reservation, suite ])
+  }
 
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
@@ -215,12 +212,11 @@ export const ReservationModal = ({
     if (isOpen === true) {
       form.resetFields()
       getGuests()
-      updatePrice()
       if (reservation?.guest?.id !== undefined) {
         getRoommates({ variables: { guestId: String(reservation.guest.id) } })
       }
     }
-  }, [ form, getGuests, getRoommates, isOpen, reservation, updatePrice ])
+  }, [ form, getGuests, getRoommates, isOpen, reservation ])
 
   useEffect(() => {
     if (guestsData !== undefined && guestsData.guests !== null) {
@@ -274,7 +270,8 @@ export const ReservationModal = ({
             reservation={ reservation } />,
           <SendConfirmationButton
             key="confirmation"
-            reservation={ reservation } />,
+            reservation={ reservation }
+            send={ sendReservationConfirmation } />,
           <AddGuestButton
             key="guest"
             openGuestDrawer={ () => setGuestDrawerOpen(true) } />,
@@ -289,13 +286,24 @@ export const ReservationModal = ({
         visible={ isOpen }>
         <Spin
           spinning={
-            guestsLoading
-            || roommatesLoading
+            confirmationLoading
             || createLoading
             || deleteLoading
+            || guestsLoading
+            || roommatesLoading
             || updateLoading
           }
           tip={ `${ t("loading") }...` }>
+          <Confirmation
+            cancel={ () => {
+              setReservationConfirmationMessage(undefined)
+              setReservationConfirmationVisible(false)
+              close()
+            } }
+            message={ reservationConfirmationMessage }
+            reservation={ reservation }
+            send={ sendReservationConfirmation }
+            visible={ reservationConfirmationVisible } />
           <Form
             form={ form }
             initialValues={ initialValues }
@@ -306,7 +314,6 @@ export const ReservationModal = ({
               required>
               <DatePicker.RangePicker
                 format={ dateFormat }
-                onChange={ updatePrice }
                 showTime />
             </Form.Item>
             <Form.Item
@@ -314,16 +321,19 @@ export const ReservationModal = ({
               label={ t("guests.name") }
               name="guest"
               required
-              rules={ guestValidator }>
+              rules={ [
+                {
+                  message: t("forms.choose-guest"),
+                  required: true
+                }
+              ] }>
               <Select
                 filterOption={ (input, option): boolean => {
                   const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
                   return match !== undefined && match >= 0
                 } }
                 onChange={ (guestId: string) => {
-                  updatePrice()
                   selectGuest(guestId)
-
                 } }
                 options={ guestOptions }
                 showSearch />
@@ -355,9 +365,7 @@ export const ReservationModal = ({
               name="meal"
               required
               rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
-              <Select
-                onChange={ updatePrice }
-                options={ ReservationFormHelper.mealOptions } />
+              <Select options={ ReservationFormHelper.mealOptions } />
             </Form.Item>
             <Form.Item
               hidden={ !additionalInfoVisible }
@@ -421,6 +429,16 @@ export const ReservationModal = ({
               label={ <strong>{ t("reservations.price-total") }</strong> }
               name="priceTotal">
               <Input addonBefore={ t("rooms.currency") } type="number" />
+            </Form.Item>
+            <Form.Item
+              hidden={ !pricesVisible }
+              wrapperCol={ { offset: 8, span: 16 } }>
+              <Button
+                block
+                icon={ <CalculatorOutlined /> }
+                onClick={ calculatePrices }>
+                Calculate prices
+              </Button>
             </Form.Item>
             <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
               <Button

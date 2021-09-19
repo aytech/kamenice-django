@@ -6,6 +6,10 @@
   text-align: center;
 }
 
+.reservation-modal .reservation-info {
+  margin-bottom: 24px;
+}
+
 .reservation-modal .roommate-list, .reservation-modal .roommate-list>.ant-space-item:first-child {
   width: 80%
 }

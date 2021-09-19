@@ -88,6 +88,7 @@
     "choose-type": "Vyberte typ rezervace",
     "confirmation-sent": "Potvrzení odesláno na adresu {{ email }}",
     "created": "Rezervace byla vytvořena!",
+    "created-info": "Rezervace je vytvořena, odeslat potvrzovací e-mail na adresu {{ email }}?",
     "date": "Datum Rezervace",
     "deleted": "Rezervace byla odstraněna!",
     "form": "Rezervační formulář",
@@ -107,13 +108,16 @@
     "price-total": "Celková cena",
     "purpose": "Účel pobytu",
     "remove": "Odstranit rezervaci",
+    "send-cancel-info": "Neposílat potvrzení a zavřít vyskakovací okno",
     "send-confirmation-confirm": "Odeslat potvrzovací e-mail na adresu {{ email }}?",
     "send-confirmation-tooltip": "Odeslat potvrzovací e-mail",
+    "send-ok-info": "Odeslat potvrzení a zavřít vyskakovací okno",
     "sending-message": "Posílám zprávu",
     "show-info": "Ukázat další informace",
     "show-prices": "Ukázat ceny",
     "type": "Typ Rezervace",
-    "updated": "Rezervace byla aktualizována!"
+    "updated": "Rezervace byla aktualizována!",
+    "updated-info": "Rezervace je aktualizována, odeslat potvrzovací e-mail na adresu {{ email }}?"
   },
   "reservation-types": {
     "ACCOMMODATED": "Aktuálně Ubytování",

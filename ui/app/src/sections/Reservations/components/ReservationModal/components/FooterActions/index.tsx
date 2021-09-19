@@ -1,9 +1,6 @@
 import { CloseCircleOutlined, NotificationOutlined, SaveOutlined, UserAddOutlined } from "@ant-design/icons";
-import { ApolloError, useMutation } from "@apollo/client";
-import { Button, message, Popconfirm, Tooltip } from "antd";
+import { Button, Popconfirm, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
-import { SEND_CONFIRMATION } from "../../../../../../lib/graphql/mutations/Reservation";
-import { SendConfirmation, SendConfirmationVariables } from "../../../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation";
 import { IReservation } from "../../../../../../lib/Types";
 
 interface RemoveProps {
@@ -13,6 +10,7 @@ interface RemoveProps {
 
 interface ConfirmationProps {
   reservation?: IReservation
+  send: (reservation: IReservation) => void
 }
 
 interface AddGuestProps {
@@ -54,33 +52,24 @@ export const RemoveButton = ({
 }
 
 export const SendConfirmationButton = ({
-  reservation
+  reservation,
+  send
 }: ConfirmationProps) => {
 
   const { t } = useTranslation()
-
-  const [ sendConfirmation, { loading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
-    onCompleted: () => message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email })),
-    onError: (reason: ApolloError) => message.error(reason.message)
-  })
 
   return reservation !== undefined && reservation.id !== undefined ? (
     <Popconfirm
       cancelText={ t("no") }
       okText={ t("yes") }
-      onConfirm={ () => {
-        if (reservation.id !== undefined) {
-          sendConfirmation({ variables: { reservationId: String(reservation.id) } })
-        }
-      } }
+      onConfirm={ () => send(reservation) }
       title={ t("reservations.send-confirmation-confirm", { email: reservation.guest?.email }) }>
       <Tooltip
         placement="top"
         title={ t("reservations.send-confirmation-tooltip") }>
         <Button
           className="action confirm"
-          icon={ <NotificationOutlined /> }
-          loading={ loading } />
+          icon={ <NotificationOutlined /> } />
       </Tooltip>
     </Popconfirm>
   ) : null
