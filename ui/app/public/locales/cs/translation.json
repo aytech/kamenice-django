@@ -85,6 +85,7 @@
   },
   "phone-number": "Telefonní číslo",
   "reservations": {
+    "calculate-prices": "Vypočítat cenu",
     "choose-type": "Vyberte typ rezervace",
     "confirmation-sent": "Potvrzení odesláno na adresu {{ email }}",
     "created": "Rezervace byla vytvořena!",

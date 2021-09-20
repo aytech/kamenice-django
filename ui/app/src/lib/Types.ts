@@ -1,5 +1,6 @@
 import { Moment } from "moment"
 import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
+import { Roommates_roommates } from "./graphql/queries/Roommates/__generated__/Roommates"
 import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
@@ -170,7 +171,7 @@ export interface PriceInfo {
 }
 
 export interface ReservationInputExtended {
-  guest?: Guests_guests | null
-  roommates?: Guests_guests[]
+  guest?: Guests_guests
+  roommates?: Roommates_roommates[]
   suite?: Suites_suites
 }
