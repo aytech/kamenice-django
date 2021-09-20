@@ -166,7 +166,7 @@ export const ReservationForm = ({
       <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
         <Button
           block
-          disabled={ guest === undefined }
+          disabled={ guest === undefined && reservation?.guest === undefined }
           icon={ <UsergroupAddOutlined /> }
           onClick={ openRoommateDrawer }
           type="dashed">
