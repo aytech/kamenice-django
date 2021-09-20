@@ -8,14 +8,13 @@ import { CREATE_ROOMMATE, DELETE_ROOMMATE, UPDATE_ROOMMATE } from "../../../../l
 import { CreateRoommate, CreateRoommateVariables, CreateRoommate_createRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/CreateRoommate"
 import { DeleteRoommate, DeleteRoommateVariables, DeleteRoommate_deleteRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/DeleteRoommate"
 import { UpdateRoommate, UpdateRoommateVariables, UpdateRoommate_updateRoommate_roommate } from "../../../../lib/graphql/mutations/Roommate/__generated__/UpdateRoommate"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
-import { IGuestForm } from "../../../../lib/Types"
+import { GuestOption, IGuestForm } from "../../../../lib/Types"
 import { GuestForm } from "../GuestForm"
 
 interface Props {
   close: () => void
-  guest?: Guests_guests | null
+  guest?: GuestOption | null
   refetch?: () => any
   roommate?: Roommates_roommates | null
   visible: boolean

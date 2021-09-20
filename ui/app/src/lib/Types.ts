@@ -74,6 +74,12 @@ export interface Guest {
   surname: string
 }
 
+export interface GuestOption {
+  id: string
+  name: string
+  surname: string
+}
+
 export interface Suite {
   id: number | string
   number?: number | null

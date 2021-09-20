@@ -4,7 +4,7 @@ import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation, OptionsType } from "../../../../lib/Types"
+import { GuestOption, IReservation, OptionsType } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
@@ -51,7 +51,7 @@ export const ReservationModal = ({
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
   const [ roommateDrawerOpen, setRoommateDrawerOpen ] = useState<boolean>(false)
-  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
+  const [ selectedGuest, setSelectedGuest ] = useState<GuestOption>()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
@@ -248,7 +248,10 @@ export const ReservationModal = ({
             form={ form }
             guest={ selectedGuest }
             guestsData={ guestsData }
-            openRoommateDrawer={ () => setRoommateDrawerOpen(true) }
+            openRoommateDrawer={ (guest: GuestOption) => {
+              setSelectedGuest(guest)
+              setRoommateDrawerOpen(true)
+            } }
             reservation={ reservation }
             roommatesData={ roommatesData }
             selectGuest={ selectGuest }

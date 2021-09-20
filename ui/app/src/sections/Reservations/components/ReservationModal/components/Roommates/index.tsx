@@ -1,11 +1,11 @@
 import { UserAddOutlined } from "@ant-design/icons"
 import { Form, Input } from "antd"
 import { useTranslation } from "react-i18next"
-import { Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { Roommates as RoommatesData } from "../../../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
+import { GuestOption } from "../../../../../../lib/Types"
 
 interface Props {
-  guest?: Guests_guests
+  guest?: GuestOption
   roommates?: RoommatesData
 }
 

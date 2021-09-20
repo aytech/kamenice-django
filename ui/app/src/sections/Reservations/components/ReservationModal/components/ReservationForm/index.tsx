@@ -12,14 +12,14 @@ import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Gue
 import { Roommates, Roommates_roommates } from "../../../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
 import { Suites_suites } from "../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../../../lib/Prices"
-import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
+import { GuestOption, IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
 import { Roommates as RoommatesItem } from "../Roommates"
 
 interface Props {
   form: FormInstance
-  guest?: Guests_guests
+  guest?: GuestOption
   guestsData?: Guests
-  openRoommateDrawer: () => void
+  openRoommateDrawer: (guest: GuestOption) => void
   reservation?: IReservation
   roommatesData?: Roommates
   selectGuest: (guestId: string) => void
@@ -168,7 +168,14 @@ export const ReservationForm = ({
           block
           disabled={ guest === undefined && reservation?.guest === undefined }
           icon={ <UsergroupAddOutlined /> }
-          onClick={ openRoommateDrawer }
+          onClick={ () => {
+            // Guest can either be explicitly selected,
+            // or pre-selected, e.g. when opening existing reservation
+            const selectedGuest = guest === undefined ? reservation?.guest : guest
+            if (selectedGuest !== undefined) {
+              openRoommateDrawer(selectedGuest as GuestOption)
+            }
+          } }
           type="dashed">
           { t("guests.roommate") }
         </Button>
