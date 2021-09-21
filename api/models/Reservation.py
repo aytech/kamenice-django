@@ -6,6 +6,8 @@ from django.db import models
 
 from django.utils.translation import gettext_lazy as _
 
+from api.constants import RESERVATION_TYPE_NONBINDING, RESERVATION_TYPE_INHABITED, RESERVATION_TYPE_ACCOMMODATED, \
+    RESERVATION_TYPE_BINDING, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_NOMEAL, MEAL_CHOICE_HALFBOARD
 from api.models.BaseModel import BaseModel
 from api.models.Guest import Guest
 from api.models.Suite import Suite
@@ -18,15 +20,15 @@ def generate_reservation_hash():
 class Reservation(BaseModel):
     year = datetime.now().year
     TYPE_CHOICES = [
-        ('ACCOMMODATED', _('Currently accommodated')),
-        ('BINDING', _('Binding reservation')),
-        ('INHABITED', _('Occupied term')),
-        ('NONBINDING', _('Non-binding reservation')),
+        (RESERVATION_TYPE_ACCOMMODATED, _('Currently accommodated')),
+        (RESERVATION_TYPE_BINDING, _('Binding reservation')),
+        (RESERVATION_TYPE_INHABITED, _('Occupied term')),
+        (RESERVATION_TYPE_NONBINDING, _('Non-binding reservation')),
     ]
     MEAL_CHOICES = [
-        ('NOMEAL', _('Meal not included')),
-        ('BREAKFAST', _('Breakfast included')),
-        ('HALFBOARD', _('Half board'))
+        (MEAL_CHOICE_NOMEAL, _('Meal not included')),
+        (MEAL_CHOICE_BREAKFAST, _('Breakfast included')),
+        (MEAL_CHOICE_HALFBOARD, _('Half board'))
     ]
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.BooleanField(default=False)

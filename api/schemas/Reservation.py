@@ -9,6 +9,7 @@ from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
 from sendgrid import SendGridAPIClient, Mail
 
+from api.constants import ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, ENVIRON_EMAIL_API_KEY
 from api.models.Guest import Guest
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
@@ -246,9 +247,9 @@ class SendConfirmationEmail(Mutation):
                 'type': instance.read_type(instance.type),
                 'url': '{}/rezervace/{}/hoste'.format(settings.APP_URL, instance.hash)
             }
-            message.template_id = os.environ['EMAIL_TEMPLATE_ID']
+            message.template_id = os.environ[ENVIRON_EMAIL_CONFIRMATION_TEMPLATE]
 
-            SendGridAPIClient(os.environ['EMAIL_API_KEY']).send(message)
+            SendGridAPIClient(os.environ[ENVIRON_EMAIL_API_KEY]).send(message)
 
             logging.getLogger('kamenice').info('Reservation confirmation sent to {}'.format(instance.guest))
 
