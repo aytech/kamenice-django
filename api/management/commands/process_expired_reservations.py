@@ -28,8 +28,10 @@ class Command(BaseCommand):
 
             reservations = Reservation.objects.filter(type=RESERVATION_TYPE_NONBINDING, deleted=False)
             for reservation in reservations.all():
-                duration = reservation.created - datetime.now()
-                if duration.days < -1:
+                if reservation.expired is None:
+                    continue
+                duration = reservation.expired - datetime.now()
+                if duration.days < 0:
                     message = Mail(
                         from_email=settings.FROM_EMAIL_ADDRESS,
                         to_emails=','.join(["oyapparov@gmail.com"]))
