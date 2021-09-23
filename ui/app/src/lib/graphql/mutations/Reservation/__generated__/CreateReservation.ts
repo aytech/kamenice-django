@@ -26,9 +26,10 @@ export interface CreateReservation_createReservation_reservation_suite {
 
 export interface CreateReservation_createReservation_reservation {
   __typename: "Reservation";
+  expired: any | null;
   fromDate: any;
-  id: string;
   guest: CreateReservation_createReservation_reservation_guest;
+  id: string;
   meal: ReservationMeal;
   notes: string | null;
   priceAccommodation: any;

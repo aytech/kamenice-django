@@ -43,9 +43,10 @@ export interface SuitesWithReservations_reservations_suite {
 
 export interface SuitesWithReservations_reservations {
   __typename: "Reservation";
+  expired: any | null;
   fromDate: any;
-  id: string;
   guest: SuitesWithReservations_reservations_guest;
+  id: string;
   meal: ReservationMeal;
   notes: string | null;
   priceAccommodation: any;

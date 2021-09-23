@@ -33,14 +33,15 @@ export const SUITES_WITH_RESERVATIONS = gql`
       title
     }
     reservations {
+      expired
       fromDate
-      id
       guest {
         email
         id
         name
         surname
       }
+      id
       meal
       notes
       priceAccommodation

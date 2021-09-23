@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { Roommates_roommates } from "./queries/Roommates/__generated__/Roommates";
-
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -102,6 +100,7 @@ export interface ReservationGuestInput {
 }
 
 export interface ReservationInput {
+  expired?: string | null;
   fromDate?: string | null;
   guestId?: number | null;
   id?: string | null;
@@ -113,7 +112,6 @@ export interface ReservationInput {
   priceMunicipality?: any | null;
   priceTotal?: any | null;
   purpose?: string | null;
-  roommates?: Roommates_roommates[];
   suiteId?: number | null;
   toDate?: string | null;
   type?: string | null;

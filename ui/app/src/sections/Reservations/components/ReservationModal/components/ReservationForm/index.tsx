@@ -14,6 +14,7 @@ import { Suites_suites } from "../../../../../../lib/graphql/queries/Suites/__ge
 import { Prices } from "../../../../../../lib/Prices"
 import { GuestOption, IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
 import { Roommates as RoommatesItem } from "../Roommates"
+import "./styles.css"
 
 interface Props {
   form: FormInstance
@@ -45,6 +46,7 @@ export const ReservationForm = ({
 
   const initialValues: Store & { type?: ReservationTypeKey } = reservation !== undefined ? {
     dates: [ reservation.fromDate, reservation.toDate ],
+    expired: reservation.expired,
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
     notes: reservation.notes,
@@ -67,7 +69,7 @@ export const ReservationForm = ({
     }
   }
 
-  const getReservationPrices = (): ReservationInput => {
+  const getReservationPrices = (): ReservationInput & ReservationInputExtended => {
     const formData = form.getFieldsValue(true)
     const roommates: Roommates_roommates[] = []
     const formDates: Array<Moment> = form.getFieldValue("dates")
@@ -81,7 +83,7 @@ export const ReservationForm = ({
       to = formDates[ 1 ]
     }
 
-    const data: ReservationInput = {
+    const data: ReservationInput & ReservationInputExtended = {
       fromDate: from.format(dateFormat),
       guestId: formData.guest,
       meal: formData.meal,
@@ -96,6 +98,16 @@ export const ReservationForm = ({
     data.roommates = roommates
     return data
   }
+
+  const ExpirationItem = () => reservation?.type === "NONBINDING" ? (
+    <Form.Item
+      label={ t("reservations.expiration") }
+      name="expired">
+      <DatePicker
+        className="select-expiration"
+        placeholder={ t("reservations.expiration-placeholder") } />
+    </Form.Item>
+  ) : null
 
   const calculatePrices = () => {
     if (suite !== undefined && reservation !== undefined) {
@@ -197,6 +209,7 @@ export const ReservationForm = ({
         rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
         <Select options={ ReservationFormHelper.mealOptions } />
       </Form.Item>
+      <ExpirationItem />
       <Form.Item
         hidden={ !additionalInfoVisible }
         label={ t("reservations.purpose") }

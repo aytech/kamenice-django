@@ -32,6 +32,9 @@ class Reservation(BaseModel):
     ]
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     deleted = models.BooleanField(default=False)
+    expired = models.DateTimeField(blank=True, null=True, error_messages={
+        'invalid': _('Enter valid date for the expiration'),
+    })
     from_date = models.DateTimeField(blank=False, null=False, error_messages={
         'invalid': _('Enter valid date for the reservation start date'),
         'null': _('Enter valid date for the reservation start date'),

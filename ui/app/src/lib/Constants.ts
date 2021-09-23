@@ -3,6 +3,7 @@ export const csrfTokenName: string = "csrftoken"
 export const defaultArrivalHour: number = 14
 export const defaultDepartureHour: number = 10
 export const dateFormat = "YYYY-MM-DD HH:mm"
+export const dateFormatShort = "YYYY-MM-DD"
 export const errorMessages = {
   invalidCredentials: "Please enter valid credentials",
   refreshTokenExpired: "Refresh token is expired",

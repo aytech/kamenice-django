@@ -92,6 +92,8 @@
     "created-info": "Rezervace je vytvořena, odeslat potvrzovací e-mail na adresu {{ email }}?",
     "date": "Datum Rezervace",
     "deleted": "Rezervace byla odstraněna!",
+    "expiration": "Platnost",
+    "expiration-placeholder": "Platnost rezervace",
     "form": "Rezervační formulář",
     "hide-info": "Skrýt další informace",
     "hide-prices": "Skrýt ceny",

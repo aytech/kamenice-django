@@ -91,6 +91,7 @@ export interface Roommate extends Guest {
 }
 
 export interface IReservation {
+  expired?: Moment | null
   fromDate: Moment
   guest?: Guest
   meal?: ReservationMeal
@@ -129,6 +130,7 @@ export interface CustomGroupFields {
 
 export interface CustomItemFields {
   color?: string
+  expired?: Moment | null
   guest: Guest
   meal: ReservationMeal
   notes: string | null

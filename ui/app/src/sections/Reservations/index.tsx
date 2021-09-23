@@ -44,6 +44,7 @@ export const Reservations = withRouter(({
     return {
       color: Colors.getReservationColor(reservation.type),
       end_time: moment(reservation.toDate),
+      expired: reservation.expired !== null ? moment(reservation.expired) : null,
       group: reservation.suite.id,
       guest: reservation.guest,
       id: reservation.id,
@@ -129,6 +130,7 @@ export const Reservations = withRouter(({
         setSelectedSuite(suite)
       }
       setSelectedReservation({
+        expired: timelineItem.expired !== null ? moment(timelineItem.expired) : null,
         fromDate: moment(timelineItem.start_time),
         guest: timelineItem.guest,
         id: timelineItem.id,
@@ -220,6 +222,7 @@ export const Reservations = withRouter(({
           if (selected !== undefined) {
             setSelectedReservation({
               ...selected,
+              expired: selected.expired !== null ? moment(selected.expired) : null,
               fromDate: moment(selected.fromDate),
               toDate: moment(selected.toDate)
             })

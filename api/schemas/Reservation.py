@@ -22,7 +22,7 @@ class Reservation(DjangoObjectType):
     class Meta:
         model = ReservationModel
         fields = (
-            'from_date', 'guest', 'id', 'meal', 'notes', 'price_accommodation', 'price_extra', 'price_meal',
+            'expired', 'from_date', 'guest', 'id', 'meal', 'notes', 'price_accommodation', 'price_extra', 'price_meal',
             'price_municipality', 'price_total', 'purpose', 'suite', 'to_date', 'type')
 
 
@@ -51,6 +51,7 @@ class ReservationQuery(ObjectType):
 
 
 class ReservationInput(InputObjectType):
+    expired = String()
     from_date = String()
     guest_id = Int()
     id = ID()
@@ -62,7 +63,6 @@ class ReservationInput(InputObjectType):
     price_municipality = Decimal()
     price_total = Decimal()
     purpose = String()
-    roommates_ids = List(Int)
     suite_id = Int()
     to_date = String()
     type = String()
@@ -159,6 +159,7 @@ class UpdateReservation(Mutation):
             instance = ReservationModel.objects.get(pk=data.id, deleted=False)
 
             if instance:
+                instance.expired = data.expired
                 instance.from_date = data.from_date if data.from_date is not None else instance.from_date
                 instance.to_date = data.to_date if data.to_date is not None else instance.to_date
 

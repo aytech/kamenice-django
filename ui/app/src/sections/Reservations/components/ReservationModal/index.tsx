@@ -6,7 +6,7 @@ import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { GuestOption, IReservation, OptionsType } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
-import { dateFormat } from "../../../../lib/Constants"
+import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
@@ -110,6 +110,7 @@ export const ReservationModal = ({
   const getReservationInput = (): ReservationInput => {
     const formData = form.getFieldsValue(true)
     const formDates: Array<Moment> = form.getFieldValue("dates")
+    const expired: Moment = form.getFieldValue("expired")
     let from, to: Moment
 
     if (formDates === null) {
@@ -119,7 +120,9 @@ export const ReservationModal = ({
       from = formDates[ 0 ]
       to = formDates[ 1 ]
     }
+
     return {
+      expired: expired === null ? null : expired.format(dateFormatShort),
       fromDate: from.format(dateFormat),
       guestId: formData.guest,
       meal: formData.meal,

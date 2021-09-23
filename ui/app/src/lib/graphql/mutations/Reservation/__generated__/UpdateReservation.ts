@@ -26,9 +26,10 @@ export interface UpdateReservation_updateReservation_reservation_suite {
 
 export interface UpdateReservation_updateReservation_reservation {
   __typename: "Reservation";
+  expired: any | null;
   fromDate: any;
-  id: string;
   guest: UpdateReservation_updateReservation_reservation_guest;
+  id: string;
   meal: ReservationMeal;
   notes: string | null;
   priceAccommodation: any;
