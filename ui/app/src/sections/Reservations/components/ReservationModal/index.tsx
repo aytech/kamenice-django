@@ -24,6 +24,7 @@ import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } fr
 import { Confirmation } from "./components/Confirmation"
 import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 import { ReservationForm } from "./components/ReservationForm"
+import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
 
 interface Props {
   close: () => void
@@ -121,8 +122,7 @@ export const ReservationModal = ({
       to = formDates[ 1 ]
     }
 
-    return {
-      expired: expired === null ? null : expired.format(dateFormatShort),
+    const input: ReservationInput = {
       fromDate: from.format(dateFormat),
       guestId: formData.guest,
       meal: formData.meal,
@@ -137,6 +137,12 @@ export const ReservationModal = ({
       toDate: to.format(dateFormat),
       type: formData.type
     }
+
+    if (expired !== undefined && expired !== null) {
+      input.expired = expired.format(dateFormatShort)
+    }
+
+    return input
   }
 
   const submitForm = (): void => {
@@ -178,10 +184,13 @@ export const ReservationModal = ({
     // but the component is rendered only when modal is opened
     if (isOpen === true) {
       form.resetFields()
-      setSelectedGuest(undefined)
       getGuests()
-      if (reservation?.guest?.id !== undefined) {
-        getRoommates({ variables: { guestId: String(reservation.guest.id) } })
+      const reservationGuest = reservation?.guest
+      if (reservationGuest !== undefined && reservationGuest.id !== undefined) {
+        setSelectedGuest(reservationGuest as GuestOption)
+        getRoommates({ variables: { guestId: String(reservationGuest.id) } })
+      } else {
+        setSelectedGuest(undefined)
       }
     }
   }, [ form, getGuests, getRoommates, isOpen, reservation ])
@@ -247,6 +256,8 @@ export const ReservationModal = ({
             reservation={ reservation }
             send={ sendReservationConfirmation }
             visible={ reservationConfirmationVisible } />
+          <ExpirationConfirmation
+            reservation={ reservation } />
           <ReservationForm
             form={ form }
             guest={ selectedGuest }

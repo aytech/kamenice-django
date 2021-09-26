@@ -37,7 +37,10 @@ class Command(BaseCommand):
                         to_emails=','.join(["oyapparov@gmail.com"]))
                     message.dynamic_template_data = {
                         'from': DateHelper.get_formatted_date(reservation.from_date),
+                        'name': reservation.guest.name,
+                        'surname': reservation.guest.surname,
                         'to': DateHelper.get_formatted_date(reservation.to_date),
+                        'url': '{}/rezervace/{}'.format(settings.APP_URL, reservation.id)
                     }
                     message.template_id = os.environ[ENVIRON_EMAIL_EXPIRATION_TEMPLATE]
 

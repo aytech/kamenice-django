@@ -15,7 +15,7 @@ export const Roommates = ({
 }: Props) => {
 
   const { t } = useTranslation()
-
+  
   return guest !== undefined
     && roommates !== undefined
     && roommates.roommates !== null

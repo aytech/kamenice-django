@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { Link, RouteComponentProps, withRouter } from "react-router-dom"
 import { Colors } from "../../../../../../lib/components/Colors"
 import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
-import { refreshTokenName, tokenName, usernameKey } from "../../../../../../lib/Constants"
+import { paths, refreshTokenName, tokenName, uris, usernameKey } from "../../../../../../lib/Constants"
 import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
 import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
 import { MenuItemKey, User } from "../../../../../../lib/Types"
@@ -63,13 +63,13 @@ export const MenuItems = withRouter(({
         className="navigation-items"
         selectedKeys={ [ selectedPage ] }>
         <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-          <Link to="/">{ t("reservations.name") }</Link>
+          <Link to={ uris.reservations }>{ t("reservations.name") }</Link>
         </Menu.Item>
         <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
-          <Link to="/guests">{ t("guests.name-pl") }</Link>
+          <Link to={ paths.guests }>{ t("guests.name-pl") }</Link>
         </Menu.Item>
         <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-          <Link to="/apartma">{ t("living-units") }</Link>
+          <Link to={ paths.suites }>{ t("living-units") }</Link>
         </Menu.Item>
       </Menu >
       <Menu

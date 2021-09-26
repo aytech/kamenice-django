@@ -94,6 +94,7 @@
     "deleted": "Rezervace byla odstraněna!",
     "expiration": "Platnost",
     "expiration-placeholder": "Platnost rezervace",
+    "expired-info": "Platnost rezervace vypršela",
     "form": "Rezervační formulář",
     "hide-info": "Skrýt další informace",
     "hide-prices": "Skrýt ceny",

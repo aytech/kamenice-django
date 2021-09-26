@@ -39,7 +39,7 @@ export const App = () => {
       </Layout.Header>
       <Layout.Content className="app-content">
         <Switch>
-          <Route exact path={ paths.root }>
+          <Route exact path={ paths.reservations }>
             <Reservations
               setPageTitle={ setPageTitle }
               setSelectedPage={ setSelectedPage } />

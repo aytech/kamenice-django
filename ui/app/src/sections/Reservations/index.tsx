@@ -1,4 +1,4 @@
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import { RouteComponentProps, useParams, withRouter } from "react-router-dom"
 import Text from "antd/lib/typography/Text"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
@@ -27,6 +27,8 @@ export const Reservations = withRouter(({
   setPageTitle,
   setSelectedPage
 }: RouteComponentProps & Props) => {
+
+  const { open: openReservation }: { open: string } = useParams()
 
   const { t } = useTranslation()
 
@@ -70,6 +72,17 @@ export const Reservations = withRouter(({
     }
   }
 
+  const updateSelectedReservation = (reservation?: SuitesWithReservations_reservations) => {
+    if (reservation !== undefined) {
+      setSelectedReservation({
+        ...reservation,
+        expired: reservation.expired !== null ? moment(reservation.expired) : null,
+        fromDate: moment(reservation.fromDate),
+        toDate: moment(reservation.toDate)
+      })
+    }
+  }
+
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
@@ -85,10 +98,14 @@ export const Reservations = withRouter(({
       if (reservation !== null) {
         reservationList.push(getTimelineReservationItem(reservation))
       }
+      if (openReservation !== undefined && reservation?.id === openReservation) {
+        updateSelectedReservation(reservation)
+        setReservationModalOpen(true)
+      }
     })
     setItems(reservationList)
 
-  }, [ data ])
+  }, [ data, openReservation ])
 
   useEffect(() => {
     setPageTitle(t("home-title"))
@@ -219,14 +236,7 @@ export const Reservations = withRouter(({
         } }
         isOpen={ reservationModalOpen }
         refetch={ (selected?: IReservation) => {
-          if (selected !== undefined) {
-            setSelectedReservation({
-              ...selected,
-              expired: selected.expired !== null ? moment(selected.expired) : null,
-              fromDate: moment(selected.fromDate),
-              toDate: moment(selected.toDate)
-            })
-          }
+          updateSelectedReservation(selected as SuitesWithReservations_reservations)
           refetch()
         } }
         reservation={ selectedReservation }
