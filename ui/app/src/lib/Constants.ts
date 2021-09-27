@@ -16,10 +16,12 @@ export const paths = {
   reservation_guests: "/rezervace/:hash/hoste",
   reservations: "/rezervace/:open?",
   root: "/",
+  settings: "/settings",
   suites: "/apartma"
 }
 export const uris = {
-  reservations: "/rezervace"
+  reservations: "/rezervace",
+  settings: "/settings"
 }
 export const refreshTokenName: string = "refreshToken"
 export const tokenName: string = "token"

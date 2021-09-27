@@ -1,4 +1,4 @@
-import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined } from "@ant-design/icons"
+import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons"
 import { useMutation } from "@apollo/client"
 import { Avatar, Menu } from "antd"
 import { useCallback } from "react"
@@ -79,6 +79,11 @@ export const MenuItems = withRouter(({
         <Menu.SubMenu
           key="user"
           title={ userAvatar }>
+          <Menu.Item
+            key="settings"
+            icon={ <SettingOutlined /> }>
+            <Link to={ uris.settings }>{ t("settings") }</Link>
+          </Menu.Item>
           <Menu.Item
             key="logout"
             icon={ <LogoutOutlined /> }

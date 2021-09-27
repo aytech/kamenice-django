@@ -1,13 +1,13 @@
 import { Affix, Layout } from "antd"
 import { useState } from "react"
-import { Route, Switch } from "react-router-dom"
+import { Redirect, Route, Switch } from "react-router-dom"
 import { Header } from "./components/Header"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
 import { Guests } from "../Guests"
 import { Suites } from "../Suites"
 import { Login } from "../Login"
-import { paths, usernameKey } from "../../lib/Constants"
+import { paths, uris, usernameKey } from "../../lib/Constants"
 import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
 import { useTranslation } from "react-i18next"
@@ -39,6 +39,9 @@ export const App = () => {
       </Layout.Header>
       <Layout.Content className="app-content">
         <Switch>
+          <Route exact path={ paths.root }>
+            <Redirect to={ uris.reservations } />
+          </Route>
           <Route exact path={ paths.reservations }>
             <Reservations
               setPageTitle={ setPageTitle }
@@ -61,6 +64,9 @@ export const App = () => {
           <Route exact path={ paths.reservation_guests }>
             <ReservationGuests
               setPageTitle={ setPageTitle } />
+          </Route>
+          <Route exact path={ paths.settings }>
+            <NotFound />
           </Route>
           <Route path="*">
             <NotFound />
