@@ -49,6 +49,13 @@ class Reservation(BaseModel):
         'null': _('Select Meal from the list'),
     }, choices=MEAL_CHOICES)
     notes = models.TextField(blank=True, null=True)
+    paying_guest = models.ForeignKey(
+        Guest,
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name='paying_guest'
+    )
     price_accommodation = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
         'null': _('Price for accommodation is required field')
     })

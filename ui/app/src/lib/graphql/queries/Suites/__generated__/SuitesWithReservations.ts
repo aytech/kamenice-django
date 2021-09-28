@@ -36,6 +36,11 @@ export interface SuitesWithReservations_reservations_guest {
   surname: string;
 }
 
+export interface SuitesWithReservations_reservations_payingGuest {
+  __typename: "Guest";
+  id: string;
+}
+
 export interface SuitesWithReservations_reservations_roommates {
   __typename: "Guest";
   id: string;
@@ -54,6 +59,7 @@ export interface SuitesWithReservations_reservations {
   id: string;
   meal: ReservationMeal;
   notes: string | null;
+  payingGuest: SuitesWithReservations_reservations_payingGuest;
   priceAccommodation: any;
   priceExtra: any;
   priceMeal: any;

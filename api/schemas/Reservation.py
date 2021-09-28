@@ -22,8 +22,9 @@ class Reservation(DjangoObjectType):
     class Meta:
         model = ReservationModel
         fields = (
-            'expired', 'from_date', 'guest', 'id', 'meal', 'notes', 'price_accommodation', 'price_extra', 'price_meal',
-            'price_municipality', 'price_total', 'purpose', 'roommates', 'suite', 'to_date', 'type')
+            'expired', 'from_date', 'guest', 'id', 'meal', 'notes', 'paying_guest', 'price_accommodation',
+            'price_extra', 'price_meal', 'price_municipality', 'price_total', 'purpose', 'roommates', 'suite',
+            'to_date', 'type')
 
 
 class ReservationQuery(ObjectType):
@@ -57,6 +58,7 @@ class ReservationInput(InputObjectType):
     id = ID()
     meal = String()
     notes = String()
+    paying_guest_id = Int()
     price_accommodation = Decimal()
     price_extra = Decimal()
     price_meal = Decimal()
@@ -126,9 +128,15 @@ class CreateReservation(Mutation):
             raise Exception(_('The room is already reserved for this period of time'))
 
         try:
-            instance.guest = Guest.objects.get(pk=data.guest_id)
+            instance.guest = Guest.objects.get(pk=data.guest_id, deleted=False)
         except ObjectDoesNotExist:
             raise Exception(_('Please select guest from the list'))
+
+        if data.paying_guest_id is not None:
+            try:
+                instance.paying_guest = Guest.objects.get(pk=data.paying_guest_id, deleted=False)
+            except ObjectDoesNotExist:
+                raise Exception(_('Please select paying guest from the list'))
 
         try:
             instance.suite = Suite.objects.get(pk=data.suite_id)
@@ -191,6 +199,14 @@ class UpdateReservation(Mutation):
                     instance.guest = Guest.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
                     raise Exception(_('Please select guest from the list'))
+
+                if data.paying_guest_id is not None:
+                    try:
+                        instance.paying_guest = Guest.objects.get(pk=data.paying_guest_id, deleted=False)
+                    except ObjectDoesNotExist:
+                        raise Exception(_('Please select paying guest from the list'))
+                else:
+                    instance.paying_guest = None
 
                 # Roommates are recreated from scratch
                 for roommate_id in instance.roommates.all():

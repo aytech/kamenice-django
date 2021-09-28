@@ -96,6 +96,7 @@ export interface IReservation {
   meal?: ReservationMeal
   id?: number | string
   notes?: string | null
+  payingGuest?: { id: string }
   priceAccommodation: string | null
   priceExtra: string | null
   priceMeal: string | null
@@ -134,6 +135,7 @@ export interface CustomItemFields {
   guest: Guest
   meal: ReservationMeal
   notes: string | null
+  payingGuest?: { id: string }
   priceAccommodation: string | null
   priceExtra: string | null
   priceMeal: string | null

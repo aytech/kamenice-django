@@ -17,6 +17,11 @@ export interface CreateReservation_createReservation_reservation_guest {
   surname: string;
 }
 
+export interface CreateReservation_createReservation_reservation_payingGuest {
+  __typename: "Guest";
+  id: string;
+}
+
 export interface CreateReservation_createReservation_reservation_suite {
   __typename: "Suite";
   id: string;
@@ -32,6 +37,7 @@ export interface CreateReservation_createReservation_reservation {
   id: string;
   meal: ReservationMeal;
   notes: string | null;
+  payingGuest: CreateReservation_createReservation_reservation_payingGuest;
   priceAccommodation: any;
   priceExtra: any;
   priceMeal: any;

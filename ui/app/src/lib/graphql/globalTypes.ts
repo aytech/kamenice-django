@@ -88,6 +88,7 @@ export interface ReservationInput {
   id?: string | null;
   meal?: string | null;
   notes?: string | null;
+  payingGuestId?: number | null;
   priceAccommodation?: any | null;
   priceExtra?: any | null;
   priceMeal?: any | null;

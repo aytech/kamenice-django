@@ -44,6 +44,9 @@ export const SUITES_WITH_RESERVATIONS = gql`
       id
       meal
       notes
+      payingGuest {
+        id
+      }
       priceAccommodation
       priceExtra
       priceMeal

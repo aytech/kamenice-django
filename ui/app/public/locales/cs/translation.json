@@ -59,10 +59,12 @@
     "added": "Host {{ name }} {{ surname }} přidán!",
     "deleted": "Host {{ name }} {{ surname }} byl smazán",
     "list": "Seznam hostů",
+    "main": "Hlavní host",
     "name": "Host",
     "new": "Nový host",
     "name-pl": "Hosté",
     "page-title": "Správa hostů",
+    "paying": "Platící host",
     "roommate": "Další host",
     "roommates": "Další hosté",
     "updated": "Host {{ name }} {{ surname }} aktualizován!"
@@ -152,6 +154,9 @@
   "sex": "Pohlaví",
   "surname": "Příjmení",
   "to": "Do",
+  "tooltips": {
+    "paying-guest": "Pokud není vybráno, hlavní host je platící host"
+  },
   "woman": "Žena",
   "yes": "Ano"
 }

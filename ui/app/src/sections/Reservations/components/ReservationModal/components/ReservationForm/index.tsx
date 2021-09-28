@@ -41,6 +41,7 @@ export const ReservationForm = ({
     guest: reservation.guest === undefined ? null : reservation.guest.id,
     meal: reservation.meal,
     notes: reservation.notes,
+    paying: reservation.payingGuest === undefined || reservation.payingGuest === null ? null : reservation.payingGuest.id,
     priceAccommodation: reservation.priceAccommodation,
     priceExtra: reservation.priceAccommodation,
     priceMeal: reservation.priceMeal,
@@ -147,9 +148,9 @@ export const ReservationForm = ({
         }
       })
       setGuestOptions(options)
-      setRoommateOptions(options)
+      setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
     }
-  }, [ guestsData ])
+  }, [ guestsData, reservation?.guest?.id ])
 
   return (
     <Form
@@ -166,7 +167,7 @@ export const ReservationForm = ({
       </Form.Item>
       <Form.Item
         hasFeedback
-        label={ t("guests.name") }
+        label={ t("guests.main") }
         name="guest"
         required
         rules={ [
@@ -238,6 +239,20 @@ export const ReservationForm = ({
         required
         rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
         <Select options={ ReservationFormHelper.mealOptions } />
+      </Form.Item>
+      <Form.Item
+        hasFeedback
+        label={ t("guests.paying") }
+        name="paying"
+        tooltip={ t("tooltips.paying-guest") }>
+        <Select
+          allowClear
+          filterOption={ (input, option): boolean => {
+            const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
+            return match !== undefined && match >= 0
+          } }
+          options={ guestOptions }
+          showSearch />
       </Form.Item>
       <ExpirationItem />
       <Form.Item

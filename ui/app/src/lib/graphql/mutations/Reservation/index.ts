@@ -15,6 +15,9 @@ export const CREATE_RESERVATION = gql`
         id
         meal
         notes
+        payingGuest {
+          id
+        }
         priceAccommodation
         priceExtra
         priceMeal
@@ -58,6 +61,9 @@ export const UPDATE_RESERVATION = gql`
         id
         meal
         notes
+        payingGuest {
+          id
+        }
         priceAccommodation
         priceExtra
         priceMeal
