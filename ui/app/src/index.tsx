@@ -66,6 +66,7 @@ const errorLink = onError(
                 return forward(operation)
               })
           case errorMessages.refreshTokenExpired:
+          case errorMessages.refreshTokenInvalid:
           case errorMessages.unauthorized:
             localStorage.removeItem(tokenName)
             localStorage.removeItem(refreshTokenName)

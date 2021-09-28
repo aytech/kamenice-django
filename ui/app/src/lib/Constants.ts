@@ -7,6 +7,7 @@ export const dateFormatShort = "YYYY-MM-DD"
 export const errorMessages = {
   invalidCredentials: "Please enter valid credentials",
   refreshTokenExpired: "Refresh token is expired",
+  refreshTokenInvalid: "Invalid refresh token",
   signatureExpired: "Signature has expired",
   unauthorized: "Unauthorized"
 }
