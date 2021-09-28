@@ -15,10 +15,8 @@ class Guest(BaseModel):
         'invalid_choice': _('Choose age from the list'),
     }, choices=BaseModel.AGE_CHOICES)
     citizenship = models.CharField(blank=True, max_length=10, null=True, validators=[validate_citizenship])
-    email = models.EmailField(blank=False, null=False, validators=[validate_email], error_messages={
-        'blank': _('E-Mail is required field'),
+    email = models.EmailField(blank=True, null=True, validators=[validate_email], error_messages={
         'invalid': _('Enter valid email address'),
-        'null': _('E-Mail is required field'),
         'unique': _('User with this email already exists'),
     })
     gender = models.CharField(blank=True, max_length=10, null=True, error_messages={

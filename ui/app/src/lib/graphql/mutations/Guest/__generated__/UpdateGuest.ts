@@ -16,7 +16,7 @@ export interface UpdateGuest_updateGuest_guest {
   addressStreet: string | null;
   age: GuestAge | null;
   citizenship: string | null;
-  email: string;
+  email: string | null;
   gender: GuestGender | null;
   identity: string | null;
   id: string;

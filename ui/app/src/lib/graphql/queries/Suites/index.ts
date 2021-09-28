@@ -50,6 +50,9 @@ export const SUITES_WITH_RESERVATIONS = gql`
       priceMunicipality
       priceTotal
       purpose
+      roommates {
+        id
+      }
       suite {
         id
       }

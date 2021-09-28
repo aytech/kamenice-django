@@ -30,10 +30,15 @@ export interface SuitesWithReservations_suites {
 
 export interface SuitesWithReservations_reservations_guest {
   __typename: "Guest";
-  email: string;
+  email: string | null;
   id: string;
   name: string;
   surname: string;
+}
+
+export interface SuitesWithReservations_reservations_roommates {
+  __typename: "Guest";
+  id: string;
 }
 
 export interface SuitesWithReservations_reservations_suite {
@@ -55,6 +60,7 @@ export interface SuitesWithReservations_reservations {
   priceMunicipality: any;
   priceTotal: any;
   purpose: string | null;
+  roommates: SuitesWithReservations_reservations_roommates[];
   suite: SuitesWithReservations_reservations_suite;
   toDate: any;
   type: ReservationType;

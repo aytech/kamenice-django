@@ -11,7 +11,7 @@ import { ReservationInput, ReservationMeal, ReservationType } from "./../../../g
 
 export interface UpdateReservation_updateReservation_reservation_guest {
   __typename: "Guest";
-  email: string;
+  email: string | null;
   id: string;
   name: string;
   surname: string;

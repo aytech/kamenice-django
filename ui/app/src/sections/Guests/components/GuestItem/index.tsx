@@ -1,10 +1,8 @@
-import { EditOutlined, EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons"
+import { EditOutlined } from "@ant-design/icons"
 import { Avatar, Button, List } from "antd"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Colors } from "../../../../lib/components/Colors"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { Roommates } from "../Roommates"
 
 interface Props {
   guest: Guests_guests
@@ -20,10 +18,6 @@ export const GuestItem = ({
 
   const { t } = useTranslation()
 
-  const [ showRoommates, setShowRoommates ] = useState<boolean>(false)
-
-  const toggleShowRoommates = () => setShowRoommates(!showRoommates)
-
   return (
     <>
       <List.Item
@@ -36,12 +30,6 @@ export const GuestItem = ({
               openGuestDrawer()
             } }>
             { t("edit") }
-          </Button>,
-          <Button
-            key="roommates"
-            icon={ showRoommates === true ? <EyeInvisibleOutlined /> : <EyeOutlined /> }
-            onClick={ toggleShowRoommates }>
-            { t("guests.roommates") }
           </Button>
         ] }>
         <List.Item.Meta
@@ -58,9 +46,6 @@ export const GuestItem = ({
           description={ guest.email }
           title={ `${ guest.name } ${ guest.surname }` } />
       </List.Item>
-      <Roommates
-        guest={ guest }
-        show={ showRoommates } />
     </>
   )
 }

@@ -23,7 +23,7 @@ class Reservation(DjangoObjectType):
         model = ReservationModel
         fields = (
             'expired', 'from_date', 'guest', 'id', 'meal', 'notes', 'price_accommodation', 'price_extra', 'price_meal',
-            'price_municipality', 'price_total', 'purpose', 'suite', 'to_date', 'type')
+            'price_municipality', 'price_total', 'purpose', 'roommates', 'suite', 'to_date', 'type')
 
 
 class ReservationQuery(ObjectType):
@@ -63,6 +63,7 @@ class ReservationInput(InputObjectType):
     price_municipality = Decimal()
     price_total = Decimal()
     purpose = String()
+    roommate_ids = List(Int)
     suite_id = Int()
     to_date = String()
     type = String()
@@ -141,6 +142,12 @@ class CreateReservation(Mutation):
 
         instance.save()
 
+        try:
+            for roommate_id in data.roommate_ids:
+                instance.roommates.add(Guest.objects.get(pk=roommate_id))
+        except ObjectDoesNotExist as ex:
+            logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
+
         instance.save()
 
         return CreateReservation(reservation=instance)
@@ -184,6 +191,16 @@ class UpdateReservation(Mutation):
                     instance.guest = Guest.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
                     raise Exception(_('Please select guest from the list'))
+
+                # Roommates are recreated from scratch
+                for roommate_id in instance.roommates.all():
+                    instance.roommates.remove(roommate_id)
+
+                try:
+                    for roommate_id in data.roommate_ids:
+                        instance.roommates.add(Guest.objects.get(pk=roommate_id))
+                except ObjectDoesNotExist as ex:
+                    logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
 
                 try:
                     instance.full_clean()

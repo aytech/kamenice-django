@@ -5,16 +5,13 @@ import Title from "antd/lib/typography/Title"
 import { useTranslation } from "react-i18next"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { Roommates_roommates } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
 
 interface Props {
-  emailRequired: boolean
   form: FormInstance
-  guest?: Guests_guests | Roommates_roommates | null
+  guest?: Guests_guests | null
 }
 
 export const GuestForm = ({
-  emailRequired,
   form,
   guest
 }: Props) => {
@@ -38,32 +35,6 @@ export const GuestForm = ({
     phone: guest?.phoneNumber,
     surname: guest?.surname,
     visa: guest?.visaNumber
-  }
-
-  const EmailFormItem = () => {
-    const EmailInput = (
-      <Input
-        addonBefore={ <MailOutlined /> }
-        placeholder={ t("email") }
-        type="email" />
-    )
-    return emailRequired ? (
-      <Form.Item
-        hasFeedback
-        label={ t("email") }
-        name="email"
-        required
-        rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
-        { EmailInput }
-      </Form.Item>
-    ) : (
-      <Form.Item
-        hasFeedback
-        label={ t("email") }
-        name="email">
-        { EmailInput }
-      </Form.Item>
-    )
   }
 
   return (
@@ -97,7 +68,15 @@ export const GuestForm = ({
         ] }>
         <Input placeholder={ t("surname") } />
       </Form.Item>
-      <EmailFormItem />
+      <Form.Item
+        hasFeedback
+        label={ t("email") }
+        name="email">
+        <Input
+          addonBefore={ <MailOutlined /> }
+          placeholder={ t("email") }
+          type="email" />
+      </Form.Item>
       <Form.Item
         hasFeedback
         label={ t("forms.id-number") }

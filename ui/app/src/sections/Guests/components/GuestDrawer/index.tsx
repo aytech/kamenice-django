@@ -167,7 +167,6 @@ export const GuestDrawer = ({
         loading={ createLoading || updateLoading || deleteLoading }
         paragraph={ { rows: 15 } }>
         <GuestForm
-          emailRequired={ true }
           form={ form }
           guest={ guest } />
       </Skeleton>

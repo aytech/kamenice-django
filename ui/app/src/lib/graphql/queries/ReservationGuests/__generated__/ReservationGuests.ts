@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { GuestAge, GuestGender, RoommateAge, RoommateGender } from "./../../../globalTypes";
+import { GuestAge, GuestGender } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL query operation: ReservationGuests
@@ -16,7 +16,7 @@ export interface ReservationGuests_reservationGuests_guest {
   addressStreet: string | null;
   age: GuestAge | null;
   citizenship: string | null;
-  email: string;
+  email: string | null;
   gender: GuestGender | null;
   identity: string | null;
   id: string;
@@ -27,14 +27,14 @@ export interface ReservationGuests_reservationGuests_guest {
 }
 
 export interface ReservationGuests_reservationGuests_roommates {
-  __typename: "Roommate";
+  __typename: "Guest";
   addressMunicipality: string | null;
   addressPsc: number | null;
   addressStreet: string | null;
-  age: RoommateAge | null;
+  age: GuestAge | null;
   citizenship: string | null;
   email: string | null;
-  gender: RoommateGender | null;
+  gender: GuestGender | null;
   identity: string | null;
   id: string;
   name: string;

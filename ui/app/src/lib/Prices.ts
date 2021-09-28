@@ -1,21 +1,20 @@
 import moment from "moment";
-import { ReservationInput, RoommateAge } from "./graphql/globalTypes";
+import { GuestAge, ReservationInput } from "./graphql/globalTypes";
 import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests";
-import { Roommates_roommates } from "./graphql/queries/Roommates/__generated__/Roommates";
 import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites";
 import { PriceInfo, ReservationInputExtended, ReservationMeal } from "./Types";
 
 interface IPrices {
   calculatePrice: (reservationInput: ReservationInput & ReservationInputExtended) => PriceInfo
-  getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => number
-  getMealPrice: (mealOption?: ReservationMeal, guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => number
-  getPriceExtra: (suite?: Suites_suites, roommates?: Roommates_roommates[]) => number
-  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => number
+  getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
+  getMealPrice: (mealOption?: ReservationMeal, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
+  getPriceExtra: (suite?: Suites_suites, roommates?: Guests_guests[]) => number
+  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
 }
 
 export const Prices: IPrices = {
 
-  getMealPrice: (mealOption?: ReservationMeal | null, guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => {
+  getMealPrice: (mealOption?: ReservationMeal | null, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
     let finalPrice: number = 0
 
     const breakfastPrice: number = 80 // @TODO: make configurable
@@ -23,11 +22,11 @@ export const Prices: IPrices = {
     const childDiscount: number = .40 // @TODO: 40%, make configurable
     const getPrice = (guestPrice: number) => {
       let roommatesPrice: number = 0
-      roommates?.forEach((roommate: Roommates_roommates) => {
+      roommates?.forEach((roommate: Guests_guests) => {
         switch (roommate.age) {
-          case RoommateAge.INFANT: // Child has no meal option
+          case GuestAge.INFANT: // Child has no meal option
             break
-          case RoommateAge.CHILD: // Apply discount
+          case GuestAge.CHILD: // Apply discount
             roommatesPrice = guestPrice - (guestPrice * childDiscount)
             break
           default: // 12+ and adults pay full price
@@ -53,7 +52,7 @@ export const Prices: IPrices = {
     return finalPrice
   },
 
-  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => {
+  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
     const municipalityFee = 21 // @TODO: make configurable
     let numberOfGuests = 0
 
@@ -68,7 +67,7 @@ export const Prices: IPrices = {
     return municipalityFee * numberOfGuests
   },
 
-  getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Roommates_roommates[]) => {
+  getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
     let accomodationPrice: number = 0
     if (suite !== undefined) {
       const basePrice = Number(suite.priceBase)
@@ -83,7 +82,7 @@ export const Prices: IPrices = {
     return accomodationPrice
   },
 
-  getPriceExtra: (suite?: Suites_suites, roommates?: Roommates_roommates[]) => {
+  getPriceExtra: (suite?: Suites_suites, roommates?: Guests_guests[]) => {
     let price: number = 0
 
     if (suite !== undefined) {

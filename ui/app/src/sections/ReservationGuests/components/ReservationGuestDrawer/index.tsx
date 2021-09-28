@@ -111,7 +111,6 @@ export const ReservationGuestDrawer = ({
         loading={ updateLoading }
         paragraph={ { rows: 15 } }>
         <GuestForm
-          emailRequired={ true }
           form={ form }
           guest={ guest } />
       </Skeleton>

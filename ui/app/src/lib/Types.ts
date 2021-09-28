@@ -1,6 +1,5 @@
 import { Moment } from "moment"
 import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
-import { Roommates_roommates } from "./graphql/queries/Roommates/__generated__/Roommates"
 import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
@@ -68,7 +67,7 @@ export interface IGuestData {
 }
 
 export interface Guest {
-  email: string
+  email: string | null
   id?: number | string
   name: string
   surname: string
@@ -103,6 +102,7 @@ export interface IReservation {
   priceMunicipality: string | null
   priceTotal: string | null
   purpose?: string | null
+  roommates?: { id: string }[]
   suite: Suite
   toDate: Moment
   type?: ReservationTypeKey
@@ -140,6 +140,7 @@ export interface CustomItemFields {
   priceMunicipality: string | null
   priceTotal: string | null
   purpose: string | null
+  roommates?: { id: string }[]
   suite: Suite
   type?: ReservationTypeKey
 }
@@ -180,6 +181,6 @@ export interface PriceInfo {
 
 export interface ReservationInputExtended {
   guest?: Guests_guests
-  roommates?: Roommates_roommates[]
+  roommates?: Guests_guests[]
   suite?: Suites_suites
 }

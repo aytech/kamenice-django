@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
-from api.schemas.Roommate import Roommate
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 
 
@@ -19,7 +18,7 @@ class Guest(DjangoObjectType):
 
 class ReservationGuests(ObjectType):
     guest = Field(Guest)
-    roommates = List(Roommate)
+    roommates = List(Guest)
 
 
 class GuestsQuery(ObjectType):
@@ -44,7 +43,7 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.guest.roommate_set.filter(deleted=False).all()
+                roommates=reservation.roommate_set.filter(deleted=False).all()
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
             raise Exception(_('Reservation not found'))
@@ -80,8 +79,13 @@ class CreateGuest(Mutation):
     @user_passes_test(lambda user: user.has_perm('api.add_guest'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
-            GuestModel.objects.get(email=data.email, deleted=False)
-            raise Exception('Uživatel s tímto e-mailem již existuje')
+            GuestModel.objects.get(
+                name=data.name,
+                surname=data.surname,
+                email=data.email,
+                deleted=False
+            )
+            raise Exception(_('Guest already exists'))
         except ObjectDoesNotExist:
             pass
 

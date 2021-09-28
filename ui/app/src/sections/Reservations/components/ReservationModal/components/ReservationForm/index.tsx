@@ -1,5 +1,5 @@
-import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, UsergroupAddOutlined } from "@ant-design/icons"
-import { Button, DatePicker, Form, FormInstance, Input, Select, Typography } from "antd"
+import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
+import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useEffect, useState } from "react"
@@ -9,32 +9,22 @@ import { ReservationFormHelper } from "../../../../../../lib/components/Reservat
 import { dateFormat } from "../../../../../../lib/Constants"
 import { ReservationInput } from "../../../../../../lib/graphql/globalTypes"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { Roommates, Roommates_roommates } from "../../../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
 import { Suites_suites } from "../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../../../lib/Prices"
-import { GuestOption, IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
-import { Roommates as RoommatesItem } from "../Roommates"
+import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
 import "./styles.css"
 
 interface Props {
   form: FormInstance
-  guest?: GuestOption
   guestsData?: Guests
-  openRoommateDrawer: (guest: GuestOption) => void
   reservation?: IReservation
-  roommatesData?: Roommates
-  selectGuest: (guestId: string) => void
   suite?: Suites_suites
 }
 
 export const ReservationForm = ({
   form,
-  guest,
   guestsData,
-  openRoommateDrawer,
   reservation,
-  roommatesData,
-  selectGuest,
   suite
 }: Props) => {
 
@@ -42,6 +32,7 @@ export const ReservationForm = ({
 
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
+  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
 
   const initialValues: Store & { type?: ReservationTypeKey } = reservation !== undefined ? {
@@ -56,7 +47,7 @@ export const ReservationForm = ({
     priceMunicipality: reservation.priceMunicipality,
     priceTotal: reservation.priceTotal,
     purpose: reservation.purpose,
-    roommates: [],
+    roommates: reservation.roommates,
     type: reservation.type
   } : { type: "NONBINDING" }
 
@@ -69,9 +60,32 @@ export const ReservationForm = ({
     }
   }
 
+  const roommateValidator = [
+    {
+      message: t("forms.guest-selected"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        const duplicates: Array<{ id: number }> = form.getFieldValue("roommates").filter((id: { id: number } | undefined) => {
+          return id !== undefined && id.id === value
+        })
+        if (duplicates === undefined || duplicates.length <= 1) {
+          return Promise.resolve()
+        }
+        return Promise.reject(new Error("Fail roommate validation, duplicate value"))
+      }
+    },
+    {
+      message: t("forms.guest-duplicate"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        if (form.getFieldValue("guest") !== value) {
+          return Promise.resolve()
+        }
+        return Promise.reject(new Error("Fail roommate validation, equals to guest"))
+      }
+    }
+  ]
+
   const getReservationPrices = (): ReservationInput & ReservationInputExtended => {
     const formData = form.getFieldsValue(true)
-    const roommates: Roommates_roommates[] = []
     const formDates: Array<Moment> = form.getFieldValue("dates")
     let from, to: Moment
 
@@ -89,13 +103,6 @@ export const ReservationForm = ({
       meal: formData.meal,
       toDate: to.format(dateFormat)
     }
-
-    roommatesData?.roommates?.forEach(roommate => {
-      if (roommate !== undefined && roommate !== null) {
-        roommates.push(roommate)
-      }
-    })
-    data.roommates = roommates
     return data
   }
 
@@ -124,6 +131,10 @@ export const ReservationForm = ({
     }
   }
 
+  const selectGuest = (guestId: number) => {
+    setRoommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
+  }
+
   useEffect(() => {
     if (guestsData !== undefined && guestsData.guests !== null) {
       const options: OptionsType[] = []
@@ -136,6 +147,7 @@ export const ReservationForm = ({
         }
       })
       setGuestOptions(options)
+      setRoommateOptions(options)
     }
   }, [ guestsData ])
 
@@ -172,25 +184,43 @@ export const ReservationForm = ({
           options={ guestOptions }
           showSearch />
       </Form.Item>
-      <RoommatesItem
-        guest={ guest }
-        roommates={ roommatesData } />
-      <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
-        <Button
-          block
-          disabled={ guest === undefined && reservation?.guest === undefined }
-          icon={ <UsergroupAddOutlined /> }
-          onClick={ () => {
-            // Guest can either be explicitly selected,
-            // or pre-selected, e.g. when opening existing reservation
-            const selectedGuest = guest === undefined ? reservation?.guest : guest
-            if (selectedGuest !== undefined) {
-              openRoommateDrawer(selectedGuest as GuestOption)
-            }
-          } }
-          type="dashed">
-          { t("guests.roommate") }
-        </Button>
+      <Form.Item
+        wrapperCol={ { offset: 8, span: 16 } }>
+        <Form.List name="roommates">
+          { (fields, { add, remove }) => (
+            <>
+              { fields.map(({ key, name, fieldKey, ...restField }) => (
+                <Space
+                  align="baseline"
+                  className="roommate-list"
+                  key={ key }>
+                  <Form.Item
+                    hasFeedback
+                    { ...restField }
+                    fieldKey={ [ fieldKey, 'first' ] }
+                    name={ [ name, "id" ] }
+                    rules={ roommateValidator }>
+                    <Select
+                      options={ roommateOptions }
+                      showSearch />
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={ () => {
+                    remove(name)
+                    form.validateFields()
+                  } } />
+                </Space>
+              )) }
+              <Button
+                disabled={ fields.length >= roommateOptions.length }
+                type="dashed"
+                onClick={ () => add() }
+                block
+                icon={ <UsergroupAddOutlined /> }>
+                { t("reservations.add-roommate") }
+              </Button>
+            </>
+          ) }
+        </Form.List>
       </Form.Item>
       <Form.Item
         hasFeedback

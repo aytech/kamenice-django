@@ -65,9 +65,13 @@ class Reservation(BaseModel):
         'null': _('Total price is required field')
     })
     purpose = models.CharField(blank=True, max_length=100, null=True)
+    roommates = models.ManyToManyField(
+        Guest,
+        related_name='+',
+    )
     suite = models.ForeignKey(
         Suite,
-        on_delete=models.DO_NOTHING
+        on_delete=models.CASCADE
     )
     to_date = models.DateTimeField(blank=False, null=False, error_messages={
         'invalid': _('Enter valid date for the reservation end date'),

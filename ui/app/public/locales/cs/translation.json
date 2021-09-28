@@ -33,7 +33,8 @@
     "enter-text": "Zadejte text",
     "field-required": "Pole je povinné",
     "from-list": "Ze seznamu",
-    "guest-duplicate": "Host nemůže být stejný jako spolubydlící",
+    "guest-duplicate": "Další host nemůže být stejný jako hlavní host",
+    "guest-selected": "Host je již vybrán",
     "id-number": "Číslo OP",
     "id-number-full": "Číslo občanského průkazu",
     "login": "Přihlásit",
@@ -85,6 +86,7 @@
   },
   "phone-number": "Telefonní číslo",
   "reservations": {
+    "add-roommate": "Přidat hosta",
     "calculate-prices": "Vypočítat cenu",
     "choose-type": "Vyberte typ rezervace",
     "confirmation-sent": "Potvrzení odesláno na adresu {{ email }}",

@@ -11,7 +11,7 @@
 }
 
 .reservation-modal .roommate-list, .reservation-modal .roommate-list>.ant-space-item:first-child {
-  width: 80%
+  width: 100%
 }
 
 .reservation-modal button.action.delete {

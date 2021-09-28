@@ -4,7 +4,7 @@ import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { GuestOption, IReservation, OptionsType } from "../../../../lib/Types"
+import { IReservation, OptionsType } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
@@ -17,9 +17,6 @@ import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/g
 import { useTranslation } from "react-i18next"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import moment from "moment"
-import { Roommates, RoommatesVariables } from "../../../../lib/graphql/queries/Roommates/__generated__/Roommates"
-import { ROOMMATES } from "../../../../lib/graphql/queries/Roommates"
-import { RoommatesDrawer } from "../../../Guests/components/RoommatesDrawer"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
 import { Confirmation } from "./components/Confirmation"
 import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
@@ -51,8 +48,6 @@ export const ReservationModal = ({
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
-  const [ roommateDrawerOpen, setRoommateDrawerOpen ] = useState<boolean>(false)
-  const [ selectedGuest, setSelectedGuest ] = useState<GuestOption>()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
@@ -104,9 +99,6 @@ export const ReservationModal = ({
   const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
     onError: networkErrorHandler
   })
-  const [ getRoommates, { loading: roommatesLoading, data: roommatesData, refetch: refetchRoommates } ] = useLazyQuery<Roommates, RoommatesVariables>(ROOMMATES, {
-    onError: networkErrorHandler
-  })
 
   const getReservationInput = (): ReservationInput => {
     const formData = form.getFieldsValue(true)
@@ -133,6 +125,7 @@ export const ReservationModal = ({
       priceMunicipality: formData.priceMunicipality,
       priceTotal: formData.priceTotal,
       purpose: formData.purpose,
+      roommateIds: formData.roommates.map((roommate: { id: string }) => roommate.id),
       suiteId: reservation !== undefined ? +reservation.suite.id : null,
       toDate: to.format(dateFormat),
       type: formData.type
@@ -164,14 +157,6 @@ export const ReservationModal = ({
     }
   }
 
-  const selectGuest = (guestId: string) => {
-    const guest = guestsData?.guests?.find(guest => guest?.id === guestId)
-    if (guest !== undefined && guest !== null) {
-      setSelectedGuest(guest)
-      getRoommates({ variables: { guestId: guest.id } })
-    }
-  }
-
   const addGuestOption = (guest: Guests_guests) => {
     setGuestOptions(guestOptions.concat({
       label: `${ guest.name } ${ guest.surname }`,
@@ -185,15 +170,8 @@ export const ReservationModal = ({
     if (isOpen === true) {
       form.resetFields()
       getGuests()
-      const reservationGuest = reservation?.guest
-      if (reservationGuest !== undefined && reservationGuest.id !== undefined) {
-        setSelectedGuest(reservationGuest as GuestOption)
-        getRoommates({ variables: { guestId: String(reservationGuest.id) } })
-      } else {
-        setSelectedGuest(undefined)
-      }
     }
-  }, [ form, getGuests, getRoommates, isOpen, reservation ])
+  }, [ form, getGuests, isOpen, reservation ])
 
   return (
     <>
@@ -246,7 +224,6 @@ export const ReservationModal = ({
             || createLoading
             || deleteLoading
             || guestsLoading
-            || roommatesLoading
             || updateLoading
           }
           tip={ `${ t("loading") }...` }>
@@ -260,15 +237,8 @@ export const ReservationModal = ({
             reservation={ reservation } />
           <ReservationForm
             form={ form }
-            guest={ selectedGuest }
             guestsData={ guestsData }
-            openRoommateDrawer={ (guest: GuestOption) => {
-              setSelectedGuest(guest)
-              setRoommateDrawerOpen(true)
-            } }
             reservation={ reservation }
-            roommatesData={ roommatesData }
-            selectGuest={ selectGuest }
             suite={ suite } />
         </Spin>
       </Modal>
@@ -276,11 +246,6 @@ export const ReservationModal = ({
         close={ () => setGuestDrawerOpen(false) }
         refetch={ (guest: Guests_guests) => addGuestOption(guest) }
         visible={ guestDrawerOpen } />
-      <RoommatesDrawer
-        close={ () => setRoommateDrawerOpen(false) }
-        guest={ selectedGuest }
-        refetch={ refetchRoommates }
-        visible={ roommateDrawerOpen } />
     </>
   )
 }
