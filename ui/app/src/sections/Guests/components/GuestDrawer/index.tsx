@@ -1,14 +1,13 @@
 import { useState } from "react"
 import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
-import { CloseOutlined, WarningOutlined } from "@ant-design/icons"
+import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
-import { CREATE_GUEST, DELETE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
+import { CREATE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables, CreateGuest_createGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UpdateGuest, UpdateGuestVariables, UpdateGuest_updateGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
-import { DeleteGuest, DeleteGuestVariables, DeleteGuest_deleteGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
 import { useTranslation } from "react-i18next"
 import { GuestForm } from "../GuestForm"
 import { IGuestForm } from "../../../../lib/Types"
@@ -38,9 +37,6 @@ export const GuestDrawer = ({
     onError: networkErrorHandler
   })
   const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {
-    onError: networkErrorHandler
-  })
-  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {
     onError: networkErrorHandler
   })
 
@@ -126,37 +122,11 @@ export const GuestDrawer = ({
       width={ 500 }
       visible={ visible }
       footer={
-        <>
-          { guest !== undefined && guest !== null &&
-            <Popconfirm
-              cancelText={ t("no") }
-              icon={ <WarningOutlined /> }
-              okText={ t("yes") }
-              onConfirm={ () => {
-                deleteGuest({ variables: { guestId: guest.id } })
-                  .then((value: FetchResult<DeleteGuest>) => {
-                    actionCallback((deletedGuest: DeleteGuest_deleteGuest_guest) => {
-                      message.success(t("deleted-extended", { name: deletedGuest.name, surname: deletedGuest.surname }))
-                    }, value.data?.deleteGuest?.guest)
-                  })
-              } }
-              title={ t("forms.delete-confirm") }>
-              <Button
-                danger
-                style={ {
-                  float: "left"
-                } }
-                type="primary">
-                { t('forms.delete') }
-              </Button>
-            </Popconfirm>
-          }
-          <Button
-            onClick={ submitForm }
-            type="primary">
-            { (guest === undefined || guest === null) ? t("forms.create") : t("forms.update") }
-          </Button>
-        </>
+        <Button
+          onClick={ submitForm }
+          type="primary">
+          { (guest === undefined || guest === null) ? t("forms.create") : t("forms.update") }
+        </Button>
       }
       footerStyle={ {
         padding: "16px 20px",
@@ -164,7 +134,7 @@ export const GuestDrawer = ({
       } }>
       <Skeleton
         active
-        loading={ createLoading || updateLoading || deleteLoading }
+        loading={ createLoading || updateLoading }
         paragraph={ { rows: 15 } }>
         <GuestForm
           form={ form }

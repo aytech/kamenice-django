@@ -87,6 +87,7 @@ export const Guests = withRouter(({
             <GuestItem
               guest={ guest }
               openGuestDrawer={ () => setDrawerVisible(true) }
+              refetch={ refetch }
               selectGuest={ setSelectedGuest } />
           ) } />
       </Skeleton>

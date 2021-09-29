@@ -114,6 +114,45 @@ class CreateGuest(Mutation):
         return CreateGuest(guest=instance)
 
 
+class CreateReservationGuest(Mutation):
+    class Arguments:
+        data = ReservationGuestInput(required=True)
+
+    guest = Field(Guest)
+
+    @classmethod
+    def mutate(cls, _root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            instance = GuestModel(
+                age=data.age,
+                address_municipality=data.address_municipality,
+                address_psc=data.address_psc,
+                address_street=data.address_street,
+                citizenship=data.citizenship,
+                email=data.email,
+                gender=data.gender,
+                identity=data.identity,
+                name=data.name,
+                phone_number=data.phone_number,
+                surname=data.surname,
+                visa_number=data.visa_number
+            )
+
+            try:
+                instance.full_clean()
+            except ValidationError as errors:
+                raise Exception(errors.messages[0])
+
+            instance.save()
+            reservation.roommates.add(instance)
+
+            return CreateReservationGuest(guest=instance)
+
+        except ObjectDoesNotExist:
+            raise Exception(_('Guest cannot be created'))
+
+
 class UpdateGuest(Mutation):
     class Arguments:
         data = GuestInput(required=True)
@@ -212,3 +251,22 @@ class DeleteGuest(Mutation):
             return DeleteGuest(guest=instance)
         except ObjectDoesNotExist:
             return DeleteGuest(guest=None)
+
+
+class DeleteReservationGuest(Mutation):
+    class Arguments:
+        data = ReservationGuestInput(required=True)
+
+    guest = Field(Guest)
+
+    @classmethod
+    def mutate(cls, _root, _info, data=None):
+        try:
+            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            for roommate in reservation.roommates.all():
+                if roommate.id == int(data.id):
+                    reservation.roommates.remove(roommate)
+                    return DeleteReservationGuest(guest=roommate)
+            return DeleteReservationGuest(guest=None)
+        except ObjectDoesNotExist:
+            raise Exception(_('Guest cannot be deleted'))

@@ -69,7 +69,7 @@ export const ReservationGuestDrawer = ({
     }
   }, [ form, visible ])
 
-  return guest === undefined ? null : (
+  return (
     <Drawer
       closeIcon={ (
         <Popconfirm
@@ -92,7 +92,7 @@ export const ReservationGuestDrawer = ({
         </Popconfirm>
       ) }
       placement="left"
-      title={ `${ t("guests.name") } - ${ guest.name } ${ guest.surname }` }
+      title={ guest === undefined ? t("guests.new") : `${ guest.name } ${ guest.surname }` }
       width={ 500 }
       visible={ visible }
       footer={

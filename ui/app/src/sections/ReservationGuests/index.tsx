@@ -9,6 +9,7 @@ import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables 
 import { Error } from "./components/Error"
 import { Guest } from "./components/Guest"
 import { ReservationGuestDrawer } from "./components/Drawer"
+import { Roommates } from "./components/Roommates"
 
 interface Props {
   setPageTitle: (title: string | null) => void
@@ -20,12 +21,12 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
 
   const { t } = useTranslation()
 
-  const [ roommates, setRoommates ] = useState<Guests_guests[]>()
+  const [ roommates, setRoommates ] = useState<Guests_guests[]>([])
   const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
   const [ guestDrawerVisible, setGuestDrawerVisible ] = useState<boolean>(false)
   const [ showError, setShowError ] = useState<boolean>(false)
 
-  const { loading, data } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
+  const { loading, data, refetch } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
     onCompleted: () => setPageTitle(t("guests.page-title")), // Set page title only on successful fetch, otherwise error element will be shown
     onError: () => {
@@ -54,20 +55,16 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
           openDrawer={ (reservationGuest: Guests_guests) => {
             setSelectedGuest(reservationGuest)
             setGuestDrawerVisible(true)
+          } } />
+        <Roommates
+          hash={ hash }
+          loading={ loading }
+          openDrawer={ (roommate?: Guests_guests) => {
+            setSelectedGuest(roommate)
+            setGuestDrawerVisible(true)
           } }
-          title={ t("guests.main") } />
-        {
-          roommates?.map(roommate => (
-            <Guest
-              guest={ roommate }
-              loading={ loading }
-              openDrawer={ () => {
-                setSelectedGuest(roommate)
-                setGuestDrawerVisible(true)
-              } }
-              title={ t("guests.roommates") } />
-          ))
-        }
+          refetch={ refetch }
+          roommates={ roommates } />
         <Error show={ showError } />
       </Spin>
       <ReservationGuestDrawer

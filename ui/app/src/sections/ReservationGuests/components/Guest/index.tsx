@@ -9,17 +9,31 @@ interface Props {
   guest?: Guests_guests | null
   loading: boolean
   openDrawer: (guest: Guests_guests) => void
-  title: string
 }
 
 export const Guest = ({
   guest,
   loading,
-  openDrawer,
-  title
+  openDrawer
 }: Props) => {
 
   const { t } = useTranslation()
+
+  const headerActions = (guest: Guests_guests) => {
+    if (loading === true) {
+      return []
+    }
+    return [
+      <Button
+        key="edit"
+        icon={ <EditOutlined /> }
+        onClick={ () => {
+          openDrawer(guest)
+        } }>
+        { t("edit") }
+      </Button>
+    ]
+  }
 
   return guest === undefined
     || guest === null ? null : (
@@ -30,23 +44,12 @@ export const Guest = ({
       footer={
         <Text disabled>&reg;{ t("company-name") }</Text>
       }
-      header={ <h4>{ title }</h4> }
+      header={ <h2>{ t("guests.main") }</h2> }
       itemLayout="horizontal"
       renderItem={ (guest: Guests_guests) => (
         <List.Item
           key={ guest.id }
-          actions={
-            loading ? [] : [
-              <Button
-                key="edit"
-                icon={ <EditOutlined /> }
-                onClick={ () => {
-                  openDrawer(guest)
-                } }>
-                { t("edit") }
-              </Button>,
-            ]
-          }>
+          actions={ headerActions(guest) }>
           <List.Item.Meta
             avatar={
               <Avatar
