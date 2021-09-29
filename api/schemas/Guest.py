@@ -43,7 +43,7 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.roommate_set.filter(deleted=False).all()
+                roommates=reservation.roommates.all()
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
             raise Exception(_('Reservation not found'))
@@ -156,30 +156,41 @@ class UpdateReservationGuest(Mutation):
 
     guest = Field(Guest)
 
+    @staticmethod
+    def update_instance(instance, data):
+        instance.age = data.age if data.age is not None else instance.age
+        instance.address_municipality = data.address_municipality if data.address_municipality is not None \
+            else instance.address_municipality
+        instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc
+        instance.address_street = data.address_street if data.address_street is not None \
+            else instance.address_street
+        instance.citizenship = data.citizenship if data.citizenship is not None else instance.citizenship
+        instance.email = data.email if data.email is not None else instance.email
+        instance.gender = data.gender if data.gender is not None else instance.gender
+        instance.identity = data.identity if data.identity is not None else instance.identity
+        instance.name = data.name if data.name is not None else instance.name
+        instance.phone_number = data.phone_number if data.phone_number is not None else instance.phone_number
+        instance.surname = data.surname if data.surname is not None else instance.surname
+        instance.visa_number = data.visa_number if data.visa_number is not None else instance.visa_number
+
+        instance.full_clean()
+        instance.save()
+
+        return instance
+
     @classmethod
     def mutate(cls, _root, _info, data=None):
         try:
             reservation = Reservation.objects.get(hash=data.hash, deleted=False)
-            instance = reservation.guest
-            if instance.id == int(data.id):
-                instance.age = data.age if data.age is not None else instance.age
-                instance.address_municipality = data.address_municipality if data.address_municipality is not None \
-                    else instance.address_municipality
-                instance.address_psc = data.address_psc if data.address_psc is not None else instance.address_psc
-                instance.address_street = data.address_street if data.address_street is not None \
-                    else instance.address_street
-                instance.citizenship = data.citizenship if data.citizenship is not None else instance.citizenship
-                instance.email = data.email if data.email is not None else instance.email
-                instance.gender = data.gender if data.gender is not None else instance.gender
-                instance.identity = data.identity if data.identity is not None else instance.identity
-                instance.name = data.name if data.name is not None else instance.name
-                instance.phone_number = data.phone_number if data.phone_number is not None else instance.phone_number
-                instance.surname = data.surname if data.surname is not None else instance.surname
-                instance.visa_number = data.visa_number if data.visa_number is not None else instance.visa_number
-
-                instance.full_clean()
-                instance.save()
-            return UpdateGuest(guest=instance)
+            guest = reservation.guest
+            roommates = reservation.roommates.all()
+            if guest.id == int(data.id):
+                return UpdateGuest(guest=UpdateReservationGuest.update_instance(guest, data))
+            else:
+                for roommate in roommates:
+                    if roommate.id == int(data.id):
+                        return UpdateGuest(guest=UpdateReservationGuest.update_instance(roommate, data))
+            return UpdateGuest(guest=None)
         except ObjectDoesNotExist:
             raise Exception(_('Guest cannot be updated'))
 

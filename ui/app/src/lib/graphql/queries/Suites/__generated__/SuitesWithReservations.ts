@@ -59,7 +59,7 @@ export interface SuitesWithReservations_reservations {
   id: string;
   meal: ReservationMeal;
   notes: string | null;
-  payingGuest: SuitesWithReservations_reservations_payingGuest;
+  payingGuest: SuitesWithReservations_reservations_payingGuest | null;
   priceAccommodation: any;
   priceExtra: any;
   priceMeal: any;

@@ -274,7 +274,7 @@ class SendConfirmationEmail(Mutation):
                 to_emails=','.join([instance.guest.email]))
             message.dynamic_template_data = {
                 'from': DateHelper.get_formatted_date(instance.from_date),
-                'guests': 1 + instance.guest.roommate_set.count(),
+                'guests': 1 + instance.roommates.count(),
                 'meal': instance.read_meal(instance.meal),
                 'price': str(instance.price_total),
                 'to': DateHelper.get_formatted_date(instance.to_date),

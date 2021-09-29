@@ -9,12 +9,14 @@ interface Props {
   guest?: Guests_guests | null
   loading: boolean
   openDrawer: (guest: Guests_guests) => void
+  title: string
 }
 
 export const Guest = ({
   guest,
   loading,
-  openDrawer
+  openDrawer,
+  title
 }: Props) => {
 
   const { t } = useTranslation()
@@ -28,7 +30,7 @@ export const Guest = ({
       footer={
         <Text disabled>&reg;{ t("company-name") }</Text>
       }
-      header={ <h4>{ t("guests.name") }</h4> }
+      header={ <h4>{ title }</h4> }
       itemLayout="horizontal"
       renderItem={ (guest: Guests_guests) => (
         <List.Item

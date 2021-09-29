@@ -37,7 +37,7 @@ export interface CreateReservation_createReservation_reservation {
   id: string;
   meal: ReservationMeal;
   notes: string | null;
-  payingGuest: CreateReservation_createReservation_reservation_payingGuest;
+  payingGuest: CreateReservation_createReservation_reservation_payingGuest | null;
   priceAccommodation: any;
   priceExtra: any;
   priceMeal: any;

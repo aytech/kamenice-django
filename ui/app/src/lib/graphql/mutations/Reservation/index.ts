@@ -70,6 +70,9 @@ export const UPDATE_RESERVATION = gql`
         priceMunicipality
         priceTotal
         purpose
+        roommates {
+          id
+        }
         suite {
           id
           number

@@ -43,7 +43,7 @@ export const ReservationForm = ({
     notes: reservation.notes,
     paying: reservation.payingGuest === undefined || reservation.payingGuest === null ? null : reservation.payingGuest.id,
     priceAccommodation: reservation.priceAccommodation,
-    priceExtra: reservation.priceAccommodation,
+    priceExtra: reservation.priceExtra,
     priceMeal: reservation.priceMeal,
     priceMunicipality: reservation.priceMunicipality,
     priceTotal: reservation.priceTotal,
@@ -88,7 +88,8 @@ export const ReservationForm = ({
   const getReservationPrices = (): ReservationInput & ReservationInputExtended => {
     const formData = form.getFieldsValue(true)
     const formDates: Array<Moment> = form.getFieldValue("dates")
-    let from, to: Moment
+    let from: Moment
+    let to: Moment
 
     if (formDates === null) {
       from = moment()
@@ -102,6 +103,7 @@ export const ReservationForm = ({
       fromDate: from.format(dateFormat),
       guestId: formData.guest,
       meal: formData.meal,
+      roommates: formData.roommates,
       toDate: to.format(dateFormat)
     }
     return data
@@ -121,7 +123,6 @@ export const ReservationForm = ({
     if (suite !== undefined && reservation !== undefined) {
       const input: ReservationInput & ReservationInputExtended = getReservationPrices()
       input.suite = suite
-      input.roommates = []
       if (input.guestId !== undefined && input.guestId !== null) {
         const guest = guestsData?.guests?.find(guest => guest?.id === input.guestId)
         if (guest !== null) {
@@ -241,7 +242,6 @@ export const ReservationForm = ({
         <Select options={ ReservationFormHelper.mealOptions } />
       </Form.Item>
       <Form.Item
-        hasFeedback
         label={ t("guests.paying") }
         name="paying"
         tooltip={ t("tooltips.paying-guest") }>

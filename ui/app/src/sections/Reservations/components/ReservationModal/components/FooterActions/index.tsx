@@ -29,7 +29,8 @@ export const RemoveButton = ({
 
   const { t } = useTranslation()
 
-  return reservation !== undefined && reservation.id !== undefined ? (
+  return reservation !== undefined
+    && reservation.id !== undefined ? (
     <Popconfirm
       cancelText={ t("no") }
       okText={ t("yes") }
@@ -58,7 +59,10 @@ export const SendConfirmationButton = ({
 
   const { t } = useTranslation()
 
-  return reservation !== undefined && reservation.id !== undefined ? (
+  return reservation !== undefined
+    && reservation.id !== undefined
+    && reservation.guest?.email !== undefined
+    && reservation.guest.email !== null ? (
     <Popconfirm
       cancelText={ t("no") }
       okText={ t("yes") }

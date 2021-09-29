@@ -517,13 +517,9 @@
             "description": "",
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Guest",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Guest",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

@@ -94,6 +94,10 @@ export const ReservationModal = ({
     onError: networkErrorHandler
   })
   const [ sendConfirmation, { loading: confirmationLoading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
+    onCompleted: () => {
+      message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email }))
+      closeModal()
+    },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
   const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
@@ -157,10 +161,6 @@ export const ReservationModal = ({
   const sendReservationConfirmation = (reservation?: IReservation) => {
     if (reservation !== undefined && reservation.id !== undefined) {
       sendConfirmation({ variables: { reservationId: String(reservation.id) } })
-        .then(() => {
-          message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email }))
-          closeModal()
-        })
     }
   }
 

@@ -22,6 +22,11 @@ export interface UpdateReservation_updateReservation_reservation_payingGuest {
   id: string;
 }
 
+export interface UpdateReservation_updateReservation_reservation_roommates {
+  __typename: "Guest";
+  id: string;
+}
+
 export interface UpdateReservation_updateReservation_reservation_suite {
   __typename: "Suite";
   id: string;
@@ -37,13 +42,14 @@ export interface UpdateReservation_updateReservation_reservation {
   id: string;
   meal: ReservationMeal;
   notes: string | null;
-  payingGuest: UpdateReservation_updateReservation_reservation_payingGuest;
+  payingGuest: UpdateReservation_updateReservation_reservation_payingGuest | null;
   priceAccommodation: any;
   priceExtra: any;
   priceMeal: any;
   priceMunicipality: any;
   priceTotal: any;
   purpose: string | null;
+  roommates: UpdateReservation_updateReservation_reservation_roommates[];
   suite: UpdateReservation_updateReservation_reservation_suite;
   toDate: any;
   type: ReservationType;

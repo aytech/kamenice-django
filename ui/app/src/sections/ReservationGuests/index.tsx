@@ -8,7 +8,7 @@ import { RESERVATION_GUESTS } from "../../lib/graphql/queries/ReservationGuests"
 import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables } from "../../lib/graphql/queries/ReservationGuests/__generated__/ReservationGuests"
 import { Error } from "./components/Error"
 import { Guest } from "./components/Guest"
-import { ReservationGuestDrawer } from "./components/ReservationGuestDrawer"
+import { ReservationGuestDrawer } from "./components/Drawer"
 
 interface Props {
   setPageTitle: (title: string | null) => void
@@ -54,7 +54,20 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
           openDrawer={ (reservationGuest: Guests_guests) => {
             setSelectedGuest(reservationGuest)
             setGuestDrawerVisible(true)
-          } } />
+          } }
+          title={ t("guests.main") } />
+        {
+          roommates?.map(roommate => (
+            <Guest
+              guest={ roommate }
+              loading={ loading }
+              openDrawer={ () => {
+                setSelectedGuest(roommate)
+                setGuestDrawerVisible(true)
+              } }
+              title={ t("guests.roommates") } />
+          ))
+        }
         <Error show={ showError } />
       </Spin>
       <ReservationGuestDrawer
