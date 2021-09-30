@@ -16,7 +16,7 @@ export interface DeleteReservationGuest_deleteReservationGuest_guest {
 }
 
 export interface DeleteReservationGuest_deleteReservationGuest {
-  __typename: "UpdateReservationGuest";
+  __typename: "DeleteReservationGuest";
   guest: DeleteReservationGuest_deleteReservationGuest_guest | null;
 }
 

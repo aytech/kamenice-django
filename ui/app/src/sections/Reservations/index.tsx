@@ -16,6 +16,7 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
+import { timelineGroupsVar } from "../../cache"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -32,7 +33,6 @@ export const Reservations = withRouter(({
 
   const { t } = useTranslation()
 
-  const [ groups, setGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
@@ -94,7 +94,7 @@ export const Reservations = withRouter(({
         suiteList.push(suite)
       }
     })
-    setGroups(suiteList)
+    timelineGroupsVar(suiteList)
 
     data?.reservations?.forEach(reservation => {
       if (reservation !== null) {
@@ -117,7 +117,7 @@ export const Reservations = withRouter(({
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
   const onCanvasClick = (groupId: number, time: number) => {
-    const selectedGroup = groups.find(group => group.id === groupId)
+    const selectedGroup = timelineGroupsVar().find(group => group.id === groupId)
     if (selectedGroup !== undefined) {
       const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
       if (suite !== null) {
@@ -189,7 +189,7 @@ export const Reservations = withRouter(({
                 <Title level={ 5 }>{ group.title }</Title>
               )
             } }
-            groups={ groups }
+            groups={ timelineGroupsVar() }
             itemRenderer={ props => <ReservationItem { ...props } /> }
             items={ items }
             lineHeight={ 60 }

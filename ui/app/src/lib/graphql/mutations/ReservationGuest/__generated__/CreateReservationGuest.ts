@@ -27,7 +27,7 @@ export interface CreateReservationGuest_createReservationGuest_guest {
 }
 
 export interface CreateReservationGuest_createReservationGuest {
-  __typename: "UpdateReservationGuest";
+  __typename: "CreateReservationGuest";
   guest: CreateReservationGuest_createReservationGuest_guest | null;
 }
 

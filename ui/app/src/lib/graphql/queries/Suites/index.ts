@@ -62,5 +62,9 @@ export const SUITES_WITH_RESERVATIONS = gql`
       toDate
       type
     }
+    timelineGroups @client {
+      number
+      title
+    }
   }
 `

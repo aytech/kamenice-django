@@ -4,7 +4,7 @@ import './index.css'
 import { getCookie } from "./lib/Cookie"
 import moment from 'moment'
 import 'moment/locale/cs'
-import { ApolloClient, ApolloError, ApolloLink, ApolloProvider, FetchResult, from, fromPromise, HttpLink, InMemoryCache } from '@apollo/client'
+import { ApolloClient, ApolloError, ApolloLink, ApolloProvider, FetchResult, from, fromPromise, HttpLink } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
@@ -15,6 +15,7 @@ import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
 import "./i18n"
 import { Suspense } from 'react'
 import { Splash } from './sections/Splash'
+import { cache } from './cache'
 
 moment.locale("cs")
 
@@ -82,31 +83,7 @@ const errorLink = onError(
 )
 
 apolloClient = new ApolloClient({
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          guests: {
-            merge: false
-          },
-          reservations: {
-            merge: false
-          },
-          suiteReservations: {
-            merge: false
-          },
-          suites: {
-            merge: false
-          }
-        }
-      },
-      Reservation: {
-        fields: {
-          roommates: { merge: false }
-        }
-      }
-    }
-  }),
+  cache,
   link: from([
     errorLink,
     authMiddleware,

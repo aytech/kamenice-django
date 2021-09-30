@@ -1,0 +1,8 @@
+type TimelimeGroup {
+  number: String!
+  title: String!
+}
+
+extend type Query {
+  timelineGroups: TimelimeGroup
+}
