@@ -84,6 +84,7 @@ export const Suites = withRouter(({
           renderItem={ suite => (
             <SuiteItem
               openSuite={ openSuite }
+              refetch={ refetch }
               suite={ suite } />
           ) } />
       </Skeleton>

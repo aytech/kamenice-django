@@ -137,10 +137,10 @@
     "created": "Místnost byla vytvořena",
     "currency": "Kč",
     "deleted": "Místnost byla odstraněna",
+    "capacity": "Maximální kapacita",
     "name": "Název místnosti",
     "new": "Nová místnost",
     "number": "Číslo místnosti",
-    "number-beds": "Počet lůžek",
     "price-base": "Základní cena",
     "price-child": "Cena za dítě",
     "price-extra": "Cena za přistýlku",
@@ -155,6 +155,7 @@
   "surname": "Příjmení",
   "to": "Do",
   "tooltips": {
+    "room-capacity": "Maximální počet lůžek (lůžka a přistýlky) v místnosti",
     "paying-guest": "Pokud není vybráno, hlavní host je platící host"
   },
   "woman": "Žena",

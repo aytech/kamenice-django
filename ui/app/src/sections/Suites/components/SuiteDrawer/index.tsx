@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react"
-import { Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
+import { Button, Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { CloseOutlined } from "@ant-design/icons"
+import { BulbOutlined, CloseOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
 import { SuiteForm } from "../../../../lib/Types"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { CreateSuite, CreateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
-import { CREATE_SUITE, DELETE_SUITE, UPDATE_SUITE } from "../../../../lib/graphql/mutations/Suite"
+import { CREATE_SUITE, UPDATE_SUITE } from "../../../../lib/graphql/mutations/Suite"
 import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
-import { DeleteSuite, DeleteSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
 import { useTranslation } from "react-i18next"
-import { RoomActions } from "./components/RoomActions"
 import Title from "antd/lib/typography/Title"
 
 interface Props {
@@ -33,9 +31,6 @@ export const SuiteDrawer = ({
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
   const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuite, CreateSuiteVariables>(CREATE_SUITE, {
-    onError: networkErrorHandler
-  })
-  const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
     onError: networkErrorHandler
   })
   const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE, {
@@ -100,15 +95,6 @@ export const SuiteDrawer = ({
       })
   }
 
-  const deleteSuiteHandle = (suiteId: string) => {
-    deleteSuite({ variables: { suiteId } })
-      .then((value: FetchResult<DeleteSuite>) => {
-        actionCallback(() => {
-          message.success(t("rooms.deleted"))
-        }, value.data?.deleteSuite?.suite)
-      })
-  }
-
   const closeDrawer = (): void => {
     if (form.isFieldsTouched()) {
       setConfirmClose(true)
@@ -139,10 +125,11 @@ export const SuiteDrawer = ({
         </Popconfirm>
       ) }
       footer={
-        <RoomActions
-          deleteSuite={ deleteSuiteHandle }
-          submitForm={ submitForm }
-          suite={ suite } />
+        <Button
+          onClick={ submitForm }
+          type="primary">
+          { suite === undefined ? t("forms.create") : t("forms.update") }
+        </Button>
       }
       footerStyle={ {
         textAlign: "right"
@@ -155,7 +142,6 @@ export const SuiteDrawer = ({
         size="large"
         spinning={
           createLoading
-          || deleteLoading
           || updateLoading
         }
         tip={ `${ t("loading") }...` }>
@@ -174,7 +160,7 @@ export const SuiteDrawer = ({
           </Form.Item>
           <Form.Item
             hasFeedback
-            label={ t("rooms.number-beds") }
+            label={ t("rooms.capacity") }
             name="beds"
             required
             rules={ [
@@ -183,8 +169,12 @@ export const SuiteDrawer = ({
                 message: t("forms.enter-number"),
                 pattern: /^[0-9]+$/
               }
-            ] }>
-            <Input placeholder={ t("rooms.number-beds") } type="number" />
+            ] }
+            tooltip={ {
+              icon: <BulbOutlined />,
+              title: t("tooltips.room-capacity")
+            } }>
+            <Input placeholder={ t("rooms.capacity") } type="number" />
           </Form.Item>
           <Form.Item
             hasFeedback
