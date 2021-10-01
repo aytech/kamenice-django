@@ -1,8 +1,28 @@
+type SelectedGuest {
+  addressMunicipality: String
+  addressPsc: String
+  addressStreet: String
+  age: String
+  citizenship: String
+  email: String
+  gender: String
+  identity: String
+  id: Int
+  name: String!
+  phoneNumber: String
+  surname: String!
+  visaNumber: String
+}
+type SelectedSuite {
+  numberBeds: Int!
+}
 type TimelimeGroup {
   number: String!
   title: String!
 }
 
 extend type Query {
+  selectedGuest: SelectedGuest
+  selectedSuite: SelectedSuite
   timelineGroups: TimelimeGroup
 }

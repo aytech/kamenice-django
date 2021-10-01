@@ -10,6 +10,8 @@ import { Error } from "./components/Error"
 import { Guest } from "./components/Guest"
 import { ReservationGuestDrawer } from "./components/Drawer"
 import { Roommates } from "./components/Roommates"
+import { selectedGuest, selectedSuite } from "../../cache"
+import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 
 interface Props {
   setPageTitle: (title: string | null) => void
@@ -22,13 +24,15 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
   const { t } = useTranslation()
 
   const [ roommates, setRoommates ] = useState<Guests_guests[]>([])
-  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests>()
   const [ guestDrawerVisible, setGuestDrawerVisible ] = useState<boolean>(false)
   const [ showError, setShowError ] = useState<boolean>(false)
 
   const { loading, data, refetch } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
     variables: { reservationHash: hash },
-    onCompleted: () => setPageTitle(t("guests.page-title")), // Set page title only on successful fetch, otherwise error element will be shown
+    onCompleted: () => {
+      // Set page title only on successful fetch, otherwise error element will be shown
+      setPageTitle(t("guests.page-title"))
+    },
     onError: () => {
       setPageTitle(null)
       setShowError(true)
@@ -37,12 +41,16 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
 
   useEffect(() => {
     const roommateList: Guests_guests[] = []
+    const suite = data?.reservationGuests?.suite
     data?.reservationGuests?.roommates?.forEach(roommate => {
       if (roommate !== null) {
         roommateList.push(roommate)
       }
     })
     setRoommates(roommateList)
+    if (suite !== undefined && suite !== null) {
+      selectedSuite(suite as Suites_suites)
+    }
   }, [ data ])
 
   return (
@@ -53,14 +61,14 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
           guest={ data?.reservationGuests?.guest }
           loading={ loading }
           openDrawer={ (reservationGuest: Guests_guests) => {
-            setSelectedGuest(reservationGuest)
+            selectedGuest(reservationGuest)
             setGuestDrawerVisible(true)
           } } />
         <Roommates
           hash={ hash }
           loading={ loading }
-          openDrawer={ (roommate?: Guests_guests) => {
-            setSelectedGuest(roommate)
+          openDrawer={ (roommate: Guests_guests | null) => {
+            selectedGuest(roommate)
             setGuestDrawerVisible(true)
           } }
           refetch={ refetch }
@@ -69,7 +77,7 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
       </Spin>
       <ReservationGuestDrawer
         close={ () => setGuestDrawerVisible(false) }
-        guest={ selectedGuest }
+        refetch={ refetch }
         reservationHash={ hash }
         visible={ guestDrawerVisible } />
     </>

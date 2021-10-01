@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-28 22:58+0200\n"
+"POT-Creation-Date: 2021-09-30 17:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,13 +148,25 @@ msgstr "Rezervace nenalezena"
 msgid "Guest already exists"
 msgstr "Host již existuje"
 
-#: .\api\schemas\Guest.py:150
+#: .\api\schemas\Guest.py:129
+msgid "Accommodation capacity exceeded"
+msgstr "Překročena ubytovací kapacita"
+
+#: .\api\schemas\Guest.py:158
+msgid "Guest cannot be created"
+msgstr "Hosta nelze vytvořit"
+
+#: .\api\schemas\Guest.py:194
 msgid "Guest not found"
 msgstr "Host nenalezen"
 
-#: .\api\schemas\Guest.py:184
+#: .\api\schemas\Guest.py:239
 msgid "Guest cannot be updated"
 msgstr "Hosta nelze aktualizovat"
+
+#: .\api\schemas\Guest.py:277
+msgid "Guest cannot be deleted"
+msgstr "Hosta nelze smazat"
 
 #: .\api\schemas\Reservation.py:128 .\api\schemas\Reservation.py:184
 msgid "The room is already reserved for this period of time"

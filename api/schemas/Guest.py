@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
+from api.schemas.Suite import Suite
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 
 
@@ -19,6 +20,7 @@ class Guest(DjangoObjectType):
 class ReservationGuests(ObjectType):
     guest = Field(Guest)
     roommates = List(Guest)
+    suite = Field(Suite)
 
 
 class GuestsQuery(ObjectType):
@@ -43,7 +45,8 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.roommates.all()
+                roommates=reservation.roommates.all(),
+                suite=reservation.suite
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
             raise Exception(_('Reservation not found'))
@@ -124,6 +127,10 @@ class CreateReservationGuest(Mutation):
     def mutate(cls, _root, _info, data=None):
         try:
             reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+
+            if reservation.suite.number_beds <= (reservation.roommates.count() + 1):  # +1 for main host
+                raise Exception(_('Accommodation capacity exceeded'))
+
             instance = GuestModel(
                 age=data.age,
                 address_municipality=data.address_municipality,

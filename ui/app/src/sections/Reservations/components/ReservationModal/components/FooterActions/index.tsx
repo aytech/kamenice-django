@@ -1,6 +1,7 @@
 import { CloseCircleOutlined, NotificationOutlined, SaveOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
+import { selectedGuest } from "../../../../../../cache";
 import { IReservation } from "../../../../../../lib/Types";
 
 interface RemoveProps {
@@ -92,7 +93,10 @@ export const AddGuestButton = ({
       <Button
         className="action add"
         icon={ <UserAddOutlined /> }
-        onClick={ openGuestDrawer } />
+        onClick={ () => {
+          selectedGuest(null)
+          openGuestDrawer()
+        } } />
     </Tooltip>
   )
 }

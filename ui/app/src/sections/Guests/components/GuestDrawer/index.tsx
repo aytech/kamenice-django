@@ -5,29 +5,28 @@ import "./styles.css"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { CREATE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables, CreateGuest_createGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UpdateGuest, UpdateGuestVariables, UpdateGuest_updateGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { GuestForm } from "../GuestForm"
 import { IGuestForm } from "../../../../lib/Types"
 import { FormHelper } from "../../../../lib/components/FormHelper"
+import { selectedGuest } from "../../../../cache"
 
 interface Props {
   close: () => void
-  guest?: Guests_guests | null
   refetch?: (guest?: any) => void
   visible: boolean
 }
 
 export const GuestDrawer = ({
   close,
-  guest,
   refetch,
   visible
 }: Props) => {
 
   const { t } = useTranslation()
+  const guest = selectedGuest()
 
   const [ form ] = Form.useForm()
 
@@ -136,9 +135,7 @@ export const GuestDrawer = ({
         active
         loading={ createLoading || updateLoading }
         paragraph={ { rows: 15 } }>
-        <GuestForm
-          form={ form }
-          guest={ guest } />
+        <GuestForm form={ form } />
       </Skeleton>
     </Drawer>
   )

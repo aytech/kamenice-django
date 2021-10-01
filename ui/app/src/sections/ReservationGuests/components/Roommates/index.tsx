@@ -3,6 +3,7 @@ import { ApolloError, useMutation } from "@apollo/client"
 import { Avatar, Button, Col, List, message, Popconfirm, Row, Tooltip } from "antd"
 import Text from "antd/lib/typography/Text"
 import { useTranslation } from "react-i18next"
+import { selectedSuite } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
 import { DELETE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
 import { DeleteReservationGuest, DeleteReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/DeleteReservationGuest"
@@ -11,7 +12,7 @@ import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generate
 interface Props {
   hash?: string,
   loading: boolean
-  openDrawer: (guest?: Guests_guests) => void
+  openDrawer: (guest: Guests_guests | null) => void
   refetch?: () => void
   roommates: Guests_guests[]
 }
@@ -68,6 +69,21 @@ export const Roommates = ({
     ]
   }
 
+  const AddGuestButton = () => {
+    const suite = selectedSuite()
+    return suite !== undefined
+      && suite !== null
+      // total guests = roommates + main guest
+      && suite.numberBeds > (roommates.length + 1) ? (
+      <Tooltip title={ t("guests.add") }>
+        <Button
+          onClick={ () => openDrawer(null) }>
+          <UserAddOutlined />
+        </Button>
+      </Tooltip>
+    ) : null
+  }
+
   return (
     <List
       bordered={ true }
@@ -83,12 +99,7 @@ export const Roommates = ({
             <h2>{ t("guests.roommates") }</h2>
           </Col>
           <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
-            <Tooltip title={ t("guests.add") }>
-              <Button
-                onClick={ () => openDrawer(undefined) }>
-                <UserAddOutlined />
-              </Button>
-            </Tooltip>
+            <AddGuestButton />
           </Col>
         </Row>
       ) }

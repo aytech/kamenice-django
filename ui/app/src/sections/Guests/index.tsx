@@ -12,6 +12,7 @@ import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
 import { MenuItemKey } from "../../lib/Types"
 import Text from "antd/lib/typography/Text"
+import { selectedGuest } from "../../cache"
 
 interface Props {
   setPageTitle: (title: string) => void
@@ -27,8 +28,6 @@ export const Guests = withRouter(({
 
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
-
-  const [ selectedGuest, setSelectedGuest ] = useState<Guests_guests | null>(null)
 
   const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
     onError: (reason: ApolloError) => message.error(reason.message)
@@ -73,7 +72,7 @@ export const Guests = withRouter(({
                 <Tooltip title={ t("guests.add") }>
                   <Button
                     onClick={ () => {
-                      setSelectedGuest(null)
+                      selectedGuest(null)
                       setDrawerVisible(true)
                     } }>
                     <UserAddOutlined />
@@ -87,13 +86,11 @@ export const Guests = withRouter(({
             <GuestItem
               guest={ guest }
               openGuestDrawer={ () => setDrawerVisible(true) }
-              refetch={ refetch }
-              selectGuest={ setSelectedGuest } />
+              refetch={ refetch } />
           ) } />
       </Skeleton>
       <GuestDrawer
         close={ () => setDrawerVisible(false) }
-        guest={ selectedGuest }
         refetch={ refetch }
         visible={ drawerVisible } />
     </>

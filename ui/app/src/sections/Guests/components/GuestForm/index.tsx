@@ -3,20 +3,19 @@ import { Form, FormInstance, Input, Select } from "antd"
 import { Store } from "antd/lib/form/interface"
 import Title from "antd/lib/typography/Title"
 import { useTranslation } from "react-i18next"
+import { selectedGuest } from "../../../../cache"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 
 interface Props {
   form: FormInstance
-  guest?: Guests_guests | null
 }
 
 export const GuestForm = ({
-  form,
-  guest
+  form
 }: Props) => {
 
   const { t } = useTranslation()
+  const guest = selectedGuest()
 
   const initialValues: Store = {
     age: guest?.age,

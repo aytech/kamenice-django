@@ -33,6 +33,27 @@ export const RESERVATION_GUESTS = gql`
         surname
         visaNumber
       }
+      suite {
+        numberBeds
+      }
+    }
+    selectedGuest @client {
+      addressMunicipality
+      addressPsc
+      addressStreet
+      age
+      citizenship
+      email
+      gender
+      identity
+      id
+      name
+      phoneNumber
+      surname
+      visaNumber
+    }
+    selectedSuite @client {
+      numberBeds
     }
   }
 `

@@ -4,28 +4,43 @@ import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
 import { useEffect } from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { UPDATE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
+import { selectedGuest } from "../../../../cache"
+import { CREATE_RESERVATON_GUEST, UPDATE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
+import { CreateReservationGuest, CreateReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/CreateReservationGuest"
 import { UpdateReservationGuest, UpdateReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/UpdateReservationGuest"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { IGuestForm } from "../../../../lib/Types"
 import { GuestForm } from "../../../Guests/components/GuestForm"
 
 interface Props {
   close: () => void
-  guest?: Guests_guests
+  refetch: () => void
   reservationHash: string
   visible: boolean
 }
 
 export const ReservationGuestDrawer = ({
   close,
-  guest,
+  refetch,
   reservationHash,
   visible
 }: Props) => {
 
   const { t } = useTranslation()
+  const guest = selectedGuest()
 
+  const [ createGuest, { loading: createLoading } ] = useMutation<CreateReservationGuest, CreateReservationGuestVariables>(CREATE_RESERVATON_GUEST, {
+    onCompleted: (value: CreateReservationGuest) => {
+      const createdGuest = value.createReservationGuest?.guest
+      if (createdGuest !== undefined && createdGuest !== null) {
+        message.success(t("guests.added", { name: createdGuest.name, surname: createdGuest.surname }))
+      }
+      if (refetch !== undefined) {
+        refetch()
+      }
+      close()
+    },
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
   const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationGuest, UpdateReservationGuestVariables>(UPDATE_RESERVATON_GUEST)
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
@@ -50,15 +65,19 @@ export const ReservationGuestDrawer = ({
           surname: formData.surname,
           visaNumber: formData.visa
         }
-        updateGuest({ variables: { data: { id: String(guest?.id), hash: reservationHash, ...variables } } })
-          .then((value: FetchResult<UpdateReservationGuest>) => {
-            const guest = value.data?.updateReservationGuest?.guest
-            if (guest !== undefined && guest !== null) {
-              message.success(t("guests.updated", { name: guest.name, surname: guest.surname }))
-            }
-            close()
-          })
-          .catch((reason: ApolloError) => message.error(reason.message))
+        if (guest === null) {
+          createGuest({ variables: { data: { hash: reservationHash, ...variables } } })
+        } else {
+          updateGuest({ variables: { data: { id: String(guest.id), hash: reservationHash, ...variables } } })
+            .then((value: FetchResult<UpdateReservationGuest>) => {
+              const updatedGuest = value.data?.updateReservationGuest?.guest
+              if (updatedGuest !== undefined && updatedGuest !== null) {
+                message.success(t("guests.updated", { name: updatedGuest.name, surname: updatedGuest.surname }))
+              }
+              close()
+            })
+            .catch((reason: ApolloError) => message.error(reason.message))
+        }
       })
       .catch(() => message.error(t("errors.invalid-form")))
   }
@@ -92,14 +111,14 @@ export const ReservationGuestDrawer = ({
         </Popconfirm>
       ) }
       placement="left"
-      title={ guest === undefined ? t("guests.new") : `${ guest.name } ${ guest.surname }` }
+      title={ guest === null ? t("guests.new") : `${ guest.name } ${ guest.surname }` }
       width={ 500 }
       visible={ visible }
       footer={
         <Button
           onClick={ submitForm }
           type="primary">
-          { t("forms.save") }
+          { guest === null ? t("forms.create") : t("forms.update") }
         </Button>
       }
       footerStyle={ {
@@ -108,11 +127,9 @@ export const ReservationGuestDrawer = ({
       } }>
       <Skeleton
         active
-        loading={ updateLoading }
+        loading={ updateLoading || createLoading }
         paragraph={ { rows: 15 } }>
-        <GuestForm
-          form={ form }
-          guest={ guest } />
+        <GuestForm form={ form } />
       </Skeleton>
     </Drawer>
   )
