@@ -22,7 +22,9 @@ type TimelimeGroup {
 }
 
 extend type Query {
+  pageTitle: String!
   selectedGuest: SelectedGuest
+  selectedPage: String!
   selectedSuite: SelectedSuite
   timelineGroups: TimelimeGroup
 }

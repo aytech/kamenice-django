@@ -1,20 +1,19 @@
+import { useQuery } from "@apollo/client"
 import Title from "antd/lib/typography/Title"
+import { APP } from "../../../../lib/graphql/queries/App"
 
-interface Props {
-  title: string | null
-}
+export const PageTitle = () => {
 
-export const PageTitle = ({
-  title
-}: Props) => {
-  return title === null ? null : (
+  const { data } = useQuery(APP)
+
+  return data.pageTitle === null ? null : (
     <Title
       level={ 3 }
       style={ {
         borderBottom: "1px solid #e1e1e1",
         paddingBottom: ".3em"
       } }>
-      { title }
+      { data.pageTitle }
     </Title>
   )
 }

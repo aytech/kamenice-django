@@ -1,5 +1,4 @@
 import { Affix, Layout } from "antd"
-import { useState } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 import { Header } from "./components/Header"
 import { NotFound } from "../NotFound"
@@ -10,15 +9,9 @@ import { Login } from "../Login"
 import { paths, uris, usernameKey } from "../../lib/Constants"
 import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
-import { useTranslation } from "react-i18next"
-import { MenuItemKey, User } from "../../lib/Types"
+import { User } from "../../lib/Types"
 
 export const App = () => {
-
-  const { t } = useTranslation()
-
-  const [ pageTitle, setPageTitle ] = useState<string | null>(`${ t("loading") }...`)
-  const [ selectedPage, setSelectedPage ] = useState<MenuItemKey>("user")
 
   const getUser = (): User | null => {
     const username = localStorage.getItem(usernameKey)
@@ -30,12 +23,10 @@ export const App = () => {
   return (
     <Layout id="app">
       <Affix offsetTop={ 0 } className="app__affix-header">
-        <Header
-          selectedPage={ selectedPage }
-          user={ getUser() } />
+        <Header user={ getUser() } />
       </Affix>
       <Layout.Header>
-        <PageTitle title={ pageTitle } />
+        <PageTitle />
       </Layout.Header>
       <Layout.Content className="app-content">
         <Switch>
@@ -43,27 +34,19 @@ export const App = () => {
             <Redirect to={ uris.reservations } />
           </Route>
           <Route exact path={ paths.reservations }>
-            <Reservations
-              setPageTitle={ setPageTitle }
-              setSelectedPage={ setSelectedPage } />
+            <Reservations />
           </Route>
           <Route exact path={ paths.suites }>
-            <Suites
-              setPageTitle={ setPageTitle }
-              setSelectedPage={ setSelectedPage } />
+            <Suites />
           </Route>
           <Route exact path={ paths.guests }>
-            <Guests
-              setPageTitle={ setPageTitle }
-              setSelectedPage={ setSelectedPage } />
+            <Guests />
           </Route>
           <Route exact path={ paths.login }>
-            <Login
-              setPageTitle={ setPageTitle } />
+            <Login />
           </Route>
           <Route exact path={ paths.reservation_guests }>
-            <ReservationGuests
-              setPageTitle={ setPageTitle } />
+            <ReservationGuests />
           </Route>
           <Route exact path={ paths.settings }>
             <NotFound />

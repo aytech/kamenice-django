@@ -3,15 +3,12 @@ import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { RouteComponentProps, withRouter } from "react-router-dom"
+import { pageTitle } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { errorMessages, refreshTokenName, tokenName, usernameKey } from "../../lib/Constants"
 import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
 import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/Token/__generated__/TokenAuth"
 import "./styles.css"
-
-interface Props {
-  setPageTitle: (title: string) => void
-}
 
 const layout: FormProps = {
   labelCol: {
@@ -39,9 +36,8 @@ const tailLayout = {
 };
 
 export const Login = withRouter(({
-  history,
-  setPageTitle
-}: RouteComponentProps & Props) => {
+  history
+}: RouteComponentProps) => {
 
   const { t } = useTranslation()
 
@@ -77,8 +73,8 @@ export const Login = withRouter(({
   }
 
   useEffect(() => {
-    setPageTitle(t("pages.login"))
-  }, [ setPageTitle, t ])
+    pageTitle(t("pages.login"))
+  }, [ t ])
 
   return (
     <Layout.Content>

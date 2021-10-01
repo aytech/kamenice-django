@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import { withRouter } from "react-router-dom"
 import { Button, Col, List, message, Row, Skeleton, Tooltip } from "antd"
 import Text from "antd/lib/typography/Text"
 import { SuiteDrawer } from "./components/SuiteDrawer"
@@ -8,19 +8,11 @@ import "./styles.css"
 import { ApolloError, useQuery } from "@apollo/client"
 import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
-import { MenuItemKey } from "../../lib/Types"
 import { SuiteItem } from "./components/SuiteItem"
 import { AppstoreAddOutlined } from "@ant-design/icons"
+import { pageTitle, selectedPage } from "../../cache"
 
-interface Props {
-  setPageTitle: (title: string) => void
-  setSelectedPage: (page: MenuItemKey) => void
-}
-
-export const Suites = withRouter(({
-  setPageTitle,
-  setSelectedPage
-}: RouteComponentProps & Props) => {
+export const Suites = withRouter(() => {
 
   const { t } = useTranslation()
 
@@ -48,9 +40,9 @@ export const Suites = withRouter(({
   }, [ data ])
 
   useEffect(() => {
-    setPageTitle(t("living-units"))
-    setSelectedPage("suites")
-  }, [ setPageTitle, setSelectedPage, t ])
+    pageTitle(t("living-units"))
+    selectedPage("suites")
+  }, [ t ])
 
   return (
     <>

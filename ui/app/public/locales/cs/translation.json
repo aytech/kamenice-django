@@ -84,7 +84,8 @@
   "no": "Ne",
   "number": "Číslo",
   "pages": {
-    "login": "Přihlášení"
+    "login": "Přihlášení",
+    "settings": "Nastavení"
   },
   "phone-number": "Telefonní číslo",
   "reservations": {
@@ -150,7 +151,6 @@
     "updated": "Místnost byla aktualizována"
   },
   "send": "Odeslat",
-  "settings": "Nastavení",
   "sex": "Pohlaví",
   "surname": "Příjmení",
   "to": "Do",

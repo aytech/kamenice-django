@@ -1,4 +1,4 @@
-import { RouteComponentProps, useParams, withRouter } from "react-router-dom"
+import { useParams, withRouter } from "react-router-dom"
 import Text from "antd/lib/typography/Text"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, MenuItemKey } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
@@ -16,18 +16,10 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
-import { timelineGroups } from "../../cache"
-
-interface Props {
-  setPageTitle: (title: string) => void
-  setSelectedPage: (page: MenuItemKey) => void
-}
+import { pageTitle, selectedPage, timelineGroups } from "../../cache"
 
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Reservations = withRouter(({
-  setPageTitle,
-  setSelectedPage
-}: RouteComponentProps & Props) => {
+export const Reservations = withRouter(() => {
 
   const { open: openReservation }: { open: string } = useParams()
 
@@ -110,9 +102,9 @@ export const Reservations = withRouter(({
   }, [ data, openReservation ])
 
   useEffect(() => {
-    setPageTitle(t("home-title"))
-    setSelectedPage("reservation")
-  }, [ setPageTitle, setSelectedPage, t ])
+    pageTitle(t("home-title"))
+    selectedPage("reservation")
+  }, [ t ])
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation

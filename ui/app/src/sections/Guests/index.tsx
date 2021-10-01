@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import { withRouter } from "react-router-dom"
 import { Button, Col, List, message, Row, Skeleton, Tooltip } from "antd"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
@@ -10,19 +10,10 @@ import { GuestDrawer } from "./components/GuestDrawer"
 import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
-import { MenuItemKey } from "../../lib/Types"
 import Text from "antd/lib/typography/Text"
-import { selectedGuest } from "../../cache"
+import { pageTitle, selectedGuest, selectedPage } from "../../cache"
 
-interface Props {
-  setPageTitle: (title: string) => void
-  setSelectedPage: (page: MenuItemKey) => void
-}
-
-export const Guests = withRouter(({
-  setPageTitle,
-  setSelectedPage
-}: RouteComponentProps & Props) => {
+export const Guests = withRouter(() => {
 
   const { t } = useTranslation()
 
@@ -46,9 +37,9 @@ export const Guests = withRouter(({
   }, [ data ])
 
   useEffect(() => {
-    setPageTitle(t("guests.page-title"))
-    setSelectedPage("guests")
-  }, [ setPageTitle, setSelectedPage, t ])
+    pageTitle(t("guests.page-title"))
+    selectedPage("guests")
+  }, [ t ])
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons"
-import { useMutation } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { Avatar, Menu } from "antd"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -9,22 +9,22 @@ import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
 import { paths, refreshTokenName, tokenName, uris, usernameKey } from "../../../../../../lib/Constants"
 import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
 import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
-import { MenuItemKey, User } from "../../../../../../lib/Types"
+import { APP } from "../../../../../../lib/graphql/queries/App"
+import { User } from "../../../../../../lib/Types"
 import "./styles.css"
 
 interface Props {
-  selectedPage: MenuItemKey
   user: User | null
 }
 
 export const MenuItems = withRouter(({
   history,
-  selectedPage,
   user
 }: RouteComponentProps & Props) => {
 
   const { t } = useTranslation()
 
+  const { data: appData } = useQuery(APP)
   const [ revokeToken ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
 
   const redirectToLogin = useCallback(() => {
@@ -61,7 +61,7 @@ export const MenuItems = withRouter(({
       <Menu
         mode="horizontal"
         className="navigation-items"
-        selectedKeys={ [ selectedPage ] }>
+        selectedKeys={ [ appData.selectedPage ] }>
         <Menu.Item key="reservation" icon={ <BookOutlined /> }>
           <Link to={ uris.reservations }>{ t("reservations.name") }</Link>
         </Menu.Item>
@@ -75,7 +75,7 @@ export const MenuItems = withRouter(({
       <Menu
         className="user"
         mode="horizontal"
-        selectedKeys={ [ selectedPage ] }>
+        selectedKeys={ [ appData.selectedPage ] }>
         <Menu.SubMenu
           key="user"
           title={ userAvatar }>

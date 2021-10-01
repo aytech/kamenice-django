@@ -10,14 +10,10 @@ import { Error } from "./components/Error"
 import { Guest } from "./components/Guest"
 import { ReservationGuestDrawer } from "./components/Drawer"
 import { Roommates } from "./components/Roommates"
-import { selectedGuest, selectedSuite } from "../../cache"
+import { pageTitle, selectedGuest, selectedSuite } from "../../cache"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 
-interface Props {
-  setPageTitle: (title: string | null) => void
-}
-
-export const ReservationGuests = ({ setPageTitle }: Props) => {
+export const ReservationGuests = () => {
 
   let { hash }: { hash: string } = useParams()
 
@@ -31,10 +27,10 @@ export const ReservationGuests = ({ setPageTitle }: Props) => {
     variables: { reservationHash: hash },
     onCompleted: () => {
       // Set page title only on successful fetch, otherwise error element will be shown
-      setPageTitle(t("guests.page-title"))
+      pageTitle(t("guests.page-title"))
     },
     onError: () => {
-      setPageTitle(null)
+      pageTitle("")
       setShowError(true)
     }
   })
