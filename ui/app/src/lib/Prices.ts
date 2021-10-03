@@ -7,14 +7,14 @@ import { PriceInfo, ReservationInputExtended, ReservationMeal } from "./Types";
 interface IPrices {
   calculatePrice: (reservationInput: ReservationInput & ReservationInputExtended) => PriceInfo
   getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
-  getMealPrice: (mealOption?: ReservationMeal, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
+  getMealPrice: (numberOfDays: number, mealOption?: ReservationMeal, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
   getPriceExtra: (suite?: Suites_suites, roommates?: Guests_guests[]) => number
-  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
+  getMunicipalityFee: (numberOfDays: number, guest?: Guests_guests | null, roommates?: Guests_guests[]) => number
 }
 
 export const Prices: IPrices = {
 
-  getMealPrice: (mealOption?: ReservationMeal | null, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
+  getMealPrice: (numberOfDays: number, mealOption?: ReservationMeal | null, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
     let finalPrice: number = 0
 
     const breakfastPrice: number = 80 // @TODO: make configurable
@@ -49,10 +49,10 @@ export const Prices: IPrices = {
         break
     }
 
-    return finalPrice
+    return finalPrice * numberOfDays
   },
 
-  getMunicipalityFee: (guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
+  getMunicipalityFee: (numberOfDays: number, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
     const municipalityFee = 21 // @TODO: make configurable
     let numberOfGuests = 0
 
@@ -64,7 +64,7 @@ export const Prices: IPrices = {
       numberOfGuests += roommates.length
     }
 
-    return municipalityFee * numberOfGuests
+    return (municipalityFee * numberOfGuests) * numberOfDays
   },
 
   getAccomodationPrice: (numberOfDays: number, suite?: Suites_suites, guest?: Guests_guests | null, roommates?: Guests_guests[]) => {
@@ -79,6 +79,11 @@ export const Prices: IPrices = {
         accomodationPrice = (accomodationPrice * numberOfDays) - ((accomodationPrice * numberOfDays) * .12) // 12% discount. @TODO: make percent configurable
       }
     }
+
+    if (roommates !== undefined && roommates.length > 0) {
+      return accomodationPrice * (roommates.length + 1) // accounts for main guest
+    }
+
     return accomodationPrice
   },
 
@@ -130,27 +135,27 @@ export const Prices: IPrices = {
     }
 
     priceAccommodation = Prices.getAccomodationPrice(numberOfDays, reservationInput.suite, reservationInput.guest, reservationInput.roommates)
-    priceMeal = Prices.getMealPrice(reservationInput.meal as ReservationMeal, reservationInput.guest, reservationInput.roommates)
+    priceMeal = Prices.getMealPrice(numberOfDays, reservationInput.meal as ReservationMeal, reservationInput.guest, reservationInput.roommates)
     priceExtra = Prices.getPriceExtra(reservationInput.suite, reservationInput.roommates)
     priceTotal = priceAccommodation
 
     // Calculate meal price only if guest or roommates were selected
-    if (
-      (reservationInput.guest !== undefined && reservationInput.guest !== undefined)
-      || (reservationInput.roommates !== undefined && reservationInput.roommates.length > 0)) {
-      priceMeal *= numberOfDays
-      priceTotal += priceMeal
-    }
+    // if (
+    //   (reservationInput.guest !== undefined && reservationInput.guest !== undefined)
+    //   || (reservationInput.roommates !== undefined && reservationInput.roommates.length > 0)) {
+    //   priceMeal *= numberOfDays
+    //   priceTotal += priceMeal
+    // }
 
     if (priceExtra > 0) {
       priceExtra *= numberOfDays
     }
 
     if (numberOfDays > 0) {
-      priceMunicipality = Prices.getMunicipalityFee(reservationInput.guest, reservationInput.roommates)
+      priceMunicipality = Prices.getMunicipalityFee(numberOfDays, reservationInput.guest, reservationInput.roommates)
     }
 
-    priceTotal += (priceExtra + priceMunicipality)
+    priceTotal += (priceMeal + priceExtra + priceMunicipality)
 
     // Steps:
     // 1. Calculate base price for a room.

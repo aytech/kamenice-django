@@ -54,6 +54,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
       priceTotal
       purpose
       roommates {
+        age
         id
       }
       suite {

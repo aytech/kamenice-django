@@ -1,5 +1,5 @@
 import { BookOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons"
-import { useMutation } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { Avatar, Menu } from "antd"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -10,11 +10,14 @@ import { paths, refreshTokenName, tokenName, uris } from "../../../../../../lib/
 import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
 import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
 import { TokenAuth_tokenAuth_user } from "../../../../../../lib/graphql/mutations/Token/__generated__/TokenAuth"
+import { APP } from "../../../../../../lib/graphql/queries/App"
 import "./styles.css"
 
 export const MenuItems = withRouter(({
   history
 }: RouteComponentProps) => {
+
+  useQuery(APP)
 
   const { t } = useTranslation()
 
