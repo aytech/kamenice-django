@@ -9,7 +9,7 @@ import { onError } from '@apollo/client/link/error'
 import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
-import { csrfTokenName, errorMessages, paths, refreshTokenName, tokenName, usernameKey } from './lib/Constants'
+import { csrfTokenName, errorMessages, paths, refreshTokenName, tokenName } from './lib/Constants'
 import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/Token/__generated__/RefreshToken'
 import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
 import "./i18n"
@@ -59,11 +59,6 @@ const errorLink = onError(
                 const token = authToken as RefreshToken_refreshToken
                 localStorage.setItem(tokenName, token.token)
                 localStorage.setItem(refreshTokenName, token.refreshToken)
-                localStorage.setItem(usernameKey, token.payload.username)
-                // for debugging only
-                localStorage.setItem("tokenExpiresIn", token.payload.exp.toString())
-                localStorage.setItem("refreshTokenExpiresIn", token.refreshExpiresIn.toString())
-                // --- / ---
                 return forward(operation)
               })
           case errorMessages.refreshTokenExpired:
@@ -71,7 +66,6 @@ const errorLink = onError(
           case errorMessages.unauthorized:
             localStorage.removeItem(tokenName)
             localStorage.removeItem(refreshTokenName)
-            localStorage.removeItem(usernameKey)
             window.location.replace(paths.login)
         }
       }

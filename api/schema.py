@@ -7,7 +7,7 @@ from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
     SendConfirmationEmail
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
-from api.schemas.User import UserQuery, ObtainJSONWebToken
+from api.schemas.User import ObtainJSONWebToken, UserQuery
 
 
 class Query(

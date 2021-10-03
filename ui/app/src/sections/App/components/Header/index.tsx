@@ -1,17 +1,11 @@
-import { Link } from 'react-router-dom'
 import './styles.css'
 import logo from './assets/mill.svg'
-import { MenuItems } from './components/MenuItems'
 import { PageHeader } from 'antd'
-import { User } from '../../../../lib/Types'
+import { appUser } from '../../../../cache'
+import { MenuItems } from './components/MenuItems'
+import { Link } from 'react-router-dom'
 
-interface Props {
-  user: User | null
-}
-
-export const Header = ({
-  user
-}: Props) => {
+export const Header = () => {
 
   const logoImage = (
     <img
@@ -21,7 +15,7 @@ export const Header = ({
   )
 
   const homeLink = () => {
-    return user !== null ? (
+    return appUser() !== null ? (
       <Link to="/">{ logoImage }</Link>
     ) : logoImage
   }
@@ -29,7 +23,7 @@ export const Header = ({
   return (
     <PageHeader>
       { homeLink() }
-      <MenuItems user={ user } />
+      <MenuItems />
     </PageHeader>
   )
 }

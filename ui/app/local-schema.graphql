@@ -20,6 +20,13 @@ type TimelimeGroup {
   number: String!
   title: String!
 }
+type AppUser {
+  color: String!
+  id: Int!
+  name: String
+  surname: String
+  username: String!
+}
 
 extend type Query {
   pageTitle: String!
@@ -27,4 +34,5 @@ extend type Query {
   selectedPage: String!
   selectedSuite: SelectedSuite
   timelineGroups: TimelimeGroup
+  appUser: AppUser
 }

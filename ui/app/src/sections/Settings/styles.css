@@ -1,0 +1,16 @@
+.settings-row {
+  background-color: #fff;
+  border-radius: 10px;
+  margin: auto;
+  padding: 2rem;
+  width: 70%;
+}
+
+.settings-row .avatar {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.settings-row .button-submit {
+  margin-top: 2rem;
+}

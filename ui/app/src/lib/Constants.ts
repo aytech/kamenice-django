@@ -26,4 +26,3 @@ export const uris = {
 }
 export const refreshTokenName: string = "refreshToken"
 export const tokenName: string = "token"
-export const usernameKey: string = "username"

@@ -3,9 +3,9 @@ import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { pageTitle } from "../../cache"
+import { appUser, pageTitle } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
-import { errorMessages, refreshTokenName, tokenName, usernameKey } from "../../lib/Constants"
+import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
 import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
 import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/Token/__generated__/TokenAuth"
 import "./styles.css"
@@ -44,9 +44,9 @@ export const Login = withRouter(({
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
     onCompleted: (token: TokenAuth) => {
       if (token.tokenAuth !== null) {
+        appUser(token.tokenAuth.user)
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
-        localStorage.setItem(usernameKey, token.tokenAuth.payload.username)
         history.push(UrlHelper.getReferrer())
       }
     },
