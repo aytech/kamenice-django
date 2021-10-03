@@ -46,7 +46,7 @@ class UserQuery(ObjectType):
             try:
                 return UserModel.objects.get(username=info.context.user.username)
             except ObjectDoesNotExist:
-                raise Exception(_('User not found'))
+                return None
         else:
             return None
 
