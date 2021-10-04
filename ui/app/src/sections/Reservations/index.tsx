@@ -11,12 +11,11 @@ import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
 import { ApolloError, useQuery } from "@apollo/client"
-import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, selectedPage, timelineGroups } from "../../cache"
+import { pageTitle, reservationModalOpen, selectedPage, selectedSuite, timelineGroups } from "../../cache"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(() => {
@@ -27,8 +26,6 @@ export const Reservations = withRouter(() => {
 
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
-  const [ reservationModalOpen, setReservationModalOpen ] = useState<boolean>(false)
-  const [ selectedSuite, setSelectedSuite ] = useState<Suites_suites>()
 
   const { loading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => message.error(reason.message)
@@ -94,7 +91,7 @@ export const Reservations = withRouter(() => {
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
         updateSelectedReservation(reservation)
-        setReservationModalOpen(true)
+        reservationModalOpen(true)
       }
     })
     setItems(reservationList)
@@ -113,7 +110,7 @@ export const Reservations = withRouter(() => {
     if (selectedGroup !== undefined) {
       const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
       if (suite !== null) {
-        setSelectedSuite(suite)
+        selectedSuite(suite)
       }
       setSelectedReservation({
         fromDate: moment(time),
@@ -127,7 +124,7 @@ export const Reservations = withRouter(() => {
         toDate: moment(time).add(1, "day"),
         type: "NONBINDING"
       })
-      setReservationModalOpen(true)
+      reservationModalOpen(true)
     }
   }
 
@@ -138,7 +135,7 @@ export const Reservations = withRouter(() => {
     if (timelineItem !== undefined) {
       const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
-        setSelectedSuite(suite)
+        selectedSuite(suite)
       }
       setSelectedReservation({
         expired: timelineItem.expired !== null ? moment(timelineItem.expired) : null,
@@ -159,7 +156,7 @@ export const Reservations = withRouter(() => {
         toDate: moment(timelineItem.end_time),
         type: timelineItem.type
       })
-      setReservationModalOpen(true)
+      reservationModalOpen(true)
     }
   }
 
@@ -228,15 +225,13 @@ export const Reservations = withRouter(() => {
       <ReservationModal
         close={ () => {
           setSelectedReservation(undefined)
-          setReservationModalOpen(false)
+          reservationModalOpen(false)
         } }
-        isOpen={ reservationModalOpen }
         refetch={ (selected?: IReservation) => {
           updateSelectedReservation(selected as SuitesWithReservations_reservations)
           refetch()
         } }
-        reservation={ selectedReservation }
-        suite={ selectedSuite } />
+        reservation={ selectedReservation } />
     </>
   )
 })

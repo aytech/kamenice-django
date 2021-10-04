@@ -7,6 +7,17 @@
 // GraphQL query operation: App
 // ====================================================
 
+export interface App_selectedSuite {
+  __typename: "SelectedSuite";
+  number: number | null;
+  numberBeds: number;
+  priceBase: string | null;
+  priceChild: string | null;
+  priceExtra: string | null;
+  priceInfant: string | null;
+  title: string | null;
+}
+
 export interface App_appUser {
   __typename: "AppUser";
   color: string;
@@ -18,6 +29,8 @@ export interface App_appUser {
 
 export interface App {
   pageTitle: string;
+  reservationModalOpen: boolean;
   selectedPage: string;
+  selectedSuite: App_selectedSuite | null;
   appUser: App_appUser | null;
 }

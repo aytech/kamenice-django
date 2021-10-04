@@ -14,7 +14,13 @@ type SelectedGuest {
   visaNumber: String
 }
 type SelectedSuite {
+  number: Int
   numberBeds: Int!
+  priceBase: String
+  priceChild: String
+  priceExtra: String
+  priceInfant: String
+  title: String
 }
 type TimelimeGroup {
   number: String!
@@ -30,6 +36,7 @@ type AppUser {
 
 extend type Query {
   pageTitle: String!
+  reservationModalOpen: Boolean!
   selectedGuest: SelectedGuest
   selectedPage: String!
   selectedSuite: SelectedSuite

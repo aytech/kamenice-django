@@ -4,12 +4,12 @@ import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { ReservationFormHelper } from "../../../../../../lib/components/ReservationFormHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
 import { ReservationInput } from "../../../../../../lib/graphql/globalTypes"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { Suites_suites } from "../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Prices } from "../../../../../../lib/Prices"
 import { IReservation, OptionsType, ReservationInputExtended, ReservationTypeKey } from "../../../../../../lib/Types"
 import "./styles.css"
@@ -18,14 +18,12 @@ interface Props {
   form: FormInstance
   guestsData?: Guests
   reservation?: IReservation
-  suite?: Suites_suites
 }
 
 export const ReservationForm = ({
   form,
   guestsData,
-  reservation,
-  suite
+  reservation
 }: Props) => {
 
   const { t } = useTranslation()
@@ -120,7 +118,8 @@ export const ReservationForm = ({
   ) : null
 
   const calculatePrices = () => {
-    if (suite !== undefined && reservation !== undefined) {
+    const suite = selectedSuite()
+    if (suite !== undefined && suite !== null && reservation !== undefined) {
       const input: ReservationInput & ReservationInputExtended = getReservationPrices()
       input.suite = suite
       if (input.guestId !== undefined && input.guestId !== null) {
@@ -284,7 +283,7 @@ export const ReservationForm = ({
         label={ t("reservations.price-room") }>
         <Typography.Text>
           <strong>
-            { suite?.priceBase } { t("rooms.currency") }
+            { selectedSuite()?.priceBase } { t("rooms.currency") }
           </strong>
         </Typography.Text>
       </Form.Item>

@@ -15,28 +15,24 @@ import { CREATE_RESERVATION, DELETE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESER
 import { UpdateReservation, UpdateReservationVariables, UpdateReservation_updateReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { useTranslation } from "react-i18next"
-import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import moment from "moment"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
 import { Confirmation } from "./components/Confirmation"
 import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 import { ReservationForm } from "./components/ReservationForm"
 import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
+import { reservationModalOpen } from "../../../../cache"
 
 interface Props {
   close: () => void
-  isOpen: boolean
   refetch?: (selected?: IReservation) => void
   reservation?: IReservation
-  suite?: Suites_suites
 }
 
 export const ReservationModal = ({
   close,
-  isOpen,
   refetch,
-  reservation,
-  suite
+  reservation
 }: Props) => {
 
   const { t } = useTranslation()
@@ -174,11 +170,11 @@ export const ReservationModal = ({
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
-    if (isOpen === true) {
+    if (reservationModalOpen() === true) {
       form.resetFields()
       getGuests()
     }
-  }, [ form, getGuests, isOpen, reservation ])
+  }, [ form, getGuests, reservation ])
 
   return (
     <>
@@ -224,7 +220,7 @@ export const ReservationModal = ({
             } } />
         ] }
         title={ t("reservations.form") }
-        visible={ isOpen }>
+        visible={ reservationModalOpen() }>
         <Spin
           spinning={
             confirmationLoading
@@ -245,8 +241,7 @@ export const ReservationModal = ({
           <ReservationForm
             form={ form }
             guestsData={ guestsData }
-            reservation={ reservation }
-            suite={ suite } />
+            reservation={ reservation } />
         </Spin>
       </Modal>
       <GuestDrawer
