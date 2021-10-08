@@ -35,11 +35,12 @@ type AppUser {
 }
 
 extend type Query {
+  appUser: AppUser
+  guestDrawerOpen: Boolean!
   pageTitle: String!
   reservationModalOpen: Boolean!
   selectedGuest: SelectedGuest
   selectedPage: String!
   selectedSuite: SelectedSuite
   timelineGroups: TimelimeGroup
-  appUser: AppUser
 }

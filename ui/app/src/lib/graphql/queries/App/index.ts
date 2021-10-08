@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 
 export const APP = gql`
   query App {
+    guestDrawerOpen @client
     pageTitle @client
     reservationModalOpen @client
     selectedPage @client

@@ -5,13 +5,14 @@ import { Guests_guests } from "./lib/graphql/queries/Guests/__generated__/Guests
 import { Suites_suites } from "./lib/graphql/queries/Suites/__generated__/Suites";
 import { CustomGroupFields, MenuItemKey } from "./lib/Types";
 
-export const timelineGroups = makeVar<TimelineGroup<CustomGroupFields>[]>([]);
+export const appUser = makeVar<TokenAuth_tokenAuth_user | null>(null)
+export const guestDrawerOpen = makeVar<boolean>(false)
 export const pageTitle = makeVar<string>("")
 export const reservationModalOpen = makeVar<boolean>(false)
 export const selectedGuest = makeVar<Guests_guests | null>(null)
 export const selectedPage = makeVar<MenuItemKey>("user")
 export const selectedSuite = makeVar<Suites_suites | null>(null)
-export const appUser = makeVar<TokenAuth_tokenAuth_user | null>(null)
+export const timelineGroups = makeVar<TimelineGroup<CustomGroupFields>[]>([]);
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -40,6 +41,9 @@ export const cache = new InMemoryCache({
     // Local store
     App: {
       fields: {
+        guestDrawerOpen: {
+          read: () => guestDrawerOpen()
+        },
         reservationModalOpen: {
           read: () => reservationModalOpen()
         }

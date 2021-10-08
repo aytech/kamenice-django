@@ -11,18 +11,18 @@ import { useTranslation } from "react-i18next"
 import { GuestForm } from "../GuestForm"
 import { IGuestForm } from "../../../../lib/Types"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { selectedGuest } from "../../../../cache"
+import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 
 interface Props {
   close: () => void
   refetch?: (guest?: any) => void
-  visible: boolean
+  // visible: boolean
 }
 
 export const GuestDrawer = ({
   close,
-  refetch,
-  visible
+  refetch
+  // visible
 }: Props) => {
 
   const { t } = useTranslation()
@@ -89,10 +89,10 @@ export const GuestDrawer = ({
   }
 
   useEffect(() => {
-    if (visible === true) {
+    if (guestDrawerOpen() === true) {
       form.resetFields()
     }
-  }, [ form, visible ])
+  }, [ form ])
 
   return (
     <Drawer
@@ -119,7 +119,7 @@ export const GuestDrawer = ({
       placement="left"
       title={ t("guests.name") }
       width={ 500 }
-      visible={ visible }
+      visible={ guestDrawerOpen() }
       footer={
         <Button
           onClick={ submitForm }

@@ -28,6 +28,7 @@ export interface App_appUser {
 }
 
 export interface App {
+  guestDrawerOpen: boolean;
   pageTitle: string;
   reservationModalOpen: boolean;
   selectedPage: string;

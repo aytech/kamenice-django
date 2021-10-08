@@ -11,13 +11,13 @@ import "./styles.css"
 import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
 import Text from "antd/lib/typography/Text"
-import { pageTitle, selectedGuest, selectedPage } from "../../cache"
+import { guestDrawerOpen, pageTitle, selectedGuest, selectedPage } from "../../cache"
 
 export const Guests = withRouter(() => {
 
   const { t } = useTranslation()
 
-  const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
+  // const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
 
   const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
@@ -64,7 +64,7 @@ export const Guests = withRouter(() => {
                   <Button
                     onClick={ () => {
                       selectedGuest(null)
-                      setDrawerVisible(true)
+                      guestDrawerOpen(true)
                     } }>
                     <UserAddOutlined />
                   </Button>
@@ -76,7 +76,6 @@ export const Guests = withRouter(() => {
           renderItem={ (guest: Guests_guests) => (
             <GuestItem
               guest={ guest }
-              openGuestDrawer={ () => setDrawerVisible(true) }
               refetch={ refetch } />
           ) } />
       </Skeleton>

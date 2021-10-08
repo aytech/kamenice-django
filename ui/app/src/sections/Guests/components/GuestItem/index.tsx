@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
 import { ApolloError, useMutation } from "@apollo/client"
 import { Avatar, Button, List, message, Popconfirm } from "antd"
 import { useTranslation } from "react-i18next"
-import { selectedGuest } from "../../../../cache"
+import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
 import { DELETE_GUEST } from "../../../../lib/graphql/mutations/Guest"
 import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
@@ -10,13 +10,11 @@ import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generate
 
 interface Props {
   guest: Guests_guests
-  openGuestDrawer: () => void
   refetch?: () => void
 }
 
 export const GuestItem = ({
   guest,
-  openGuestDrawer,
   refetch,
 }: Props) => {
 
@@ -44,7 +42,7 @@ export const GuestItem = ({
             icon={ <EditOutlined /> }
             onClick={ () => {
               selectedGuest(guest)
-              openGuestDrawer()
+              guestDrawerOpen(true)
             } }>
             { t("edit") }
           </Button>,
