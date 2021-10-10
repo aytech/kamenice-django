@@ -14,15 +14,11 @@ import { FormHelper } from "../../../../lib/components/FormHelper"
 import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 
 interface Props {
-  close: () => void
   refetch?: (guest?: any) => void
-  // visible: boolean
 }
 
 export const GuestDrawer = ({
-  close,
   refetch
-  // visible
 }: Props) => {
 
   const { t } = useTranslation()
@@ -48,7 +44,7 @@ export const GuestDrawer = ({
     if (refetch !== undefined) {
       refetch(newGuest)
     }
-    close()
+    guestDrawerOpen(false)
   }
 
   const submitForm = (): void => {
@@ -102,7 +98,7 @@ export const GuestDrawer = ({
           onConfirm={ () => {
             setConfirmClose(false)
             form.resetFields()
-            close()
+            guestDrawerOpen(false)
           } }
           placement="rightTop"
           title={ t("forms.close-dirty") }
@@ -111,7 +107,7 @@ export const GuestDrawer = ({
             if (form.isFieldsTouched()) {
               setConfirmClose(true)
             } else {
-              close()
+              guestDrawerOpen(false)
             }
           } } />
         </Popconfirm>

@@ -17,7 +17,6 @@ export const Guests = withRouter(() => {
 
   const { t } = useTranslation()
 
-  // const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
 
   const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
@@ -79,10 +78,7 @@ export const Guests = withRouter(() => {
               refetch={ refetch } />
           ) } />
       </Skeleton>
-      <GuestDrawer
-        close={ () => setDrawerVisible(false) }
-        refetch={ refetch }
-        visible={ drawerVisible } />
+      <GuestDrawer refetch={ refetch } />
     </>
   )
 })

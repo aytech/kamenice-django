@@ -1,7 +1,7 @@
 import { CloseCircleOutlined, NotificationOutlined, SaveOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
-import { selectedGuest } from "../../../../../../cache";
+import { guestDrawerOpen, selectedGuest } from "../../../../../../cache";
 import { IReservation } from "../../../../../../lib/Types";
 
 interface RemoveProps {
@@ -12,10 +12,6 @@ interface RemoveProps {
 interface ConfirmationProps {
   reservation?: IReservation
   send: (reservation: IReservation) => void
-}
-
-interface AddGuestProps {
-  openGuestDrawer: () => void
 }
 
 interface SubmitProps {
@@ -80,9 +76,7 @@ export const SendConfirmationButton = ({
   ) : null
 }
 
-export const AddGuestButton = ({
-  openGuestDrawer
-}: AddGuestProps) => {
+export const AddGuestButton = () => {
 
   const { t } = useTranslation()
 
@@ -95,7 +89,7 @@ export const AddGuestButton = ({
         icon={ <UserAddOutlined /> }
         onClick={ () => {
           selectedGuest(null)
-          openGuestDrawer()
+          guestDrawerOpen(true)
         } } />
     </Tooltip>
   )

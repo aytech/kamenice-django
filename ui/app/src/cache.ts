@@ -21,11 +21,17 @@ export const cache = new InMemoryCache({
         guests: {
           merge: false
         },
+        guestDrawerOpen: {
+          read: () => guestDrawerOpen()
+        },
         pageTitle: {
           read: () => pageTitle()
         },
         reservations: {
           merge: false
+        },
+        reservationModalOpen: {
+          read: () => reservationModalOpen()
         },
         selectedPage: {
           read: () => selectedPage()
@@ -39,16 +45,6 @@ export const cache = new InMemoryCache({
       }
     },
     // Local store
-    App: {
-      fields: {
-        guestDrawerOpen: {
-          read: () => guestDrawerOpen()
-        },
-        reservationModalOpen: {
-          read: () => reservationModalOpen()
-        }
-      }
-    },
     Guest: {
       fields: {
         selectedGuest: {

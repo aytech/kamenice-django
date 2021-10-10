@@ -40,7 +40,6 @@ export const ReservationModal = ({
   const [ form ] = Form.useForm()
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
-  const [ guestDrawerOpen, setGuestDrawerOpen ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
@@ -209,9 +208,7 @@ export const ReservationModal = ({
             key="confirmation"
             reservation={ reservation }
             send={ sendReservationConfirmation } />,
-          <AddGuestButton
-            key="guest"
-            openGuestDrawer={ () => setGuestDrawerOpen(true) } />,
+          <AddGuestButton key="guest" />,
           <SubmitButton
             key="create"
             reservation={ reservation }
@@ -244,10 +241,7 @@ export const ReservationModal = ({
             reservation={ reservation } />
         </Spin>
       </Modal>
-      <GuestDrawer
-        close={ () => setGuestDrawerOpen(false) }
-        refetch={ (guest: Guests_guests) => addGuestOption(guest) }
-        visible={ guestDrawerOpen } />
+      <GuestDrawer refetch={ (guest: Guests_guests) => addGuestOption(guest) } />
     </>
   )
 }
