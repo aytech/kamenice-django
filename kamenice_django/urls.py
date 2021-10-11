@@ -13,7 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
+import os
+
+# from django.conf import settings
 from django.contrib import admin
 from django.urls import re_path
 from django.views.decorators.csrf import csrf_exempt
@@ -24,6 +26,12 @@ from api.schema import schema
 from ui import views as ui
 
 handler404 = 'ui.views.page_not_found'
+env = os.environ['DJANGO_SETTINGS_MODULE']
+
+if env == 'kamenice_django.settings.development':
+    from kamenice_django.settings import development as settings
+else:
+    from kamenice_django.settings import production as settings
 
 urlpatterns = [
     # Client UI routes
@@ -38,7 +46,7 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
 
     # GraphQL
-    re_path('^api$', csrf_exempt(GraphQLView.as_view(graphiql=False, schema=schema))),
+    re_path('^api$', csrf_exempt(GraphQLView.as_view(graphiql=settings.GRAPHIQL_AVAILABLE, schema=schema))),
 
     # Static
     re_path(r'^static/(?P<path>.*)$', serve, {

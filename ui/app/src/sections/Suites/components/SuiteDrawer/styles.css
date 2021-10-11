@@ -1,0 +1,7 @@
+.discounts-list {
+  width: 100%;
+}
+
+.discounts-list > .ant-space-item:not(:last-child) {
+  flex: 1;
+}

@@ -10,6 +10,8 @@ ALLOWED_HOSTS = [
     'kamenice.pythonanywhere.com',
 ]
 
+GRAPHIQL_AVAILABLE = False
+
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,

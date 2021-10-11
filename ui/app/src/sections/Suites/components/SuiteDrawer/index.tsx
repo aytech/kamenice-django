@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Button, Drawer, Form, Input, message, Popconfirm, Spin } from "antd"
+import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Spin } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
-import { BulbOutlined, CloseOutlined } from "@ant-design/icons"
+import { BulbOutlined, CloseOutlined, ControlOutlined, MinusCircleOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
 import { SuiteForm } from "../../../../lib/Types"
@@ -10,7 +10,8 @@ import { CreateSuite, CreateSuiteVariables } from "../../../../lib/graphql/mutat
 import { CREATE_SUITE, UPDATE_SUITE } from "../../../../lib/graphql/mutations/Suite"
 import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
 import { useTranslation } from "react-i18next"
-import Title from "antd/lib/typography/Title"
+import { discountOptions } from "../../../../cache"
+import "./styles.css"
 
 interface Props {
   close: () => void
@@ -109,6 +110,15 @@ export const SuiteDrawer = ({
     }
   }, [ form, visible ])
 
+  useEffect(() => {
+    discountOptions([
+      {
+        label: "Extra bed",
+        value: 0
+      }
+    ])
+  }, [])
+
   return (
     <Drawer
       closeIcon={ (
@@ -160,7 +170,7 @@ export const SuiteDrawer = ({
           </Form.Item>
           <Form.Item
             hasFeedback
-            label={ t("rooms.capacity") }
+            label={ t("rooms.number-beds") }
             name="beds"
             required
             rules={ [
@@ -172,9 +182,23 @@ export const SuiteDrawer = ({
             ] }
             tooltip={ {
               icon: <BulbOutlined />,
-              title: t("tooltips.room-capacity")
+              title: t("tooltips.room-beds")
             } }>
-            <Input placeholder={ t("rooms.capacity") } type="number" />
+            <Input placeholder={ t("rooms.number-beds") } type="number" />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            label={ t("rooms.number-beds-extra") }
+            name="capacity"
+            required
+            rules={ [
+              FormHelper.requiredRule(t("forms.field-required")),
+              {
+                message: t("forms.enter-number"),
+                pattern: /^[0-9]+$/
+              }
+            ] }>
+            <Input placeholder={ t("rooms.number-beds-extra") } type="number" />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -190,7 +214,6 @@ export const SuiteDrawer = ({
             ] }>
             <Input placeholder={ t("rooms.number") } type="number" />
           </Form.Item>
-          <Title level={ 5 }>{ t("rooms.prices-title") }</Title>
           <Form.Item
             hasFeedback
             label={ t("rooms.price-base") }
@@ -203,7 +226,7 @@ export const SuiteDrawer = ({
             ] }>
             <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             hasFeedback
             label={ t("rooms.price-child") }
             name="price_child"
@@ -212,8 +235,12 @@ export const SuiteDrawer = ({
                 message: t("forms.enter-number"),
                 pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
-            ] }>
-            <Input addonBefore={ t("rooms.currency") } />
+            ] }
+            tooltip={ {
+              icon: <BulbOutlined />,
+              title: t("tooltips.room-price-child")
+            } }>
+            <Input addonBefore="%" />
           </Form.Item>
           <Form.Item
             hasFeedback
@@ -226,18 +253,63 @@ export const SuiteDrawer = ({
               }
             ] }>
             <Input addonBefore={ t("rooms.currency") } />
-          </Form.Item>
-          <Form.Item
+          </Form.Item> */}
+          {/* <Form.Item
             hasFeedback
-            label={ t("rooms.price-extra") }
+            label={ t("rooms.discount-extra") }
             name="price_extra"
             rules={ [
               {
                 message: t("forms.enter-number"),
-                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
+                pattern: /^[0-9]{1,3}$/
               }
-            ] }>
-            <Input addonBefore={ t("rooms.currency") } />
+            ] }
+            tooltip={ {
+              icon: <BulbOutlined />,
+              title: t("tooltips.room-discount-extra")
+            } }>
+            <Input addonBefore="%" type="number" />
+          </Form.Item> */}
+          <Form.Item>
+            <Form.List name="discounts">
+              { (fields, { add, remove }) => (
+                <>
+                  { fields.map(({ key, name, fieldKey, ...restField }) => (
+                    <Space
+                      align="baseline"
+                      className="discounts-list"
+                      key={ key }>
+                      <Form.Item
+                        { ...restField }
+                        fieldKey={ [ fieldKey, 'type' ] }
+                        name={ [ name, "type" ] }>
+                        <Select
+                          options={ discountOptions() }
+                          showSearch />
+                      </Form.Item>
+                      <Form.Item
+                        hasFeedback
+                        { ...restField }
+                        fieldKey={ [ fieldKey, 'value' ] }
+                        name={ [ name, "value" ] }>
+                        <Input type="number" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={ () => {
+                        remove(name)
+                        form.validateFields()
+                      } } />
+                    </Space>
+                  )) }
+                  <Button
+                    type="dashed"
+                    onClick={ () => add() }
+                    block
+                    icon={ <ControlOutlined /> }>
+                    { t("rooms.add-discount") }
+                  </Button>
+                </>
+              ) }
+            </Form.List>
           </Form.Item>
         </Form>
       </Spin>

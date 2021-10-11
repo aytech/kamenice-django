@@ -11,14 +11,13 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('id', 'number', 'number_beds', 'price_base', 'price_child', 'price_extra', 'price_infant', 'title',)
+        fields = ('id', 'number', 'number_beds', 'price_base', 'title',)
 
 
 class SuitesQuery(ObjectType):
     suites = List(Suite)
     suite = Field(Suite, suite_id=Int())
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_suite'), exc=PermissionDenied)
     def resolve_suites(self, _info):
         return SuiteModel.objects.filter(deleted=False)
@@ -37,9 +36,6 @@ class SuiteInput(InputObjectType):
     number = Int()
     number_beds = Int()
     price_base = Decimal()
-    price_child = Decimal()
-    price_extra = Decimal()
-    price_infant = Decimal()
     title = String()
 
 

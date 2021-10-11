@@ -33,9 +33,14 @@ type AppUser {
   surname: String
   username: String!
 }
+type Options {
+  label: String!
+  value: String!
+}
 
 extend type Query {
   appUser: AppUser
+  discountOptions: [Options!]!
   guestDrawerOpen: Boolean!
   pageTitle: String!
   reservationModalOpen: Boolean!

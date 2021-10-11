@@ -3,9 +3,10 @@ import { TimelineGroup } from "react-calendar-timeline";
 import { TokenAuth_tokenAuth_user } from "./lib/graphql/mutations/Token/__generated__/TokenAuth";
 import { Guests_guests } from "./lib/graphql/queries/Guests/__generated__/Guests";
 import { Suites_suites } from "./lib/graphql/queries/Suites/__generated__/Suites";
-import { CustomGroupFields, MenuItemKey } from "./lib/Types";
+import { CustomGroupFields, MenuItemKey, OptionsType } from "./lib/Types";
 
 export const appUser = makeVar<TokenAuth_tokenAuth_user | null>(null)
+export const discountOptions = makeVar<OptionsType[]>([])
 export const guestDrawerOpen = makeVar<boolean>(false)
 export const pageTitle = makeVar<string>("")
 export const reservationModalOpen = makeVar<boolean>(false)
@@ -18,6 +19,9 @@ export const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
+        discountOptions: {
+          read: () => discountOptions()
+        },
         guests: {
           merge: false
         },

@@ -7,6 +7,8 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+GRAPHIQL_AVAILABLE = True
+
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,

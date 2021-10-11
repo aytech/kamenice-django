@@ -11,7 +11,7 @@ import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
 import { Settings } from "../Settings"
 import { useQuery } from "@apollo/client"
-import { USER } from "../../lib/graphql/queries/App"
+import { APP, USER } from "../../lib/graphql/queries/App"
 import { User } from "../../lib/graphql/queries/App/__generated__/User"
 import { useState } from "react"
 import { appUser } from "../../cache"
@@ -22,6 +22,7 @@ export const App = withRouter(({ history }: RouteComponentProps) => {
 
   const [ appLoading, setAppLoading ] = useState<boolean>(true)
 
+  useQuery(APP)
   useQuery<User>(USER, {
     onCompleted: (value: User) => {
       if (value.user === null) {

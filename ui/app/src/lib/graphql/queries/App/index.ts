@@ -2,6 +2,17 @@ import { gql } from "@apollo/client";
 
 export const APP = gql`
   query App {
+    appUser @client {
+      color
+      id
+      name
+      surname
+      username
+    }
+    discountOptions @client {
+      label
+      value
+    }
     guestDrawerOpen @client
     pageTitle @client
     reservationModalOpen @client
@@ -14,13 +25,6 @@ export const APP = gql`
       priceExtra
       priceInfant
       title
-    }
-    appUser @client {
-      color
-      id
-      name
-      surname
-      username
     }
   }
 `
