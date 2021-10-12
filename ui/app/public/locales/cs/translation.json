@@ -10,6 +10,7 @@
   "enums": {
     "ADULT": "Dospělý",
     "CHILD": "3-12 let",
+    "EXTRA_BED": "Přistýlka",
     "INFANT": "Do 3 let",
     "YOUNG": "12+ let"
   },

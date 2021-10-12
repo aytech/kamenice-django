@@ -44,11 +44,15 @@ export const SuiteDrawer = ({
 
   const initialValues: Store = {
     beds: suite?.numberBeds,
+    beds_extra: suite?.numberBedsExtra,
+    discounts: suite?.discountSet.map(set => {
+      return {
+        type: t(`enums.${set.type}`),
+        value: set.value
+      }
+    }),
     number: suite?.number,
     price_base: suite === undefined ? "0.00" : suite.priceBase,
-    price_child: suite === undefined ? "0.00" : suite.priceChild,
-    price_extra: suite === undefined ? "0.00" : suite.priceExtra,
-    price_infant: suite === undefined ? "0.00" : suite.priceInfant,
     title: suite?.title
   }
 
@@ -109,15 +113,6 @@ export const SuiteDrawer = ({
       form.resetFields()
     }
   }, [ form, visible ])
-
-  useEffect(() => {
-    discountOptions([
-      {
-        label: "Extra bed",
-        value: 0
-      }
-    ])
-  }, [])
 
   return (
     <Drawer
@@ -189,7 +184,7 @@ export const SuiteDrawer = ({
           <Form.Item
             hasFeedback
             label={ t("rooms.number-beds-extra") }
-            name="capacity"
+            name="beds_extra"
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
@@ -292,7 +287,7 @@ export const SuiteDrawer = ({
                         { ...restField }
                         fieldKey={ [ fieldKey, 'value' ] }
                         name={ [ name, "value" ] }>
-                        <Input type="number" />
+                        <Input addonBefore="%" type="number" />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
                         remove(name)

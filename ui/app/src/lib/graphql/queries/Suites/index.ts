@@ -3,14 +3,20 @@ import { gql } from "@apollo/client";
 export const SUITES = gql`
   query Suites {
     suites {
+      discountSet {
+        type
+        value
+      }
       id
       number
       numberBeds
+      numberBedsExtra
       priceBase
-      priceChild
-      priceExtra
-      priceInfant
       title
+    }
+    discountTypes {
+      name
+      value
     }
   }
 `
@@ -23,13 +29,15 @@ export const SUITES_WITH_RESERVATIONS = gql`
       surname
     }
     suites {
+      discountSet {
+        type
+        value
+      }
       id
       number
       numberBeds
+      numberBedsExtra
       priceBase
-      priceChild
-      priceExtra
-      priceInfant
       title
     }
     reservations {

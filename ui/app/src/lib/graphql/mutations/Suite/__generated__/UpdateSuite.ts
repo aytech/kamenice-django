@@ -3,21 +3,26 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { SuiteInput } from "./../../../globalTypes";
+import { SuiteInput, DiscountType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UpdateSuite
 // ====================================================
 
+export interface UpdateSuite_updateSuite_suite_discountSet {
+  __typename: "Discount";
+  type: DiscountType;
+  value: number;
+}
+
 export interface UpdateSuite_updateSuite_suite {
   __typename: "Suite";
+  discountSet: UpdateSuite_updateSuite_suite_discountSet[];
   id: string;
   number: number | null;
   numberBeds: number;
+  numberBedsExtra: number;
   priceBase: any;
-  priceChild: any;
-  priceExtra: any;
-  priceInfant: any;
   title: string;
 }
 

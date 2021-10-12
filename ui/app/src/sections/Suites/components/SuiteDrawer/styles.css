@@ -1,7 +1,12 @@
 .discounts-list {
+  align-items: center;
   width: 100%;
 }
 
 .discounts-list > .ant-space-item:not(:last-child) {
   flex: 1;
+}
+
+.discounts-list > .ant-space-item:last-child {
+  margin-bottom: 24px;
 }

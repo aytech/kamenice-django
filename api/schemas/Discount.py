@@ -15,8 +15,8 @@ class Discount(DjangoObjectType):
 
 
 class DiscountOption(ObjectType):
-    name = String()
-    value = String()
+    name = String(required=True)
+    value = String(required=True)
 
 
 class DiscountQuery(ObjectType):

@@ -11,7 +11,7 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('discount_set', 'id', 'number', 'number_beds', 'price_base', 'title',)
+        fields = ('discount_set', 'id', 'number', 'number_beds', 'number_beds_extra', 'price_base', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -34,6 +34,7 @@ class SuiteInput(InputObjectType):
     id = ID()
     number = Int()
     number_beds = Int()
+    number_beds_extra = Int()
     price_base = Decimal()
     title = String()
 
@@ -50,10 +51,8 @@ class CreateSuite(Mutation):
         instance = SuiteModel(
             number=data.number,
             number_beds=data.number_beds,
+            number_beds_extra=data.number_beds_extra,
             price_base=data.price_base,
-            price_child=data.price_child,
-            price_extra=data.price_extra,
-            price_infant=data.price_infant,
             title=data.title,
         )
 
@@ -81,13 +80,18 @@ class UpdateSuite(Mutation):
             if instance:
                 instance.number = data.number if data.number is not None else instance.number
                 instance.number_beds = data.number_beds if data.number_beds is not None else instance.number_beds
+                instance.number_beds_extra = data.number_beds_extra if data.number_beds_extra is not None else \
+                    instance.number_beds_extra
                 instance.price_base = data.price_base if data.price_base is not None else instance.price_base
-                instance.price_child = data.price_child if data.price_child is not None else instance.price_child
-                instance.price_extra = data.price_extra if data.price_extra is not None else instance.price_extra
-                instance.price_infant = data.price_infant if data.price_infant is not None else instance.price_infant
                 instance.title = data.title if data.title is not None else instance.title
-                instance.full_clean()
+
+                try:
+                    instance.full_clean()
+                except ValidationError as errors:
+                    raise Exception(errors.messages[0])
+
                 instance.save()
+
             return UpdateSuite(suite=instance)
         except ObjectDoesNotExist:
             return UpdateSuite(suite=None)

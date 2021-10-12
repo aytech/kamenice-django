@@ -10,7 +10,8 @@ import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
 import { SuiteItem } from "./components/SuiteItem"
 import { AppstoreAddOutlined } from "@ant-design/icons"
-import { pageTitle, selectedPage } from "../../cache"
+import { discountOptions, pageTitle, selectedPage } from "../../cache"
+import { OptionsType } from "../../lib/Types"
 
 export const Suites = withRouter(() => {
 
@@ -30,14 +31,24 @@ export const Suites = withRouter(() => {
   }
 
   useEffect(() => {
+    const discountTypes: OptionsType[] = []
     const suitesList: Suites_suites[] = []
-    data?.suites?.forEach((suite: Suites_suites | null) => {
+    data?.suites?.forEach(suite => {
       if (suite !== null) {
         suitesList.push(suite)
       }
     })
+    data?.discountTypes?.forEach(type => {
+      if (type !== null) {
+        discountTypes.push({
+          label: t(`enums.${ type.name }`),
+          value: type.value
+        })
+      }
+    })
     setSuites(suitesList)
-  }, [ data ])
+    discountOptions(discountTypes)
+  }, [ data, t ])
 
   useEffect(() => {
     pageTitle(t("living-units"))

@@ -10,6 +10,13 @@
 /**
  * An enumeration.
  */
+export enum DiscountType {
+  EXTRA_BED = "EXTRA_BED",
+}
+
+/**
+ * An enumeration.
+ */
 export enum GuestAge {
   ADULT = "ADULT",
   CHILD = "CHILD",
@@ -105,10 +112,8 @@ export interface SuiteInput {
   id?: string | null;
   number?: number | null;
   numberBeds?: number | null;
+  numberBedsExtra?: number | null;
   priceBase?: any | null;
-  priceChild?: any | null;
-  priceExtra?: any | null;
-  priceInfant?: any | null;
   title?: string | null;
 }
 
