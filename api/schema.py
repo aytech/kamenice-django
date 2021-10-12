@@ -2,7 +2,7 @@ import graphene as graphene
 import graphql_jwt
 
 from api.schemas.Contact import CreateContactMessage
-from api.schemas.Discount import DiscountQuery
+from api.schemas.Discount import DiscountQuery, CreateDiscount, UpdateDiscount, DeleteDiscount
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest, \
     DeleteReservationGuest, CreateReservationGuest
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
@@ -44,6 +44,11 @@ class Mutation(graphene.ObjectType):
     create_suite = CreateSuite.Field()
     delete_suite = DeleteSuite.Field()
     update_suite = UpdateSuite.Field()
+
+    create_discount = CreateDiscount.Field()
+    delete_discount = DeleteDiscount.Field()
+    update_discount = UpdateDiscount.Field()
+
     create_contact_message = CreateContactMessage.Field()
 
 

@@ -11,7 +11,7 @@ from api.schemas.exceptions.Unauthorized import Unauthorized
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('id', 'number', 'number_beds', 'price_base', 'title',)
+        fields = ('discount_set', 'id', 'number', 'number_beds', 'price_base', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -22,7 +22,6 @@ class SuitesQuery(ObjectType):
     def resolve_suites(self, _info):
         return SuiteModel.objects.filter(deleted=False)
 
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.view_suite'), exc=PermissionDenied)
     def resolve_suite(self, _info, suite_id):
         try:
@@ -46,7 +45,6 @@ class CreateSuite(Mutation):
     suite = Field(Suite)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.add_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         instance = SuiteModel(
@@ -76,7 +74,6 @@ class UpdateSuite(Mutation):
     suite = Field(Suite)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.change_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, data=None):
         try:
@@ -103,7 +100,6 @@ class DeleteSuite(Mutation):
     suite = Field(Suite)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.delete_suite'), exc=PermissionDenied)
     def mutate(cls, _root, _info, suite_id):
         try:

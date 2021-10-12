@@ -15,7 +15,6 @@ Including another URLconf
 """
 import os
 
-# from django.conf import settings
 from django.contrib import admin
 from django.urls import re_path
 from django.views.decorators.csrf import csrf_exempt

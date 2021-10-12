@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-30 17:24+0200\n"
+"POT-Creation-Date: 2021-10-11 22:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,14 @@ msgstr "12+ let"
 #: .\api\models\BaseModel.py:13
 msgid "Adult"
 msgstr "Dospělý"
+
+#: .\api\models\Discount.py:11
+msgid "Extra bed"
+msgstr "Přistýlka"
+
+#: .\api\models\Discount.py:17 .\api\models\Discount.py:18
+msgid "Select discount type from the list"
+msgstr "Vyberte typ slevy ze seznamu"
 
 #: .\api\models\Guest.py:15
 msgid "Choose age from the list"
@@ -127,44 +135,36 @@ msgstr "Zadejte platný datum konce rezervace"
 msgid "Select reservation type from the list"
 msgstr "Vyberte údaj Typ Rezervace ze seznamu"
 
-#: .\api\models\Suite.py:15
+#: .\api\models\Suite.py:14
 msgid "Base price is required field"
 msgstr "Základní cena je povinný údaj"
 
-#: .\api\models\Suite.py:18 .\api\models\Suite.py:24
-msgid "Price for child is required field"
-msgstr "Cena za dítě je povinný údaj"
-
-#: .\api\models\Suite.py:21
-msgid "Price for extra bed is required field"
-msgstr "Cena za přistýlku je povinný údaj"
-
-#: .\api\schemas\Guest.py:49 .\api\schemas\Reservation.py:231
+#: .\api\schemas\Guest.py:52 .\api\schemas\Reservation.py:231
 #: .\api\schemas\Reservation.py:292
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
-#: .\api\schemas\Guest.py:88
+#: .\api\schemas\Guest.py:91
 msgid "Guest already exists"
 msgstr "Host již existuje"
 
-#: .\api\schemas\Guest.py:129
+#: .\api\schemas\Guest.py:132
 msgid "Accommodation capacity exceeded"
 msgstr "Překročena ubytovací kapacita"
 
-#: .\api\schemas\Guest.py:158
+#: .\api\schemas\Guest.py:160
 msgid "Guest cannot be created"
 msgstr "Hosta nelze vytvořit"
 
-#: .\api\schemas\Guest.py:194
+#: .\api\schemas\Guest.py:196
 msgid "Guest not found"
 msgstr "Host nenalezen"
 
-#: .\api\schemas\Guest.py:239
+#: .\api\schemas\Guest.py:241
 msgid "Guest cannot be updated"
 msgstr "Hosta nelze aktualizovat"
 
-#: .\api\schemas\Guest.py:277
+#: .\api\schemas\Guest.py:279
 msgid "Guest cannot be deleted"
 msgstr "Hosta nelze smazat"
 
