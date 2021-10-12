@@ -2,6 +2,7 @@ import { MailOutlined } from "@ant-design/icons"
 import { Form, FormInstance, Input, Select } from "antd"
 import { Store } from "antd/lib/form/interface"
 import Title from "antd/lib/typography/Title"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { selectedGuest } from "../../../../cache"
 import { FormHelper } from "../../../../lib/components/FormHelper"
@@ -35,6 +36,10 @@ export const GuestForm = ({
     surname: guest?.surname,
     visa: guest?.visaNumber
   }
+
+  useEffect(() => {
+    form.resetFields()
+  }, [ form, guest ])
 
   return (
     <Form

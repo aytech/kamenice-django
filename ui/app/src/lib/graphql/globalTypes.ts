@@ -71,6 +71,12 @@ export interface GuestInput {
   visaNumber?: string | null;
 }
 
+export interface PriceInput {
+  suiteId: number;
+  numberDays: number;
+  guests: (number | null)[];
+}
+
 export interface ReservationGuestInput {
   age?: string | null;
   addressMunicipality?: string | null;

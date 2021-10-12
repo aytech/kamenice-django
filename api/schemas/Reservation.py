@@ -10,12 +10,13 @@ from django.utils.translation import gettext_lazy as _
 from sendgrid import SendGridAPIClient, Mail
 
 from api.constants import ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, ENVIRON_EMAIL_API_KEY
-from api.models.Guest import Guest
+from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Suite import Suite
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
 from api.schemas.helpers.DateHelper import DateHelper
+from api.schemas.helpers.PriceHelper import PriceHelper
 
 
 class Reservation(DjangoObjectType):
@@ -28,9 +29,9 @@ class Reservation(DjangoObjectType):
 
 
 class ReservationQuery(ObjectType):
-    suite_reservations = List(Reservation, suite_id=Int())
     reservation = Field(Reservation, reservation_id=Int())
     reservations = List(Reservation)
+    suite_reservations = List(Reservation, suite_id=Int())
 
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_suite_reservations(self, _info, suite_id):
@@ -49,6 +50,35 @@ class ReservationQuery(ObjectType):
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservations(self, _info):
         return ReservationModel.objects.filter(deleted=False)
+
+
+class Price(ObjectType):
+    accommodation = Int(required=True)
+    meal = Int(required=True)
+    municipality = Int(required=True)
+    total = Int(required=True)
+
+
+class PriceInput(InputObjectType):
+    suite_id = Int(required=True)
+    number_days = Int(required=True)
+    guests = List(Int, required=True)
+
+
+class CalculateReservationPrice(Mutation):
+    class Arguments:
+        data = PriceInput(required=True)
+
+    price = Field(Price)
+
+    @classmethod
+    # @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
+    def mutate(cls, _root, _info, data=None):
+        try:
+            helper = PriceHelper(data)
+            return CalculateReservationPrice(price=helper.calculate(Price))
+        except ObjectDoesNotExist:
+            return CalculateReservationPrice(price=None)
 
 
 class ReservationInput(InputObjectType):
@@ -128,13 +158,13 @@ class CreateReservation(Mutation):
             raise Exception(_('The room is already reserved for this period of time'))
 
         try:
-            instance.guest = Guest.objects.get(pk=data.guest_id, deleted=False)
+            instance.guest = GuestModel.objects.get(pk=data.guest_id, deleted=False)
         except ObjectDoesNotExist:
             raise Exception(_('Please select guest from the list'))
 
         if data.paying_guest_id is not None:
             try:
-                instance.paying_guest = Guest.objects.get(pk=data.paying_guest_id, deleted=False)
+                instance.paying_guest = GuestModel.objects.get(pk=data.paying_guest_id, deleted=False)
             except ObjectDoesNotExist:
                 raise Exception(_('Please select paying guest from the list'))
 
@@ -152,7 +182,7 @@ class CreateReservation(Mutation):
 
         try:
             for roommate_id in data.roommate_ids:
-                instance.roommates.add(Guest.objects.get(pk=roommate_id))
+                instance.roommates.add(GuestModel.objects.get(pk=roommate_id))
         except ObjectDoesNotExist as ex:
             logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
 
@@ -196,13 +226,13 @@ class UpdateReservation(Mutation):
                 instance.type = data.type if data.type is not None else instance.type
 
                 try:
-                    instance.guest = Guest.objects.get(pk=data.guest_id)
+                    instance.guest = GuestModel.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
                     raise Exception(_('Please select guest from the list'))
 
                 if data.paying_guest_id is not None:
                     try:
-                        instance.paying_guest = Guest.objects.get(pk=data.paying_guest_id, deleted=False)
+                        instance.paying_guest = GuestModel.objects.get(pk=data.paying_guest_id, deleted=False)
                     except ObjectDoesNotExist:
                         raise Exception(_('Please select paying guest from the list'))
                 else:
@@ -214,7 +244,7 @@ class UpdateReservation(Mutation):
 
                 try:
                     for roommate_id in data.roommate_ids:
-                        instance.roommates.add(Guest.objects.get(pk=roommate_id))
+                        instance.roommates.add(GuestModel.objects.get(pk=roommate_id))
                 except ObjectDoesNotExist as ex:
                     logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
 

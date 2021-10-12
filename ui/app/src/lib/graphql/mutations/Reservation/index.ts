@@ -99,3 +99,13 @@ export const SEND_CONFIRMATION = gql`
     }
   }
 `
+
+export const CALCULATE_PRICE = gql`
+  mutation CalculatePrice($data: PriceInput!) {
+    calculateReservationPrice(data: $data) {
+      price {
+        accommodation
+      }
+    }
+  }
+`

@@ -2,15 +2,17 @@ from django.db import models
 
 from django.utils.translation import gettext_lazy as _
 
+from api.constants import AGE_CHOICE_ADULT, AGE_CHOICE_YOUNG, AGE_CHOICE_CHILD, AGE_CHOICE_INFANT
+
 
 class BaseModel(models.Model):
     objects = models.Manager()
 
     AGE_CHOICES = [
-        ('INFANT', _('Up to 3 years')),
-        ('CHILD', _('3-12 years')),
-        ('YOUNG', _('12+ years')),
-        ('ADULT', _('Adult')),
+        (AGE_CHOICE_INFANT, _('Up to 3 years')),
+        (AGE_CHOICE_CHILD, _('3-12 years')),
+        (AGE_CHOICE_YOUNG, _('12+ years')),
+        (AGE_CHOICE_ADULT, _('Adult')),
     ]
 
     GENDER_CHOICES = [
