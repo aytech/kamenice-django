@@ -41,8 +41,8 @@ export const Suites = withRouter(() => {
     data?.discountTypes?.forEach(type => {
       if (type !== null) {
         discountTypes.push({
-          label: t(`enums.${ type.name }`),
-          value: type.value
+          label: type.value,
+          value: type.name
         })
       }
     })

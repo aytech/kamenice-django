@@ -11,7 +11,10 @@
  * An enumeration.
  */
 export enum DiscountType {
+  CHILD = "CHILD",
   EXTRA_BED = "EXTRA_BED",
+  INFANT = "INFANT",
+  THREE_NIGHTS = "THREE_NIGHTS",
 }
 
 /**
@@ -114,7 +117,13 @@ export interface ReservationInput {
   type?: string | null;
 }
 
+export interface SuiteDiscountInput {
+  type: string;
+  value: number;
+}
+
 export interface SuiteInput {
+  discounts?: (SuiteDiscountInput | null)[] | null;
   id?: string | null;
   number?: number | null;
   numberBeds?: number | null;

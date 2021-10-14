@@ -45,16 +45,25 @@ export const SuiteDrawer = ({
   const initialValues: Store = {
     beds: suite?.numberBeds,
     beds_extra: suite?.numberBedsExtra,
-    discounts: suite?.discountSet.map(set => {
-      return {
-        type: t(`enums.${set.type}`),
-        value: set.value
-      }
-    }),
+    discounts: suite?.discountSet,
     number: suite?.number,
     price_base: suite === undefined ? "0.00" : suite.priceBase,
     title: suite?.title
   }
+
+  const discountValidator = [
+    {
+      message: t("rooms.error-duplicate-discount"),
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        const duplicate = form.getFieldValue("discounts").filter((discount: any) => discount.type === value)
+        // Validation is run after the selected values are added to form
+        if (duplicate !== undefined && duplicate.length > 1) {
+          return Promise.reject(new Error("Fail discount validation, duplicate value"))
+        }
+        return Promise.resolve()
+      }
+    }
+  ]
 
   const actionCallback = (callback: () => void, newSuite?: any | null) => {
     if (newSuite !== undefined && newSuite !== null) {
@@ -71,6 +80,9 @@ export const SuiteDrawer = ({
       .then(() => {
         const formData: SuiteForm = form.getFieldsValue(true)
         const variables = {
+          discounts: formData.discounts.map(discount => {
+            return { type: discount.type, value: discount.value }
+          }),
           number: formData.number,
           numberBeds: formData.beds,
           priceBase: formData.price_base,
@@ -277,7 +289,8 @@ export const SuiteDrawer = ({
                       <Form.Item
                         { ...restField }
                         fieldKey={ [ fieldKey, 'type' ] }
-                        name={ [ name, "type" ] }>
+                        name={ [ name, "type" ] }
+                        rules={ discountValidator }>
                         <Select
                           options={ discountOptions() }
                           showSearch />

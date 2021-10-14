@@ -2,7 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID, Decimal
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
+from django.utils.translation import gettext_lazy as _
 
+from api.models.Discount import Discount as DiscountModel
 from api.models.Suite import Suite as SuiteModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
@@ -30,7 +32,13 @@ class SuitesQuery(ObjectType):
             return None
 
 
+class SuiteDiscountInput(InputObjectType):
+    type = String(required=True)
+    value = Int(required=True)
+
+
 class SuiteInput(InputObjectType):
+    discounts = List(SuiteDiscountInput)
     id = ID()
     number = Int()
     number_beds = Int()
@@ -84,6 +92,26 @@ class UpdateSuite(Mutation):
                     instance.number_beds_extra
                 instance.price_base = data.price_base if data.price_base is not None else instance.price_base
                 instance.title = data.title if data.title is not None else instance.title
+
+                # Recreate discounts
+                instance.discount_set.all().delete()
+                added_discounts = []
+                for discount in data.discounts:
+                    # Suite cannot have duplicate discounts
+                    if discount.type in added_discounts:
+                        raise Exception(_('Discount %(type)s is already applied') % {
+                            'type': DiscountModel.get_discount_choice(choice=discount.type)})
+                    added_discounts.append(discount.type)
+                    new_discount = DiscountModel(
+                        suite=instance,
+                        type=discount.type,
+                        value=discount.value
+                    )
+                    try:
+                        new_discount.full_clean()
+                        new_discount.save()
+                    except ValidationError as error:
+                        raise Exception(error.messages[0])
 
                 try:
                     instance.full_clean()

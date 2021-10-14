@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 22:16+0200\n"
+"POT-Creation-Date: 2021-10-14 12:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,27 +19,31 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: .\api\models\BaseModel.py:10
-msgid "Up to 3 years"
-msgstr "Do 3 let"
+#: .\api\models\BaseModel.py:12 .\api\models\Discount.py:14
+msgid "Child up to 3 years old"
+msgstr "Dítě do 3 let"
 
-#: .\api\models\BaseModel.py:11
-msgid "3-12 years"
-msgstr "3-12 let"
+#: .\api\models\BaseModel.py:13 .\api\models\Discount.py:12
+msgid "Child 3-12 years old"
+msgstr "Dítě 3-12 let"
 
-#: .\api\models\BaseModel.py:12
+#: .\api\models\BaseModel.py:14
 msgid "12+ years"
 msgstr "12+ let"
 
-#: .\api\models\BaseModel.py:13
+#: .\api\models\BaseModel.py:15
 msgid "Adult"
 msgstr "Dospělý"
 
-#: .\api\models\Discount.py:11
+#: .\api\models\Discount.py:13
 msgid "Extra bed"
 msgstr "Přistýlka"
 
-#: .\api\models\Discount.py:17 .\api\models\Discount.py:18
+#: .\api\models\Discount.py:15
+msgid "Three or more nights"
+msgstr "Tři a více nocí"
+
+#: .\api\models\Discount.py:21 .\api\models\Discount.py:22
 msgid "Select discount type from the list"
 msgstr "Vyberte typ slevy ze seznamu"
 
@@ -139,8 +143,8 @@ msgstr "Vyberte údaj Typ Rezervace ze seznamu"
 msgid "Base price is required field"
 msgstr "Základní cena je povinný údaj"
 
-#: .\api\schemas\Guest.py:52 .\api\schemas\Reservation.py:231
-#: .\api\schemas\Reservation.py:292
+#: .\api\schemas\Guest.py:52 .\api\schemas\Reservation.py:261
+#: .\api\schemas\Reservation.py:322
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
@@ -168,25 +172,30 @@ msgstr "Hosta nelze aktualizovat"
 msgid "Guest cannot be deleted"
 msgstr "Hosta nelze smazat"
 
-#: .\api\schemas\Reservation.py:128 .\api\schemas\Reservation.py:184
+#: .\api\schemas\Reservation.py:158 .\api\schemas\Reservation.py:214
 msgid "The room is already reserved for this period of time"
 msgstr "Místnost je rezervováno pro tuto dobu"
 
-#: .\api\schemas\Reservation.py:133 .\api\schemas\Reservation.py:201
+#: .\api\schemas\Reservation.py:163 .\api\schemas\Reservation.py:231
 msgid "Please select guest from the list"
 msgstr "Prosím vyberte hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:139 .\api\schemas\Reservation.py:207
+#: .\api\schemas\Reservation.py:169 .\api\schemas\Reservation.py:237
 msgid "Please select paying guest from the list"
 msgstr "Prosím vyberte platícího hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:144
+#: .\api\schemas\Reservation.py:174
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:295
+#: .\api\schemas\Reservation.py:325
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
+
+#: .\api\schemas\Suite.py:102
+#, python-format
+msgid "Discount %(type)s is already applied"
+msgstr "Sleva %(type)s již zadaná"
 
 #: .\api\schemas\exceptions\PermissionDenied.py:6
 msgid ""

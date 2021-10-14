@@ -9,9 +9,10 @@
   "email": "E-Mail",
   "enums": {
     "ADULT": "Dospělý",
-    "CHILD": "3-12 let",
+    "CHILD": "Dítě 3-12 let",
     "EXTRA_BED": "Přistýlka",
-    "INFANT": "Do 3 let",
+    "INFANT": "Dítě do 3 let",
+    "THREE_NIGHTS": "Tři a více nocí",
     "YOUNG": "12+ let"
   },
   "errors": {
@@ -142,6 +143,7 @@
     "deleted": "Místnost byla odstraněna",
     "discounts": "Slevy",
     "discount-extra": "Sleva za přistýlku",
+    "error-duplicate-discount": "Sleva již vybrána",
     "name": "Název místnosti",
     "new": "Nová místnost",
     "number": "Číslo místnosti",

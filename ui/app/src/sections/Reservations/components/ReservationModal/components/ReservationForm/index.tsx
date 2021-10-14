@@ -2,6 +2,7 @@ import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutli
 import { useMutation } from "@apollo/client"
 import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
+import moment, { Moment } from "moment"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { selectedSuite } from "../../../../../../cache"
@@ -116,6 +117,24 @@ export const ReservationForm = ({
   //   }
   //   return data
   // }
+
+  const getReservationDuration = (): number => {
+    const formDates: Array<Moment> = form.getFieldValue("dates")
+    if (formDates !== null) {
+      const startDate = moment(formDates[ 0 ])
+      const endDate = moment(formDates[ 1 ])
+      return Math.ceil(moment.duration(endDate.diff(startDate)).asDays())
+    }
+    // @todo: replace with default constant 
+    return 1
+  }
+
+  const getGuestsIds = (): Array<number> => {
+    const guest = form.getFieldValue("guest")
+    const roommates = form.getFieldValue("roommates")
+      .map((roommate: any) => Number(roommate.id))
+    return [ Number(guest), ...roommates ]
+  }
 
   const ExpirationItem = () => reservation?.type === "NONBINDING" ? (
     <Form.Item
@@ -336,7 +355,18 @@ export const ReservationForm = ({
             block
             icon={ <CalculatorOutlined /> }
             onClick={ () => {
-              calculatePrices({ variables: { data: { suiteId: 1, numberDays: 2, guests: [ 1, 2, 3, 5 ] } } })
+              const selectedSuiteId = selectedSuite()?.id
+              if (selectedSuiteId !== undefined) {
+                calculatePrices({
+                  variables: {
+                    data: {
+                      suiteId: Number(selectedSuiteId),
+                      numberDays: getReservationDuration(),
+                      guests: getGuestsIds()
+                    }
+                  }
+                })
+              }
             } }>
             { t("reservations.calculate-prices") }
           </Button>
