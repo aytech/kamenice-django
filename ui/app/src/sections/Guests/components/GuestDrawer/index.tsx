@@ -14,7 +14,7 @@ import { FormHelper } from "../../../../lib/components/FormHelper"
 import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 
 interface Props {
-  refetch?: (guest?: any) => void
+  refetch?: () => void
 }
 
 export const GuestDrawer = ({
@@ -42,7 +42,7 @@ export const GuestDrawer = ({
       callback(newGuest)
     }
     if (refetch !== undefined) {
-      refetch(newGuest)
+      refetch()
     }
     guestDrawerOpen(false)
   }

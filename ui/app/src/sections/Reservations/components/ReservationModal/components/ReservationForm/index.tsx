@@ -146,40 +146,24 @@ export const ReservationForm = ({
     </Form.Item>
   ) : null
 
-  // const calculatePrices = () => {
-  //   const suite = selectedSuite()
-  //   if (suite !== undefined && suite !== null && reservation !== undefined) {
-  //     const input: ReservationInput & ReservationInputExtended = getReservationPrices()
-  //     input.suite = suite
-  //     if (input.guestId !== undefined && input.guestId !== null) {
-  //       const guest = guestsData?.guests?.find(guest => guest?.id === input.guestId)
-  //       if (guest !== null) {
-  //         input.guest = guest
-  //       }
-  //     }
-  //     form.setFieldsValue(Prices.calculatePrice(input))
-  //   }
-  // }
-
   const selectGuest = (guestId: number) => {
     setRoommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
   }
 
   useEffect(() => {
-    if (guestsData !== undefined && guestsData.guests !== null) {
-      const options: OptionsType[] = []
-      guestsData.guests.forEach((guest: Guests_guests | null) => {
-        if (guest !== null) {
-          options.push({
-            label: `${ guest.name } ${ guest.surname }`,
-            value: guest.id
-          })
-        }
-      })
-      setGuestOptions(options)
-      setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
-    }
+    const options: OptionsType[] = []
+    guestsData?.guests?.forEach((guest: Guests_guests | null) => {
+      if (guest !== null) {
+        options.push({
+          label: `${ guest.name } ${ guest.surname }`,
+          value: guest.id
+        })
+      }
+    })
+    setGuestOptions(options)
+    setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
   }, [ guestsData, reservation?.guest?.id ])
+
 
   return (
     <Form

@@ -4,11 +4,11 @@ import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation, OptionsType } from "../../../../lib/Types"
+import { IReservation } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
-import { Guests, Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { Guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
 import { CreateReservation, CreateReservationVariables, CreateReservation_createReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
 import { CREATE_RESERVATION, DELETE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
@@ -40,7 +40,6 @@ export const ReservationModal = ({
   const [ form ] = Form.useForm()
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
-  const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
 
@@ -95,7 +94,7 @@ export const ReservationModal = ({
     },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ getGuests, { loading: guestsLoading, data: guestsData } ] = useLazyQuery<Guests>(GUESTS, {
+  const [ getGuests, { loading: guestsLoading, data: guestsData, refetch: refetchGuests } ] = useLazyQuery<Guests>(GUESTS, {
     onError: networkErrorHandler
   })
 
@@ -157,13 +156,6 @@ export const ReservationModal = ({
     if (reservation !== undefined && reservation.id !== undefined) {
       sendConfirmation({ variables: { reservationId: String(reservation.id) } })
     }
-  }
-
-  const addGuestOption = (guest: Guests_guests) => {
-    setGuestOptions(guestOptions.concat({
-      label: `${ guest.name } ${ guest.surname }`,
-      value: guest.id
-    }))
   }
 
   useEffect(() => {
@@ -241,7 +233,7 @@ export const ReservationModal = ({
             reservation={ reservation } />
         </Spin>
       </Modal>
-      <GuestDrawer refetch={ (guest: Guests_guests) => addGuestOption(guest) } />
+      <GuestDrawer refetch={ refetchGuests } />
     </>
   )
 }
