@@ -116,11 +116,11 @@ export const Reservations = withRouter(() => {
         fromDate: moment(time),
         meal: "NOMEAL",
         suite: { ...selectedGroup },
-        priceAccommodation: "0.00",
-        priceExtra: "0.00",
-        priceMeal: "0.00",
-        priceMunicipality: "0.00",
-        priceTotal: "0.00",
+        priceAccommodation: 0,
+        priceExtra: 0,
+        priceMeal: 0,
+        priceMunicipality: 0,
+        priceTotal: 0,
         toDate: moment(time).add(1, "day"),
         type: "NONBINDING"
       })

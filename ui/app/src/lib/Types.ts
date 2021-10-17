@@ -97,11 +97,11 @@ export interface IReservation {
   id?: number | string
   notes?: string | null
   payingGuest?: { id: string } | null
-  priceAccommodation: string | null
-  priceExtra: string | null
-  priceMeal: string | null
-  priceMunicipality: string | null
-  priceTotal: string | null
+  priceAccommodation: number | null
+  priceExtra: number | null
+  priceMeal: number | null
+  priceMunicipality: number | null
+  priceTotal: number | null
   purpose?: string | null
   roommates?: { id: string }[]
   suite: Suite
@@ -137,11 +137,11 @@ export interface CustomItemFields {
   meal: ReservationMeal
   notes: string | null
   payingGuest?: { id: string } | null
-  priceAccommodation: string | null
-  priceExtra: string | null
-  priceMeal: string | null
-  priceMunicipality: string | null
-  priceTotal: string | null
+  priceAccommodation: number | null
+  priceExtra: number | null
+  priceMeal: number | null
+  priceMunicipality: number | null
+  priceTotal: number | null
   purpose: string | null
   roommates?: { id: string }[]
   suite: Suite

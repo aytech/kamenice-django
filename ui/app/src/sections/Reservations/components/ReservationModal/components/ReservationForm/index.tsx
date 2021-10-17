@@ -38,7 +38,10 @@ export const ReservationForm = ({
     onCompleted: (data: CalculatePrice) => {
       if (data.calculateReservationPrice !== null && data.calculateReservationPrice.price !== null) {
         form.setFieldsValue({
-          priceAccommodation: data.calculateReservationPrice.price.accommodation
+          priceAccommodation: data.calculateReservationPrice.price.accommodation,
+          priceMeal: data.calculateReservationPrice.price.meal,
+          priceMunicipality: data.calculateReservationPrice.price.municipality,
+          priceTotal: data.calculateReservationPrice.price.total
         })
       }
     }
@@ -93,30 +96,6 @@ export const ReservationForm = ({
       }
     }
   ]
-
-  // const getReservationPrices = (): ReservationInput & ReservationInputExtended => {
-  //   const formData = form.getFieldsValue(true)
-  //   const formDates: Array<Moment> = form.getFieldValue("dates")
-  //   let from: Moment
-  //   let to: Moment
-
-  //   if (formDates === null) {
-  //     from = moment()
-  //     to = moment()
-  //   } else {
-  //     from = formDates[ 0 ]
-  //     to = formDates[ 1 ]
-  //   }
-
-  //   const data: ReservationInput & ReservationInputExtended = {
-  //     fromDate: from.format(dateFormat),
-  //     guestId: formData.guest,
-  //     meal: formData.meal,
-  //     roommates: formData.roommates,
-  //     toDate: to.format(dateFormat)
-  //   }
-  //   return data
-  // }
 
   const getReservationDuration = (): number => {
     const formDates: Array<Moment> = form.getFieldValue("dates")
@@ -310,12 +289,6 @@ export const ReservationForm = ({
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
-          label={ t("reservations.price-extra") }
-          name="priceExtra">
-          <Input addonBefore={ t("rooms.currency") } type="number" />
-        </Form.Item>
-        <Form.Item
-          hidden={ !pricesVisible }
           label={ t("reservations.price-meal") }
           name="priceMeal">
           <Input addonBefore={ t("rooms.currency") } type="number" />
@@ -344,9 +317,10 @@ export const ReservationForm = ({
                 calculatePrices({
                   variables: {
                     data: {
-                      suiteId: Number(selectedSuiteId),
+                      guests: getGuestsIds(),
+                      meal: form.getFieldValue('meal'),
                       numberDays: getReservationDuration(),
-                      guests: getGuestsIds()
+                      suiteId: Number(selectedSuiteId)
                     }
                   }
                 })

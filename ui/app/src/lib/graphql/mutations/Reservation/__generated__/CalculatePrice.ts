@@ -12,6 +12,9 @@ import { PriceInput } from "./../../../globalTypes";
 export interface CalculatePrice_calculateReservationPrice_price {
   __typename: "Price";
   accommodation: number;
+  meal: number;
+  municipality: number;
+  total: number;
 }
 
 export interface CalculatePrice_calculateReservationPrice {

@@ -60,9 +60,10 @@ class Price(ObjectType):
 
 
 class PriceInput(InputObjectType):
-    suite_id = Int(required=True)
-    number_days = Int(required=True)
     guests = List(Int, required=True)
+    meal = String()
+    number_days = Int(required=True)
+    suite_id = Int(required=True)
 
 
 class CalculateReservationPrice(Mutation):

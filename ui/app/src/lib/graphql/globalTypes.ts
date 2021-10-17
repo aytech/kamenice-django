@@ -75,9 +75,10 @@ export interface GuestInput {
 }
 
 export interface PriceInput {
-  suiteId: number;
-  numberDays: number;
   guests: (number | null)[];
+  meal?: string | null;
+  numberDays: number;
+  suiteId: number;
 }
 
 export interface ReservationGuestInput {

@@ -105,6 +105,9 @@ export const CALCULATE_PRICE = gql`
     calculateReservationPrice(data: $data) {
       price {
         accommodation
+        meal
+        municipality
+        total
       }
     }
   }

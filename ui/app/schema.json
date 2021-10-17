@@ -598,7 +598,7 @@
         "enumValues": [
           {
             "name": "CHILD",
-            "description": "Child (3-12 years old)",
+            "description": "Dítě 3-12 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -610,13 +610,13 @@
           },
           {
             "name": "INFANT",
-            "description": "Child (up to 3 years old)",
+            "description": "Dítě do 3 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "THREE_NIGHTS",
-            "description": "Three or more nights",
+            "description": "Tři a více nocí",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -1101,13 +1101,13 @@
         "enumValues": [
           {
             "name": "INFANT",
-            "description": "Do 3 let",
+            "description": "Dítě do 3 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "CHILD",
-            "description": "3-12 let",
+            "description": "Dítě 3-12 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -3489,16 +3489,32 @@
         "fields": null,
         "inputFields": [
           {
-            "name": "suiteId",
+            "name": "guests",
             "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
               }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "meal",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -3521,19 +3537,15 @@
             "deprecationReason": null
           },
           {
-            "name": "guests",
+            "name": "suiteId",
             "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
               }
             },
             "defaultValue": null,
