@@ -160,7 +160,9 @@
   "surname": "Příjmení",
   "to": "Do",
   "tooltips": {
+    "add-roommate": "Přidat dalšího hosta",
     "room-beds": "Počet lůžek bez přistýlek",
+    "room-capacity-full": "Místnost je plná",
     "room-discount-extra": "Cena za přistýlku se vypočítává z ceny pro hosta mínus zde zadaná sleva v procentech",
     "room-price-child": "Procento slevy z ceny pro hosta",
     "paying-guest": "Pokud není vybráno, hlavní host je platící host"

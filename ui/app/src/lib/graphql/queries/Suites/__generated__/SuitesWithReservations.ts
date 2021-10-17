@@ -55,6 +55,8 @@ export interface SuitesWithReservations_reservations_roommates {
 export interface SuitesWithReservations_reservations_suite {
   __typename: "Suite";
   id: string;
+  numberBeds: number;
+  numberBedsExtra: number;
 }
 
 export interface SuitesWithReservations_reservations {

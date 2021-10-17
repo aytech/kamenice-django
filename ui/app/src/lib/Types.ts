@@ -82,6 +82,8 @@ export interface GuestOption {
 export interface Suite {
   id: number | string
   number?: number | null
+  numberBeds?: number | null
+  numberBedsExtra?: number | null
   title?: string
 }
 

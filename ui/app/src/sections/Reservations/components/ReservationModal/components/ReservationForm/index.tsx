@@ -1,6 +1,6 @@
 import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import { useMutation } from "@apollo/client"
-import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Typography } from "antd"
+import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Tooltip, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useEffect, useState } from "react"
@@ -30,9 +30,11 @@ export const ReservationForm = ({
   const { t } = useTranslation()
 
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
+  const [ addRoommateTooltip, setAddRoommateTooltip ] = useState<string>(t("tooltips.add-roommate"))
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
-  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
+  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
+  const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
   const [ calculatePrices, { loading: calculatePriceLoading } ] = useMutation<CalculatePrice, CalculatePriceVariables>(CALCULATE_PRICE, {
     onCompleted: (data: CalculatePrice) => {
@@ -129,6 +131,14 @@ export const ReservationForm = ({
     setRoommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
   }
 
+  const updateRoomCapacity = (roommatesLength: number) => {
+    if (suiteCapacity <= roommatesLength) {
+      setAddRoommateTooltip(t("tooltips.room-capacity-full"))
+    } else {
+      setAddRoommateTooltip(t("tooltips.add-roommate"))
+    }
+  }
+
   useEffect(() => {
     const options: OptionsType[] = []
     guestsData?.guests?.forEach((guest: Guests_guests | null) => {
@@ -141,7 +151,17 @@ export const ReservationForm = ({
     })
     setGuestOptions(options)
     setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
-  }, [ guestsData, reservation?.guest?.id ])
+
+    const beds = reservation?.suite.numberBeds
+    const bedsExtra = reservation?.suite.numberBedsExtra
+    if (beds !== undefined && beds !== null) {
+      let capacity: number = beds
+      if (bedsExtra !== undefined && bedsExtra !== null) {
+        capacity += bedsExtra
+      }
+      setSuiteCapacity(capacity - 1) // -1 as main guest occupies one bed
+    }
+  }, [ guestsData, reservation ])
 
 
   return (
@@ -199,18 +219,27 @@ export const ReservationForm = ({
                   </Form.Item>
                   <MinusCircleOutlined onClick={ () => {
                     remove(name)
+                    updateRoomCapacity(fields.length - 1) // fields length seems not updated immediately
                     form.validateFields()
                   } } />
                 </Space>
               )) }
-              <Button
-                disabled={ fields.length >= roommateOptions.length }
-                type="dashed"
-                onClick={ () => add() }
-                block
-                icon={ <UsergroupAddOutlined /> }>
-                { t("reservations.add-roommate") }
-              </Button>
+              <Tooltip title={ addRoommateTooltip }>
+                <Button
+                  disabled={
+                    fields.length >= roommateOptions.length
+                    || fields.length >= suiteCapacity
+                  }
+                  type="dashed"
+                  onClick={ () => {
+                    add()
+                    updateRoomCapacity(fields.length + 1) // fields length seems not updated immediately
+                  } }
+                  block
+                  icon={ <UsergroupAddOutlined /> }>
+                  { t("reservations.add-roommate") }
+                </Button>
+              </Tooltip>
             </>
           ) }
         </Form.List>
