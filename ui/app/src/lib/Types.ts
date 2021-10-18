@@ -100,7 +100,6 @@ export interface IReservation {
   notes?: string | null
   payingGuest?: { id: string } | null
   priceAccommodation: number | null
-  priceExtra: number | null
   priceMeal: number | null
   priceMunicipality: number | null
   priceTotal: number | null
@@ -140,7 +139,6 @@ export interface CustomItemFields {
   notes: string | null
   payingGuest?: { id: string } | null
   priceAccommodation: number | null
-  priceExtra: number | null
   priceMeal: number | null
   priceMunicipality: number | null
   priceTotal: number | null

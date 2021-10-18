@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client"
 import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Tooltip, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
@@ -57,7 +57,6 @@ export const ReservationForm = ({
     notes: reservation.notes,
     paying: reservation.payingGuest === undefined || reservation.payingGuest === null ? null : reservation.payingGuest.id,
     priceAccommodation: reservation.priceAccommodation,
-    priceExtra: reservation.priceExtra,
     priceMeal: reservation.priceMeal,
     priceMunicipality: reservation.priceMunicipality,
     priceTotal: reservation.priceTotal,
@@ -131,15 +130,16 @@ export const ReservationForm = ({
     setRoommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
   }
 
-  const updateRoomCapacity = (roommatesLength: number) => {
+  const updateRoomCapacity = useCallback((roommatesLength: number) => {
     if (suiteCapacity <= roommatesLength) {
       setAddRoommateTooltip(t("tooltips.room-capacity-full"))
     } else {
       setAddRoommateTooltip(t("tooltips.add-roommate"))
     }
-  }
+  }, [ suiteCapacity, t ])
 
   useEffect(() => {
+    // Define guest and roommate options
     const options: OptionsType[] = []
     guestsData?.guests?.forEach((guest: Guests_guests | null) => {
       if (guest !== null) {
@@ -151,7 +151,7 @@ export const ReservationForm = ({
     })
     setGuestOptions(options)
     setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
-
+    // Define room capacity
     const beds = reservation?.suite.numberBeds
     const bedsExtra = reservation?.suite.numberBedsExtra
     if (beds !== undefined && beds !== null) {
@@ -161,7 +161,12 @@ export const ReservationForm = ({
       }
       setSuiteCapacity(capacity - 1) // -1 as main guest occupies one bed
     }
-  }, [ guestsData, reservation ])
+    // When opening existing reservation, update
+    // tooltip for adding guests, if necessary
+    if (reservation?.roommates?.length !== undefined) {
+      updateRoomCapacity(reservation.roommates.length)
+    }
+  }, [ guestsData, reservation, updateRoomCapacity ])
 
 
   return (

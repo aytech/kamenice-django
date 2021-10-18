@@ -56,7 +56,6 @@ export const SUITES_WITH_RESERVATIONS = gql`
         id
       }
       priceAccommodation
-      priceExtra
       priceMeal
       priceMunicipality
       priceTotal

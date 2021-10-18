@@ -69,7 +69,6 @@ export interface SuitesWithReservations_reservations {
   notes: string | null;
   payingGuest: SuitesWithReservations_reservations_payingGuest | null;
   priceAccommodation: any;
-  priceExtra: any;
   priceMeal: any;
   priceMunicipality: any;
   priceTotal: any;

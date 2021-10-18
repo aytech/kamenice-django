@@ -746,22 +746,6 @@
             "deprecationReason": null
           },
           {
-            "name": "priceExtra",
-            "description": "",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Decimal",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "priceMeal",
             "description": "",
             "args": [],
@@ -2786,18 +2770,6 @@
           },
           {
             "name": "priceAccommodation",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Decimal",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "priceExtra",
             "description": null,
             "type": {
               "kind": "SCALAR",

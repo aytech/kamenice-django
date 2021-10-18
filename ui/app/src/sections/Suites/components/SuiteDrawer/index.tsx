@@ -214,10 +214,7 @@ export const SuiteDrawer = ({
             required
             rules={ [
               FormHelper.requiredRule(t("forms.field-required")),
-              {
-                message: t("forms.enter-number"),
-                pattern: /^[0-9]+$/
-              }
+              FormHelper.numberRule(t("forms.enter-number"))
             ] }>
             <Input placeholder={ t("rooms.number") } type="number" />
           </Form.Item>
@@ -233,50 +230,6 @@ export const SuiteDrawer = ({
             ] }>
             <Input addonBefore={ t("rooms.currency") } />
           </Form.Item>
-          {/* <Form.Item
-            hasFeedback
-            label={ t("rooms.price-child") }
-            name="price_child"
-            rules={ [
-              {
-                message: t("forms.enter-number"),
-                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
-              }
-            ] }
-            tooltip={ {
-              icon: <BulbOutlined />,
-              title: t("tooltips.room-price-child")
-            } }>
-            <Input addonBefore="%" />
-          </Form.Item>
-          <Form.Item
-            hasFeedback
-            label={ t("rooms.price-infant") }
-            name="price_infant"
-            rules={ [
-              {
-                message: t("forms.enter-number"),
-                pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
-              }
-            ] }>
-            <Input addonBefore={ t("rooms.currency") } />
-          </Form.Item> */}
-          {/* <Form.Item
-            hasFeedback
-            label={ t("rooms.discount-extra") }
-            name="price_extra"
-            rules={ [
-              {
-                message: t("forms.enter-number"),
-                pattern: /^[0-9]{1,3}$/
-              }
-            ] }
-            tooltip={ {
-              icon: <BulbOutlined />,
-              title: t("tooltips.room-discount-extra")
-            } }>
-            <Input addonBefore="%" type="number" />
-          </Form.Item> */}
           <Form.Item>
             <Form.List name="discounts">
               { (fields, { add, remove }) => (
@@ -299,7 +252,12 @@ export const SuiteDrawer = ({
                         hasFeedback
                         { ...restField }
                         fieldKey={ [ fieldKey, 'value' ] }
-                        name={ [ name, "value" ] }>
+                        name={ [ name, "value" ] }
+                        required
+                        rules={ [
+                          FormHelper.requiredRule(t("forms.field-required")),
+                          FormHelper.numberRule(t("forms.enter-number"))
+                        ] }>
                         <Input addonBefore="%" type="number" />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {

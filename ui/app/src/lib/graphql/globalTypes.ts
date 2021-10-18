@@ -107,7 +107,6 @@ export interface ReservationInput {
   notes?: string | null;
   payingGuestId?: number | null;
   priceAccommodation?: any | null;
-  priceExtra?: any | null;
   priceMeal?: any | null;
   priceMunicipality?: any | null;
   priceTotal?: any | null;

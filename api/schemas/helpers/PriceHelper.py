@@ -59,20 +59,22 @@ class PriceHelper:
         self.accommodation = self.suite.price_base * self.days
 
     def calculate_extra_beds(self):
-        suite_discount = self.get_suite_discount(DISCOUNT_CHOICE_EXTRA_BED)
-        if suite_discount is not None:
-            adults = self.get_adults()
-            # 1. Assume main guest is an adult
-            # 2. Calculate extra only when number of guests
-            # (including main guest) exceeds base number of beds
-            if len(adults) + 1 > self.suite.number_beds:
-                bed_price = self.suite.price_base / self.suite.number_beds
-                # Extra bed is percentage from the bed price
-                extra_bed_price = bed_price - (bed_price / 100 * suite_discount.value)
-                # Multiply extra price by the number of extra guests and days of stay
-                extra_total = (extra_bed_price * (len(adults) - self.suite.number_beds)) * self.days
-                # Add extra bed price to the accommodation total
-                self.accommodation += extra_total
+        # if suite_discount is not None:
+        adults = self.get_adults()
+        # 1. Assume main guest is an adult
+        # 2. Calculate extra only when number of guests
+        # (including main guest) exceeds base number of beds
+        if len(adults) + 1 > self.suite.number_beds:
+            bed_price = self.suite.price_base / self.suite.number_beds
+            extra_bed_price = bed_price
+            # Extra bed can have discount percentage from base price
+            discount = self.get_suite_discount(DISCOUNT_CHOICE_EXTRA_BED)
+            if discount is not None:
+                extra_bed_price = bed_price - (bed_price / 100 * discount.value)
+            # Multiply extra price by the number of extra guests and days of stay
+            extra_total = (extra_bed_price * (len(adults) - self.suite.number_beds)) * self.days
+            # Add extra bed price to the accommodation total
+            self.accommodation += extra_total
 
     def discount_three_nights(self):
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
@@ -80,22 +82,19 @@ class PriceHelper:
             self.accommodation -= (self.accommodation / 100 * discount.value)
 
     def calculate_child_price(self):
-        discount = self.get_suite_discount(DISCOUNT_CHOICE_CHILD)
-        if discount is not None:
-            # Add price for child only if the child exceeds the capacity, i.e.
-            # when the room is occupied by adults and child is on extra bed.
-            # todo: recalculate the room price when child is within capacity:
-            #   - 1x adult + 1 child is 2 beds room
-            #   - 2x adults + 1 child in 4 beds room
-            #   - 2x adults + 2x children in 4 beds room
-            children = self.get_children()
-            if len(self.get_adults()) + len(children) > self.suite.number_beds:
-                price_adult = self.suite.price_base / self.suite.number_beds
-                for _child in children:
-                    price = price_adult - ((price_adult / 100) * discount.value)
-                    self.accommodation += price * self.days
+        children = self.get_children()
+        # Add price for child only if the child exceeds the capacity, i.e.
+        # when the room is occupied by adults and child is on extra bed.
+        if len(children) > 0 and len(self.get_adults()) + len(children) > self.suite.number_beds:
+            price_base = self.suite.price_base / self.suite.number_beds
+            price_child = price_base * self.days
+            discount = self.get_suite_discount(DISCOUNT_CHOICE_CHILD)
+            if discount is not None:
+                price_child = (price_base - ((price_base / 100) * discount.value)) * self.days
+            self.accommodation += price_child
 
     def calculate_municipality_fee(self):
+        # Municipality fee is paid only for 18+ guests
         # todo: pull municipality fee from user settings
         self.municipality = (21 * self.days) * len(self.get_adults())
 
@@ -108,11 +107,15 @@ class PriceHelper:
             meal_price = 200  # todo: pull from user settings
 
         if meal_price > 0:
-            self.meal = floor((meal_price * self.days) * len(self.get_adults()))
-            children = self.get_children()
-            if len(children) > 0:
-                discount = 40  # todo: pull from user settings
-                self.meal += floor(((meal_price - ((meal_price / 100) * discount)) * self.days) * len(children))
+            discount = 40  # todo: pull from user settings
+            meal_adults = floor((meal_price * self.days) * len(self.get_adults()))
+            if discount is None:
+                # If no discount is specified, calculate children at full price for the meal
+                meal_children = floor((meal_price * self.days) * len(self.get_children()))
+            else:
+                meal_children = floor(
+                    ((meal_price - ((meal_price / 100) * discount)) * self.days) * len(self.get_children()))
+            self.meal = meal_adults + meal_children
 
     def calculate_total(self):
         self.total = self.accommodation + self.meal + self.municipality

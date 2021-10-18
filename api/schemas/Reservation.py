@@ -24,8 +24,7 @@ class Reservation(DjangoObjectType):
         model = ReservationModel
         fields = (
             'expired', 'from_date', 'guest', 'id', 'meal', 'notes', 'paying_guest', 'price_accommodation',
-            'price_extra', 'price_meal', 'price_municipality', 'price_total', 'purpose', 'roommates', 'suite',
-            'to_date', 'type')
+            'price_meal', 'price_municipality', 'price_total', 'purpose', 'roommates', 'suite', 'to_date', 'type')
 
 
 class ReservationQuery(ObjectType):
@@ -91,7 +90,6 @@ class ReservationInput(InputObjectType):
     notes = String()
     paying_guest_id = Int()
     price_accommodation = Decimal()
-    price_extra = Decimal()
     price_meal = Decimal()
     price_municipality = Decimal()
     price_total = Decimal()
@@ -146,7 +144,6 @@ class CreateReservation(Mutation):
             meal=data.meal,
             notes=data.notes,
             price_accommodation=data.price_accommodation,
-            price_extra=data.price_extra,
             price_meal=data.price_meal,
             price_municipality=data.price_municipality,
             price_total=data.price_total,
@@ -218,7 +215,6 @@ class UpdateReservation(Mutation):
                 instance.notes = data.notes if data.notes is not None else instance.notes
                 instance.price_accommodation = data.price_accommodation \
                     if data.price_accommodation is not None else instance.price_accommodation
-                instance.price_extra = data.price_extra if data.price_extra is not None else instance.price_extra
                 instance.price_meal = data.price_meal if data.price_meal is not None else instance.price_meal
                 instance.price_municipality = data.price_municipality \
                     if data.price_municipality is not None else instance.price_municipality

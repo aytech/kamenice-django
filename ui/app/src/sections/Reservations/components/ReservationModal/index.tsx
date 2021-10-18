@@ -125,7 +125,6 @@ export const ReservationModal = ({
       notes: formData.notes,
       payingGuestId: formData.paying,
       priceAccommodation: formData.priceAccommodation,
-      priceExtra: formData.priceExtra,
       priceMeal: formData.priceMeal,
       priceMunicipality: formData.priceMunicipality,
       priceTotal: formData.priceTotal,

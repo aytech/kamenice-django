@@ -4,6 +4,7 @@ import { IGuestForm, OptionsType } from "../Types"
 interface IFormHelper {
   getGuestCitizenship: (formData: IGuestForm) => string | null
   guestAgeOptions: OptionsType[]
+  numberRule: (message: string) => Rule
   requiredAlphaRule: (message: string) => Rule
   requiredRule: (message: string) => Rule
   trim: (value: string | undefined) => string | undefined
@@ -36,6 +37,12 @@ export const FormHelper: IFormHelper = {
       value: "ADULT"
     }
   ],
+  numberRule: (message: string) => {
+    return {
+      message: message,
+      pattern: /^[0-9]+$/
+    }
+  },
   requiredAlphaRule: (message: string) => {
     return {
       message: message,

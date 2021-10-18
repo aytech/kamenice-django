@@ -19,7 +19,6 @@ export const CREATE_RESERVATION = gql`
           id
         }
         priceAccommodation
-        priceExtra
         priceMeal
         priceMunicipality
         priceTotal
@@ -69,7 +68,6 @@ export const UPDATE_RESERVATION = gql`
           id
         }
         priceAccommodation
-        priceExtra
         priceMeal
         priceMunicipality
         priceTotal

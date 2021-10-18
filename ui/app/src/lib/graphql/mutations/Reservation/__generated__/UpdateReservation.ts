@@ -45,7 +45,6 @@ export interface UpdateReservation_updateReservation_reservation {
   notes: string | null;
   payingGuest: UpdateReservation_updateReservation_reservation_payingGuest | null;
   priceAccommodation: any;
-  priceExtra: any;
   priceMeal: any;
   priceMunicipality: any;
   priceTotal: any;

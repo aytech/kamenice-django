@@ -59,9 +59,6 @@ class Reservation(BaseModel):
     price_accommodation = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
         'null': _('Price for accommodation is required field')
     })
-    price_extra = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Price for extra bed(s) is required field')
-    })
     price_meal = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
         'null': _('Price for meal is required field')
     })
