@@ -157,7 +157,9 @@
   "surname": "Příjmení",
   "to": "Do",
   "tooltips": {
+    "add-discount": "Přidat slevu pro místnost",
     "add-roommate": "Přidat dalšího hosta",
+    "discounts-full": "Všechny slevy již byly vybrány",
     "room-beds": "Počet lůžek bez přistýlek",
     "room-capacity-full": "Místnost je plná",
     "paying-guest": "Pokud není vybráno, hlavní host je platící host"

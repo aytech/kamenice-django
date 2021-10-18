@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Spin } from "antd"
+import { useCallback, useEffect, useState } from "react"
+import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Spin, Tooltip } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { BulbOutlined, CloseOutlined, ControlOutlined, MinusCircleOutlined } from "@ant-design/icons"
 import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
@@ -41,6 +41,8 @@ export const SuiteDrawer = ({
   const [ form ] = Form.useForm()
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
+  const [ discountsFull, setDiscountsFull ] = useState<boolean>(false)
+  const [ addDiscountTooltip, setAddDiscountTooltip ] = useState<string>(t("tooltips.add-discount"))
 
   const initialValues: Store = {
     beds: suite?.numberBeds,
@@ -55,7 +57,9 @@ export const SuiteDrawer = ({
     {
       message: t("rooms.error-duplicate-discount"),
       validator: (_rule: any, value: number): Promise<void | Error> => {
-        const duplicate = form.getFieldValue("discounts").filter((discount: any) => discount.type === value)
+        const duplicate = form.getFieldValue("discounts").filter((discount: any) => {
+          return discount !== undefined && discount.type === value
+        })
         // Validation is run after the selected values are added to form
         if (duplicate !== undefined && duplicate.length > 1) {
           return Promise.reject(new Error("Fail discount validation, duplicate value"))
@@ -120,11 +124,27 @@ export const SuiteDrawer = ({
     }
   }
 
+  const updateAddDiscountTooltip = useCallback((fieldsLength: number) => {
+    if (discountOptions() !== undefined && discountOptions().length <= fieldsLength) {
+      setDiscountsFull(true)
+      setAddDiscountTooltip(t("tooltips.discounts-full"))
+    } else {
+      setDiscountsFull(false)
+      setAddDiscountTooltip(t("tooltips.add-discount"))
+    }
+  }, [ t ])
+
   useEffect(() => {
     if (visible === true) {
       form.resetFields()
     }
   }, [ form, visible ])
+
+  useEffect(() => {
+    if (suite !== undefined) {
+      updateAddDiscountTooltip(suite.discountSet.length)
+    }
+  }, [ suite, updateAddDiscountTooltip ])
 
   return (
     <Drawer
@@ -261,18 +281,26 @@ export const SuiteDrawer = ({
                         <Input addonBefore="%" type="number" />
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
+                        updateAddDiscountTooltip(fields.length - 1) // length is not updated immediately
                         remove(name)
                         form.validateFields()
                       } } />
                     </Space>
                   )) }
-                  <Button
-                    type="dashed"
-                    onClick={ () => add() }
-                    block
-                    icon={ <ControlOutlined /> }>
-                    { t("rooms.add-discount") }
-                  </Button>
+                  <Tooltip
+                    title={ addDiscountTooltip }>
+                    <Button
+                      block
+                      disabled={ discountsFull === true }
+                      icon={ <ControlOutlined /> }
+                      onClick={ () => {
+                        updateAddDiscountTooltip(fields.length + 1) // length is not updated immediately
+                        add()
+                      } }
+                      type="dashed">
+                      { t("rooms.add-discount") }
+                    </Button>
+                  </Tooltip>
                 </>
               ) }
             </Form.List>
