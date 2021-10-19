@@ -16,7 +16,7 @@ class PriceHelper:
         self.total = 0
 
         self.days = data.number_days
-        self.meal = data.meal
+        self.meal_option = data.meal
 
         self.guests = Guest.objects.filter(pk__in=data.guests)
         self.suite = Suite.objects.get(pk=data.suite_id)
@@ -101,9 +101,9 @@ class PriceHelper:
     def calculate_meal(self):
         meal_price = 0
 
-        if self.meal == MEAL_CHOICE_BREAKFAST:
+        if self.meal_option == MEAL_CHOICE_BREAKFAST:
             meal_price = 80  # todo: pull from user settings
-        elif self.meal == MEAL_CHOICE_HALFBOARD:
+        elif self.meal_option == MEAL_CHOICE_HALFBOARD:
             meal_price = 200  # todo: pull from user settings
 
         if meal_price > 0:
@@ -118,7 +118,7 @@ class PriceHelper:
             self.meal = meal_adults + meal_children
 
     def calculate_total(self):
-        self.total = self.accommodation + self.meal + self.municipality
+        self.total = floor(self.accommodation) + floor(self.meal) + floor(self.municipality)
 
     def get_adults(self):
         return list(
