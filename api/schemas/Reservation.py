@@ -3,7 +3,7 @@ import os
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
-from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String, Decimal
+from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String, Decimal, Argument
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
@@ -65,20 +65,16 @@ class PriceInput(InputObjectType):
     suite_id = Int(required=True)
 
 
-class CalculateReservationPrice(Mutation):
-    class Arguments:
-        data = PriceInput(required=True)
+class CalculateReservationPriceQuery(ObjectType):
+    price = Field(Price, data=Argument(PriceInput))
 
-    price = Field(Price)
-
-    @classmethod
-    # @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
-    def mutate(cls, _root, _info, data=None):
+    @user_passes_test(lambda user: user.has_perm('api.change_reservation'), exc=PermissionDenied)
+    def resolve_price(self, _info, data=None):
         try:
             helper = PriceHelper(data)
-            return CalculateReservationPrice(price=helper.calculate(Price))
+            return helper.calculate(Price)
         except ObjectDoesNotExist:
-            return CalculateReservationPrice(price=None)
+            return None
 
 
 class ReservationInput(InputObjectType):

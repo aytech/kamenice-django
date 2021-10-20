@@ -45,7 +45,7 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
 
     # GraphQL
-    re_path('^api$', csrf_exempt(GraphQLView.as_view(graphiql=settings.GRAPHIQL_AVAILABLE, schema=schema))),
+    re_path(r'^api$', csrf_exempt(GraphQLView.as_view(graphiql=settings.GRAPHIQL_AVAILABLE, schema=schema))),
 
     # Static
     re_path(r'^static/(?P<path>.*)$', serve, {
