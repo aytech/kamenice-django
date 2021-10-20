@@ -1,5 +1,5 @@
 import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
-import { useMutation } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Tooltip, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
@@ -9,9 +9,9 @@ import { selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { ReservationFormHelper } from "../../../../../../lib/components/ReservationFormHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
-import { CALCULATE_PRICE } from "../../../../../../lib/graphql/mutations/Reservation"
-import { CalculatePrice, CalculatePriceVariables } from "../../../../../../lib/graphql/mutations/Reservation/__generated__/CalculatePrice"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
+import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
 import { IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
 import "./styles.css"
 
@@ -36,14 +36,14 @@ export const ReservationForm = ({
   const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
-  const [ calculatePrices, { loading: calculatePriceLoading } ] = useMutation<CalculatePrice, CalculatePriceVariables>(CALCULATE_PRICE, {
-    onCompleted: (data: CalculatePrice) => {
-      if (data.calculateReservationPrice !== null && data.calculateReservationPrice.price !== null) {
+  const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
+    onCompleted: (data: CalculateReservationPrice) => {
+      if (data.price !== null) {
         form.setFieldsValue({
-          priceAccommodation: data.calculateReservationPrice.price.accommodation,
-          priceMeal: data.calculateReservationPrice.price.meal,
-          priceMunicipality: data.calculateReservationPrice.price.municipality,
-          priceTotal: data.calculateReservationPrice.price.total
+          priceAccommodation: data.price.accommodation,
+          priceMeal: data.price.meal,
+          priceMunicipality: data.price.municipality,
+          priceTotal: data.price.total
         })
       }
     }
@@ -311,7 +311,7 @@ export const ReservationForm = ({
           label={ t("reservations.price-room") }>
           <Typography.Text>
             <strong>
-              { selectedSuite()?.priceBase } { t("rooms.currency") }
+              { selectedSuite()?.priceBase } { t("currency") }
             </strong>
           </Typography.Text>
         </Form.Item>
@@ -319,25 +319,25 @@ export const ReservationForm = ({
           hidden={ !pricesVisible }
           label={ t("reservations.price-accommodation") }
           name="priceAccommodation">
-          <Input addonBefore={ t("rooms.currency") } type="number" />
+          <Input addonBefore={ t("currency") } type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ t("reservations.price-meal") }
           name="priceMeal">
-          <Input addonBefore={ t("rooms.currency") } type="number" />
+          <Input addonBefore={ t("currency") } type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ t("reservations.price-municipality") }
           name="priceMunicipality">
-          <Input addonBefore={ t("rooms.currency") } type="number" />
+          <Input addonBefore={ t("currency") } type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ <strong>{ t("reservations.price-total") }</strong> }
           name="priceTotal">
-          <Input addonBefore={ t("rooms.currency") } type="number" />
+          <Input addonBefore={ t("currency") } type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }

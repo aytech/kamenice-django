@@ -5,6 +5,7 @@
     "sk": "Slovenské"
   },
   "company-name": "Penzion Mlýn Kamenice",
+  "currency": "Kč",
   "edit": "Upravit",
   "email": "E-Mail",
   "enums": {
@@ -139,7 +140,6 @@
   "rooms": {
     "add-discount": "Přidat slevu",
     "created": "Místnost byla vytvořena",
-    "currency": "Kč",
     "deleted": "Místnost byla odstraněna",
     "discounts": "Slevy",
     "error-duplicate-discount": "Sleva již vybrána",
@@ -153,6 +153,10 @@
     "updated": "Místnost byla aktualizována"
   },
   "send": "Odeslat",
+  "settings": {
+    "base-breakfast-price": "Základní cena snídaně",
+    "base-halfboard-price": "Základní cena polopenze"
+  },
   "sex": "Pohlaví",
   "surname": "Příjmení",
   "to": "Do",
