@@ -89,6 +89,7 @@ export const SuiteDrawer = ({
           }),
           number: formData.number,
           numberBeds: formData.beds,
+          numberBedsExtra: formData.beds_extra,
           priceBase: formData.price_base,
           priceChild: formData.price_child,
           priceExtra: formData.price_extra,

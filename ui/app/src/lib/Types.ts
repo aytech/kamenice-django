@@ -112,6 +112,7 @@ export interface IReservation {
 
 export interface SuiteForm {
   beds: number
+  beds_extra: number
   discounts: Array<{type: string, value: number}>
   number: number
   price_base: number
