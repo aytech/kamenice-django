@@ -1,7 +1,7 @@
 from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
-    DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD
+    DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG
 from api.models.Guest import Guest
 from api.models.Suite import Suite
 
@@ -60,17 +60,18 @@ class PriceHelper:
 
     def calculate_extra_beds(self):
         # if suite_discount is not None:
-        adults = self.get_adults()
+        guests = self.get_adults() + self.get_young()
         # 1. Assume main guest is an adult
         # 2. Calculate extra only when number of guests
         # (including main guest) exceeds base number of beds
-        if len(adults) + 1 > self.suite.number_beds:
+        number_extra_beds = len(guests) - self.suite.number_beds
+        if number_extra_beds > 0:
             extra_bed_price = self.suite.price_base * self.days
             # Extra bed can have discount percentage from base price
             discount = self.get_suite_discount(DISCOUNT_CHOICE_EXTRA_BED)
             if discount is not None:
                 extra_bed_price -= (extra_bed_price / 100) * discount.value
-            self.accommodation += extra_bed_price
+            self.accommodation += (extra_bed_price * number_extra_beds)
 
     def discount_three_nights(self):
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
@@ -104,13 +105,14 @@ class PriceHelper:
         if meal_price > 0:
             discount = 40  # todo: pull from user settings
             meal_adults = floor((meal_price * self.days) * len(self.get_adults()))
+            meal_young = floor((meal_price * self.days)) * len(self.get_young())
             if discount is None:
                 # If no discount is specified, calculate children at full price for the meal
                 meal_children = floor((meal_price * self.days) * len(self.get_children()))
             else:
                 meal_children = floor(
                     ((meal_price - ((meal_price / 100) * discount)) * self.days) * len(self.get_children()))
-            self.meal = meal_adults + meal_children
+            self.meal = meal_adults + meal_young + meal_children
 
     def calculate_total(self):
         self.total = floor(self.accommodation) + floor(self.meal) + floor(self.municipality)
@@ -119,6 +121,13 @@ class PriceHelper:
         return list(
             filter(
                 lambda guest: guest.age == AGE_CHOICE_ADULT or guest.age is None, self.guests
+            )
+        )
+
+    def get_young(self):
+        return list(
+            filter(
+                lambda guest: guest.age == AGE_CHOICE_YOUNG, self.guests
             )
         )
 
