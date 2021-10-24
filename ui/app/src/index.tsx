@@ -39,7 +39,12 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
 const refreshToken = () => {
   return apolloClient
-    .mutate({ mutation: TOKEN_REFRESH, variables: { refreshToken: localStorage.getItem(refreshTokenName) } })
+    .mutate({
+      mutation: TOKEN_REFRESH,
+      variables: {
+        refreshToken: localStorage.getItem(refreshTokenName)
+      }
+    })
     .then((value: FetchResult<RefreshToken>) => {
       return value.data?.refreshToken
     })

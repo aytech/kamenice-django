@@ -3,7 +3,7 @@ import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { RouteComponentProps, withRouter } from "react-router-dom"
-import { appUser, pageTitle } from "../../cache"
+import { pageTitle, appSettings } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
 import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
@@ -44,7 +44,7 @@ export const Login = withRouter(({
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
     onCompleted: (token: TokenAuth) => {
       if (token.tokenAuth !== null) {
-        appUser(token.tokenAuth.user)
+        appSettings(token.tokenAuth.settings)
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
         history.push(UrlHelper.getReferrer())

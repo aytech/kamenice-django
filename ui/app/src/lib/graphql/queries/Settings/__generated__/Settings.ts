@@ -6,18 +6,18 @@
 import { DiscountSettingsType } from "./../../../globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: TokenAuth
+// GraphQL query operation: Settings
 // ====================================================
 
-export interface TokenAuth_tokenAuth_settings_discountSettingsSet {
+export interface Settings_settings_discountSettingsSet {
   __typename: "DiscountSettings";
   type: DiscountSettingsType;
   value: number;
 }
 
-export interface TokenAuth_tokenAuth_settings {
+export interface Settings_settings {
   __typename: "Settings";
-  discountSettingsSet: TokenAuth_tokenAuth_settings_discountSettingsSet[];
+  discountSettingsSet: Settings_settings_discountSettingsSet[];
   id: string;
   municipalityFee: any | null;
   priceBreakfast: any | null;
@@ -27,20 +27,13 @@ export interface TokenAuth_tokenAuth_settings {
   userName: string | null;
 }
 
-export interface TokenAuth_tokenAuth {
-  __typename: "ObtainJSONWebToken";
-  payload: any;
-  refreshExpiresIn: number;
-  refreshToken: string;
-  token: string;
-  settings: TokenAuth_tokenAuth_settings | null;
+export interface Settings_discountSettingsTypes {
+  __typename: "DiscountSettingsOption";
+  name: string;
+  value: string;
 }
 
-export interface TokenAuth {
-  tokenAuth: TokenAuth_tokenAuth | null;
-}
-
-export interface TokenAuthVariables {
-  username: string;
-  password: string;
+export interface Settings {
+  settings: Settings_settings | null;
+  discountSettingsTypes: (Settings_discountSettingsTypes | null)[] | null;
 }

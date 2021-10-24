@@ -4,16 +4,15 @@ from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
 
-from api.models.Discount import Discount as DiscountModel
+from api.models.DiscountSuite import DiscountSuite as DiscountSuiteModel
 from api.models.Suite import Suite as SuiteModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
-from api.schemas.exceptions.Unauthorized import Unauthorized
 
 
 class Suite(DjangoObjectType):
     class Meta:
         model = SuiteModel
-        fields = ('discount_set', 'id', 'number', 'number_beds', 'number_beds_extra', 'price_base', 'title',)
+        fields = ('discount_suite_set', 'id', 'number', 'number_beds', 'number_beds_extra', 'price_base', 'title',)
 
 
 class SuitesQuery(ObjectType):
@@ -94,15 +93,15 @@ class UpdateSuite(Mutation):
                 instance.title = data.title if data.title is not None else instance.title
 
                 # Recreate discounts
-                instance.discount_set.all().delete()
+                instance.discount_suite_set.all().delete()
                 added_discounts = []
                 for discount in data.discounts:
                     # Suite cannot have duplicate discounts
                     if discount.type in added_discounts:
                         raise Exception(_('Discount %(type)s is already applied') % {
-                            'type': DiscountModel.get_discount_choice(choice=discount.type)})
+                            'type': DiscountSuiteModel.get_discount_choice(choice=discount.type)})
                     added_discounts.append(discount.type)
-                    new_discount = DiscountModel(
+                    new_discount = DiscountSuiteModel(
                         suite=instance,
                         type=discount.type,
                         value=discount.value

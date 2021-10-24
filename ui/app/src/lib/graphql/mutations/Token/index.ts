@@ -7,12 +7,18 @@ export const TOKEN_AUTH = gql`
       refreshExpiresIn
       refreshToken
       token
-      user {
-        color
+      settings {
+        discountSettingsSet {
+          type
+          value
+        }
         id
-        name
-        surname
-        username
+        municipalityFee
+        priceBreakfast
+        priceHalfboard
+        userAvatar
+        userColor
+        userName
       }
     }
   }

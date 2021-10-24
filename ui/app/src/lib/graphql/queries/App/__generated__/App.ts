@@ -41,4 +41,6 @@ export interface App {
   reservationModalOpen: boolean;
   selectedPage: string;
   selectedSuite: App_selectedSuite | null;
+  userColor: string;
+  userName: string;
 }

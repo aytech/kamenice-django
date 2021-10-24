@@ -1,7 +1,11 @@
 import { Rule } from "antd/lib/form"
-import { IGuestForm, OptionsType } from "../Types"
+import { Discount, IGuestForm, OptionsType } from "../Types"
 
 interface IFormHelper {
+  discountValidator: (
+    message: string,
+    fields: () => Discount[]
+  ) => Rule
   getGuestCitizenship: (formData: IGuestForm) => string | null
   guestAgeOptions: OptionsType[]
   numberRule: (message: string) => Rule
@@ -10,6 +14,23 @@ interface IFormHelper {
   trim: (value: string | undefined) => string | undefined
 }
 export const FormHelper: IFormHelper = {
+  discountValidator: (
+    message: string,
+    fields: () => Discount[]
+  ) => {
+    return {
+      message: message,
+      validator: (_rule: any, value: number): Promise<void | Error> => {
+        const duplicate = fields().filter((discount: any) => {
+          return discount !== undefined && discount.type === value
+        })
+        if (duplicate !== undefined && duplicate.length > 1) {
+          return Promise.reject(new Error("Fail discount validation, duplicate value"))
+        }
+        return Promise.resolve()
+      }
+    }
+  },
   getGuestCitizenship: (formData: IGuestForm) => {
     if (formData.citizenship?.new !== undefined) {
       return formData.citizenship.new

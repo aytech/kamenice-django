@@ -10,7 +10,7 @@ import { CreateSuite, CreateSuiteVariables } from "../../../../lib/graphql/mutat
 import { CREATE_SUITE, UPDATE_SUITE } from "../../../../lib/graphql/mutations/Suite"
 import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
 import { useTranslation } from "react-i18next"
-import { discountOptions } from "../../../../cache"
+import { discountSuiteOptions } from "../../../../cache"
 import "./styles.css"
 
 interface Props {
@@ -42,32 +42,16 @@ export const SuiteDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
   const [ discountsFull, setDiscountsFull ] = useState<boolean>(false)
-  const [ addDiscountTooltip, setAddDiscountTooltip ] = useState<string>(t("tooltips.add-discount"))
+  const [ addDiscountTooltip, setAddDiscountTooltip ] = useState<string>(t("tooltips.add-discount-suite"))
 
   const initialValues: Store = {
     beds: suite?.numberBeds,
     beds_extra: suite?.numberBedsExtra,
-    discounts: suite?.discountSet,
+    discounts: suite?.discountSuiteSet,
     number: suite?.number,
     price_base: suite === undefined ? "0.00" : suite.priceBase,
     title: suite?.title
   }
-
-  const discountValidator = [
-    {
-      message: t("rooms.error-duplicate-discount"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        const duplicate = form.getFieldValue("discounts").filter((discount: any) => {
-          return discount !== undefined && discount.type === value
-        })
-        // Validation is run after the selected values are added to form
-        if (duplicate !== undefined && duplicate.length > 1) {
-          return Promise.reject(new Error("Fail discount validation, duplicate value"))
-        }
-        return Promise.resolve()
-      }
-    }
-  ]
 
   const actionCallback = (callback: () => void, newSuite?: any | null) => {
     if (newSuite !== undefined && newSuite !== null) {
@@ -126,12 +110,12 @@ export const SuiteDrawer = ({
   }
 
   const updateAddDiscountTooltip = useCallback((fieldsLength: number) => {
-    if (discountOptions() !== undefined && discountOptions().length <= fieldsLength) {
+    if (discountSuiteOptions() !== undefined && discountSuiteOptions().length <= fieldsLength) {
       setDiscountsFull(true)
       setAddDiscountTooltip(t("tooltips.discounts-full"))
     } else {
       setDiscountsFull(false)
-      setAddDiscountTooltip(t("tooltips.add-discount"))
+      setAddDiscountTooltip(t("tooltips.add-discount-suite"))
     }
   }, [ t ])
 
@@ -143,7 +127,7 @@ export const SuiteDrawer = ({
 
   useEffect(() => {
     if (suite !== undefined) {
-      updateAddDiscountTooltip(suite.discountSet.length)
+      updateAddDiscountTooltip(suite.discountSuiteSet.length)
     }
   }, [ suite, updateAddDiscountTooltip ])
 
@@ -264,9 +248,14 @@ export const SuiteDrawer = ({
                         { ...restField }
                         fieldKey={ [ fieldKey, 'type' ] }
                         name={ [ name, "type" ] }
-                        rules={ discountValidator }>
+                        rules={ [
+                          FormHelper.discountValidator(
+                            t("rooms.error-duplicate-discount"),
+                            () => form.getFieldValue("discounts")
+                          )
+                        ] }>
                         <Select
-                          options={ discountOptions() }
+                          options={ discountSuiteOptions() }
                           showSearch />
                       </Form.Item>
                       <Form.Item
@@ -299,7 +288,7 @@ export const SuiteDrawer = ({
                         add()
                       } }
                       type="dashed">
-                      { t("rooms.add-discount") }
+                      { t("forms.add-discount") }
                     </Button>
                   </Tooltip>
                 </>

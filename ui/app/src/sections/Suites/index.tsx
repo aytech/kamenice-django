@@ -10,7 +10,7 @@ import { SUITES } from "../../lib/graphql/queries/Suites"
 import { useTranslation } from "react-i18next"
 import { SuiteItem } from "./components/SuiteItem"
 import { AppstoreAddOutlined } from "@ant-design/icons"
-import { discountOptions, pageTitle, selectedPage } from "../../cache"
+import { discountSuiteOptions, pageTitle, selectedPage } from "../../cache"
 import { OptionsType } from "../../lib/Types"
 
 export const Suites = withRouter(() => {
@@ -38,7 +38,7 @@ export const Suites = withRouter(() => {
         suitesList.push(suite)
       }
     })
-    data?.discountTypes?.forEach(type => {
+    data?.discountSuiteTypes?.forEach(type => {
       if (type !== null) {
         discountTypes.push({
           label: type.value,
@@ -47,7 +47,7 @@ export const Suites = withRouter(() => {
       }
     })
     setSuites(suitesList)
-    discountOptions(discountTypes)
+    discountSuiteOptions(discountTypes)
   }, [ data, t ])
 
   useEffect(() => {

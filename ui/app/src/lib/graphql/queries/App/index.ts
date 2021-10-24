@@ -26,17 +26,7 @@ export const APP = gql`
       priceInfant
       title
     }
-  }
-`
-
-export const USER = gql`
-  query User {
-    user {
-      color
-      id
-      name
-      surname
-      username
-    }
+    userColor @client
+    userName @client
   }
 `

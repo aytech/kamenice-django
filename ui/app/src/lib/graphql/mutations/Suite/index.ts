@@ -4,7 +4,7 @@ export const CREATE_SUITE = gql`
   mutation CreateSuite($data: SuiteInput!) {
     createSuite(data: $data) {
       suite {
-        discountSet {
+        discountSuiteSet {
           type
           value
         }
@@ -23,7 +23,7 @@ export const UPDATE_SUITE = gql`
   mutation UpdateSuite($data: SuiteInput!) {
     updateSuite(data: $data) {
       suite {
-        discountSet {
+        discountSuiteSet {
           type
           value
         }

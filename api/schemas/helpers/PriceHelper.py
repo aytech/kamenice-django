@@ -1,8 +1,10 @@
 from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
-    DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG
+    DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG, \
+    DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD
 from api.models.Guest import Guest
+from api.models.Settings import Settings
 from api.models.Suite import Suite
 
 
@@ -20,7 +22,8 @@ class PriceHelper:
 
         self.guests = Guest.objects.filter(pk__in=data.guests)
         self.suite = Suite.objects.get(pk=data.suite_id)
-        self.discounts = self.suite.discount_set.all()
+        self.settings = Settings.objects.get(pk=data.settings_id)
+        self.discounts = self.suite.discount_suite_set.all()
 
     def calculate(self, model):
         # Order is important, first calculate base price
@@ -51,6 +54,12 @@ class PriceHelper:
 
     def get_suite_discount(self, discount_type):
         for discount in self.discounts:
+            if discount.type == discount_type:
+                return discount
+        return None
+
+    def get_settings_discount(self, discount_type):
+        for discount in self.settings.discount_settings_set.all():
             if discount.type == discount_type:
                 return discount
         return None
@@ -92,26 +101,26 @@ class PriceHelper:
     def calculate_municipality_fee(self):
         # Municipality fee is paid only for 18+ guests
         # todo: pull municipality fee from user settings
-        self.municipality = (21 * self.days) * len(self.get_adults())
+        self.municipality = (self.settings.municipality_fee * self.days) * len(self.get_adults())
 
     def calculate_meal(self):
         meal_price = 0
 
         if self.meal_option == MEAL_CHOICE_BREAKFAST:
-            meal_price = 80  # todo: pull from user settings
+            meal_price = self.settings.price_breakfast
         elif self.meal_option == MEAL_CHOICE_HALFBOARD:
-            meal_price = 200  # todo: pull from user settings
+            meal_price = self.settings.price_halfboard
 
         if meal_price > 0:
-            discount = 40  # todo: pull from user settings
             meal_adults = floor((meal_price * self.days) * len(self.get_adults()))
-            meal_young = floor((meal_price * self.days)) * len(self.get_young())
-            if discount is None:
-                # If no discount is specified, calculate children at full price for the meal
-                meal_children = floor((meal_price * self.days) * len(self.get_children()))
-            else:
-                meal_children = floor(
-                    ((meal_price - ((meal_price / 100) * discount)) * self.days) * len(self.get_children()))
+            meal_young = floor((meal_price * self.days) * len(self.get_young()))
+            meal_children = floor((meal_price * self.days) * len(self.get_children()))
+            breakfast_discount = self.get_settings_discount(DISCOUNT_CHOICE_CHILD_BREAKFAST)
+            halfboard_discount = self.get_settings_discount(DISCOUNT_CHOICE_HALFBOARD)
+            if self.meal_option == MEAL_CHOICE_BREAKFAST and breakfast_discount is not None:
+                meal_children -= floor((meal_children / 100) * breakfast_discount.value)
+            if self.meal_option == MEAL_CHOICE_HALFBOARD and halfboard_discount is not None:
+                meal_children -= floor((meal_children / 100) * halfboard_discount.value)
             self.meal = meal_adults + meal_young + meal_children
 
     def calculate_total(self):

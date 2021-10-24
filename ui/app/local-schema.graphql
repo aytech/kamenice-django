@@ -48,4 +48,6 @@ extend type Query {
   selectedPage: String!
   selectedSuite: SelectedSuite
   timelineGroups: TimelimeGroup
+  userColor: String!
+  userName: String!
 }

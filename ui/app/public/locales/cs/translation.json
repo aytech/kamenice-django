@@ -22,6 +22,7 @@
     "oops": "Jejda"
   },
   "forms": {
+    "add-discount": "Přidat slevu",
     "address": "Trvalé bydliště",
     "by-hand": "ručně",
     "choose-from-list": "Vyberte ze seznamu",
@@ -138,7 +139,6 @@
     "NONBINDING": "Nezávazná Rezervace"
   },
   "rooms": {
-    "add-discount": "Přidat slevu",
     "created": "Místnost byla vytvořena",
     "deleted": "Místnost byla odstraněna",
     "discounts": "Slevy",
@@ -155,13 +155,17 @@
   "send": "Odeslat",
   "settings": {
     "base-breakfast-price": "Základní cena snídaně",
-    "base-halfboard-price": "Základní cena polopenze"
+    "base-halfboard-price": "Základní cena polopenze",
+    "municipality-fee-amount": "Výše obecního poplatku",
+    "updated": "Nastavení aktualizováno",
+    "user-name": "Uživatelské jméno",
+    "your-name": "Vaše jméno"
   },
   "sex": "Pohlaví",
   "surname": "Příjmení",
   "to": "Do",
   "tooltips": {
-    "add-discount": "Přidat slevu pro místnost",
+    "add-discount-suite": "Přidat slevu pro místnost",
     "add-roommate": "Přidat dalšího hosta",
     "discounts-full": "Všechny slevy již byly vybrány",
     "room-beds": "Počet lůžek bez přistýlek",

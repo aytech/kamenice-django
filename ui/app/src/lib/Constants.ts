@@ -25,4 +25,7 @@ export const uris = {
   settings: "/settings"
 }
 export const refreshTokenName: string = "refreshToken"
+export const sessionStorageKeys = {
+  page: "page"
+}
 export const tokenName: string = "token"

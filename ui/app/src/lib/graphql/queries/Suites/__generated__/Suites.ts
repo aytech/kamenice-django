@@ -3,21 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { DiscountType } from "./../../../globalTypes";
+import { DiscountSuiteType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL query operation: Suites
 // ====================================================
 
-export interface Suites_suites_discountSet {
-  __typename: "Discount";
-  type: DiscountType;
+export interface Suites_suites_discountSuiteSet {
+  __typename: "DiscountSuite";
+  type: DiscountSuiteType;
   value: number;
 }
 
 export interface Suites_suites {
   __typename: "Suite";
-  discountSet: Suites_suites_discountSet[];
+  discountSuiteSet: Suites_suites_discountSuiteSet[];
   id: string;
   number: number | null;
   numberBeds: number;
@@ -26,13 +26,13 @@ export interface Suites_suites {
   title: string;
 }
 
-export interface Suites_discountTypes {
-  __typename: "DiscountOption";
+export interface Suites_discountSuiteTypes {
+  __typename: "DiscountSuiteOption";
   name: string;
   value: string;
 }
 
 export interface Suites {
   suites: (Suites_suites | null)[] | null;
-  discountTypes: (Suites_discountTypes | null)[] | null;
+  discountSuiteTypes: (Suites_discountSuiteTypes | null)[] | null;
 }

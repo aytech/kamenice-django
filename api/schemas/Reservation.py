@@ -3,10 +3,10 @@ import os
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 from graphene import ObjectType, List, Field, Int, Mutation, InputObjectType, ID, String, Decimal, Argument
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
-from django.utils.translation import gettext_lazy as _
 from sendgrid import SendGridAPIClient, Mail
 
 from api.constants import ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, ENVIRON_EMAIL_API_KEY
@@ -62,6 +62,7 @@ class PriceInput(InputObjectType):
     guests = List(Int, required=True)
     meal = String()
     number_days = Int(required=True)
+    settings_id = Int()
     suite_id = Int(required=True)
 
 

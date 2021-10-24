@@ -1,7 +1,7 @@
 import './styles.css'
 import logo from './assets/mill.svg'
 import { PageHeader } from 'antd'
-import { appUser } from '../../../../cache'
+import { appSettings } from '../../../../cache'
 import { MenuItems } from './components/MenuItems'
 import { Link } from 'react-router-dom'
 
@@ -15,7 +15,7 @@ export const Header = () => {
   )
 
   const homeLink = () => {
-    return appUser() !== null ? (
+    return appSettings() !== null ? (
       <Link to="/">{ logoImage }</Link>
     ) : logoImage
   }

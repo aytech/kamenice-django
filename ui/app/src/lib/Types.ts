@@ -110,10 +110,26 @@ export interface IReservation {
   type?: ReservationTypeKey
 }
 
+export interface Discount {
+  type: string
+  value: number
+}
+
+export interface SettingsForm {
+  discounts: Array<Discount>
+  id: number
+  municipality_fee: number
+  price_breakfast: number
+  price_halfboard: number
+  user_avatar: string
+  user_color: string
+  user_name: string
+}
+
 export interface SuiteForm {
   beds: number
   beds_extra: number
-  discounts: Array<{type: string, value: number}>
+  discounts: Array<Discount>
   number: number
   price_base: number
   price_child: number

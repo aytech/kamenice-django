@@ -5,7 +5,7 @@ import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { selectedSuite } from "../../../../../../cache"
+import { appSettings, selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { ReservationFormHelper } from "../../../../../../lib/components/ReservationFormHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
@@ -37,6 +37,7 @@ export const ReservationForm = ({
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
   const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
+    fetchPolicy: "no-cache",
     onCompleted: (data: CalculateReservationPrice) => {
       if (data.price !== null) {
         form.setFieldsValue({
@@ -354,6 +355,7 @@ export const ReservationForm = ({
                       guests: getGuestsIds(),
                       meal: form.getFieldValue('meal'),
                       numberDays: getReservationDuration(),
+                      settingsId: Number(appSettings()?.id),
                       suiteId: Number(selectedSuiteId)
                     }
                   }

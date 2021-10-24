@@ -1,9 +1,9 @@
 **/__pycache__/
 **/node_modules/
+*.sqlite3
 .env
 .idea
 ui/app/build
 kamenice_django/logs
 kamenice_django/static
 venv
-db.sqlite3

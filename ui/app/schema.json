@@ -16,12 +16,12 @@
         "specifiedByUrl": null,
         "fields": [
           {
-            "name": "user",
+            "name": "settings",
             "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "Settings",
               "ofType": null
             },
             "isDeprecated": false,
@@ -205,7 +205,7 @@
             "deprecationReason": null
           },
           {
-            "name": "discountTypes",
+            "name": "discountSuiteTypes",
             "description": null,
             "args": [],
             "type": {
@@ -213,7 +213,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "DiscountOption",
+                "name": "DiscountSuiteOption",
                 "ofType": null
               }
             },
@@ -221,7 +221,7 @@
             "deprecationReason": null
           },
           {
-            "name": "discounts",
+            "name": "discountsSuite",
             "description": null,
             "args": [
               {
@@ -242,7 +242,52 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Discount",
+                "name": "DiscountSuite",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "discountSettingsTypes",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "DiscountSettingsOption",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "discountsSettings",
+            "description": null,
+            "args": [
+              {
+                "name": "settingsId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "DiscountSettings",
                 "ofType": null
               }
             },
@@ -304,7 +349,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "User",
+        "name": "Settings",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -325,23 +370,43 @@
             "deprecationReason": null
           },
           {
-            "name": "color",
+            "name": "municipalityFee",
             "description": "",
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "name",
+            "name": "priceBreakfast",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "priceHalfboard",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userAvatar",
             "description": "",
             "args": [],
             "type": {
@@ -353,7 +418,7 @@
             "deprecationReason": null
           },
           {
-            "name": "surname",
+            "name": "userColor",
             "description": "",
             "args": [],
             "type": {
@@ -365,16 +430,36 @@
             "deprecationReason": null
           },
           {
-            "name": "username",
+            "name": "userName",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "discountSettingsSet",
             "description": "",
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "DiscountSettings",
+                    "ofType": null
+                  }
+                }
               }
             },
             "isDeprecated": false,
@@ -395,6 +480,117 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Decimal",
+        "description": "The `Decimal` scalar type represents a python Decimal.",
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DiscountSettings",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "id",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "settings",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Settings",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "DiscountSettingsType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "value",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "DiscountSettingsType",
+        "description": "An enumeration.",
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "CHILD_BREAKFAST_DISCOUNT",
+            "description": "Snídaně (dítě 3 - 12 let)",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "HALFBOARD_DISCOUNT",
+            "description": "Polopenze (dítě 3 - 12 let)",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -496,7 +692,7 @@
             "deprecationReason": null
           },
           {
-            "name": "discountSet",
+            "name": "discountSuiteSet",
             "description": "",
             "args": [],
             "type": {
@@ -510,7 +706,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Discount",
+                    "name": "DiscountSuite",
                     "ofType": null
                   }
                 }
@@ -526,19 +722,8 @@
         "possibleTypes": null
       },
       {
-        "kind": "SCALAR",
-        "name": "Decimal",
-        "description": "The `Decimal` scalar type represents a python Decimal.",
-        "specifiedByUrl": null,
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "OBJECT",
-        "name": "Discount",
+        "name": "DiscountSuite",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -583,7 +768,7 @@
               "name": null,
               "ofType": {
                 "kind": "ENUM",
-                "name": "DiscountType",
+                "name": "DiscountSuiteType",
                 "ofType": null
               }
             },
@@ -614,7 +799,7 @@
       },
       {
         "kind": "ENUM",
-        "name": "DiscountType",
+        "name": "DiscountSuiteType",
         "description": "An enumeration.",
         "specifiedByUrl": null,
         "fields": null,
@@ -622,25 +807,25 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "CHILD",
+            "name": "CHILD_DISCOUNT",
             "description": "Dítě 3-12 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "EXTRA_BED",
+            "name": "EXTRA_BED_DISCOUNT",
             "description": "Přistýlka",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "INFANT",
+            "name": "INFANT_DISCOUNT",
             "description": "Dítě do 3 let",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "THREE_NIGHTS",
+            "name": "THREE_NIGHTS_DISCOUNT",
             "description": "Tři a více nocí",
             "isDeprecated": false,
             "deprecationReason": null
@@ -1279,7 +1464,51 @@
       },
       {
         "kind": "OBJECT",
-        "name": "DiscountOption",
+        "name": "DiscountSuiteOption",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "name",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "value",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DiscountSettingsOption",
         "description": null,
         "specifiedByUrl": null,
         "fields": [
@@ -1447,6 +1676,18 @@
                 "name": "Int",
                 "ofType": null
               }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "settingsId",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -1972,7 +2213,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "DiscountInput",
+                    "name": "DiscountSuiteInput",
                     "ofType": null
                   }
                 },
@@ -2038,6 +2279,35 @@
             "type": {
               "kind": "OBJECT",
               "name": "UpdateDiscount",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateSettings",
+            "description": null,
+            "args": [
+              {
+                "name": "data",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "SettingsInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "UpdateSettings",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2117,12 +2387,12 @@
             "deprecationReason": null
           },
           {
-            "name": "user",
+            "name": "settings",
             "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "Settings",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3333,7 +3603,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Discount",
+              "name": "DiscountSuite",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3347,7 +3617,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "DiscountInput",
+        "name": "DiscountSuiteInput",
         "description": null,
         "specifiedByUrl": null,
         "fields": null,
@@ -3405,7 +3675,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Discount",
+              "name": "DiscountSuite",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3429,7 +3699,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Discount",
+              "name": "DiscountSuite",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3491,6 +3761,186 @@
               "kind": "SCALAR",
               "name": "ID",
               "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UpdateSettings",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": [
+          {
+            "name": "settings",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Settings",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "SettingsInput",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "discounts",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "INPUT_OBJECT",
+                "name": "SettingsDiscountInput",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "municipalityFee",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "priceBreakfast",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "priceHalfboard",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Decimal",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userAvatar",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userColor",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userName",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "SettingsDiscountInput",
+        "description": null,
+        "specifiedByUrl": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "type",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "value",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
             },
             "defaultValue": null,
             "isDeprecated": false,
