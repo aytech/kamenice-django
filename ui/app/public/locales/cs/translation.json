@@ -62,7 +62,6 @@
     "add": "Přidat hosta",
     "added": "Host {{ name }} {{ surname }} přidán!",
     "deleted": "Host {{ name }} {{ surname }} byl smazán",
-    "list": "Seznam hostů",
     "main": "Hlavní host",
     "name": "Host",
     "new": "Nový host",
@@ -71,6 +70,7 @@
     "paying": "Platící host",
     "roommate": "Další host",
     "roommates": "Další hosté",
+    "search": "Hledat hosta",
     "updated": "Host {{ name }} {{ surname }} aktualizován!"
   },
   "home-title": "Rezervace / Obsazenost",
