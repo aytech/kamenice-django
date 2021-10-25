@@ -14,3 +14,7 @@ class Settings(BaseModel):
     user_color = models.CharField(blank=True, max_length=50, null=True)
     user_name = models.CharField(blank=True, max_length=100, null=True)
     username = models.CharField(blank=False, max_length=100, null=False)
+
+    class Meta:
+        default_permissions = ()
+        permissions = [('change_settings', 'Can change settings')]

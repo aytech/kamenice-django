@@ -10,3 +10,6 @@ class Contact(BaseModel):
 
     def __str__(self):
         return self.message
+
+    class Meta:
+        default_permissions = ()
