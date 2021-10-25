@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { withRouter } from "react-router-dom"
-import { Button, Col, Input, List, message, Row, Skeleton, Tooltip } from "antd"
+import { Button, Col, Input, List, message, Pagination, Row, Skeleton, Tooltip } from "antd"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UserAddOutlined } from "@ant-design/icons"
@@ -17,7 +17,10 @@ export const Guests = withRouter(() => {
 
   const { t } = useTranslation()
 
+  const defaultPageSize = 10 // TODO: Fetch from settings
+  const [ currentPage, setCurrentPage ] = useState<number>(1)
   const [ filteredGuests, setFilteredGuests ] = useState<Guests_guests[]>([])
+  const [ totalGuests, setTotalGuests ] = useState<number>(0)
   const [ guests, setGuests ] = useState<Guests_guests[]>([])
 
   const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
@@ -28,9 +31,16 @@ export const Guests = withRouter(() => {
     return (guestA.name).localeCompare(guestB.name)
   }
 
+  const onPageChange = (page: number) => {
+    const startIndex = (page - 1) * defaultPageSize
+    setFilteredGuests(guests.slice(startIndex, page * defaultPageSize))
+    setCurrentPage(page)
+  }
+
   const onSearch = (value: string) => {
     if (value.length < 1) {
-      setFilteredGuests(guests)
+      setTotalGuests(guests.length)
+      onPageChange(currentPage)
     } else {
       const foundGuests = guests.filter(guest => {
         return guest.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
@@ -38,7 +48,9 @@ export const Guests = withRouter(() => {
           || (guest.email !== null && guest.email.toLowerCase().indexOf(value.toLowerCase()) !== -1)
       })
       setFilteredGuests(foundGuests)
+      setTotalGuests(foundGuests.length)
     }
+    setCurrentPage(1)
   }
 
   useEffect(() => {
@@ -50,7 +62,8 @@ export const Guests = withRouter(() => {
         }
       })
       setGuests(guestsList)
-      setFilteredGuests(guestsList.sort(sortGuests))
+      setFilteredGuests(guestsList.sort(sortGuests).slice(0, defaultPageSize))
+      setTotalGuests(guestsList.length)
     }
   }, [ data ])
 
@@ -70,7 +83,21 @@ export const Guests = withRouter(() => {
           className="guests"
           dataSource={ filteredGuests }
           footer={
-            <Text disabled>&reg;{ t("company-name") }</Text>
+            <Row>
+              <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 0 }></Col>
+              <Col
+                className="pagination"
+                lg={ 14 } md={ 14 } sm={ 10 } xs={ 12 }>
+                <Pagination
+                  current={ currentPage }
+                  onChange={ onPageChange }
+                  pageSize={ defaultPageSize }
+                  total={ totalGuests } />
+              </Col>
+              <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 12 }>
+                <Text disabled>&reg;{ t("company-name") }</Text>
+              </Col>
+            </Row>
           }
           header={ (
             <Row>

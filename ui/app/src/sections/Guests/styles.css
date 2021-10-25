@@ -6,3 +6,7 @@
 .guests .ant-list-footer {
   text-align: end;
 }
+
+.guests .pagination {
+  text-align: center;
+}
