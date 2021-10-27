@@ -71,6 +71,48 @@ def migrate_reservation_roommates(source, destination, connection):
         print('Roommate {} created'.format(roommate[0]))
 
 
+def migrate_settings(source, destination, connection):
+    settings_query = 'SELECT * FROM api_settings;'
+    source.execute(settings_query)
+    for settings in source.fetchall():
+        insert_query = '''
+            INSERT INTO api_settings (
+                id, created, deleted, municipality_fee, price_breakfast, updated, user_avatar, user_color, user_name, 
+                username, price_halfboard)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        '''
+        destination.execute(insert_query, settings)
+        connection.commit()
+        print('Settings {} created'.format(settings[9]))
+
+
+def migrate_auth_user(source, destination, connection):
+    user_query = 'SELECT * FROM auth_user;'
+    source.execute(user_query)
+    for user in source.fetchall():
+        insert_query = '''
+                INSERT INTO auth_user (
+                    id, password, last_login, is_superuser, username, last_name, email, is_staff, is_active, 
+                    date_joined, first_name)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            '''
+        destination.execute(insert_query, user)
+        connection.commit()
+        print('User {} created'.format(user[4]))
+
+
+def migrate_auth_user_permissions(source, destination, connection):
+    permissions_query = 'SELECT * FROM auth_user_user_permissions;'
+    source.execute(permissions_query)
+    for permission in source.fetchall():
+        insert_query = '''
+                    INSERT INTO auth_user_user_permissions (id, user_id, permission_id) VALUES (?, ?, ?)
+                '''
+        destination.execute(insert_query, permission)
+        connection.commit()
+        print('Permission for user {} created'.format(permission[1]))
+
+
 source_db_name = 'db_source.sqlite3'  # replace with command line argument
 destination_db_name = 'db.sqlite3'  # replace with command line argument
 connection_source = None
@@ -90,6 +132,9 @@ try:
     migrate_guests(cursor_source, cursor_destination, connection_destination)
     migrate_reservations(cursor_source, cursor_destination, connection_destination)
     migrate_reservation_roommates(cursor_source, cursor_destination, connection_destination)
+    migrate_settings(cursor_source, cursor_destination, connection_destination)
+    migrate_auth_user(cursor_source, cursor_destination, connection_destination)
+    migrate_auth_user_permissions(cursor_source, cursor_destination, connection_destination)
 
     cursor_source.close()
     cursor_destination.close()

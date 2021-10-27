@@ -12,7 +12,6 @@ class SettingsTestCase(JSONWebTokenTestCase, GraphQLTestCase):
 
     def setUp(self):
         user = get_user_model().objects.create(username="test")
-        user.user_permissions.add(Permission.objects.get(codename='view_settings'))
         user.user_permissions.add(Permission.objects.get(codename='change_settings'))
         self.client.authenticate(user)
 

@@ -76,6 +76,7 @@ export const Suites = withRouter(() => {
               <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
                 <Tooltip title={ t("living-unit-add") }>
                   <Button
+                    className="add-suite"
                     onClick={ () => openSuite(undefined) }>
                     <AppstoreAddOutlined />
                   </Button>
