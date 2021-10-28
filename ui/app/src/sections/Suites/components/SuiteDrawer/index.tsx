@@ -148,6 +148,7 @@ export const SuiteDrawer = ({
       ) }
       footer={
         <Button
+          id="submit-suite"
           onClick={ submitForm }
           type="primary">
           { suite === undefined ? t("forms.create") : t("forms.update") }
@@ -282,6 +283,7 @@ export const SuiteDrawer = ({
                     <Button
                       block
                       disabled={ discountsFull === true }
+                      id="add-discount-field"
                       icon={ <ControlOutlined /> }
                       onClick={ () => {
                         updateAddDiscountTooltip(fields.length + 1) // length is not updated immediately

@@ -34,6 +34,7 @@ export const SuiteItem = ({
     <List.Item
       actions={ [
         <Button
+          className="edit-suite"
           key="edit"
           icon={ <EditOutlined /> }
           onClick={ () => openSuite(suite) }>
@@ -41,12 +42,14 @@ export const SuiteItem = ({
         </Button>,
         <Popconfirm
           cancelText={ t("no") }
+          id="delete-suite-confirm"
           key="delete"
           okText={ t("yes") }
           onConfirm={ () => deleteSuite({ variables: { suiteId: suite.id } }) }
           title={ t("forms.delete-confirm") }>
           <Button
             danger
+            className="delete-suite"
             key="delete"
             icon={ <DeleteOutlined /> }
             loading={ deleteLoading }>
