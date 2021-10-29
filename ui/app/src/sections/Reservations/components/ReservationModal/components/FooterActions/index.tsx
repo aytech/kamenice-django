@@ -86,6 +86,7 @@ export const AddGuestButton = () => {
       title={ t("guests.add") }>
       <Button
         className="action add"
+        id="add-main-guest"
         icon={ <UserAddOutlined /> }
         onClick={ () => {
           selectedGuest(null)

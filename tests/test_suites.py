@@ -18,58 +18,63 @@ class TestSuites:
             expected_conditions.presence_of_element_located((By.CLASS_NAME, 'suites'))
         )
 
-    def test_create_suite(self):
-        self.navigate()
-        self.driver.find_element(by=By.CLASS_NAME, value='add-suite').click()
-        WebDriverWait(self.driver, 10).until(
+    @staticmethod
+    def fill_suite_form(driver):
+        driver.find_element(by=By.CLASS_NAME, value='add-suite').click()
+        WebDriverWait(driver, 10).until(
             expected_conditions.presence_of_element_located((By.CLASS_NAME, 'ant-drawer'))
         )
-        self.driver.find_element(by=By.ID, value='suite_title').send_keys(self.ROOM_NAME)
-        self.driver.find_element(by=By.ID, value='suite_beds').send_keys(2)
-        self.driver.find_element(by=By.ID, value='suite_beds_extra').send_keys(2)
-        self.driver.find_element(by=By.ID, value='suite_number').send_keys(1)
+        driver.find_element(by=By.ID, value='suite_title').send_keys(TestSuites.ROOM_NAME)
+        driver.find_element(by=By.ID, value='suite_beds').send_keys(2)
+        driver.find_element(by=By.ID, value='suite_beds_extra').send_keys(2)
+        driver.find_element(by=By.ID, value='suite_number').send_keys(1)
 
-        price = self.driver.find_element(by=By.ID, value='suite_price_base')
+        price = driver.find_element(by=By.ID, value='suite_price_base')
         price.send_keys(Keys.CONTROL + 'a')
         price.send_keys(Keys.DELETE)
         price.send_keys(1400)
 
-        self.driver.find_element(by=By.ID, value='add-discount-field').click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_0_type').click()
-        self.driver.implicitly_wait(2)  # let the dropdown roll
-        self.driver.find_element(by=By.XPATH, value='//div[@label="Dítě 3-12 let"]').click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_0_value').send_keys(50)
-        self.driver.find_element(by=By.ID, value='add-discount-field').click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_1_type').click()
-        self.driver.implicitly_wait(2)  # let the dropdown roll
-        self.driver.find_elements(by=By.XPATH, value='//div[@label="Přistýlka"]')[1].click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_1_value').send_keys(40)
-        self.driver.find_element(by=By.ID, value='add-discount-field').click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_2_type').click()
-        self.driver.implicitly_wait(2)  # let the dropdown roll
+        driver.find_element(by=By.ID, value='add-discount-field').click()
+        driver.find_element(by=By.ID, value='suite_discounts_0_type').click()
+        driver.implicitly_wait(2)  # let the dropdown roll
+        driver.find_element(by=By.XPATH, value='//div[@label="Dítě 3-12 let"]').click()
+        driver.find_element(by=By.ID, value='suite_discounts_0_value').send_keys(50)
+        driver.find_element(by=By.ID, value='add-discount-field').click()
+        driver.find_element(by=By.ID, value='suite_discounts_1_type').click()
+        driver.implicitly_wait(2)  # let the dropdown roll
+        driver.find_elements(by=By.XPATH, value='//div[@label="Přistýlka"]')[1].click()
+        driver.find_element(by=By.ID, value='suite_discounts_1_value').send_keys(40)
+        driver.find_element(by=By.ID, value='add-discount-field').click()
+        driver.find_element(by=By.ID, value='suite_discounts_2_type').click()
+        driver.implicitly_wait(2)  # let the dropdown roll
         try:
             # key event is interrupted sometimes, possibly because of tooltips
-            self.driver.find_elements(by=By.XPATH, value='//div[@label="Dítě do 3 let"]')[2].click()
+            driver.find_elements(by=By.XPATH, value='//div[@label="Dítě do 3 let"]')[2].click()
         except ElementClickInterceptedException:
-            self.driver.find_elements(by=By.XPATH, value='//div[@label="Dítě do 3 let"]')[2].click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_2_value').send_keys(100)
-        self.driver.find_element(by=By.ID, value='add-discount-field').click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_3_type').click()
-        self.driver.implicitly_wait(2)  # let the dropdown roll
+            driver.find_elements(by=By.XPATH, value='//div[@label="Dítě do 3 let"]')[2].click()
+        driver.find_element(by=By.ID, value='suite_discounts_2_value').send_keys(100)
+        driver.find_element(by=By.ID, value='add-discount-field').click()
+        driver.find_element(by=By.ID, value='suite_discounts_3_type').click()
+        driver.implicitly_wait(2)  # let the dropdown roll
         try:
             # key event is interrupted sometimes, possibly because of tooltips
-            self.driver.find_elements(by=By.XPATH, value='//div[@label="Tři a více nocí"]')[3].click()
+            driver.find_elements(by=By.XPATH, value='//div[@label="Tři a více nocí"]')[3].click()
         except ElementClickInterceptedException:
-            self.driver.find_elements(by=By.XPATH, value='//div[@label="Tři a více nocí"]')[3].click()
-        self.driver.find_element(by=By.ID, value='suite_discounts_3_value').send_keys(12)
+            driver.find_elements(by=By.XPATH, value='//div[@label="Tři a více nocí"]')[3].click()
+        driver.find_element(by=By.ID, value='suite_discounts_3_value').send_keys(12)
 
-        assert self.driver.find_element(by=By.ID, value='add-discount-field').is_enabled() is False
-
-        self.driver.find_element(by=By.ID, value='submit-suite').click()
-        WebDriverWait(self.driver, 10).until(
+    @staticmethod
+    def submit_suite_form(driver):
+        driver.find_element(by=By.ID, value='submit-suite').click()
+        WebDriverWait(driver, 10).until(
             expected_conditions.presence_of_element_located((By.CLASS_NAME, 'ant-message'))
         )
 
+    def test_create_suite(self):
+        self.navigate()
+        self.fill_suite_form(self.driver)
+        assert self.driver.find_element(by=By.ID, value='add-discount-field').is_enabled() is False
+        self.submit_suite_form(self.driver)
         assert len(self.driver.find_elements(by=By.XPATH,
                                              value='//li[contains(@class, "suite-item")]//h4[text() = "{}"]'.format(
                                                  self.ROOM_NAME))) > 0

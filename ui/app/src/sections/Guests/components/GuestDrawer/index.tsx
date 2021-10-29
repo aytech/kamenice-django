@@ -92,6 +92,7 @@ export const GuestDrawer = ({
 
   return (
     <Drawer
+      className="guest-drawer"
       closeIcon={ (
         <Popconfirm
           onCancel={ () => setConfirmClose(false) }
@@ -118,6 +119,7 @@ export const GuestDrawer = ({
       visible={ guestDrawerOpen() }
       footer={
         <Button
+          id="submit-guest"
           onClick={ submitForm }
           type="primary">
           { (guest === undefined || guest === null) ? t("forms.create") : t("forms.update") }
