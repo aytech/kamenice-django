@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { withRouter } from "react-router-dom"
 import { Button, Col, Input, List, message, Pagination, Row, Skeleton, Tooltip } from "antd"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
@@ -53,6 +53,18 @@ export const Guests = withRouter(() => {
     setCurrentPage(1)
   }
 
+  const updateGuestList = useCallback((guestsList) => {
+    let startIndex = (currentPage - 1) * defaultPageSize
+    let newGuestList = guestsList.sort(sortGuests).slice(startIndex, currentPage * defaultPageSize)
+    // If user is not on first page and list subset is empty, switch to previous page
+    if (newGuestList.length < 1 && currentPage > 1) {
+      startIndex = (currentPage - 2) * defaultPageSize
+      newGuestList = guestsList.sort(sortGuests).slice(startIndex, currentPage * defaultPageSize)
+      setCurrentPage(currentPage - 1)
+    }
+    setFilteredGuests(newGuestList)
+  }, [ currentPage ])
+
   useEffect(() => {
     const guestsList: Guests_guests[] = []
     if (data !== undefined && data?.guests !== null) {
@@ -62,10 +74,10 @@ export const Guests = withRouter(() => {
         }
       })
       setGuests(guestsList)
-      setFilteredGuests(guestsList.sort(sortGuests).slice(0, defaultPageSize))
       setTotalGuests(guestsList.length)
+      updateGuestList(guestsList)
     }
-  }, [ data ])
+  }, [ data, updateGuestList ])
 
   useEffect(() => {
     pageTitle(t("guests.page-title"))
