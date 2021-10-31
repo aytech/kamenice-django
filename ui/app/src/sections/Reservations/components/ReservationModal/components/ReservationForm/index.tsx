@@ -195,10 +195,7 @@ export const ReservationForm = ({
           }
         ] }>
         <Select
-          filterOption={ (input, option): boolean => {
-            const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
-            return match !== undefined && match >= 0
-          } }
+          filterOption={ FormHelper.searchFilter }
           onChange={ selectGuest }
           options={ guestOptions }
           showSearch />
@@ -220,6 +217,8 @@ export const ReservationForm = ({
                     name={ [ name, "id" ] }
                     rules={ roommateValidator }>
                     <Select
+                      className="select-roommate"
+                      filterOption={ FormHelper.searchFilter }
                       options={ roommateOptions }
                       showSearch />
                   </Form.Item>
@@ -236,6 +235,7 @@ export const ReservationForm = ({
                     fields.length >= roommateOptions.length
                     || fields.length >= suiteCapacity
                   }
+                  id="add-roommate"
                   type="dashed"
                   onClick={ () => {
                     add()
@@ -257,6 +257,7 @@ export const ReservationForm = ({
         required
         rules={ [ ReservationFormHelper.getRequiredRule(t("reservations.choose-type")) ] }>
         <Select
+          id="select-reservation-type"
           options={ ReservationFormHelper.reservationOptions } />
       </Form.Item>
       <Form.Item
@@ -265,7 +266,9 @@ export const ReservationForm = ({
         name="meal"
         required
         rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
-        <Select options={ ReservationFormHelper.mealOptions } />
+        <Select
+          id="select-reservation-meal"
+          options={ ReservationFormHelper.mealOptions } />
       </Form.Item>
       <Form.Item
         label={ t("guests.paying") }
@@ -273,10 +276,7 @@ export const ReservationForm = ({
         tooltip={ t("tooltips.paying-guest") }>
         <Select
           allowClear
-          filterOption={ (input, option): boolean => {
-            const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
-            return match !== undefined && match >= 0
-          } }
+          filterOption={ FormHelper.searchFilter }
           options={ guestOptions }
           showSearch />
       </Form.Item>

@@ -117,6 +117,7 @@ export const Guests = withRouter(() => {
                 <Input.Search
                   allowClear
                   enterButton
+                  id="search-guest"
                   onSearch={ onSearch }
                   placeholder={ t("guests.search") } />
               </Col>

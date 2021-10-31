@@ -39,6 +39,7 @@ export const Confirmation = ({
             title={ t("reservations.send-cancel-info") }>
             <Button
               danger
+              id="reservation-notification-cancel"
               onClick={ cancel }
               size="small">
               { t("no") }

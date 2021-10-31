@@ -52,6 +52,7 @@ export const GuestItem = ({
             onConfirm={ () => deleteGuest({ variables: { guestId: guest.id } }) }
             title={ t("forms.delete-confirm") }>
             <Button
+              className="remove-guest"
               danger
               key="delete"
               icon={ <DeleteOutlined /> }

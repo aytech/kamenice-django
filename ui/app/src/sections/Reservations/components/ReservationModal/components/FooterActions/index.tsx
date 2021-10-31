@@ -86,7 +86,7 @@ export const AddGuestButton = () => {
       title={ t("guests.add") }>
       <Button
         className="action add"
-        id="add-main-guest"
+        id="add-guest"
         icon={ <UserAddOutlined /> }
         onClick={ () => {
           selectedGuest(null)
@@ -109,6 +109,7 @@ export const SubmitButton = ({
       title={ (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }>
       <Button
         className="action submit"
+        id="submit-reservation"
         icon={ <SaveOutlined /> }
         onClick={ submit }
         type="primary" />

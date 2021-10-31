@@ -11,6 +11,7 @@ interface IFormHelper {
   numberRule: (message: string) => Rule
   requiredAlphaRule: (message: string) => Rule
   requiredRule: (message: string) => Rule
+  searchFilter: (input?: any, option?: any) => boolean
   trim: (value: string | undefined) => string | undefined
 }
 export const FormHelper: IFormHelper = {
@@ -76,6 +77,13 @@ export const FormHelper: IFormHelper = {
       required: true,
       message: message
     }
+  },
+  searchFilter: (input?: string, option?: OptionsType) => {
+    if (input !== undefined) {
+      const match = option?.label?.toString().toLowerCase().indexOf(input.toLowerCase())
+      return match !== undefined && match >= 0
+    }
+    return false
   },
   trim: (value: string | undefined): string | undefined => {
     return value === undefined ? value : value.trim()
