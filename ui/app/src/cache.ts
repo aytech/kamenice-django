@@ -10,7 +10,9 @@ export const discountSettingsOptions = makeVar<OptionsType[]>([])
 export const discountSuiteOptions = makeVar<OptionsType[]>([])
 export const guestDrawerOpen = makeVar<boolean>(false)
 export const pageTitle = makeVar<string>("")
+export const reservationMealOptions = makeVar<OptionsType[]>([])
 export const reservationModalOpen = makeVar<boolean>(false)
+export const reservationTypeOptions = makeVar<OptionsType[]>([])
 export const selectedGuest = makeVar<Guests_guests | null>(null)
 export const selectedPage = makeVar<MenuItemKey>("user")
 export const selectedSuite = makeVar<Suites_suites | null>(null)
@@ -43,8 +45,14 @@ export const cache = new InMemoryCache({
         reservations: {
           merge: false
         },
+        reservationMealOptions: {
+          read: () => reservationMealOptions()
+        },
         reservationModalOpen: {
           read: () => reservationModalOpen()
+        },
+        reservationTypeOptions: {
+          read: () => reservationTypeOptions()
         },
         selectedPage: {
           read: () => selectedPage()

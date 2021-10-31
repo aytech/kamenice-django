@@ -43,7 +43,9 @@ extend type Query {
   discountOptions: [Options!]!
   guestDrawerOpen: Boolean!
   pageTitle: String!
+  reservationMealOptions: [Options!]!
   reservationModalOpen: Boolean!
+  reservationTypeOptions: [Options!]!
   selectedGuest: SelectedGuest
   selectedPage: String!
   selectedSuite: SelectedSuite

@@ -79,6 +79,18 @@ export interface SuitesWithReservations_reservations {
   type: ReservationType;
 }
 
+export interface SuitesWithReservations_reservationMeals {
+  __typename: "ReservationTypeOption";
+  label: string;
+  value: string;
+}
+
+export interface SuitesWithReservations_reservationTypes {
+  __typename: "ReservationTypeOption";
+  label: string;
+  value: string;
+}
+
 export interface SuitesWithReservations_timelineGroups {
   __typename: "TimelimeGroup";
   number: string;
@@ -89,5 +101,7 @@ export interface SuitesWithReservations {
   guests: (SuitesWithReservations_guests | null)[] | null;
   suites: (SuitesWithReservations_suites | null)[] | null;
   reservations: (SuitesWithReservations_reservations | null)[] | null;
+  reservationMeals: (SuitesWithReservations_reservationMeals | null)[] | null;
+  reservationTypes: (SuitesWithReservations_reservationTypes | null)[] | null;
   timelineGroups: SuitesWithReservations_timelineGroups | null;
 }

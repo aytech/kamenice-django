@@ -5,9 +5,8 @@ import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { appSettings, selectedSuite } from "../../../../../../cache"
+import { appSettings, reservationMealOptions, reservationTypeOptions, selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
-import { ReservationFormHelper } from "../../../../../../lib/components/ReservationFormHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
@@ -255,10 +254,10 @@ export const ReservationForm = ({
         label={ t("reservations.type") }
         name="type"
         required
-        rules={ [ ReservationFormHelper.getRequiredRule(t("reservations.choose-type")) ] }>
+        rules={ [ FormHelper.requiredRule(t("reservations.choose-type")) ] }>
         <Select
           id="select-reservation-type"
-          options={ ReservationFormHelper.reservationOptions } />
+          options={ reservationTypeOptions() } />
       </Form.Item>
       <Form.Item
         hasFeedback
@@ -268,7 +267,7 @@ export const ReservationForm = ({
         rules={ [ FormHelper.requiredRule(t("forms.field-required")) ] }>
         <Select
           id="select-reservation-meal"
-          options={ ReservationFormHelper.mealOptions } />
+          options={ reservationMealOptions() } />
       </Form.Item>
       <Form.Item
         label={ t("guests.paying") }

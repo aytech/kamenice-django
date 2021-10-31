@@ -72,6 +72,14 @@ export const SUITES_WITH_RESERVATIONS = gql`
       toDate
       type
     }
+    reservationMeals {
+      label
+      value
+    }
+    reservationTypes {
+      label
+      value
+    }
     timelineGroups @client {
       number
       title

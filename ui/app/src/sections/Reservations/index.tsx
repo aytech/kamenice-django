@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
 import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
@@ -15,7 +15,7 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, reservationModalOpen, selectedPage, selectedSuite, timelineGroups } from "../../cache"
+import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, timelineGroups } from "../../cache"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = withRouter(() => {
@@ -76,6 +76,8 @@ export const Reservations = withRouter(() => {
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
+    const reservationOptionMeals: OptionsType[] = []
+    const reservationOptionTypes: OptionsType[] = []
 
     data?.suites?.forEach(suite => {
       if (suite !== null) {
@@ -93,7 +95,20 @@ export const Reservations = withRouter(() => {
         reservationModalOpen(true)
       }
     })
+    data?.reservationTypes?.forEach(option => {
+      if (option !== null) {
+        reservationOptionTypes.push(option)
+      }
+    })
+    data?.reservationMeals?.forEach(option => {
+      if (option !== null) {
+        reservationOptionMeals.push(option)
+      }
+    })
+
     setItems(reservationList)
+    reservationTypeOptions(reservationOptionTypes)
+    reservationMealOptions(reservationOptionMeals)
 
   }, [ data, openReservation ])
 

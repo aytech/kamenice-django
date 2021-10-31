@@ -27,9 +27,16 @@ class Reservation(DjangoObjectType):
             'price_meal', 'price_municipality', 'price_total', 'purpose', 'roommates', 'suite', 'to_date', 'type')
 
 
+class ReservationTypeOption(ObjectType):
+    label = String(required=True)
+    value = String(required=True)
+
+
 class ReservationQuery(ObjectType):
     reservation = Field(Reservation, reservation_id=Int())
     reservations = List(Reservation)
+    reservation_meals = List(ReservationTypeOption)
+    reservation_types = List(ReservationTypeOption)
     suite_reservations = List(Reservation, suite_id=Int())
 
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
@@ -49,6 +56,16 @@ class ReservationQuery(ObjectType):
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservations(self, _info):
         return ReservationModel.objects.filter(deleted=False)
+
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
+    def resolve_reservation_meals(self, _info):
+        return map(lambda choice: ReservationTypeOption(label=choice[1], value=choice[0]),
+                   ReservationModel.MEAL_CHOICES)
+
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
+    def resolve_reservation_types(self, _info):
+        return map(lambda choice: ReservationTypeOption(label=choice[1], value=choice[0]),
+                   ReservationModel.TYPE_CHOICES)
 
 
 class Price(ObjectType):

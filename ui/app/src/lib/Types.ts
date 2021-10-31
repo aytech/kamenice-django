@@ -7,21 +7,6 @@ export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | 
 export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED"
 export type MenuItemKey = "reservation" | "guests" | "suites" | "user"
 
-export const Reservation = {
-  getType: (key: ReservationTypeKey): ReservationType => {
-    switch (key) {
-      case "NONBINDING":
-        return "Nezávazná Rezervace"
-      case "ACCOMMODATED":
-        return "Aktuálně Ubytování"
-      case "INHABITED":
-        return "Obydlený Termín"
-      case "BINDING":
-      default: return "Závazná Rezervace"
-    }
-  }
-}
-
 export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
 export type GuestsAge = "ADULT" | "CHILD" | "INFANT" | "YOUNG"
 

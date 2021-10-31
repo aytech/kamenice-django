@@ -73,10 +73,7 @@ export const FormHelper: IFormHelper = {
     }
   },
   requiredRule: (message: string) => {
-    return {
-      required: true,
-      message: message
-    }
+    return { required: true, message }
   },
   searchFilter: (input?: string, option?: OptionsType) => {
     if (input !== undefined) {
