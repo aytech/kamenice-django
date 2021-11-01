@@ -10,6 +10,9 @@ import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
 import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/Token/__generated__/TokenAuth"
 import "./styles.css"
 
+interface Props {
+  settingsRefetch: () => void
+}
 const layout: FormProps = {
   labelCol: {
     lg: 8,
@@ -36,8 +39,9 @@ const tailLayout = {
 };
 
 export const Login = withRouter(({
-  history
-}: RouteComponentProps) => {
+  history,
+  settingsRefetch
+}: Props & RouteComponentProps) => {
 
   const { t } = useTranslation()
 
@@ -47,6 +51,7 @@ export const Login = withRouter(({
         appSettings(token.tokenAuth.settings)
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
+        settingsRefetch()
         history.push(UrlHelper.getReferrer())
       }
     },

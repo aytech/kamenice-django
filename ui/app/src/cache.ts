@@ -6,7 +6,6 @@ import { Suites_suites } from "./lib/graphql/queries/Suites/__generated__/Suites
 import { CustomGroupFields, MenuItemKey, OptionsType } from "./lib/Types";
 
 export const appSettings = makeVar<TokenAuth_tokenAuth_settings | null>(null)
-export const discountSettingsOptions = makeVar<OptionsType[]>([])
 export const discountSuiteOptions = makeVar<OptionsType[]>([])
 export const guestDrawerOpen = makeVar<boolean>(false)
 export const pageTitle = makeVar<string>("")
@@ -26,9 +25,6 @@ export const cache = new InMemoryCache({
       fields: {
         appSettings: {
           read: () => appSettings()
-        },
-        discountSettingsOptions: {
-          read: () => discountSettingsOptions()
         },
         discountSuiteOptions: {
           read: () => discountSuiteOptions()

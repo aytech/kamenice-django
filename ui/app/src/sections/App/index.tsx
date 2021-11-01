@@ -13,24 +13,21 @@ import { Settings } from "../Settings"
 import { useQuery } from "@apollo/client"
 import { APP } from "../../lib/graphql/queries/App"
 import { Settings as SettingsData } from "../../lib/graphql/queries/Settings/__generated__/Settings"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import './styles.css'
-import { discountSettingsOptions, appSettings, userColor, userName } from "../../cache"
+import { appSettings, userColor, userName } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { SETTINGS } from "../../lib/graphql/queries/Settings"
-import { OptionsType } from "../../lib/Types"
 
 export const App = withRouter(({
   history,
   location
 }: RouteComponentProps) => {
 
-  const [ appLoading, setAppLoading ] = useState<boolean>(true)
-
   useQuery(APP)
-  useQuery<SettingsData>(SETTINGS, {
+  const { loading: settingsLoading, data: settingsData, refetch: settingsRefetch } = useQuery<SettingsData>(SETTINGS, {
     onCompleted: (value: SettingsData) => {
-      if (value.settings === null) {
+      if (value?.settings === null) {
         history.push(`/login?next=${ UrlHelper.getReferrer() }`)
       } else {
         if (location.pathname === paths.login) {
@@ -42,28 +39,8 @@ export const App = withRouter(({
             history.push(page)
           }
         }
-        // Update user settings in local cache
         appSettings(value.settings)
-        if (value.settings.userColor !== null) {
-          userColor(value.settings.userColor)
-        }
-        if (value.settings.userName !== null) {
-          userName(value.settings.userName)
-        }
-        // Set discount types for Settings page.
-        // Maybe move to component
-        const settingsDiscountTypes: OptionsType[] = []
-        value?.discountSettingsTypes?.forEach(discount => {
-          if (discount !== null) {
-            settingsDiscountTypes.push({
-              label: discount.value,
-              value: discount.name
-            })
-          }
-        })
-        discountSettingsOptions(settingsDiscountTypes)
       }
-      setAppLoading(false)
     }
   })
 
@@ -71,14 +48,28 @@ export const App = withRouter(({
     if (location.pathname !== paths.login) {
       sessionStorage.setItem(sessionStorageKeys.page, location.pathname)
     }
-  }, [ location ])
+  }, [ location, settingsData ])
+
+  useEffect(() => {
+    if (settingsData !== undefined && settingsData?.settings !== null) {
+      appSettings(settingsData.settings)
+
+      if (settingsData.settings.userColor !== null) {
+        userColor(settingsData.settings.userColor)
+      }
+
+      if (settingsData.settings.userName !== null) {
+        userName(settingsData.settings.userName)
+      }
+    }
+  }, [ settingsData ])
 
   return (
     <Layout id="app">
       <Skeleton
         active
         className="app-skeleton"
-        loading={ appLoading }>
+        loading={ settingsLoading }>
         <Affix
           className="app__affix-header"
           offsetTop={ 0 }>
@@ -102,13 +93,13 @@ export const App = withRouter(({
               <Guests />
             </Route>
             <Route exact path={ paths.login }>
-              <Login />
+              <Login settingsRefetch={ settingsRefetch } />
             </Route>
             <Route exact path={ paths.reservation_guests }>
               <ReservationGuests />
             </Route>
             <Route exact path={ paths.settings }>
-              <Settings />
+              <Settings settingsData={ settingsData } />
             </Route>
             <Route path="*">
               <NotFound />
