@@ -16,7 +16,7 @@ export const SETTINGS = gql`
       userName
     }
     discountSettingsTypes {
-      name
+      label
       value
     }
   }

@@ -98,7 +98,7 @@ class TestSuites:
                                   value='//div[@label="{} {}"]'.format(self.ROOMMATE_NAME, self.SURNAME))[1].click()
         type_open_path = '//input[@id="select-reservation-type"]/ancestor::div[@class="ant-select-selector"]'
         self.driver.find_element(by=By.XPATH, value=type_open_path).click()
-        self.driver.find_element(by=By.XPATH, value='//div[@label="Nezávazná Rezervace"]').click()
+        self.driver.find_element(by=By.XPATH, value='//div[@label="Nezávazná rezervace"]').click()
         meal_open_path = '//input[@id="select-reservation-meal"]/ancestor::div[@class="ant-select-selector"]'
         self.driver.find_element(by=By.XPATH, value=meal_open_path).click()
         self.driver.find_element(by=By.XPATH, value='//div[@label="Polopenze"]').click()

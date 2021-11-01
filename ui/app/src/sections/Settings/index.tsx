@@ -88,10 +88,7 @@ export const Settings = ({
       const settingsDiscountTypes: OptionsType[] = []
       settingsData?.discountSettingsTypes?.forEach(discount => {
         if (discount !== null) {
-          settingsDiscountTypes.push({
-            label: discount.value,
-            value: discount.name
-          })
+          settingsDiscountTypes.push(discount)
         }
       })
       setDiscountOptions(settingsDiscountTypes)

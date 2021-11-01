@@ -11,7 +11,7 @@ class DiscountSettings(DjangoObjectType):
 
 
 class DiscountSettingsOption(ObjectType):
-    name = String(required=True)
+    label = String(required=True)
     value = String(required=True)
 
 
@@ -21,7 +21,7 @@ class DiscountSettingsQuery(ObjectType):
 
     @classmethod
     def resolve_discount_settings_types(cls, _root, _info):
-        return map(lambda choice: DiscountSettingsOption(name=choice[0], value=choice[1]),
+        return map(lambda choice: DiscountSettingsOption(label=choice[1], value=choice[0]),
                    DiscountSettingsModel.DISCOUNT_CHOICES)
 
     @classmethod

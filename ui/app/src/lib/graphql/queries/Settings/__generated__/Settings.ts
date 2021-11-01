@@ -29,7 +29,7 @@ export interface Settings_settings {
 
 export interface Settings_discountSettingsTypes {
   __typename: "DiscountSettingsOption";
-  name: string;
+  label: string;
   value: string;
 }
 
