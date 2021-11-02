@@ -4,6 +4,7 @@ type SelectedGuest {
   addressStreet: String
   age: String
   citizenship: String
+  color: String
   email: String
   gender: String
   identity: String

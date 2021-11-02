@@ -9,6 +9,7 @@ export const RESERVATION_GUESTS = gql`
         addressStreet
         age
         citizenship
+        color
         email
         gender
         identity
@@ -24,6 +25,7 @@ export const RESERVATION_GUESTS = gql`
         addressStreet
         age
         citizenship
+        color
         email
         gender
         identity
@@ -43,6 +45,7 @@ export const RESERVATION_GUESTS = gql`
       addressStreet
       age
       citizenship
+      color
       email
       gender
       identity

@@ -16,6 +16,7 @@ export interface ReservationGuests_reservationGuests_guest {
   addressStreet: string | null;
   age: GuestAge | null;
   citizenship: string | null;
+  color: string | null;
   email: string | null;
   gender: GuestGender | null;
   identity: string | null;
@@ -33,6 +34,7 @@ export interface ReservationGuests_reservationGuests_roommates {
   addressStreet: string | null;
   age: GuestAge | null;
   citizenship: string | null;
+  color: string | null;
   email: string | null;
   gender: GuestGender | null;
   identity: string | null;
@@ -62,6 +64,7 @@ export interface ReservationGuests_selectedGuest {
   addressStreet: string | null;
   age: string | null;
   citizenship: string | null;
+  color: string | null;
   email: string | null;
   gender: string | null;
   identity: string | null;

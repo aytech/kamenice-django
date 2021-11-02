@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation
+from api.schemas.Authentication import Color
 from api.schemas.Suite import Suite
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 
@@ -13,8 +14,8 @@ from api.schemas.exceptions.PermissionDenied import PermissionDenied
 class Guest(DjangoObjectType):
     class Meta:
         model = GuestModel
-        fields = ('address_municipality', 'address_psc', 'address_street', 'age', 'citizenship', 'email', 'gender',
-                  'id', 'identity', 'name', 'phone_number', 'surname', 'visa_number')
+        fields = ('address_municipality', 'address_psc', 'address_street', 'age', 'citizenship', 'color', 'email',
+                  'gender', 'id', 'identity', 'name', 'phone_number', 'surname', 'visa_number')
 
 
 class ReservationGuests(ObjectType):
@@ -98,6 +99,7 @@ class CreateGuest(Mutation):
             address_psc=data.address_psc,
             address_street=data.address_street,
             citizenship=data.citizenship,
+            color=Color.get_color(),
             email=data.email,
             gender=data.gender,
             identity=data.identity,
@@ -137,6 +139,7 @@ class CreateReservationGuest(Mutation):
                 address_psc=data.address_psc,
                 address_street=data.address_street,
                 citizenship=data.citizenship,
+                color=Color.get_color(),
                 email=data.email,
                 gender=data.gender,
                 identity=data.identity,

@@ -75,8 +75,6 @@
   },
   "home-title": "Rezervace / Obsazenost",
   "living-unit-add": "Přidat místnost",
-  "living-units": "Místnosti",
-  "living-units-list": "Seznam místnosti",
   "loading": "Načítám",
   "login": {
     "invalid-login": "Prosím zadejte platné přihlašovací údaje",
@@ -144,11 +142,14 @@
     "discounts": "Slevy",
     "error-duplicate-discount": "Sleva již vybrána",
     "name": "Název místnosti",
+    "nav-title": "Místnosti",
     "new": "Nová místnost",
     "number": "Číslo místnosti",
     "number-beds": "Počet lůžek",
     "number-beds-extra": "Počet přistýlek",
+    "page-title": "Správa místnosti",
     "price-base": "Základní cena",
+    "search": "Hledat místnost",
     "suites": "Apartmá",
     "updated": "Místnost byla aktualizována"
   },

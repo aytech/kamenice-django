@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { withRouter } from "react-router-dom"
-import { Button, Col, List, message, Row, Skeleton, Tooltip } from "antd"
+import { Button, Col, Input, List, message, Row, Skeleton, Tooltip } from "antd"
 import Text from "antd/lib/typography/Text"
 import { SuiteDrawer } from "./components/SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
@@ -17,8 +17,9 @@ export const Suites = withRouter(() => {
 
   const { t } = useTranslation()
 
-  const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
+  const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
+  const [ filteredSuites, setFilteredSuites ] = useState<Suites_suites[]>([])
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
 
   const { loading, data, refetch } = useQuery<SuitesData>(SUITES, {
@@ -28,6 +29,17 @@ export const Suites = withRouter(() => {
   const openSuite = (suite: Suites_suites | undefined) => {
     setActiveSuite(suite)
     setDrawerVisible(true)
+  }
+
+  const onSearch = (value: string) => {
+    if (value.length < 1) {
+      setFilteredSuites(suites)
+    } else {
+      const foundSuites = suites.filter(suite => {
+        return suite.title.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1
+      })
+      setFilteredSuites(foundSuites)
+    }
   }
 
   useEffect(() => {
@@ -47,11 +59,12 @@ export const Suites = withRouter(() => {
       }
     })
     setSuites(suitesList)
+    setFilteredSuites(suitesList)
     discountSuiteOptions(discountTypes)
   }, [ data, t ])
 
   useEffect(() => {
-    pageTitle(t("living-units"))
+    pageTitle(t("rooms.page-title"))
     selectedPage("suites")
   }, [ t ])
 
@@ -64,18 +77,25 @@ export const Suites = withRouter(() => {
         <List
           bordered={ true }
           className="suites"
-          dataSource={ suites }
+          dataSource={ filteredSuites }
           footer={
             <Text disabled>&reg;{ t("company-name") }</Text>
           }
           header={
             <Row>
-              <Col lg={ 23 } md={ 22 } sm={ 20 } xs={ 20 }>
-                <h2>{ t("living-units-list") }</h2>
+              <Col lg={ 10 } md={ 12 } sm={ 14 } xs={ 16 }>
+                <Input.Search
+                  allowClear
+                  enterButton
+                  id="search-room"
+                  onSearch={ onSearch }
+                  placeholder={ t("rooms.search") } />
               </Col>
-              <Col lg={ 1 } md={ 2 } sm={ 4 } xs={ 4 }>
+              <Col lg={ 12 } md={ 9 } sm={ 5 } xs={ 4 } />
+              <Col lg={ 2 } md={ 3 } sm={ 5 } xs={ 4 }>
                 <Tooltip title={ t("living-unit-add") }>
                   <Button
+                    block
                     className="add-suite"
                     onClick={ () => openSuite(undefined) }>
                     <AppstoreAddOutlined />

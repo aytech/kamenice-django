@@ -16,6 +16,7 @@ export interface Guests_guests {
   addressPsc: number | null;
   addressStreet: string | null;
   citizenship: string | null;
+  color: string | null;
   email: string | null;
   gender: GuestGender | null;
   identity: string | null;

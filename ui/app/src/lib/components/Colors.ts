@@ -2,6 +2,7 @@ import { ReservationTypeKey } from "../Types"
 
 interface Props {
   colors: string[]
+  getDefaultColor: () => string
   getRandomColor: () => string
   getReservationColor: (reservationType: ReservationTypeKey) => string
 }
@@ -21,6 +22,7 @@ export const Colors: Props = {
     "#722ed1", // purple
     "#eb2f96", // magenta
   ],
+  getDefaultColor: () => '#cccccc',
   getRandomColor: () => {
     return Colors.colors[ Math.floor(Math.random() * Colors.colors.length) ]
   },

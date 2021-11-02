@@ -203,7 +203,7 @@ export const Reservations = withRouter(() => {
                     <div
                       { ...getRootProps() }
                       className="side-header">
-                      { t("living-units") }
+                      { t("rooms.nav-title") }
                     </div>
                   )
                 } }

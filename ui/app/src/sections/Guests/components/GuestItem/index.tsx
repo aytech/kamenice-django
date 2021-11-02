@@ -33,6 +33,13 @@ export const GuestItem = ({
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
+  const getUserColor = () => {
+    if (guest.color !== null) {
+      return guest.color
+    }
+    return Colors.getDefaultColor()
+  }
+
   return (
     <>
       <List.Item
@@ -67,7 +74,7 @@ export const GuestItem = ({
               gap={ 4 }
               size="large"
               style={ {
-                backgroundColor: Colors.getRandomColor()
+                backgroundColor: getUserColor()
               } }>
               { guest.name.substring(0, 1).toUpperCase() }
             </Avatar>

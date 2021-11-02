@@ -15,6 +15,9 @@ class Guest(BaseModel):
         'invalid_choice': _('Choose age from the list'),
     }, choices=BaseModel.AGE_CHOICES)
     citizenship = models.CharField(blank=True, max_length=10, null=True, validators=[validate_citizenship])
+    color = models.CharField(blank=True, max_length=50, null=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    deleted = models.BooleanField(default=False)
     email = models.EmailField(blank=True, null=True, validators=[validate_email], error_messages={
         'invalid': _('Enter valid email address'),
         'unique': _('User with this email already exists'),
@@ -32,10 +35,8 @@ class Guest(BaseModel):
         'blank': _('Surname is required field'),
         'null': _('Surname is required field'),
     })
-    visa_number = models.CharField(blank=True, max_length=100, null=True)
-    created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now=True)
-    deleted = models.BooleanField(default=False)
+    visa_number = models.CharField(blank=True, max_length=100, null=True)
 
     def __str__(self):
         return '{} {}'.format(self.name, self.surname)

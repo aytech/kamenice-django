@@ -8,6 +8,7 @@ export const GUESTS = gql`
       addressPsc
       addressStreet
       citizenship
+      color
       email
       gender
       identity
