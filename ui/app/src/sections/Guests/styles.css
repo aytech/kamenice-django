@@ -7,6 +7,10 @@
   text-align: end;
 }
 
+.guests .guest-item {
+  cursor: pointer;
+}
+
 .guests .pagination {
   text-align: center;
 }

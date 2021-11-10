@@ -67,7 +67,12 @@ export const GuestItem = ({
               { t("forms.delete") }
             </Button>
           </Popconfirm>
-        ] }>
+        ] }
+        className="guest-item"
+        onClick={ () => {
+          selectedGuest(guest)
+          guestDrawerOpen(true)
+        } }>
         <List.Item.Meta
           avatar={
             <Avatar
@@ -79,7 +84,7 @@ export const GuestItem = ({
               { guest.name.substring(0, 1).toUpperCase() }
             </Avatar>
           }
-          description={ guest.email }
+          description={ guest.age !== null ? t(`enums.${ guest.age }`) : null }
           title={ `${ guest.name } ${ guest.surname }` } />
       </List.Item>
     </>

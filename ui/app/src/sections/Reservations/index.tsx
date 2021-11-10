@@ -127,14 +127,14 @@ export const Reservations = withRouter(() => {
         selectedSuite(suite)
       }
       setSelectedReservation({
-        fromDate: moment(time),
+        fromDate: moment(time).hour(15).minute(0),
         meal: "NOMEAL",
         suite: { ...selectedGroup },
         priceAccommodation: 0,
         priceMeal: 0,
         priceMunicipality: 0,
         priceTotal: 0,
-        toDate: moment(time).add(1, "day"),
+        toDate: moment(time).add(1, "day").hour(10).minute(0),
         type: "NONBINDING"
       })
       reservationModalOpen(true)

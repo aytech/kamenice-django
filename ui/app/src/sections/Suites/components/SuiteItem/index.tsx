@@ -57,7 +57,8 @@ export const SuiteItem = ({
           </Button>
         </Popconfirm>
       ] }
-      className="suite-item">
+      className="suite-item"
+      onClick={ () => openSuite(suite) }>
       <List.Item.Meta
         avatar={
           <Avatar gap={ 4 } size="large">
