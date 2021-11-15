@@ -2,7 +2,8 @@ from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
     DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG, \
-    DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD
+    DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD, DISCOUNT_CHOICE_THIRD_FOURTH_BED, \
+    DISCOUNT_CHOICE_FIFTH_MORE_BED
 from api.models.Guest import Guest
 from api.models.Settings import Settings
 from api.models.Suite import Suite
@@ -33,12 +34,16 @@ class PriceHelper:
         # children have already a discounted rate. Only exception
         # is when adults + children do not use extra beds, see method
         self.discount_three_nights()
+        # Calculate price for 3rd, 4th and 5th bed, if applicable
+
+
         # Calculate price for extra bed(s), if applicable. This
         # should be calculated after three night discount, as extra
         # beds are already at the discounted rate
-        self.calculate_extra_beds()
+        # todo: calculate discount for 3, 4, and 5 bed before calculating this
+        # self.calculate_extra_beds()
         # Calculate price for children, if applicable
-        self.calculate_child_price()
+        # self.calculate_child_price()
         # Next 2 should be calculated before total
         self.calculate_meal()
         self.calculate_municipality_fee()
@@ -66,6 +71,18 @@ class PriceHelper:
 
     def calculate_accommodation(self):
         self.accommodation = self.suite.price_base * self.days
+
+    def calculate_additional_bed_discount(self):
+        third_fourth_discount = self.get_suite_discount(DISCOUNT_CHOICE_THIRD_FOURTH_BED)
+        fifth_discount = self.get_suite_discount(DISCOUNT_CHOICE_FIFTH_MORE_BED)
+
+        if third_fourth_discount is not None:
+            # Calculate
+            pass
+
+        if fifth_discount is not None:
+            # Calculate
+            pass
 
     def calculate_extra_beds(self):
         # if suite_discount is not None:
