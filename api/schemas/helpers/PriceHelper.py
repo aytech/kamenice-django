@@ -10,6 +10,7 @@ from api.models.Suite import Suite
 
 
 class PriceHelper:
+    GUESTS_BASE_NUMBER = 2
 
     def __init__(self, data):
         # model data
@@ -34,16 +35,13 @@ class PriceHelper:
         # children have already a discounted rate. Only exception
         # is when adults + children do not use extra beds, see method
         self.discount_three_nights()
-        # Calculate price for 3rd, 4th and 5th bed, if applicable
-
-
-        # Calculate price for extra bed(s), if applicable. This
+        # Calculate price for 3rd, 4th and 5th bed, if applicable. If not,
+        # calculate price for extra bed(s), if applicable. This
         # should be calculated after three night discount, as extra
-        # beds are already at the discounted rate
-        # todo: calculate discount for 3, 4, and 5 bed before calculating this
-        # self.calculate_extra_beds()
+        # beds will calculate their own discount
+        self.calculate_beds_discounts()
         # Calculate price for children, if applicable
-        # self.calculate_child_price()
+        self.calculate_child_price()
         # Next 2 should be calculated before total
         self.calculate_meal()
         self.calculate_municipality_fee()
@@ -72,32 +70,48 @@ class PriceHelper:
     def calculate_accommodation(self):
         self.accommodation = self.suite.price_base * self.days
 
-    def calculate_additional_bed_discount(self):
+    def calculate_extra_beds(self, number_guests):
+        # Extra bed can have discount percentage from base price
+        extra_bed_price = self.suite.price_base * self.days
+        discount = self.get_suite_discount(DISCOUNT_CHOICE_EXTRA_BED)
+        if discount is not None and number_guests > 0:
+            extra_bed_price -= (extra_bed_price / 100) * discount.value
+            self.accommodation += (extra_bed_price * number_guests)
+        if discount is None and number_guests > 0:
+            self.accommodation += (extra_bed_price / self.GUESTS_BASE_NUMBER) * number_guests
+
+    def calculate_third_fourth_discount(self):
+        bed_price = self.suite.price_base * self.days
+        if self.days > 3:
+            duration_discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
+            if duration_discount is not None:
+                bed_price -= (bed_price / 100) * duration_discount.value
+        discount = self.get_suite_discount(DISCOUNT_CHOICE_THIRD_FOURTH_BED)
+        if discount is not None:
+            self.accommodation += bed_price - ((bed_price / 100) * discount.value)
+        else:
+            self.accommodation += bed_price
+
+    def calculate_beds_discounts(self):
+        bed_price = self.suite.price_base * self.days
         third_fourth_discount = self.get_suite_discount(DISCOUNT_CHOICE_THIRD_FOURTH_BED)
         fifth_discount = self.get_suite_discount(DISCOUNT_CHOICE_FIFTH_MORE_BED)
-
+        number_guests = len(self.get_adults() + self.get_young())
+        additional_beds_number = number_guests
         if third_fourth_discount is not None:
-            # Calculate
-            pass
-
+            if number_guests > 2:
+                self.calculate_third_fourth_discount()
+                additional_beds_number -= 1
+            if number_guests > 3:
+                self.calculate_third_fourth_discount()
+                additional_beds_number -= 1
         if fifth_discount is not None:
-            # Calculate
-            pass
-
-    def calculate_extra_beds(self):
-        # if suite_discount is not None:
-        guests = self.get_adults() + self.get_young()
-        # 1. Assume main guest is an adult
-        # 2. Calculate extra only when number of guests
-        # (including main guest) exceeds base number of beds
-        number_extra_beds = len(guests) - self.suite.number_beds
-        if number_extra_beds > 0:
-            extra_bed_price = self.suite.price_base * self.days
-            # Extra bed can have discount percentage from base price
-            discount = self.get_suite_discount(DISCOUNT_CHOICE_EXTRA_BED)
-            if discount is not None:
-                extra_bed_price -= (extra_bed_price / 100) * discount.value
-            self.accommodation += (extra_bed_price * number_extra_beds)
+            if number_guests > 4:
+                price_per_guest = bed_price - ((bed_price / 100) * fifth_discount.value)
+                self.accommodation += price_per_guest * (number_guests - 4)
+                # Do not calculate extra beds for the rest of the guests
+                additional_beds_number = 0
+        self.calculate_extra_beds(additional_beds_number - self.GUESTS_BASE_NUMBER)
 
     def discount_three_nights(self):
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
@@ -105,11 +119,12 @@ class PriceHelper:
             self.accommodation -= (self.accommodation / 100 * discount.value)
 
     def calculate_child_price(self):
-        children = self.get_children()
         # Add price for child only if the child exceeds the capacity, i.e.
         # when the room is occupied by adults and child is on extra bed.
-        if len(children) > 0 and len(self.get_adults()) + len(children) > self.suite.number_beds:
-            price_child = self.suite.price_base * self.days
+        number_adults = len(self.get_adults() + self.get_young())
+        number_children = len(self.get_children())
+        if number_children > 0 and (number_adults + number_children) > self.suite.number_beds:
+            price_child = (self.suite.price_base * self.days) / self.GUESTS_BASE_NUMBER
             discount = self.get_suite_discount(DISCOUNT_CHOICE_CHILD)
             if discount is not None:
                 price_child -= (price_child / 100) * discount.value
