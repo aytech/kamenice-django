@@ -115,7 +115,7 @@ class PriceHelper:
 
     def discount_three_nights(self):
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
-        if discount is not None:
+        if discount is not None and self.days > 3:
             self.accommodation -= (self.accommodation / 100 * discount.value)
 
     def calculate_child_price(self):
@@ -123,8 +123,8 @@ class PriceHelper:
         # when the room is occupied by adults and child is on extra bed.
         number_adults = len(self.get_adults() + self.get_young())
         number_children = len(self.get_children())
-        if number_children > 0 and (number_adults + number_children) > self.suite.number_beds:
-            price_child = (self.suite.price_base * self.days) / self.GUESTS_BASE_NUMBER
+        if number_children > 0 and (number_adults + number_children) > self.GUESTS_BASE_NUMBER:
+            price_child = self.suite.price_base * self.days
             discount = self.get_suite_discount(DISCOUNT_CHOICE_CHILD)
             if discount is not None:
                 price_child -= (price_child / 100) * discount.value
