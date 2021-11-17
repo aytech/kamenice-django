@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-12 17:11+0100\n"
+"POT-Creation-Date: 2021-11-17 10:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,19 +35,6 @@ msgstr "12+ let"
 msgid "Adult"
 msgstr "Dospělý"
 
-#: .\api\models\DiscountSettings.py:11
-msgid "Breakfast (child 3-12 years old)"
-msgstr "Snídaně (dítě 3 - 12 let)"
-
-#: .\api\models\DiscountSettings.py:12
-msgid "Halfboard (child 3-12 years old)"
-msgstr "Polopenze (dítě 3 - 12 let)"
-
-#: .\api\models\DiscountSettings.py:18 .\api\models\DiscountSettings.py:19
-#: .\api\models\DiscountSuite.py:23 .\api\models\DiscountSuite.py:24
-msgid "Select discount type from the list"
-msgstr "Vyberte typ slevy ze seznamu"
-
 #: .\api\models\DiscountSuite.py:13
 msgid "Extra bed"
 msgstr "Přistýlka"
@@ -63,6 +50,10 @@ msgstr "Třetí a čtvrtá osoba"
 #: .\api\models\DiscountSuite.py:17
 msgid "Three or more nights"
 msgstr "Tři a více nocí"
+
+#: .\api\models\DiscountSuite.py:23 .\api\models\DiscountSuite.py:24
+msgid "Select discount type from the list"
+msgstr "Vyberte typ slevy ze seznamu"
 
 #: .\api\models\Guest.py:15
 msgid "Choose age from the list"
@@ -205,7 +196,7 @@ msgstr "Místnost nebyla nalezena"
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 
-#: .\api\schemas\Settings.py:76 .\api\schemas\Suite.py:101
+#: .\api\schemas\Suite.py:101
 #, python-format
 msgid "Discount %(type)s is already applied"
 msgstr "Sleva %(type)s již zadaná"

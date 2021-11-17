@@ -8,14 +8,12 @@ export const TOKEN_AUTH = gql`
       refreshToken
       token
       settings {
-        discountSettingsSet {
-          type
-          value
-        }
         id
         municipalityFee
         priceBreakfast
+        priceBreakfastChild
         priceHalfboard
+        priceHalfboardChild
         userAvatar
         userColor
         userName

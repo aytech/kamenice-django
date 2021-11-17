@@ -2,7 +2,6 @@ import graphene as graphene
 import graphql_jwt
 
 from api.schemas.Contact import CreateContactMessage
-from api.schemas.DiscountSettings import DiscountSettingsQuery
 from api.schemas.DiscountSuite import DiscountSuiteQuery, CreateDiscount, UpdateDiscount, DeleteDiscount
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest, \
     DeleteReservationGuest, CreateReservationGuest
@@ -15,7 +14,6 @@ from api.schemas.Authentication import ObtainJSONWebToken
 
 class Query(
     CalculateReservationPriceQuery,
-    DiscountSettingsQuery,
     DiscountSuiteQuery,
     GuestsQuery,
     ReservationQuery,

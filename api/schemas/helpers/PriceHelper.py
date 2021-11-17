@@ -2,8 +2,7 @@ from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
     DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG, \
-    DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD, DISCOUNT_CHOICE_THIRD_FOURTH_BED, \
-    DISCOUNT_CHOICE_FIFTH_MORE_BED
+    DISCOUNT_CHOICE_THIRD_FOURTH_BED, DISCOUNT_CHOICE_FIFTH_MORE_BED
 from api.models.Guest import Guest
 from api.models.Settings import Settings
 from api.models.Suite import Suite
@@ -137,22 +136,19 @@ class PriceHelper:
 
     def calculate_meal(self):
         meal_price = 0
+        meal_price_child = 0
 
         if self.meal_option == MEAL_CHOICE_BREAKFAST:
             meal_price = self.settings.price_breakfast
+            meal_price_child = self.settings.price_breakfast_child
         elif self.meal_option == MEAL_CHOICE_HALFBOARD:
             meal_price = self.settings.price_halfboard
+            meal_price_child = self.settings.price_halfboard_child
 
         if meal_price > 0:
             meal_adults = floor((meal_price * self.days) * len(self.get_adults()))
             meal_young = floor((meal_price * self.days) * len(self.get_young()))
-            meal_children = floor((meal_price * self.days) * len(self.get_children()))
-            breakfast_discount = self.get_settings_discount(DISCOUNT_CHOICE_CHILD_BREAKFAST)
-            halfboard_discount = self.get_settings_discount(DISCOUNT_CHOICE_HALFBOARD)
-            if self.meal_option == MEAL_CHOICE_BREAKFAST and breakfast_discount is not None:
-                meal_children -= floor((meal_children / 100) * breakfast_discount.value)
-            if self.meal_option == MEAL_CHOICE_HALFBOARD and halfboard_discount is not None:
-                meal_children -= floor((meal_children / 100) * halfboard_discount.value)
+            meal_children = floor((meal_price_child * self.days) * len(self.get_children()))
             self.meal = meal_adults + meal_young + meal_children
 
     def calculate_total(self):

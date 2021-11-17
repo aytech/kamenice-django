@@ -3,25 +3,20 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { SettingsInput, DiscountSettingsType } from "./../../../globalTypes";
+import { SettingsInput } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UpdateSettings
 // ====================================================
 
-export interface UpdateSettings_updateSettings_settings_discountSettingsSet {
-  __typename: "DiscountSettings";
-  type: DiscountSettingsType;
-  value: number;
-}
-
 export interface UpdateSettings_updateSettings_settings {
   __typename: "Settings";
-  discountSettingsSet: UpdateSettings_updateSettings_settings_discountSettingsSet[];
   id: string;
   municipalityFee: any | null;
+  priceBreakfastChild: any | null;
   priceBreakfast: any | null;
   priceHalfboard: any | null;
+  priceHalfboardChild: any | null;
   userAvatar: string | null;
   userColor: string | null;
   userName: string | null;

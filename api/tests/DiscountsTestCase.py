@@ -4,9 +4,7 @@ from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.testcases import JSONWebTokenTestCase
 
 from api.constants import DISCOUNT_CHOICE_CHILD, DISCOUNT_CHOICE_EXTRA_BED, DISCOUNT_CHOICE_THREE_NIGHTS, \
-    MEAL_CHOICE_BREAKFAST, MEAL_PRICE_BREAKFAST, MEAL_PRICE_HALFBOARD, MEAL_CHOICE_HALFBOARD, \
-    DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD
-from api.models.DiscountSettings import DiscountSettings
+    MEAL_CHOICE_BREAKFAST, MEAL_PRICE_BREAKFAST, MEAL_PRICE_HALFBOARD, MEAL_CHOICE_HALFBOARD
 from api.models.DiscountSuite import DiscountSuite
 from api.models.Guest import Guest
 from api.models.Settings import Settings
@@ -199,53 +197,3 @@ class DiscountsTestCase(JSONWebTokenTestCase, GraphQLTestCase):
         self.assertEquals(content.data['price']['meal'], meal_price)
         self.assertEquals(content.data['price']['municipality'], municipality_fee)
         self.assertEquals(content.data['price']['total'], accommodation_price + meal_price + municipality_fee)
-
-    def test_child_breakfast_discount(self):
-        number_days = 2
-        discount_value = 40
-        DiscountSettings.objects.create(
-            settings=self.settings,
-            type=DISCOUNT_CHOICE_CHILD_BREAKFAST,
-            value=discount_value
-        )
-        variables = {
-            'data': {
-                'guests': self.guests,
-                'meal': MEAL_CHOICE_BREAKFAST,
-                'numberDays': number_days,
-                'settingsId': self.settings.id,
-                'suiteId': self.suite.id
-            }
-        }
-        content = self.client.execute(self.query_string, variables)
-
-        meal_price_adults = (self.settings.price_breakfast * 3) * number_days
-        meal_price_child = (self.settings.price_breakfast - (
-                (self.settings.price_breakfast / 100) * discount_value)) * number_days
-
-        self.assertEquals(content.data['price']['meal'], meal_price_adults + meal_price_child)
-
-    def test_child_halfboard_discount(self):
-        number_days = 2
-        discount_value = 40
-        DiscountSettings.objects.create(
-            settings=self.settings,
-            type=DISCOUNT_CHOICE_HALFBOARD,
-            value=discount_value
-        )
-        variables = {
-            'data': {
-                'guests': self.guests,
-                'meal': MEAL_CHOICE_HALFBOARD,
-                'numberDays': number_days,
-                'settingsId': self.settings.id,
-                'suiteId': self.suite.id
-            }
-        }
-        content = self.client.execute(self.query_string, variables)
-
-        meal_price_adults = (self.settings.price_halfboard * 3) * number_days
-        meal_price_child = (self.settings.price_halfboard - (
-                (self.settings.price_halfboard / 100) * discount_value)) * number_days
-
-        self.assertEquals(content.data['price']['meal'], meal_price_adults + meal_price_child)

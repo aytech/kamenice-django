@@ -157,6 +157,8 @@
   "settings": {
     "base-breakfast-price": "Základní cena snídaně",
     "base-halfboard-price": "Základní cena polopenze",
+    "breakfast-price-child": "Cena snídaně pro dítě",
+    "halfboard-price-child": "Cena polopenze pro dítě",
     "municipality-fee-amount": "Výše obecního poplatku",
     "updated": "Nastavení aktualizováno",
     "user-name": "Uživatelské jméno",

@@ -10,18 +10,12 @@
 /**
  * An enumeration.
  */
-export enum DiscountSettingsType {
-  CHILD_BREAKFAST_DISCOUNT = "CHILD_BREAKFAST_DISCOUNT",
-  HALFBOARD_DISCOUNT = "HALFBOARD_DISCOUNT",
-}
-
-/**
- * An enumeration.
- */
 export enum DiscountSuiteType {
   CHILD_DISCOUNT = "CHILD_DISCOUNT",
   EXTRA_BED_DISCOUNT = "EXTRA_BED_DISCOUNT",
+  FIFTH_MORE_BED = "FIFTH_MORE_BED",
   INFANT_DISCOUNT = "INFANT_DISCOUNT",
+  THIRD_FOURTH_BED = "THIRD_FOURTH_BED",
   THREE_NIGHTS_DISCOUNT = "THREE_NIGHTS_DISCOUNT",
 }
 
@@ -126,17 +120,13 @@ export interface ReservationInput {
   type?: string | null;
 }
 
-export interface SettingsDiscountInput {
-  type: string;
-  value: number;
-}
-
 export interface SettingsInput {
-  discounts?: (SettingsDiscountInput | null)[] | null;
   id?: string | null;
   municipalityFee?: any | null;
   priceBreakfast?: any | null;
+  priceBreakfastChild?: any | null;
   priceHalfboard?: any | null;
+  priceHalfboardChild?: any | null;
   userAvatar?: string | null;
   userColor?: string | null;
   userName?: string | null;
