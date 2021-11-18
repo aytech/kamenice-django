@@ -81,10 +81,6 @@ class PriceHelper:
 
     def calculate_third_fourth_discount(self):
         bed_price = self.suite.price_base * self.days
-        if self.days > 3:
-            duration_discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
-            if duration_discount is not None:
-                bed_price -= (bed_price / 100) * duration_discount.value
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THIRD_FOURTH_BED)
         if discount is not None:
             self.accommodation += bed_price - ((bed_price / 100) * discount.value)
@@ -122,12 +118,14 @@ class PriceHelper:
         # when the room is occupied by adults and child is on extra bed.
         number_adults = len(self.get_adults() + self.get_young())
         number_children = len(self.get_children())
+        # Process if children are found and number of children is greater than room base
+        # calculation number (otherwise the child is calculated as part of the room price)
         if number_children > 0 and (number_adults + number_children) > self.GUESTS_BASE_NUMBER:
             price_child = self.suite.price_base * self.days
             discount = self.get_suite_discount(DISCOUNT_CHOICE_CHILD)
             if discount is not None:
                 price_child -= (price_child / 100) * discount.value
-            self.accommodation += price_child
+            self.accommodation += price_child * number_children
 
     def calculate_municipality_fee(self):
         # Municipality fee is paid only for 18+ guests

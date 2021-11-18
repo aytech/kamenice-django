@@ -214,7 +214,6 @@ class UpdateReservation(Mutation):
     def mutate(cls, _root, _info, data=None):
         try:
             instance = ReservationModel.objects.get(pk=data.id, deleted=False)
-
             if instance:
                 instance.expired = data.expired
                 instance.from_date = data.from_date if data.from_date is not None else instance.from_date
@@ -222,7 +221,7 @@ class UpdateReservation(Mutation):
 
                 duplicate = ReservationUtility.get_duplicate(data.suite_id, instance=instance)
 
-                if duplicate.count() > 1 or str(duplicate.get().id) != data.id:
+                if duplicate.count() > 0 and str(duplicate.get().id) != data.id:
                     raise Exception(_('The room is already reserved for this period of time'))
 
                 instance.meal = data.meal if data.meal is not None else instance.meal

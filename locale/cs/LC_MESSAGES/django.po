@@ -178,7 +178,7 @@ msgstr "Hosta nelze smazat"
 
 #: .\api\schemas\Reservation.py:170 .\api\schemas\Reservation.py:226
 msgid "The room is already reserved for this period of time"
-msgstr "Místnost je rezervováno pro tuto dobu"
+msgstr "Místnost je rezervováná pro tuto dobu"
 
 #: .\api\schemas\Reservation.py:175 .\api\schemas\Reservation.py:242
 msgid "Please select guest from the list"
