@@ -138,6 +138,13 @@ export const ReservationForm = ({
     }
   }, [ suiteCapacity, t ])
 
+  const onPriceChange = () => {
+    const priceAccommodation: number = Number(form.getFieldValue("priceAccommodation"))
+    const priceMeal: number = Number(form.getFieldValue("priceMeal"))
+    const priceMunicipality: number = Number(form.getFieldValue("priceMunicipality"))
+    form.setFieldsValue({ priceTotal: priceAccommodation + priceMeal + priceMunicipality })
+  }
+
   useEffect(() => {
     // Define guest and roommate options
     const options: OptionsType[] = []
@@ -319,19 +326,28 @@ export const ReservationForm = ({
           hidden={ !pricesVisible }
           label={ t("reservations.price-accommodation") }
           name="priceAccommodation">
-          <Input addonBefore={ t("currency") } type="number" />
+          <Input
+            addonBefore={ t("currency") }
+            onChange={ onPriceChange }
+            type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ t("reservations.price-meal") }
           name="priceMeal">
-          <Input addonBefore={ t("currency") } type="number" />
+          <Input
+            addonBefore={ t("currency") }
+            onChange={ onPriceChange }
+            type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ t("reservations.price-municipality") }
           name="priceMunicipality">
-          <Input addonBefore={ t("currency") } type="number" />
+          <Input
+            addonBefore={ t("currency") }
+            onChange={ onPriceChange }
+            type="number" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
