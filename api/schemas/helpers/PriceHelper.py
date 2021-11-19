@@ -1,3 +1,4 @@
+from decimal import Decimal, getcontext
 from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
@@ -80,12 +81,11 @@ class PriceHelper:
             self.accommodation += (extra_bed_price / self.GUESTS_BASE_NUMBER) * number_guests
 
     def calculate_third_fourth_discount(self):
-        bed_price = self.suite.price_base * self.days
+        bed_price = self.suite.price_base
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THIRD_FOURTH_BED)
         if discount is not None:
-            self.accommodation += bed_price - ((bed_price / 100) * discount.value)
-        else:
-            self.accommodation += bed_price
+            bed_price -= (bed_price / 100) * discount.value
+        self.accommodation += floor(bed_price) * self.days
 
     def calculate_beds_discounts(self):
         bed_price = self.suite.price_base * self.days
@@ -111,7 +111,7 @@ class PriceHelper:
     def discount_three_nights(self):
         discount = self.get_suite_discount(DISCOUNT_CHOICE_THREE_NIGHTS)
         if discount is not None and self.days > 2:
-            self.accommodation -= (self.accommodation / 100 * discount.value)
+            self.accommodation -= (self.accommodation / 100) * discount.value
 
     def calculate_child_price(self):
         # Add price for child only if the child exceeds the capacity, i.e.
