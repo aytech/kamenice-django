@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Form, message, Modal, Popconfirm, Spin } from "antd"
+import { Col, Form, message, Modal, Popconfirm, Row, Spin } from "antd"
 import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
@@ -194,25 +194,43 @@ export const ReservationModal = ({
             } } />
           </Popconfirm>
         ) }
-        footer={ [
-          <RemoveButton
-            deleteReservation={ (reservationId: string) => {
-              deleteReservation({ variables: { reservationId } })
-            } }
-            key="remove"
-            reservation={ reservation } />,
-          <SendConfirmationButton
-            key="confirmation"
-            reservation={ reservation }
-            send={ sendReservationConfirmation } />,
-          <AddGuestButton key="guest" />,
-          <SubmitButton
-            key="create"
-            reservation={ reservation }
-            submit={ () => {
-              form.validateFields().then(submitForm)
-            } } />
-        ] }
+        footer={
+          <Row>
+            <Col
+              sm={ { span: 4 } }
+              xs={ { span: 24 } }>
+              <RemoveButton
+                deleteReservation={ (reservationId: string) => {
+                  deleteReservation({ variables: { reservationId } })
+                } }
+                key="remove"
+                reservation={ reservation } />
+            </Col>
+            <Col
+              sm={ { offset: 6, span: 4 } }
+              xs={ { span: 24 } }>
+              <SendConfirmationButton
+                key="confirmation"
+                reservation={ reservation }
+                send={ sendReservationConfirmation } />
+            </Col>
+            <Col
+              sm={ { offset: 1, span: 4 } }
+              xs={ { span: 24 } }>
+              <AddGuestButton key="guest" />
+            </Col>
+            <Col
+              sm={ { offset: 1, span: 4 } }
+              xs={ { span: 24 } }>
+              <SubmitButton
+                key="create"
+                reservation={ reservation }
+                submit={ () => {
+                  form.validateFields().then(submitForm)
+                } } />
+            </Col>
+          </Row>
+        }
         title={ t("reservations.form") }
         visible={ reservationModalOpen() }>
         <Spin

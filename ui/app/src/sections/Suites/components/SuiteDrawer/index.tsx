@@ -234,7 +234,9 @@ export const SuiteDrawer = ({
                 pattern: /^[0-9]{1,4}(\.[0-9]{1,2})?$/
               }
             ] }>
-            <Input addonBefore={ t("currency") } />
+            <Input
+              addonBefore={ t("currency") }
+              type="text" />
           </Form.Item>
           <Form.Item>
             <Form.List name="discounts">

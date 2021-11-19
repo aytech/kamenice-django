@@ -42,7 +42,7 @@ class SuiteInput(InputObjectType):
     number = Int()
     number_beds = Int()
     number_beds_extra = Int()
-    price_base = Decimal()
+    price_base = String()
     title = String()
 
 
@@ -85,11 +85,16 @@ class UpdateSuite(Mutation):
         try:
             instance = SuiteModel.objects.get(pk=data.id)
             if instance:
+                price_base = 0
+                try:  # handle empty and invalid values
+                    price_base = int(data.price_base)
+                except (TypeError, ValueError):
+                    pass
                 instance.number = data.number if data.number is not None else instance.number
                 instance.number_beds = data.number_beds if data.number_beds is not None else instance.number_beds
                 instance.number_beds_extra = data.number_beds_extra if data.number_beds_extra is not None else \
                     instance.number_beds_extra
-                instance.price_base = data.price_base if data.price_base is not None else instance.price_base
+                instance.price_base = price_base if data.price_base is not None else instance.price_base
                 instance.title = data.title if data.title is not None else instance.title
 
                 # Recreate discounts

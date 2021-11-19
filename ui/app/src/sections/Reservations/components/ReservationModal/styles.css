@@ -14,10 +14,12 @@
   width: 100%
 }
 
-.reservation-modal button.action.delete {
-  float: left;
+.reservation-modal .ant-col-xs-24 button.action {
+  margin-bottom: 1.5em;
 }
 
-.reservation-modal button.action {
-  width: 80px;
+@media (min-width: 576px) {
+  .reservation-modal .ant-col-xs-24 button.action {
+    margin-bottom: .5em;
+  }
 }

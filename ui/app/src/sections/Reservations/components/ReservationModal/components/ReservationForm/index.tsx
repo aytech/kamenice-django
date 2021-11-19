@@ -223,7 +223,9 @@ export const ReservationForm = ({
           showSearch />
       </Form.Item>
       <Form.Item
-        wrapperCol={ { offset: 8, span: 16 } }>
+        wrapperCol={ {
+          lg: { offset: 8, span: 16 }
+        } }>
         <Form.List name="roommates">
           { (fields, { add, remove }) => (
             <>
@@ -317,7 +319,9 @@ export const ReservationForm = ({
           placeholder={ t("forms.enter-text") }
           allowClear />
       </Form.Item>
-      <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
+      <Form.Item wrapperCol={ {
+        lg: { offset: 8, span: 16 }
+      } }>
         <Button
           block
           onClick={ () => setAdditionalInfoVisible(!additionalInfoVisible) }
@@ -333,7 +337,7 @@ export const ReservationForm = ({
           label={ t("reservations.price-room") }>
           <Typography.Text>
             <strong>
-              { selectedSuite()?.priceBase } { t("currency") }
+              { NumberHelper.formatCurrency(selectedSuite()?.priceBase) } { t("currency") }
             </strong>
           </Typography.Text>
         </Form.Item>
@@ -374,7 +378,12 @@ export const ReservationForm = ({
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
-          wrapperCol={ { offset: 8, span: 16 } }>
+          wrapperCol={ {
+            lg: {
+              offset: 8,
+              span: 16
+            }
+          } }>
           <Button
             block
             icon={ <CalculatorOutlined /> }
@@ -398,7 +407,12 @@ export const ReservationForm = ({
           </Button>
         </Form.Item>
       </Spin>
-      <Form.Item wrapperCol={ { offset: 8, span: 16 } }>
+      <Form.Item wrapperCol={ {
+        lg: {
+          offset: 8,
+          span: 16
+        }
+      } }>
         <Button
           block
           onClick={ () => setPricesVisible(!pricesVisible) }

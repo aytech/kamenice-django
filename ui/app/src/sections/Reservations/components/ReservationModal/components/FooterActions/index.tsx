@@ -41,6 +41,7 @@ export const RemoveButton = ({
         placement="top"
         title={ t("forms.delete") }>
         <Button
+          block
           className="action delete"
           danger
           icon={ <CloseCircleOutlined /> } />
@@ -69,6 +70,7 @@ export const SendConfirmationButton = ({
         placement="top"
         title={ t("reservations.send-confirmation-tooltip") }>
         <Button
+          block
           className="action confirm"
           icon={ <NotificationOutlined /> } />
       </Tooltip>
@@ -85,6 +87,7 @@ export const AddGuestButton = () => {
       placement="top"
       title={ t("guests.add") }>
       <Button
+        block
         className="action add"
         id="add-guest"
         icon={ <UserAddOutlined /> }
@@ -108,6 +111,7 @@ export const SubmitButton = ({
       placement="top"
       title={ (reservation !== undefined && reservation.id !== undefined) ? t("forms.update") : t("forms.save") }>
       <Button
+        block
         className="action submit"
         id="submit-reservation"
         icon={ <SaveOutlined /> }
