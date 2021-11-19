@@ -7,23 +7,26 @@ import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { appSettings, reservationMealOptions, reservationTypeOptions, selectedSuite } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
+import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
 import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
-import { IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
+import { IReservation, OptionsType, PriceInfo, ReservationTypeKey } from "../../../../../../lib/Types"
 import "./styles.css"
 
 interface Props {
   form: FormInstance
   guestsData?: Guests
   reservation?: IReservation
+  setPriceInfo: (info: PriceInfo) => void
 }
 
 export const ReservationForm = ({
   form,
   guestsData,
-  reservation
+  reservation,
+  setPriceInfo
 }: Props) => {
 
   const { t } = useTranslation()
@@ -39,11 +42,17 @@ export const ReservationForm = ({
     fetchPolicy: "no-cache",
     onCompleted: (data: CalculateReservationPrice) => {
       if (data.price !== null) {
-        form.setFieldsValue({
+        setPriceInfo({
           priceAccommodation: data.price.accommodation,
           priceMeal: data.price.meal,
           priceMunicipality: data.price.municipality,
           priceTotal: data.price.total
+        })
+        form.setFieldsValue({
+          priceAccommodation: NumberHelper.formatCurrency(data.price.accommodation),
+          priceMeal: NumberHelper.formatCurrency(data.price.meal),
+          priceMunicipality: NumberHelper.formatCurrency(data.price.municipality),
+          priceTotal: NumberHelper.formatCurrency(data.price.total)
         })
       }
     }
@@ -56,10 +65,10 @@ export const ReservationForm = ({
     meal: reservation.meal,
     notes: reservation.notes,
     paying: reservation.payingGuest === undefined || reservation.payingGuest === null ? null : reservation.payingGuest.id,
-    priceAccommodation: reservation.priceAccommodation,
-    priceMeal: reservation.priceMeal,
-    priceMunicipality: reservation.priceMunicipality,
-    priceTotal: reservation.priceTotal,
+    priceAccommodation: NumberHelper.formatCurrency(reservation.priceAccommodation),
+    priceMeal: NumberHelper.formatCurrency(reservation.priceMeal),
+    priceMunicipality: NumberHelper.formatCurrency(reservation.priceMunicipality),
+    priceTotal: NumberHelper.formatCurrency(reservation.priceTotal),
     purpose: reservation.purpose,
     roommates: reservation.roommates,
     type: reservation.type
@@ -139,10 +148,17 @@ export const ReservationForm = ({
   }, [ suiteCapacity, t ])
 
   const onPriceChange = () => {
-    const priceAccommodation: number = Number(form.getFieldValue("priceAccommodation"))
-    const priceMeal: number = Number(form.getFieldValue("priceMeal"))
-    const priceMunicipality: number = Number(form.getFieldValue("priceMunicipality"))
-    form.setFieldsValue({ priceTotal: priceAccommodation + priceMeal + priceMunicipality })
+    const priceAccommodation: number = NumberHelper.decodeCurrency(form.getFieldValue("priceAccommodation"))
+    const priceMeal: number = NumberHelper.decodeCurrency(form.getFieldValue("priceMeal"))
+    const priceMunicipality: number = NumberHelper.decodeCurrency(form.getFieldValue("priceMunicipality"))
+    const priceTotal = priceAccommodation + priceMeal + priceMunicipality
+    setPriceInfo({
+      priceAccommodation: priceAccommodation,
+      priceMeal: priceMeal,
+      priceMunicipality: priceMunicipality,
+      priceTotal: priceTotal
+    })
+    form.setFieldsValue({ priceTotal: NumberHelper.formatCurrency(priceTotal) })
   }
 
   useEffect(() => {
@@ -310,7 +326,6 @@ export const ReservationForm = ({
           { additionalInfoVisible ? t("reservations.hide-info") : t("reservations.show-info") }
         </Button>
       </Form.Item>
-      {/* @TODO: add tooltips explaining price calculation */ }
       <Spin
         spinning={ pricesVisible && calculatePriceLoading }>
         <Form.Item
@@ -329,7 +344,7 @@ export const ReservationForm = ({
           <Input
             addonBefore={ t("currency") }
             onChange={ onPriceChange }
-            type="number" />
+            type="text" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
@@ -338,7 +353,7 @@ export const ReservationForm = ({
           <Input
             addonBefore={ t("currency") }
             onChange={ onPriceChange }
-            type="number" />
+            type="text" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
@@ -347,13 +362,15 @@ export const ReservationForm = ({
           <Input
             addonBefore={ t("currency") }
             onChange={ onPriceChange }
-            type="number" />
+            type="text" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }
           label={ <strong>{ t("reservations.price-total") }</strong> }
           name="priceTotal">
-          <Input addonBefore={ t("currency") } type="number" />
+          <Input
+            addonBefore={ t("currency") }
+            type="text" />
         </Form.Item>
         <Form.Item
           hidden={ !pricesVisible }

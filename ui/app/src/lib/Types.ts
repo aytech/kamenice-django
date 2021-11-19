@@ -178,7 +178,6 @@ export interface User {
 
 export interface PriceInfo {
   priceAccommodation: number
-  priceExtra: number
   priceMeal: number
   priceMunicipality?: number
   priceTotal?: number

@@ -4,7 +4,7 @@ import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation } from "../../../../lib/Types"
+import { IReservation, PriceInfo } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
@@ -40,6 +40,12 @@ export const ReservationModal = ({
   const [ form ] = Form.useForm()
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
+  const [ priceInfo, setPriceInfo ] = useState<PriceInfo>({
+    priceAccommodation: 0,
+    priceMeal: 0,
+    priceMunicipality: 0,
+    priceTotal: 0
+  })
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
 
@@ -124,10 +130,10 @@ export const ReservationModal = ({
       meal: formData.meal,
       notes: formData.notes,
       payingGuestId: formData.paying,
-      priceAccommodation: formData.priceAccommodation,
-      priceMeal: formData.priceMeal,
-      priceMunicipality: formData.priceMunicipality,
-      priceTotal: formData.priceTotal,
+      priceAccommodation: priceInfo.priceAccommodation,
+      priceMeal: priceInfo.priceMeal,
+      priceMunicipality: priceInfo.priceMunicipality,
+      priceTotal: priceInfo.priceTotal,
       purpose: formData.purpose,
       roommateIds: roommates,
       suiteId: reservation !== undefined ? +reservation.suite.id : null,
@@ -229,7 +235,8 @@ export const ReservationModal = ({
           <ReservationForm
             form={ form }
             guestsData={ guestsData }
-            reservation={ reservation } />
+            reservation={ reservation }
+            setPriceInfo={ setPriceInfo } />
         </Spin>
       </Modal>
       <GuestDrawer refetch={ refetchGuests } />
