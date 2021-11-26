@@ -116,7 +116,7 @@ export interface SuiteForm {
   beds_extra: number
   discounts: Array<Discount>
   number: number
-  price_base: number
+  price_base: string
   price_child: number
   price_extra: number
   price_infant: number

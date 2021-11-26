@@ -18,6 +18,7 @@ import './styles.css'
 import { appSettings, userColor, userName } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { SETTINGS } from "../../lib/graphql/queries/Settings"
+import { Statements } from "../Statements"
 
 export const App = withRouter(({
   history,
@@ -99,7 +100,10 @@ export const App = withRouter(({
               <ReservationGuests />
             </Route>
             <Route exact path={ paths.settings }>
-              <Settings settingsData={ settingsData } />
+              <Settings />
+            </Route>
+            <Route exact path={ paths.statements }>
+              <Statements />
             </Route>
             <Route path="*">
               <NotFound />

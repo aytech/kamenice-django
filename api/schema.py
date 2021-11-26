@@ -5,6 +5,7 @@ from api.schemas.Contact import CreateContactMessage
 from api.schemas.DiscountSuite import DiscountSuiteQuery, CreateDiscount, UpdateDiscount, DeleteDiscount
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest, \
     DeleteReservationGuest, CreateReservationGuest
+from api.schemas.GuestsReport import GuestsReportQuery, DeleteDriveFile
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
     SendConfirmationEmail, CalculateReservationPriceQuery
 from api.schemas.Settings import SettingsQuery, UpdateSettings
@@ -16,6 +17,7 @@ class Query(
     CalculateReservationPriceQuery,
     DiscountSuiteQuery,
     GuestsQuery,
+    GuestsReportQuery,
     ReservationQuery,
     SuitesQuery,
     SettingsQuery,
@@ -54,6 +56,8 @@ class Mutation(graphene.ObjectType):
     update_settings = UpdateSettings.Field()
 
     create_contact_message = CreateContactMessage.Field()
+
+    delete_drive_file = DeleteDriveFile.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

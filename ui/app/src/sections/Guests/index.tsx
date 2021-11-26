@@ -12,12 +12,12 @@ import { GuestItem } from "./components/GuestItem"
 import { useTranslation } from "react-i18next"
 import Text from "antd/lib/typography/Text"
 import { guestDrawerOpen, pageTitle, selectedGuest, selectedPage } from "../../cache"
+import { PagerHelper } from "../../lib/components/PagerHelper"
 
 export const Guests = withRouter(() => {
 
   const { t } = useTranslation()
 
-  const defaultPageSize = 10 // TODO: Fetch from settings
   const [ currentPage, setCurrentPage ] = useState<number>(1)
   const [ filteredGuests, setFilteredGuests ] = useState<Guests_guests[]>([])
   const [ totalGuests, setTotalGuests ] = useState<number>(0)
@@ -27,14 +27,11 @@ export const Guests = withRouter(() => {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
-  const sortGuests = (guestA: Guests_guests, guestB: Guests_guests) => {
-    return (guestA.name).localeCompare(guestB.name)
-  }
-
   const onPageChange = (page: number) => {
-    const startIndex = (page - 1) * defaultPageSize
-    setFilteredGuests(guests.slice(startIndex, page * defaultPageSize))
-    setCurrentPage(page)
+    PagerHelper.onPageChange(guests, page, (slice: Guests_guests[]) => {
+      setFilteredGuests(slice)
+      setCurrentPage(page)
+    })
   }
 
   const onSearch = (value: string) => {
@@ -54,15 +51,12 @@ export const Guests = withRouter(() => {
   }
 
   const updateGuestList = useCallback((guestsList) => {
-    let startIndex = (currentPage - 1) * defaultPageSize
-    let newGuestList = guestsList.sort(sortGuests).slice(startIndex, currentPage * defaultPageSize)
-    // If user is not on first page and list subset is empty, switch to previous page
-    if (newGuestList.length < 1 && currentPage > 1) {
-      startIndex = (currentPage - 2) * defaultPageSize
-      newGuestList = guestsList.sort(sortGuests).slice(startIndex, currentPage * defaultPageSize)
-      setCurrentPage(currentPage - 1)
-    }
-    setFilteredGuests(newGuestList)
+    PagerHelper.getPageSlice(guestsList, currentPage, (data: Guests_guests[], page: number) => {
+      if (page > 0) {
+        setCurrentPage(page)
+      }
+      setFilteredGuests(data)
+    })
   }, [ currentPage ])
 
   useEffect(() => {
@@ -103,7 +97,7 @@ export const Guests = withRouter(() => {
                 <Pagination
                   current={ currentPage }
                   onChange={ onPageChange }
-                  pageSize={ defaultPageSize }
+                  pageSize={ PagerHelper.defaultPageSize }
                   total={ totalGuests } />
               </Col>
               <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 12 }>

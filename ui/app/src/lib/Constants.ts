@@ -18,11 +18,13 @@ export const paths = {
   reservations: "/rezervace/:open?",
   root: "/",
   settings: "/settings",
+  statements: "/statements",
   suites: "/apartma"
 }
 export const uris = {
   reservations: "/rezervace",
-  settings: "/settings"
+  settings: "/settings",
+  statements: "/statements"
 }
 export const refreshTokenName: string = "refreshToken"
 export const sessionStorageKeys = {

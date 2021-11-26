@@ -1,0 +1,11 @@
+.statement-modal {
+  min-width: 500px;
+}
+
+.statement-modal .ant-picker {
+  width: 100%;
+}
+
+.statement-modal .ant-form-inline .ant-form-item {
+  flex-grow: 1;
+}

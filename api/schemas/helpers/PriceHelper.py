@@ -1,4 +1,3 @@
-from decimal import Decimal, getcontext
 from math import floor
 
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \

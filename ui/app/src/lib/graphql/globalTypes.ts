@@ -143,7 +143,7 @@ export interface SuiteInput {
   number?: number | null;
   numberBeds?: number | null;
   numberBedsExtra?: number | null;
-  priceBase?: any | null;
+  priceBase?: string | null;
   title?: string | null;
 }
 

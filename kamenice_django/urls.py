@@ -47,10 +47,16 @@ urlpatterns = [
     # GraphQL
     re_path(r'^api$', csrf_exempt(GraphQLView.as_view(graphiql=settings.GRAPHIQL_AVAILABLE, schema=schema))),
 
+    # Media
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+
     # Static
     re_path(r'^static/(?P<path>.*)$', serve, {
         'document_root': settings.STATIC_ROOT,
     }),
+
     # UI locales
     re_path(r'^locales/(?P<path>.*)$', serve, {
         'document_root': settings.LOCALES_ROOT,

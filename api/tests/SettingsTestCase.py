@@ -3,7 +3,6 @@ from django.contrib.auth.models import Permission
 from graphene_django.utils import GraphQLTestCase
 from graphql_jwt.testcases import JSONWebTokenTestCase
 
-from api.constants import DISCOUNT_CHOICE_CHILD_BREAKFAST, DISCOUNT_CHOICE_HALFBOARD
 from api.models.Settings import Settings
 
 
@@ -76,13 +75,8 @@ class SettingsTestCase(JSONWebTokenTestCase, GraphQLTestCase):
                 }
             }
         '''
-        discount_set = [
-            {'type': DISCOUNT_CHOICE_CHILD_BREAKFAST, 'value': 20},
-            {'type': DISCOUNT_CHOICE_HALFBOARD, 'value': 40},
-        ]
         variables = {
             'data': {
-                'discounts': discount_set,
                 'id': settings.id,
                 'municipalityFee': '22.00',
                 'priceBreakfast': '100.00',
@@ -94,26 +88,9 @@ class SettingsTestCase(JSONWebTokenTestCase, GraphQLTestCase):
         }
         response = self.client.execute(query_string, variables)
 
-        self.assertListEqual(discount_set, response.data['updateSettings']['settings']['discountSettingsSet'])
         self.assertEquals(response.data['updateSettings']['settings']['municipalityFee'], '22.00')
         self.assertEquals(response.data['updateSettings']['settings']['priceBreakfast'], '100.00')
         self.assertEquals(response.data['updateSettings']['settings']['priceHalfboard'], '250.00')
         self.assertEquals(response.data['updateSettings']['settings']['userAvatar'], '/some/path')
         self.assertEquals(response.data['updateSettings']['settings']['userColor'], '#fa541c')
         self.assertEquals(response.data['updateSettings']['settings']['userName'], 'Test User Updated')
-
-    def test_get_discount_types(self):
-        query_string = '''
-            query DiscountSettingsTypes {
-                discountSettingsTypes {
-                    name
-                    value
-                }
-            }
-        '''
-        response = self.client.execute(query_string)
-
-        self.assertListEqual([
-            {'name': DISCOUNT_CHOICE_CHILD_BREAKFAST, 'value': 'Snídaně (dítě 3 - 12 let)'},
-            {'name': DISCOUNT_CHOICE_HALFBOARD, 'value': 'Polopenze (dítě 3 - 12 let)'},
-        ], response.data['discountSettingsTypes'])

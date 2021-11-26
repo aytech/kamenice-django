@@ -124,6 +124,11 @@ STATIC_ASSETS = APP_DIR / 'static' / 'static'
 STATICFILES_DIRS = (
     BASE_DIR / 'ui' / 'app' / 'build',
 )
+MEDIA_URL = '/media/'
+MEDIA_ROOT = APP_DIR / 'media'
+STATEMENTS_URL = '/media/statements/'
+STATEMENTS_ROOT = APP_DIR / 'media' / 'statements'
+KEYS_ROOT = APP_DIR / 'keys'
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale'

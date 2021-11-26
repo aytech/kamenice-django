@@ -7,16 +7,9 @@ import { useTranslation } from "react-i18next"
 import { appSettings, pageTitle, selectedPage, userColor, userName } from "../../cache"
 import { UPDATE_SETTINGS } from "../../lib/graphql/mutations/Settings"
 import { UpdateSettings, UpdateSettingsVariables } from "../../lib/graphql/mutations/Settings/__generated__/UpdateSettings"
-import { Settings as SettingsData } from "../../lib/graphql/queries/Settings/__generated__/Settings"
 import "./styles.css"
 
-interface Props {
-  settingsData?: SettingsData
-}
-
-export const Settings = ({
-  settingsData
-}: Props) => {
+export const Settings = () => {
 
   const { t } = useTranslation()
   const [ form ] = Form.useForm()

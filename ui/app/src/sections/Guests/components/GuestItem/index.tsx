@@ -41,52 +41,50 @@ export const GuestItem = ({
   }
 
   return (
-    <>
-      <List.Item
-        actions={ [
+    <List.Item
+      actions={ [
+        <Button
+          key="edit"
+          icon={ <EditOutlined /> }
+          onClick={ () => {
+            selectedGuest(guest)
+            guestDrawerOpen(true)
+          } }>
+          { t("edit") }
+        </Button>,
+        <Popconfirm
+          cancelText={ t("no") }
+          okText={ t("yes") }
+          onConfirm={ () => deleteGuest({ variables: { guestId: guest.id } }) }
+          title={ t("forms.delete-confirm") }>
           <Button
-            key="edit"
-            icon={ <EditOutlined /> }
-            onClick={ () => {
-              selectedGuest(guest)
-              guestDrawerOpen(true)
+            className="remove-guest"
+            danger
+            key="delete"
+            icon={ <DeleteOutlined /> }
+            loading={ deleteLoading }>
+            { t("forms.delete") }
+          </Button>
+        </Popconfirm>
+      ] }
+      className="guest-item"
+      onClick={ () => {
+        selectedGuest(guest)
+        guestDrawerOpen(true)
+      } }>
+      <List.Item.Meta
+        avatar={
+          <Avatar
+            gap={ 4 }
+            size="large"
+            style={ {
+              backgroundColor: getUserColor()
             } }>
-            { t("edit") }
-          </Button>,
-          <Popconfirm
-            cancelText={ t("no") }
-            okText={ t("yes") }
-            onConfirm={ () => deleteGuest({ variables: { guestId: guest.id } }) }
-            title={ t("forms.delete-confirm") }>
-            <Button
-              className="remove-guest"
-              danger
-              key="delete"
-              icon={ <DeleteOutlined /> }
-              loading={ deleteLoading }>
-              { t("forms.delete") }
-            </Button>
-          </Popconfirm>
-        ] }
-        className="guest-item"
-        onClick={ () => {
-          selectedGuest(guest)
-          guestDrawerOpen(true)
-        } }>
-        <List.Item.Meta
-          avatar={
-            <Avatar
-              gap={ 4 }
-              size="large"
-              style={ {
-                backgroundColor: getUserColor()
-              } }>
-              { guest.name.substring(0, 1).toUpperCase() }
-            </Avatar>
-          }
-          description={ guest.age !== null ? t(`enums.${ guest.age }`) : null }
-          title={ `${ guest.name } ${ guest.surname }` } />
-      </List.Item>
-    </>
+            { guest.name.substring(0, 1).toUpperCase() }
+          </Avatar>
+        }
+        description={ guest.age !== null ? t(`enums.${ guest.age }`) : null }
+        title={ `${ guest.name } ${ guest.surname }` } />
+    </List.Item>
   )
 }

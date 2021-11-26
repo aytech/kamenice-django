@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID, Decimal
+from graphene import ObjectType, List, Field, Int, Mutation, String, InputObjectType, ID
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _

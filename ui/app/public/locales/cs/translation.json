@@ -25,6 +25,7 @@
     "add-discount": "Přidat slevu",
     "address": "Trvalé bydliště",
     "by-hand": "ručně",
+    "choose-date": "Vyberte datum",
     "choose-from-list": "Vyberte ze seznamu",
     "choose-guest": "Vyberte hosta",
     "citizenship": "Občanství",
@@ -87,7 +88,8 @@
   "number": "Číslo",
   "pages": {
     "login": "Přihlášení",
-    "settings": "Nastavení"
+    "settings": "Nastavení",
+    "statements": "Výpisy"
   },
   "phone-number": "Telefonní číslo",
   "reservations": {
@@ -165,6 +167,16 @@
     "your-name": "Vaše jméno"
   },
   "sex": "Pohlaví",
+  "statements": {
+    "action-generate": "Generovat",
+    "delete-success": "Výpis {{ name }} byl smazán",
+    "download-format": "Stáhnout ve formátu {{ format }}",
+    "generate": "Vygenerovat nový výpis",
+    "generated": "Vygenerováno: {{ date }}",
+    "modal-title": "Data výpisu",
+    "page-title": "Výpisy - hosté",
+    "search": "Hledat výpis"
+  },
   "surname": "Příjmení",
   "to": "Do",
   "tooltips": {

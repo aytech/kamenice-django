@@ -4,7 +4,6 @@ from graphene_django.utils import GraphQLTestCase
 from graphql_jwt.testcases import JSONWebTokenTestCase
 
 from api.models.DiscountSuite import DiscountSuite
-from api.models.Suite import Suite
 
 
 class SuiteTestCase(JSONWebTokenTestCase, GraphQLTestCase):
