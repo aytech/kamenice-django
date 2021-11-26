@@ -1,7 +1,7 @@
 import { Button, Col, DatePicker, Form, Input, List, message, Modal, Pagination, Row, Skeleton, Spin, Tooltip } from "antd"
 import { useTranslation } from "react-i18next"
 import Text from "antd/lib/typography/Text"
-import { FileAddOutlined } from "@ant-design/icons"
+import { CloseOutlined, FileAddOutlined } from "@ant-design/icons"
 import { useCallback, useEffect, useState } from "react"
 import { ApolloError, useLazyQuery, useQuery } from "@apollo/client"
 import { GENERATE_STATEMENT, STATEMENTS } from "../../lib/graphql/queries/Statements"
@@ -147,6 +147,13 @@ export const Statements = () => {
       </Skeleton>
       <Modal
         className="statement-modal"
+        closeIcon={ (
+          <Button
+            className="close-button"
+            disabled={ generateLoading }
+            icon={ <CloseOutlined /> }
+            shape="circle" />
+        ) }
         title={ t("statements.modal-title") }
         visible={ statementModalOpen }
         okText={ t("statements.action-generate") }

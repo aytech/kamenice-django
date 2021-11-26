@@ -1,3 +1,23 @@
+.ant-btn-circle.close-button {
+  color: rgb(217, 217, 217);
+}
+
+.ant-btn-circle.close-button:hover,
+.ant-btn-circle.close-button:focus {
+  color: rgb(64, 169, 255);
+}
+
+.ant-btn-circle.close-button:active {
+  color: rgb(9, 109, 217);
+}
+
+.ant-btn-circle.close-button[disabled],
+.ant-btn-circle.close-button[disabled]:active,
+.ant-btn-circle.close-button[disabled]:hover,
+.ant-btn-circle.close-button[disabled]:focus {
+  color: rgba(0, 0, 0, .25);
+}
+
 .statement-modal {
   min-width: 500px;
 }
