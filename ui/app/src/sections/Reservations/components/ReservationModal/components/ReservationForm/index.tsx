@@ -224,7 +224,9 @@ export const ReservationForm = ({
       </Form.Item>
       <Form.Item
         wrapperCol={ {
-          lg: { offset: 8, span: 16 }
+          lg: { offset: 8, span: 16 },
+          md: { offset: 8, span: 16 },
+          sm: { offset: 8, span: 16 }
         } }>
         <Form.List name="roommates">
           { (fields, { add, remove }) => (
@@ -320,7 +322,9 @@ export const ReservationForm = ({
           allowClear />
       </Form.Item>
       <Form.Item wrapperCol={ {
-        lg: { offset: 8, span: 16 }
+        lg: { offset: 8, span: 16 },
+        md: { offset: 8, span: 16 },
+        sm: { offset: 8, span: 16 }
       } }>
         <Button
           block
@@ -379,10 +383,9 @@ export const ReservationForm = ({
         <Form.Item
           hidden={ !pricesVisible }
           wrapperCol={ {
-            lg: {
-              offset: 8,
-              span: 16
-            }
+            lg: { offset: 8, span: 16 },
+            md: { offset: 8, span: 16 },
+            sm: { offset: 8, span: 16 }
           } }>
           <Button
             block
@@ -408,10 +411,9 @@ export const ReservationForm = ({
         </Form.Item>
       </Spin>
       <Form.Item wrapperCol={ {
-        lg: {
-          offset: 8,
-          span: 16
-        }
+        lg: { offset: 8, span: 16 },
+        md: { offset: 8, span: 16 },
+        sm: { offset: 8, span: 16 }
       } }>
         <Button
           block

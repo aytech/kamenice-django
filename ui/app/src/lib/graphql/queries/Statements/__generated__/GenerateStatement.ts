@@ -20,4 +20,5 @@ export interface GenerateStatement {
 export interface GenerateStatementVariables {
   fromDate: string;
   toDate: string;
+  foreigners?: boolean | null;
 }

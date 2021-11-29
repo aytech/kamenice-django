@@ -1,6 +1,7 @@
 export const apolloErrorUnauthorized: string = "Unauthorized"
 export const csrfTokenName: string = "csrftoken"
 export const defaultArrivalHour: number = 14
+export const defaultCitizenship: string = "cze"
 export const defaultDepartureHour: number = 10
 export const dateFormat = "YYYY-MM-DD HH:mm"
 export const dateFormatShort = "YYYY-MM-DD"

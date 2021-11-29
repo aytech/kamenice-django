@@ -173,6 +173,9 @@
     "download-format": "Stáhnout ve formátu {{ format }}",
     "generate": "Vygenerovat nový výpis",
     "generated": "Vygenerováno: {{ date }}",
+    "labels": {
+      "generate-foreign": "Pouze cizinci"
+    },
     "modal-title": "Data výpisu",
     "page-title": "Výpisy - hosté",
     "search": "Hledat výpis"

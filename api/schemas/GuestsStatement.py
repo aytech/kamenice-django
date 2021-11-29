@@ -8,10 +8,12 @@ from graphene import ObjectType, Boolean, String, Field, List, Mutation, InputOb
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import user_passes_test
 
+from api.constants import CITIZENSHIP_CZ
 from api.models.GuestStatement import GuestStatement
 from api.models.Reservation import Reservation
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.helpers.GuestStatementHelper import GuestStatementHelper
+from api.schemas.helpers.statements.word_pairs import get_formatted_pair
 from kamenice_django.settings.base import STATEMENTS_ROOT
 
 
@@ -31,12 +33,12 @@ class DriveFile(DjangoObjectType):
 
 
 class GuestsStatementQuery(ObjectType):
-    guests_report = Field(Report, from_date=String(required=True), to_date=String(required=True))
+    guests_report = Field(Report, from_date=String(required=True), to_date=String(required=True), foreigners=Boolean())
     guests_report_files = List(DriveFile)
 
     @classmethod
     @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
-    def resolve_guests_report(cls, _root, _info, from_date, to_date):
+    def resolve_guests_report(cls, _root, _info, from_date, to_date, foreigners):
         start_date = datetime.strptime(from_date, '%Y-%m-%d')
         end_date = datetime.strptime(to_date, '%Y-%m-%d')
         reservations = Reservation.objects.filter(
@@ -53,7 +55,46 @@ class GuestsStatementQuery(ObjectType):
             )
         )
 
-        if reservations.count() == 0:
+        reservation_guests = []
+        for reservation in reservations:
+            guests = []
+            if foreigners:
+                if reservation.guest.citizenship != CITIZENSHIP_CZ:
+                    guests.append(reservation.guest)
+            else:
+                if reservation.guest.citizenship == CITIZENSHIP_CZ:
+                    guests.append(reservation.guest)
+            for roommate in reservation.roommates.all():
+                if foreigners:
+                    if roommate.citizenship != CITIZENSHIP_CZ:
+                        guests.append(roommate)
+                else:
+                    if reservation.guest.citizenship == CITIZENSHIP_CZ:
+                        guests.append(roommate)
+            for guest in guests:
+                if foreigners:
+                    reservation_guests.append([
+                        reservation.from_date.strftime('%d.%m.%Y'),
+                        reservation.to_date.strftime('%d.%m.%Y'),
+                        guest.surname,
+                        guest.name,
+                        guest.citizenship if guest.citizenship is not None else '-',
+                        get_formatted_pair(guest.address_street, guest.address_municipality, '{}, {}'),
+                        guest.identity if guest.identity is not None else '-',
+                        guest.visa_number if guest.visa_number is not None else '-'
+                    ])
+                else:
+                    reservation_guests.append(([
+                        reservation.suite.number,
+                        get_formatted_pair(reservation.guest.name, reservation.guest.surname, '{} {}'),
+                        reservation.guest.identity if reservation.guest.identity is not None else '-',
+                        get_formatted_pair(guest.address_street, guest.address_municipality, '{}, {}'),
+                        reservation.guest.citizenship if reservation.guest.citizenship is not None else '-',
+                        get_formatted_pair(reservation.from_date.strftime('%d.%m.%Y'),
+                                           reservation.to_date.strftime('%d.%m.%Y'), '{} - {}')
+                    ]))
+
+        if len(reservation_guests) == 0:
             return Report(
                 status=False,
                 message=_('No guests found for the selected period')
@@ -61,7 +102,32 @@ class GuestsStatementQuery(ObjectType):
 
         try:
             helper = GuestStatementHelper(init_docs_service=True)
-            helper.generate_cz_statement(reservations, start_date, end_date)
+            if foreigners:
+                headers = [
+                    [
+                        _('Accommodated from'),
+                        _('Accommodated to'),
+                        _('Surname'),
+                        _('Name'),
+                        _('Citizenship'),
+                        _('Foreign address'),
+                        _('Travel document number'),
+                        _('Visa number')
+                    ]
+                ]
+                helper.generate_foreigner_statement(headers + reservation_guests, start_date, end_date)
+            else:
+                headers = [
+                    [
+                        _('Room'),
+                        _('Surname - Name'),
+                        _('ID or Passport'),
+                        _('Permanent address'),
+                        _('State'),
+                        _('Accommodated from - to')
+                    ]
+                ]
+                helper.generate_cz_statement(headers + reservation_guests, start_date, end_date)
             return Report(
                 status=True,
                 message=_('Statement generated successfully')

@@ -14,8 +14,8 @@ export const STATEMENTS = gql`
 `
 
 export const GENERATE_STATEMENT = gql`
-  query GenerateStatement($fromDate: String!, $toDate: String!) {
-    guestsReport(fromDate: $fromDate, toDate: $toDate) {
+  query GenerateStatement($fromDate: String!, $toDate: String!, $foreigners: Boolean) {
+    guestsReport(fromDate: $fromDate, toDate: $toDate, foreigners: $foreigners) {
       message
       status
     }

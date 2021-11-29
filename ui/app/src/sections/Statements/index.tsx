@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Form, Input, List, message, Modal, Pagination, Row, Skeleton, Spin, Tooltip } from "antd"
+import { Button, Checkbox, Col, DatePicker, Form, Input, List, message, Modal, Pagination, Row, Skeleton, Spin, Tooltip } from "antd"
 import { useTranslation } from "react-i18next"
 import Text from "antd/lib/typography/Text"
 import { CloseOutlined, FileAddOutlined } from "@ant-design/icons"
@@ -18,6 +18,7 @@ export const Statements = () => {
   const [ form ] = Form.useForm()
 
   const [ statementModalOpen, setStatementModalOpen ] = useState<boolean>(false)
+  const [ statementForeignersOnly, setStatementForeignersOnly ] = useState<boolean>(false)
   const [ currentPage, setCurrentPage ] = useState<number>(1)
   const [ filteredFiles, setFilteredFiles ] = useState<Statements_guestsReportFiles[]>([])
   const [ totalFiles, setTotalFiles ] = useState<number>(0)
@@ -32,6 +33,7 @@ export const Statements = () => {
       if (value.guestsReport?.status === true) {
         setStatementModalOpen(false)
         form.resetFields()
+        setStatementForeignersOnly(false)
         message.success(value.guestsReport.message)
       } else {
         message.error(value.guestsReport?.message)
@@ -147,13 +149,8 @@ export const Statements = () => {
       </Skeleton>
       <Modal
         className="statement-modal"
-        closeIcon={ (
-          <Button
-            className="close-button"
-            disabled={ generateLoading }
-            icon={ <CloseOutlined /> }
-            shape="circle" />
-        ) }
+        closeIcon={ <CloseOutlined /> }
+        closable={ !generateLoading }
         title={ t("statements.modal-title") }
         visible={ statementModalOpen }
         okText={ t("statements.action-generate") }
@@ -166,7 +163,8 @@ export const Statements = () => {
               generateStatement({
                 variables: {
                   fromDate: from.format('YYYY-MM-DD'),
-                  toDate: to.format('YYYY-MM-DD')
+                  toDate: to.format('YYYY-MM-DD'),
+                  foreigners: statementForeignersOnly
                 }
               })
             })
@@ -199,6 +197,15 @@ export const Statements = () => {
                 }
               ] }>
               <DatePicker />
+            </Form.Item>
+          </Form>
+          <Form className="foreigners">
+            <Form.Item
+              label={ t("statements.labels.generate-foreign") }
+              name="foreigners">
+              <Checkbox
+                checked={ statementForeignersOnly }
+                onChange={ () => setStatementForeignersOnly(!statementForeignersOnly) } />
             </Form.Item>
           </Form>
         </Spin>

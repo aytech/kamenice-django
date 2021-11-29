@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { selectedGuest } from "../../../../cache"
 import { FormHelper } from "../../../../lib/components/FormHelper"
+import { defaultCitizenship } from "../../../../lib/Constants"
 
 interface Props {
   form: FormInstance
@@ -17,6 +18,7 @@ export const GuestForm = ({
 
   const { t } = useTranslation()
   const guest = selectedGuest()
+  const citizenship = guest === null || guest.citizenship === null ? defaultCitizenship : guest.citizenship
 
   const initialValues: Store = {
     age: guest?.age,
@@ -26,7 +28,7 @@ export const GuestForm = ({
       street: guest?.addressStreet
     },
     citizenship: {
-      selected: guest?.citizenship
+      selected: citizenship
     },
     email: guest?.email,
     gender: guest?.gender,
