@@ -15,7 +15,7 @@ import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Su
 
 export const ReservationGuests = () => {
 
-  let { hash }: { hash: string } = useParams()
+  let { hash }: { hash: string | undefined } = useParams()
 
   const { t } = useTranslation()
 
@@ -24,7 +24,7 @@ export const ReservationGuests = () => {
   const [ showError, setShowError ] = useState<boolean>(false)
 
   const { loading, data, refetch } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
-    variables: { reservationHash: hash },
+    variables: { reservationHash: hash === undefined ? "" : hash },
     onCompleted: () => {
       // Set page title only on successful fetch, otherwise error element will be shown
       pageTitle(t("guests.page-title"))
@@ -74,7 +74,7 @@ export const ReservationGuests = () => {
       <ReservationGuestDrawer
         close={ () => setGuestDrawerVisible(false) }
         refetch={ refetch }
-        reservationHash={ hash }
+        reservationHash={ hash === undefined ? "" : hash }
         visible={ guestDrawerVisible } />
     </>
   )

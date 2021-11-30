@@ -16,7 +16,7 @@ export const paths = {
   guests: "/guests",
   login: "/login",
   reservation_guests: "/rezervace/:hash/hoste",
-  reservations: "/rezervace/:open?",
+  reservations: "/rezervace",
   root: "/",
   settings: "/settings",
   statements: "/statements",

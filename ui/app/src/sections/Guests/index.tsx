@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react"
-import { withRouter } from "react-router-dom"
 import { Button, Col, Input, List, message, Pagination, Row, Skeleton, Tooltip } from "antd"
 import { GUESTS } from "../../lib/graphql/queries/Guests"
 import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
@@ -14,7 +13,7 @@ import Text from "antd/lib/typography/Text"
 import { guestDrawerOpen, pageTitle, selectedGuest, selectedPage } from "../../cache"
 import { PagerHelper } from "../../lib/components/PagerHelper"
 
-export const Guests = withRouter(() => {
+export const Guests = () => {
 
   const { t } = useTranslation()
 
@@ -140,4 +139,4 @@ export const Guests = withRouter(() => {
       <GuestDrawer refetch={ refetch } />
     </>
   )
-})
+}

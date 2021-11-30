@@ -2,7 +2,7 @@ import { ApolloError, useMutation } from "@apollo/client"
 import { Button, Form, FormProps, Input, Layout, message, Spin } from "antd"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { pageTitle, appSettings } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
@@ -38,12 +38,12 @@ const tailLayout = {
   },
 };
 
-export const Login = withRouter(({
-  history,
+export const Login = ({
   settingsRefetch
-}: Props & RouteComponentProps) => {
+}: Props) => {
 
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
     onCompleted: (token: TokenAuth) => {
@@ -52,7 +52,7 @@ export const Login = withRouter(({
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)
         settingsRefetch()
-        history.push(UrlHelper.getReferrer())
+        navigate(UrlHelper.getReferrer())
       }
     },
     onError: (reason: ApolloError) => {
@@ -122,4 +122,4 @@ export const Login = withRouter(({
       </Spin>
     </Layout.Content>
   )
-})
+}

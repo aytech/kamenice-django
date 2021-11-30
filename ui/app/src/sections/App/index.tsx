@@ -1,5 +1,5 @@
 import { Affix, Layout, Skeleton } from "antd"
-import { Redirect, Route, RouteComponentProps, Switch, withRouter } from "react-router-dom"
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { Header } from "./components/Header"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
@@ -20,24 +20,25 @@ import { UrlHelper } from "../../lib/components/UrlHelper"
 import { SETTINGS } from "../../lib/graphql/queries/Settings"
 import { Statements } from "../Statements"
 
-export const App = withRouter(({
-  history,
-  location
-}: RouteComponentProps) => {
+export const App = () => {
 
   useQuery(APP)
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const { loading: settingsLoading, data: settingsData, refetch: settingsRefetch } = useQuery<SettingsData>(SETTINGS, {
     onCompleted: (value: SettingsData) => {
       if (value?.settings === null) {
-        history.push(`/login?next=${ UrlHelper.getReferrer() }`)
+        navigate(`/login?next=${ UrlHelper.getReferrer() }`)
       } else {
         if (location.pathname === paths.login) {
           // User is logged in, redirect
           const page = sessionStorage.getItem(sessionStorageKeys.page)
           if (page === null) {
-            history.push("/")
+            navigate("/")
           } else {
-            history.push(page)
+            navigate(page)
           }
         }
         appSettings(value.settings)
@@ -80,37 +81,21 @@ export const App = withRouter(({
           <PageTitle />
         </Layout.Header>
         <Layout.Content className="app-content">
-          <Switch>
-            <Route exact path={ paths.root }>
-              <Redirect to={ uris.reservations } />
+          <Routes>
+            <Route path={ paths.root } element={ <Navigate to={ uris.reservations } /> } />
+            <Route path={ paths.reservations } element={ <Reservations /> }>
+              <Route path=":open" element={ <Reservations /> } />
             </Route>
-            <Route exact path={ paths.reservations }>
-              <Reservations />
-            </Route>
-            <Route exact path={ paths.suites }>
-              <Suites />
-            </Route>
-            <Route exact path={ paths.guests }>
-              <Guests />
-            </Route>
-            <Route exact path={ paths.login }>
-              <Login settingsRefetch={ settingsRefetch } />
-            </Route>
-            <Route exact path={ paths.reservation_guests }>
-              <ReservationGuests />
-            </Route>
-            <Route exact path={ paths.settings }>
-              <Settings />
-            </Route>
-            <Route exact path={ paths.statements }>
-              <Statements />
-            </Route>
-            <Route path="*">
-              <NotFound />
-            </Route>
-          </Switch>
+            <Route path={ paths.suites } element={ <Suites /> } />
+            <Route path={ paths.guests } element={ <Guests /> } />
+            <Route path={ paths.login } element={ <Login settingsRefetch={ settingsRefetch } /> } />
+            <Route path={ paths.reservation_guests } element={ <ReservationGuests /> } />
+            <Route path={ paths.settings } element={ <Settings /> } />
+            <Route path={ paths.statements } element={ <Statements /> } />
+            <Route path="*" element={ <NotFound /> } />
+          </Routes>
         </Layout.Content>
       </Skeleton>
     </Layout >
   )
-})
+}

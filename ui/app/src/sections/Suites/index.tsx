@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { withRouter } from "react-router-dom"
 import { Button, Col, Input, List, message, Row, Skeleton, Tooltip } from "antd"
 import Text from "antd/lib/typography/Text"
 import { SuiteDrawer } from "./components/SuiteDrawer"
@@ -13,7 +12,7 @@ import { AppstoreAddOutlined } from "@ant-design/icons"
 import { discountSuiteOptions, pageTitle, selectedPage } from "../../cache"
 import { OptionsType } from "../../lib/Types"
 
-export const Suites = withRouter(() => {
+export const Suites = () => {
 
   const { t } = useTranslation()
 
@@ -119,4 +118,4 @@ export const Suites = withRouter(() => {
         visible={ drawerVisible } />
     </>
   )
-})
+}

@@ -1,9 +1,8 @@
 import { BookOutlined, FilePdfOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons"
-import { useMutation } from "@apollo/client"
+import { useMutation, useReactiveVar } from "@apollo/client"
 import { Avatar, Menu } from "antd"
-import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, RouteComponentProps, withRouter } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { appSettings, selectedPage, userColor, userName } from "../../../../../../cache"
 import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
 import { paths, refreshTokenName, tokenName, uris } from "../../../../../../lib/Constants"
@@ -11,17 +10,13 @@ import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
 import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
 import "./styles.css"
 
-export const MenuItems = withRouter(({
-  history
-}: RouteComponentProps) => {
+export const MenuItems = () => {
 
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const activePage = useReactiveVar(selectedPage)
 
   const [ revokeToken ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
-
-  const redirectToLogin = useCallback(() => {
-    history.push(`/login?next=${ UrlHelper.getReferrer() }`)
-  }, [ history ])
 
   const logout = (): void => {
     appSettings(null)
@@ -32,9 +27,9 @@ export const MenuItems = withRouter(({
           localStorage.removeItem(tokenName)
           localStorage.removeItem(refreshTokenName)
         })
-        .finally(() => redirectToLogin())
+        .finally(() => navigate(`/login?next=${ UrlHelper.getReferrer() }`))
     } else {
-      redirectToLogin()
+      navigate(`/login?next=${ UrlHelper.getReferrer() }`)
     }
   }
 
@@ -53,7 +48,7 @@ export const MenuItems = withRouter(({
       <Menu
         mode="horizontal"
         className="navigation-items"
-        selectedKeys={ [ selectedPage() ] }>
+        selectedKeys={ [ activePage ] }>
         <Menu.Item key="reservation" icon={ <BookOutlined /> }>
           <Link to={ uris.reservations }>{ t("reservations.name") }</Link>
         </Menu.Item>
@@ -67,7 +62,7 @@ export const MenuItems = withRouter(({
       <Menu
         className="user"
         mode="horizontal"
-        selectedKeys={ [ selectedPage() ] }>
+        selectedKeys={ [ activePage ] }>
         <Menu.SubMenu
           key="user"
           title={ userAvatar() }>
@@ -91,4 +86,4 @@ export const MenuItems = withRouter(({
       </Menu>
     </>
   ) : null
-})
+}

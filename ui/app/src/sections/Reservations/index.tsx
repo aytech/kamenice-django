@@ -1,4 +1,3 @@
-import { useParams, withRouter } from "react-router-dom"
 import Text from "antd/lib/typography/Text"
 import Title from "antd/lib/typography/Title"
 import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
@@ -16,13 +15,13 @@ import { SuitesWithReservations, SuitesWithReservations_reservations } from "../
 import { message, Skeleton, Space } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, timelineGroups } from "../../cache"
+import { useParams } from "react-router-dom"
 
 // https://github.com/namespace-ee/react-calendar-timeline
-export const Reservations = withRouter(() => {
-
-  const { open: openReservation }: { open: string } = useParams()
+export const Reservations = () => {
 
   const { t } = useTranslation()
+  const { open: openReservation } = useParams()
 
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
@@ -246,4 +245,4 @@ export const Reservations = withRouter(() => {
         reservation={ selectedReservation } />
     </>
   )
-})
+}

@@ -1,12 +1,13 @@
 import { Button, Layout, Result } from "antd"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { pageTitle, selectedPage } from "../../cache"
 
-export const NotFound = withRouter(({ history }: RouteComponentProps) => {
+export const NotFound = () => {
 
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     pageTitle("")
@@ -22,7 +23,7 @@ export const NotFound = withRouter(({ history }: RouteComponentProps) => {
           subTitle={ t("errors.404") }
           extra={
             <Button
-              onClick={ () => history.push("/") }
+              onClick={ () => navigate("/") }
               type="primary">
               { t("go-home") }
             </Button>
@@ -30,4 +31,4 @@ export const NotFound = withRouter(({ history }: RouteComponentProps) => {
       </Layout.Content>
     </Layout>
   )
-})
+}
