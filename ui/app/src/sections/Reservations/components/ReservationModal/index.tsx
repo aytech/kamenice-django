@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Col, Form, message, Modal, Popconfirm, Row, Spin } from "antd"
 import { Moment } from "moment"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation, PriceInfo } from "../../../../lib/Types"
@@ -36,8 +36,8 @@ export const ReservationModal = ({
 }: Props) => {
 
   const { t } = useTranslation()
-
   const [ form ] = Form.useForm()
+  const visible = useReactiveVar(reservationModalOpen)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ priceInfo, setPriceInfo ] = useState<PriceInfo>({
@@ -232,7 +232,7 @@ export const ReservationModal = ({
           </Row>
         }
         title={ t("reservations.form") }
-        visible={ reservationModalOpen() }>
+        visible={ visible }>
         <Spin
           spinning={
             confirmationLoading

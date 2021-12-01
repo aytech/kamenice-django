@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { ApolloError, FetchResult, useMutation } from "@apollo/client"
+import { ApolloError, FetchResult, useMutation, useReactiveVar } from "@apollo/client"
 import { CREATE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
 import { CreateGuest, CreateGuestVariables, CreateGuest_createGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
 import { UpdateGuest, UpdateGuestVariables, UpdateGuest_updateGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
@@ -12,6 +12,7 @@ import { GuestForm } from "../GuestForm"
 import { IGuestForm } from "../../../../lib/Types"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { guestDrawerOpen, selectedGuest } from "../../../../cache"
+import Title from "antd/lib/typography/Title"
 
 interface Props {
   refetch?: () => void
@@ -23,6 +24,7 @@ export const GuestDrawer = ({
 
   const { t } = useTranslation()
   const guest = selectedGuest()
+  const visible = useReactiveVar(guestDrawerOpen)
 
   const [ form ] = Form.useForm()
 
@@ -85,15 +87,16 @@ export const GuestDrawer = ({
   }
 
   useEffect(() => {
-    if (guestDrawerOpen() === true) {
+    if (visible === true) {
       form.resetFields()
     }
-  }, [ form ])
+  }, [ form, visible ])
 
   return (
     <Drawer
       className="guest-drawer"
-      closeIcon={ (
+      closable={ false }
+      extra={
         <Popconfirm
           onCancel={ () => setConfirmClose(false) }
           onConfirm={ () => {
@@ -104,19 +107,29 @@ export const GuestDrawer = ({
           placement="rightTop"
           title={ t("forms.close-dirty") }
           visible={ confirmClose }>
-          <CloseOutlined onClick={ () => {
-            if (form.isFieldsTouched()) {
-              setConfirmClose(true)
-            } else {
-              guestDrawerOpen(false)
-            }
-          } } />
+          <Button
+            className="close-button"
+            icon={ <CloseOutlined /> }
+            onClick={ () => {
+              if (form.isFieldsTouched()) {
+                setConfirmClose(true)
+              } else {
+                guestDrawerOpen(false)
+              }
+            } }
+            shape="circle" />
         </Popconfirm>
-      ) }
+      }
       placement="left"
-      title={ t("guests.name") }
+      title={ (
+        <Title
+          className="drawer-title"
+          level={ 4 }>
+          { t("guests.name") }
+        </Title>)
+      }
       width={ 500 }
-      visible={ guestDrawerOpen() }
+      visible={ visible }
       footer={
         <Button
           id="submit-guest"

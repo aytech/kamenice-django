@@ -12,6 +12,7 @@ import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutat
 import { useTranslation } from "react-i18next"
 import { discountSuiteOptions } from "../../../../cache"
 import "./styles.css"
+import Title from "antd/lib/typography/Title"
 
 interface Props {
   close: () => void
@@ -133,7 +134,8 @@ export const SuiteDrawer = ({
 
   return (
     <Drawer
-      closeIcon={ (
+      closable={ false }
+      extra={ (
         <Popconfirm
           onCancel={ () => setConfirmClose(false) }
           onConfirm={ () => {
@@ -143,7 +145,11 @@ export const SuiteDrawer = ({
           placement="rightTop"
           title={ t("forms.close-dirty") }
           visible={ confirmClose }>
-          <CloseOutlined onClick={ closeDrawer } />
+          <Button
+            className="close-button"
+            icon={ <CloseOutlined /> }
+            onClick={ closeDrawer }
+            shape="circle" />
         </Popconfirm>
       ) }
       footer={
@@ -158,9 +164,15 @@ export const SuiteDrawer = ({
         textAlign: "right"
       } }
       placement="left"
-      title={ t("rooms.new") }
+      title={ (
+        <Title
+          className="drawer-title"
+          level={ 4 }>
+          { t("rooms.new") }
+        </Title>
+      ) }
       visible={ visible }
-      width={ 500 }>
+      width={ 500 } >
       <Spin
         size="large"
         spinning={
@@ -301,6 +313,6 @@ export const SuiteDrawer = ({
           </Form.Item>
         </Form>
       </Spin>
-    </Drawer>
+    </Drawer >
   )
 }

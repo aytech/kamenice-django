@@ -1,6 +1,7 @@
 import { CloseOutlined } from "@ant-design/icons"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
 import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
+import Title from "antd/lib/typography/Title"
 import { useEffect } from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -26,7 +27,10 @@ export const ReservationGuestDrawer = ({
 }: Props) => {
 
   const { t } = useTranslation()
+  const [ form ] = Form.useForm()
   const guest = selectedGuest()
+
+  const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
   const [ createGuest, { loading: createLoading } ] = useMutation<CreateReservationGuest, CreateReservationGuestVariables>(CREATE_RESERVATON_GUEST, {
     onCompleted: (value: CreateReservationGuest) => {
@@ -42,10 +46,6 @@ export const ReservationGuestDrawer = ({
     onError: (reason: ApolloError) => message.error(reason.message)
   })
   const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationGuest, UpdateReservationGuestVariables>(UPDATE_RESERVATON_GUEST)
-
-  const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
-
-  const [ form ] = Form.useForm()
 
   const submitForm = (): void => {
     form.validateFields()
@@ -90,7 +90,8 @@ export const ReservationGuestDrawer = ({
 
   return (
     <Drawer
-      closeIcon={ (
+      closable={ false }
+      extra={ (
         <Popconfirm
           onCancel={ () => setConfirmClose(false) }
           onConfirm={ () => {
@@ -101,17 +102,30 @@ export const ReservationGuestDrawer = ({
           placement="rightTop"
           title={ t("forms.close-dirty") }
           visible={ confirmClose }>
-          <CloseOutlined onClick={ () => {
-            if (form.isFieldsTouched()) {
-              setConfirmClose(true)
-            } else {
-              close()
-            }
-          } } />
+          <Button
+            className="close-button"
+            icon={ <CloseOutlined /> }
+            onClick={ () => {
+              if (form.isFieldsTouched()) {
+                setConfirmClose(true)
+              } else {
+                close()
+              }
+            } }
+            shape="circle" />
         </Popconfirm>
       ) }
       placement="left"
-      title={ guest === null ? t("guests.new") : `${ guest.name } ${ guest.surname }` }
+      title={ (
+        <Title
+          className="drawer-title"
+          level={ 4 }>
+          { guest === null ?
+            t("guests.new")
+            : `${ guest.name } ${ guest.surname }`
+          }
+        </Title>
+      ) }
       width={ 500 }
       visible={ visible }
       footer={
