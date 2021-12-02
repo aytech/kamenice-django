@@ -220,7 +220,6 @@ class UpdateReservation(Mutation):
                 instance.to_date = data.to_date if data.to_date is not None else instance.to_date
 
                 duplicate = ReservationUtility.get_duplicate(data.suite_id, instance=instance)
-
                 if duplicate.count() > 0 and str(duplicate.get().id) != data.id:
                     raise Exception(_('The room is already reserved for this period of time'))
 

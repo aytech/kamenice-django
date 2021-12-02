@@ -64,7 +64,7 @@ class GuestsStatementQuery(ObjectType):
             else:
                 if reservation.guest.citizenship == CITIZENSHIP_CZ:
                     guests.append(reservation.guest)
-            for roommate in reservation.roommates.all():
+            for roommate in reservation.roommates.filter(deleted=False):
                 if foreigners:
                     if roommate.citizenship != CITIZENSHIP_CZ:
                         guests.append(roommate)
@@ -86,10 +86,10 @@ class GuestsStatementQuery(ObjectType):
                 else:
                     reservation_guests.append(([
                         reservation.suite.number,
-                        get_formatted_pair(reservation.guest.name, reservation.guest.surname, '{} {}'),
-                        reservation.guest.identity if reservation.guest.identity is not None else '-',
+                        get_formatted_pair(guest.name, guest.surname, '{} {}'),
+                        guest.identity if guest.identity is not None else '-',
                         get_formatted_pair(guest.address_street, guest.address_municipality, '{}, {}'),
-                        reservation.guest.citizenship if reservation.guest.citizenship is not None else '-',
+                        guest.citizenship if guest.citizenship is not None else '-',
                         get_formatted_pair(reservation.from_date.strftime('%d.%m.%Y'),
                                            reservation.to_date.strftime('%d.%m.%Y'), '{} - {}')
                     ]))

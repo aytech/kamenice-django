@@ -166,11 +166,11 @@ export const ReservationModal = ({
   useEffect(() => {
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
-    if (reservationModalOpen() === true) {
+    if (visible === true) {
       form.resetFields()
       getGuests()
     }
-  }, [ form, getGuests, reservation ])
+  }, [ form, getGuests, reservation, visible ])
 
   return (
     <>
