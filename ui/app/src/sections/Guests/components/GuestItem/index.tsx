@@ -67,11 +67,7 @@ export const GuestItem = ({
           </Button>
         </Popconfirm>
       ] }
-      className="guest-item"
-      onClick={ () => {
-        selectedGuest(guest)
-        guestDrawerOpen(true)
-      } }>
+      className="guest-item">
       <List.Item.Meta
         avatar={
           <Avatar

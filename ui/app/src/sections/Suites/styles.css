@@ -3,10 +3,6 @@
   margin: 0 auto 3em;
 }
 
-.suites .suite-item {
-  cursor: pointer;
-}
-
 .suites .ant-list-footer {
   text-align: end;
 }
