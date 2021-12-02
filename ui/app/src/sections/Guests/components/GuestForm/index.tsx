@@ -129,7 +129,10 @@ export const GuestForm = ({
         <Input.Group compact>
           <Form.Item
             style={ { marginBottom: 0, width: "50%" } }
-            name={ [ "address", "psc" ] }>
+            name={ [ "address", "psc" ] }
+            rules={ [
+              FormHelper.pscRule(t("guests.invalid-psc"))
+            ] }>
             <Input placeholder={ t("forms.psc") } />
           </Form.Item>
           <Form.Item

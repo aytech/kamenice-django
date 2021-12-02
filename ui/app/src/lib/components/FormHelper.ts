@@ -9,6 +9,7 @@ interface IFormHelper {
   getGuestCitizenship: (formData: IGuestForm) => string | null
   guestAgeOptions: OptionsType[]
   numberRule: (message: string) => Rule
+  pscRule: (message: string) => Rule
   requiredAlphaRule: (message: string) => Rule
   requiredRule: (message: string) => Rule
   searchFilter: (input?: any, option?: any) => boolean
@@ -60,10 +61,10 @@ export const FormHelper: IFormHelper = {
     }
   ],
   numberRule: (message: string) => {
-    return {
-      message: message,
-      pattern: /^[0-9]+$/
-    }
+    return { message, pattern: /^[0-9]+$/ }
+  },
+  pscRule: (message: string) => {
+    return { message, pattern: /^(\d{0,5})$/ }
   },
   requiredAlphaRule: (message: string) => {
     return {

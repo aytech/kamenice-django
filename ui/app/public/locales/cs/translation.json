@@ -63,6 +63,7 @@
     "add": "Přidat hosta",
     "added": "Host {{ name }} {{ surname }} přidán!",
     "deleted": "Host {{ name }} {{ surname }} byl smazán",
+    "invalid-psc": "Zadejte 5 číslic",
     "main": "Hlavní host",
     "name": "Host",
     "new": "Nový host",
