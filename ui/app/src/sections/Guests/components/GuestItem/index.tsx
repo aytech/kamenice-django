@@ -80,7 +80,7 @@ export const GuestItem = ({
           </Avatar>
         }
         description={ guest.age !== null ? t(`enums.${ guest.age }`) : null }
-        title={ `${ guest.name } ${ guest.surname }` } />
+        title={ `${ guest.surname } ${ guest.name }` } />
     </List.Item>
   )
 }

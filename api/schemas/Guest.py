@@ -31,7 +31,7 @@ class GuestsQuery(ObjectType):
 
     @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guests(self, _info):
-        return GuestModel.objects.filter(deleted=False).order_by('name')
+        return GuestModel.objects.filter(deleted=False).order_by('surname')
 
     @user_passes_test(lambda user: user.has_perm('api.view_guest'), exc=PermissionDenied)
     def resolve_guest(self, _info, guest_id):
