@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-30 07:42+0100\n"
+"POT-Creation-Date: 2021-12-02 11:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,8 +147,8 @@ msgstr "Vyberte údaj Typ Rezervace ze seznamu"
 msgid "Base price is required field"
 msgstr "Základní cena je povinný údaj"
 
-#: .\api\schemas\Guest.py:53 .\api\schemas\Reservation.py:271
-#: .\api\schemas\Reservation.py:332
+#: .\api\schemas\Guest.py:53 .\api\schemas\Reservation.py:270
+#: .\api\schemas\Reservation.py:331
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
@@ -172,87 +172,92 @@ msgstr "Host nenalezen"
 msgid "Guest cannot be updated"
 msgstr "Hosta nelze aktualizovat"
 
-#: .\api\schemas\Guest.py:282
+#: .\api\schemas\Guest.py:262
+msgid ""
+"Guest is a main guest in one or more reservations, and cannot be deleted"
+msgstr "Host je hlavním hostem v jedné nebo více rezervacích a nelze jej smazat"
+
+#: .\api\schemas\Guest.py:290
 msgid "Guest cannot be deleted"
 msgstr "Hosta nelze smazat"
 
-#: .\api\schemas\GuestsStatement.py:99
+#: .\api\schemas\GuestsStatement.py:100
 msgid "No guests found for the selected period"
 msgstr "Pro zvolené období nebyli nalezeni žádní hosté"
 
-#: .\api\schemas\GuestsStatement.py:107
+#: .\api\schemas\GuestsStatement.py:108
 msgid "Accommodated from"
 msgstr "Ubytován od"
 
-#: .\api\schemas\GuestsStatement.py:108
+#: .\api\schemas\GuestsStatement.py:109
 msgid "Accommodated to"
 msgstr "Ubytován do"
 
-#: .\api\schemas\GuestsStatement.py:109
+#: .\api\schemas\GuestsStatement.py:110
 msgid "Surname"
 msgstr "Příjmení"
 
-#: .\api\schemas\GuestsStatement.py:110
+#: .\api\schemas\GuestsStatement.py:111
 msgid "Name"
 msgstr "Jméno"
 
-#: .\api\schemas\GuestsStatement.py:111
+#: .\api\schemas\GuestsStatement.py:112
 msgid "Citizenship"
 msgstr "Občanství"
 
-#: .\api\schemas\GuestsStatement.py:112
+#: .\api\schemas\GuestsStatement.py:113
 msgid "Foreign address"
 msgstr "Trvalé bydliště v zahraničí"
 
-#: .\api\schemas\GuestsStatement.py:113
+#: .\api\schemas\GuestsStatement.py:114
 msgid "Travel document number"
 msgstr "Číslo cestovního dokladu"
 
-#: .\api\schemas\GuestsStatement.py:114
+#: .\api\schemas\GuestsStatement.py:115
 msgid "Visa number"
 msgstr "Číslo víza"
 
-#: .\api\schemas\GuestsStatement.py:121
+#: .\api\schemas\GuestsStatement.py:122
 msgid "Room"
 msgstr "Pokoj"
 
-#: .\api\schemas\GuestsStatement.py:122
+#: .\api\schemas\GuestsStatement.py:123
 msgid "Surname - Name"
 msgstr "Příjmení - Jméno"
 
-#: .\api\schemas\GuestsStatement.py:123
+#: .\api\schemas\GuestsStatement.py:124
 msgid "ID or Passport"
 msgstr "OP nebo pas"
 
-#: .\api\schemas\GuestsStatement.py:124
+#: .\api\schemas\GuestsStatement.py:125
 msgid "Permanent address"
 msgstr "Trvalé bydliště"
 
-#: .\api\schemas\GuestsStatement.py:125
+#: .\api\schemas\GuestsStatement.py:126
 msgid "State"
 msgstr "Stát"
 
-#: .\api\schemas\GuestsStatement.py:126
+#: .\api\schemas\GuestsStatement.py:127
 msgid "Accommodated from - to"
 msgstr "Ubytován od - do"
 
-#: .\api\schemas\GuestsStatement.py:132
+#: .\api\schemas\GuestsStatement.py:133
 msgid "Statement generated successfully"
 msgstr "Výpis úspěšně vygenerován"
 
-#: .\api\schemas\GuestsStatement.py:138
+#: .\api\schemas\GuestsStatement.py:139
 msgid "Could not generate statement"
 msgstr "Výpis se nepodařilo vygenerovat"
 
-#: .\api\schemas\Reservation.py:170 .\api\schemas\Reservation.py:225
+#: .\api\schemas\Reservation.py:170 .\api\schemas\Reservation.py:224
 msgid "The room is already reserved for this period of time"
 msgstr "Místnost je rezervováná pro tuto dobu"
 
-#: .\api\schemas\Reservation.py:175 .\api\schemas\Reservation.py:241
+#: .\api\schemas\Reservation.py:175 .\api\schemas\Reservation.py:240
 msgid "Please select guest from the list"
 msgstr "Prosím vyberte hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:181 .\api\schemas\Reservation.py:247
+#: .\api\schemas\Reservation.py:181 .\api\schemas\Reservation.py:246
 msgid "Please select paying guest from the list"
 msgstr "Prosím vyberte platícího hosta ze seznamu"
 
@@ -260,7 +265,7 @@ msgstr "Prosím vyberte platícího hosta ze seznamu"
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:335
+#: .\api\schemas\Reservation.py:334
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 

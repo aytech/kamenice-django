@@ -255,9 +255,19 @@ class DeleteGuest(Mutation):
     def mutate(_root, _info, guest_id):
         try:
             instance = GuestModel.objects.get(pk=guest_id)
-            if instance:
-                instance.deleted = True
-                instance.save()
+            if instance is None:
+                return DeleteGuest(guest=None)
+            # Do not remove if guest is a main guest
+            if Reservation.objects.filter(guest_id=instance.id, deleted=False).count() > 0:
+                raise Exception(_('Guest is a main guest in one or more reservations, and cannot be deleted'))
+            # If guest is a roommate, remove from reservation(s)
+            for reservation in Reservation.objects.filter(roommates__in=[instance.id], deleted=False).all():
+                for roommate in reservation.roommates.all():
+                    if roommate.id == instance.id:
+                        reservation.roommates.remove(roommate.id)
+                        reservation.save()
+            instance.deleted = True
+            instance.save()
             return DeleteGuest(guest=instance)
         except ObjectDoesNotExist:
             return DeleteGuest(guest=None)
