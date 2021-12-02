@@ -1,5 +1,5 @@
 import { SaveOutlined, UserOutlined } from "@ant-design/icons"
-import { ApolloError, useMutation } from "@apollo/client"
+import { ApolloError, useMutation, useReactiveVar } from "@apollo/client"
 import { Avatar, Button, Col, Form, Input, message, Row, Spin } from "antd"
 import { Store } from "antd/lib/form/interface"
 import { useEffect } from "react"
@@ -13,6 +13,7 @@ export const Settings = () => {
 
   const { t } = useTranslation()
   const [ form ] = Form.useForm()
+  const settings = useReactiveVar(appSettings)
 
   const [ updateSettings, { loading: updateLoading } ] = useMutation<UpdateSettings, UpdateSettingsVariables>(UPDATE_SETTINGS, {
     onCompleted: (value: UpdateSettings) => {
@@ -29,20 +30,20 @@ export const Settings = () => {
   })
 
   const initialValues: Store = {
-    userName: appSettings()?.userName,
-    municipalityFee: appSettings()?.municipalityFee,
-    priceBreakfast: appSettings()?.priceBreakfast,
-    priceBreakfastChild: appSettings()?.priceBreakfastChild,
-    priceHalfboard: appSettings()?.priceHalfboard,
-    priceHalfboardChild: appSettings()?.priceHalfboardChild
+    userName: settings?.userName,
+    municipalityFee: settings?.municipalityFee,
+    priceBreakfast: settings?.priceBreakfast,
+    priceBreakfastChild: settings?.priceBreakfastChild,
+    priceHalfboard: settings?.priceHalfboard,
+    priceHalfboardChild: settings?.priceHalfboardChild
   }
 
   const submitForm = () => {
     form.validateFields()
       .then(() => {
-        if (appSettings()?.id !== undefined) {
+        if (settings?.id !== undefined) {
           const variables = form.getFieldsValue(true)
-          updateSettings({ variables: { data: { id: appSettings()?.id, ...variables } } })
+          updateSettings({ variables: { data: { id: settings?.id, ...variables } } })
         }
       })
       .catch(() => {
@@ -55,6 +56,10 @@ export const Settings = () => {
     selectedPage("user")
   }, [ t ])
 
+  useEffect(() => {
+    form.resetFields()
+  }, [ form, settings ])
+
   return (
     <>
       <Row className="settings-row">
@@ -62,7 +67,7 @@ export const Settings = () => {
           className="avatar">
           <Avatar
             style={ {
-              backgroundColor: appSettings()?.userColor || undefined
+              backgroundColor: settings?.userColor || undefined
             } }
             icon={ <UserOutlined /> }
             size={ 150 } />

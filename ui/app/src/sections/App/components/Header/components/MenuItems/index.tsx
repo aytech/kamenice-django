@@ -15,6 +15,9 @@ export const MenuItems = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const activePage = useReactiveVar(selectedPage)
+  const color = useReactiveVar(userColor)
+  const name = useReactiveVar(userName)
+  const settings = useReactiveVar(appSettings)
 
   const [ revokeToken ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
 
@@ -34,16 +37,16 @@ export const MenuItems = () => {
   }
 
   const userAvatar = () => {
-    return appSettings() !== undefined ? (
+    return settings !== undefined ? (
       <Avatar
         size={ 32 }
-        style={ { backgroundColor: userColor() } }>
-        { userName()?.substring(0, 1).toUpperCase() }
+        style={ { backgroundColor: color } }>
+        { name?.substring(0, 1).toUpperCase() }
       </Avatar>
     ) : null
   }
 
-  return appSettings() !== null ? (
+  return settings !== null ? (
     <>
       <Menu
         mode="horizontal"

@@ -4,7 +4,7 @@ import { pageTitle } from "../../../../cache"
 
 export const PageTitle = () => {
   const title = useReactiveVar(pageTitle)
-  return pageTitle() !== null ? (
+  return title !== null ? (
     <Title
       level={ 3 }
       style={ {
