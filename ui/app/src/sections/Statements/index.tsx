@@ -98,7 +98,7 @@ export const Statements = () => {
         paragraph={ { rows: 5 } }>
         <List
           bordered={ true }
-          className="guests"
+          className="statements"
           dataSource={ filteredFiles }
           footer={
             <Row>

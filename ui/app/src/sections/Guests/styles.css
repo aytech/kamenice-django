@@ -1,12 +1,8 @@
 .guests {
   background-color: #fff;
-  margin: 0 auto 3em;
+  margin: 0 auto;
 }
 
 .guests .ant-list-footer {
   text-align: end;
-}
-
-.guests .pagination {
-  text-align: center;
 }

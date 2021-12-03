@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Button, Col, Input, List, message, Row, Skeleton, Tooltip } from "antd"
+import { useCallback, useEffect, useState } from "react"
+import { Button, Col, Input, List, message, Pagination, Row, Skeleton, Tooltip } from "antd"
 import Text from "antd/lib/typography/Text"
 import { SuiteDrawer } from "./components/SuiteDrawer"
 import { Suites as SuitesData, Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
@@ -11,15 +11,18 @@ import { SuiteItem } from "./components/SuiteItem"
 import { AppstoreAddOutlined } from "@ant-design/icons"
 import { discountSuiteOptions, pageTitle, selectedPage } from "../../cache"
 import { OptionsType } from "../../lib/Types"
+import { PagerHelper } from "../../lib/components/PagerHelper"
 
 export const Suites = () => {
 
   const { t } = useTranslation()
 
   const [ activeSuite, setActiveSuite ] = useState<Suites_suites>()
+  const [ currentPage, setCurrentPage ] = useState<number>(1)
   const [ drawerVisible, setDrawerVisible ] = useState<boolean>(false)
   const [ filteredSuites, setFilteredSuites ] = useState<Suites_suites[]>([])
   const [ suites, setSuites ] = useState<Suites_suites[]>([])
+  const [ totalSuites, setTotalSuites ] = useState<number>(0)
 
   const { loading, data, refetch } = useQuery<SuitesData>(SUITES, {
     onError: (reason: ApolloError) => message.error(reason.message)
@@ -30,16 +33,35 @@ export const Suites = () => {
     setDrawerVisible(true)
   }
 
+  const onPageChange = (page: number) => {
+    PagerHelper.onPageChange(suites, page, (slice: Suites_suites[]) => {
+      setFilteredSuites(slice)
+      setCurrentPage(page)
+    })
+  }
+
   const onSearch = (value: string) => {
     if (value.length < 1) {
+      setTotalSuites(suites.length)
       setFilteredSuites(suites)
     } else {
       const foundSuites = suites.filter(suite => {
         return suite.title.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1
       })
+      setTotalSuites(foundSuites.length)
       setFilteredSuites(foundSuites)
     }
+    setCurrentPage(1)
   }
+
+  const updateSuiteList = useCallback((guestsList) => {
+    PagerHelper.getPageSlice(guestsList, currentPage, (data: Suites_suites[], page: number) => {
+      if (page > 0) {
+        setCurrentPage(page)
+      }
+      setFilteredSuites(data)
+    })
+  }, [ currentPage ])
 
   useEffect(() => {
     const discountTypes: OptionsType[] = []
@@ -58,9 +80,10 @@ export const Suites = () => {
       }
     })
     setSuites(suitesList)
-    setFilteredSuites(suitesList)
+    setTotalSuites(suitesList.length)
+    updateSuiteList(suitesList)
     discountSuiteOptions(discountTypes)
-  }, [ data, t ])
+  }, [ data, updateSuiteList ])
 
   useEffect(() => {
     pageTitle(t("rooms.page-title"))
@@ -78,7 +101,21 @@ export const Suites = () => {
           className="suites"
           dataSource={ filteredSuites }
           footer={
-            <Text disabled>&reg;{ t("company-name") }</Text>
+            <Row>
+              <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 0 }></Col>
+              <Col
+                className="pagination"
+                lg={ 14 } md={ 14 } sm={ 10 } xs={ 12 }>
+                <Pagination
+                  current={ currentPage }
+                  onChange={ onPageChange }
+                  pageSize={ PagerHelper.defaultPageSize }
+                  total={ totalSuites } />
+              </Col>
+              <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 12 }>
+                <Text disabled>&reg;{ t("company-name") }</Text>
+              </Col>
+            </Row>
           }
           header={
             <Row>

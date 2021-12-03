@@ -10,6 +10,15 @@
   min-width: 500px;
 }
 
+.statements {
+  background-color: #fff;
+  margin: 0 auto;
+}
+
+.statements .ant-list-footer {
+  text-align: end;
+}
+
 .statement-modal .ant-picker {
   width: 100%;
 }

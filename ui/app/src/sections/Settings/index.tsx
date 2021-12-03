@@ -1,6 +1,7 @@
 import { SaveOutlined, UserOutlined } from "@ant-design/icons"
 import { ApolloError, useMutation, useReactiveVar } from "@apollo/client"
 import { Avatar, Button, Col, Form, Input, message, Row, Spin } from "antd"
+import Text from "antd/lib/typography/Text"
 import { Store } from "antd/lib/form/interface"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -73,7 +74,7 @@ export const Settings = () => {
             size={ 150 } />
         </Col>
       </Row>
-      <Row className="settings-row">
+      <Row className="settings-row content">
         <Col
           lg={ 14 }
           md={ 20 }
@@ -135,6 +136,15 @@ export const Settings = () => {
               </Form.Item>
             </Form>
           </Spin>
+        </Col>
+      </Row>
+      <Row className="settings-row footer">
+        <Col lg={ 5 } md={ 5 } sm={ 7 } xs={ 0 } />
+        <Col lg={ 14 } md={ 14 } sm={ 10 } xs={ 12 } />
+        <Col
+          className="brand"
+          lg={ 5 } md={ 5 } sm={ 7 } xs={ 12 }>
+          <Text disabled>&reg;{ t("company-name") }</Text>
         </Col>
       </Row>
     </>
