@@ -7,7 +7,7 @@ from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery
     DeleteReservationGuest, CreateReservationGuest
 from api.schemas.GuestsStatement import GuestsStatementQuery, DeleteDriveFile
 from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
-    SendConfirmationEmail, CalculateReservationPriceQuery
+    SendConfirmationEmail, CalculateReservationPriceQuery, DragReservation
 from api.schemas.Settings import SettingsQuery, UpdateSettings
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
 from api.schemas.Authentication import ObtainJSONWebToken
@@ -43,6 +43,7 @@ class Mutation(graphene.ObjectType):
     create_reservation = CreateReservation.Field()
     delete_reservation = DeleteReservation.Field()
     update_reservation = UpdateReservation.Field()
+    drag_reservation = DragReservation.Field()
     send_confirmation = SendConfirmationEmail.Field()
 
     create_suite = CreateSuite.Field()

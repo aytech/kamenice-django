@@ -88,6 +88,23 @@ export const UPDATE_RESERVATION = gql`
   }
 `
 
+export const DRAG_RESERVATION = gql`
+  mutation DragReservation($data: ReservationDragInput!) {
+    dragReservation(data: $data) {
+      reservation {
+        fromDate
+        id
+        suite {
+          id
+          number
+          title
+        }
+        toDate
+      }
+    }
+  }
+`
+
 export const SEND_CONFIRMATION = gql`
   mutation SendConfirmation($reservationId: ID!) {
     sendConfirmation(reservationId: $reservationId) {

@@ -4,7 +4,7 @@ import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
-export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED"
+export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED" | "SELECTED"
 export type MenuItemKey = "reservation" | "guests" | "suites" | "user"
 
 export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"

@@ -84,6 +84,13 @@ export interface PriceInput {
   suiteId: number;
 }
 
+export interface ReservationDragInput {
+  fromDate?: string | null;
+  id?: string | null;
+  suiteId?: number | null;
+  toDate?: string | null;
+}
+
 export interface ReservationGuestInput {
   age?: string | null;
   addressMunicipality?: string | null;

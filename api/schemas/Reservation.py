@@ -12,7 +12,7 @@ from sendgrid import SendGridAPIClient, Mail
 from api.constants import ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, ENVIRON_EMAIL_API_KEY
 from api.models.Guest import Guest as GuestModel
 from api.models.Reservation import Reservation as ReservationModel
-from api.models.Suite import Suite
+from api.models.Suite import Suite as SuiteModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.exceptions.Unauthorized import Unauthorized
 from api.schemas.helpers.DateHelper import DateHelper
@@ -181,7 +181,7 @@ class CreateReservation(Mutation):
                 raise Exception(_('Please select paying guest from the list'))
 
         try:
-            instance.suite = Suite.objects.get(pk=data.suite_id)
+            instance.suite = SuiteModel.objects.get(pk=data.suite_id)
         except ObjectDoesNotExist:
             raise Exception(_('Room not found'))
 
@@ -266,6 +266,46 @@ class UpdateReservation(Mutation):
 
                 return UpdateReservation(reservation=instance)
 
+        except ObjectDoesNotExist:
+            raise Exception(_('Reservation not found'))
+
+
+class ReservationDragInput(InputObjectType):
+    from_date = String()
+    id = ID()
+    suite_id = Int()
+    to_date = String()
+
+
+class DragReservation(Mutation):
+    class Arguments:
+        data = ReservationDragInput(required=True)
+
+    reservation = Field(Reservation)
+
+    @classmethod
+    @user_passes_test(lambda user: user.has_perm('api.change_reservation'), exc=PermissionDenied)
+    def mutate(cls, _root, _info, data=None):
+        try:
+            instance = ReservationModel.objects.get(pk=data.id, deleted=False)
+            suite = SuiteModel.objects.get(pk=data.id, deleted=False)
+            if instance and suite:
+                instance.from_date = data.from_date if data.from_date is not None else instance.from_date
+                instance.to_date = data.to_date if data.to_date is not None else instance.to_date
+                instance.suite = suite
+
+                duplicate = ReservationUtility.get_duplicate(data.suite_id, instance=instance)
+                if duplicate.count() > 0 and str(duplicate.get().id) != data.id:
+                    raise Exception(_('The room is already reserved for this period of time'))
+
+                try:
+                    instance.full_clean()
+                except ValidationError as errors:
+                    raise Exception(errors.messages[0])
+
+                instance.save()
+
+                return DragReservation(reservation=instance)
         except ObjectDoesNotExist:
             raise Exception(_('Reservation not found'))
 

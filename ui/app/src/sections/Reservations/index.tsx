@@ -6,16 +6,18 @@ import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
-import { Colors } from "../../lib/components/Colors"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
 import { ApolloError, useQuery } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { message, Skeleton, Space } from "antd"
+import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
+import { TimelineData } from "./data"
+import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
+import { dateFormat } from "../../lib/Constants"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -26,40 +28,9 @@ export const Reservations = () => {
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
-  const { loading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+  const { loading: initialLoading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-
-  const getTimelineReservationItem = (reservation: SuitesWithReservations_reservations): TimelineItem<CustomItemFields, Moment> => {
-    return {
-      color: Colors.getReservationColor(reservation.type),
-      end_time: moment(reservation.toDate),
-      expired: reservation.expired !== null ? moment(reservation.expired) : null,
-      group: reservation.suite.id,
-      guest: reservation.guest,
-      id: reservation.id,
-      itemProps: {
-        className: 'reservation-item',
-        style: {
-          background: Colors.getReservationColor(reservation.type),
-          border: "none"
-        }
-      },
-      meal: reservation.meal,
-      notes: reservation.notes,
-      payingGuest: reservation.payingGuest,
-      priceAccommodation: reservation.priceAccommodation,
-      priceMeal: reservation.priceMeal,
-      priceMunicipality: reservation.priceMunicipality,
-      priceTotal: reservation.priceTotal,
-      purpose: reservation.purpose,
-      roommates: reservation.roommates,
-      start_time: moment(reservation.fromDate),
-      suite: reservation.suite,
-      title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
-      type: reservation.type
-    }
-  }
 
   const updateSelectedReservation = (reservation?: SuitesWithReservations_reservations) => {
     if (reservation !== undefined) {
@@ -69,6 +40,57 @@ export const Reservations = () => {
         fromDate: moment(reservation.fromDate),
         toDate: moment(reservation.toDate)
       })
+    }
+  }
+
+  // Click on timeline outside of any reservation, 
+  // opens modal for new reservation
+  const openNewReservationModal = (groupId: number, time: number) => {
+    const selectedGroup = timelineGroups().find(group => group.id === groupId)
+    if (selectedGroup !== undefined) {
+      const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
+      if (suite !== null) {
+        selectedSuite(suite)
+      }
+      setSelectedReservation(TimelineData.getReservationForCreate(selectedGroup, time))
+      reservationModalOpen(true)
+    }
+  }
+
+  // Click on item on the timeline opens modal with existing reservation for editing
+  // Note: item is selected on first click, second click registers as click event
+  const openUpdateReservationModal = (itemId: number) => {
+    const timelineItem = items.find(item => item.id === itemId)
+    if (timelineItem !== undefined) {
+      const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
+      if (suite !== null) {
+        selectedSuite(suite)
+      }
+      setSelectedReservation(TimelineData.getReservationForUpdate(timelineItem))
+      reservationModalOpen(true)
+    }
+  }
+
+  const onItemMove = (itemId: number, dragTime: number, newGroupOrder: number) => {
+    const newSuite = timelineGroups()[ newGroupOrder ]
+    const timelineItem = items.find(item => item.id === itemId)
+    if (newSuite !== undefined && timelineItem !== undefined) {
+      const reservationDuration: number = moment(timelineItem.end_time).diff(timelineItem.start_time)
+      const newStartDate = moment(dragTime).hour(timelineItem.start_time.hour()).minute(timelineItem.start_time.minutes())
+      const newEndDate = moment(dragTime + reservationDuration).hour(timelineItem.end_time.hour()).minute(timelineItem.end_time.minutes())
+      const variables: UpdateReservationVariables = {
+        data: {
+          fromDate: newStartDate.format(dateFormat),
+          id: String(timelineItem.id),
+          suiteId: Number(newSuite.id),
+          toDate: newEndDate.format(dateFormat)
+        }
+      }
+      console.log(variables)
+      // updateReservation({ variables })
+      //   .then((value: FetchResult<UpdateReservation>) => {
+      //     console.log(value.data?.updateReservation?.reservation)
+      //   })
     }
   }
 
@@ -87,7 +109,7 @@ export const Reservations = () => {
 
     data?.reservations?.forEach(reservation => {
       if (reservation !== null) {
-        reservationList.push(getTimelineReservationItem(reservation))
+        reservationList.push(TimelineData.getTimelineReservationItem(reservation))
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
         updateSelectedReservation(reservation)
@@ -116,122 +138,75 @@ export const Reservations = () => {
     selectedPage("reservation")
   }, [ t ])
 
-  // Click on timeline outside of any reservation, 
-  // opens modal for new reservation
-  const onCanvasClick = (groupId: number, time: number) => {
-    const selectedGroup = timelineGroups().find(group => group.id === groupId)
-    if (selectedGroup !== undefined) {
-      const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
-      if (suite !== null) {
-        selectedSuite(suite)
-      }
-      setSelectedReservation({
-        fromDate: moment(time).hour(15).minute(0),
-        meal: "NOMEAL",
-        suite: { ...selectedGroup },
-        priceAccommodation: 0,
-        priceMeal: 0,
-        priceMunicipality: 0,
-        priceTotal: 0,
-        toDate: moment(time).add(1, "day").hour(10).minute(0),
-        type: "NONBINDING"
-      })
-      reservationModalOpen(true)
-    }
-  }
-
-  // Click on item on the timeline opens modal
-  // with existing reservation for editing
-  const onItemClick = (itemId: number) => {
-    const timelineItem = items.find(item => item.id === itemId)
-    if (timelineItem !== undefined) {
-      const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
-      if (suite !== null) {
-        selectedSuite(suite)
-      }
-      setSelectedReservation({
-        expired: timelineItem.expired !== null ? moment(timelineItem.expired) : null,
-        fromDate: moment(timelineItem.start_time),
-        guest: timelineItem.guest,
-        id: timelineItem.id,
-        meal: timelineItem.meal,
-        notes: timelineItem.notes,
-        payingGuest: timelineItem.payingGuest,
-        priceAccommodation: timelineItem.priceAccommodation,
-        priceMeal: timelineItem.priceMeal,
-        priceMunicipality: timelineItem.priceMunicipality,
-        priceTotal: timelineItem.priceTotal,
-        purpose: timelineItem.purpose,
-        roommates: timelineItem.roommates,
-        suite: timelineItem.suite,
-        toDate: moment(timelineItem.end_time),
-        type: timelineItem.type
-      })
-      reservationModalOpen(true)
-    }
-  }
-
   return (
     <>
       <Skeleton
         active
-        loading={ loading }
+        loading={ initialLoading }
         paragraph={ { rows: 5 } }>
-        <div id="app-timeline">
-          <Timeline
-            canChangeGroup={ false }
-            canMove={ false }
-            canResize={ false }
-            defaultTimeEnd={ moment().add(12, "day") }
-            defaultTimeStart={ moment().add(-12, "day") }
-            groupRenderer={ ({ group }) => {
-              return (
-                <Title level={ 5 }>{ group.title }</Title>
-              )
-            } }
-            groups={ timelineGroups() }
-            itemRenderer={ props => <ReservationItem { ...props } /> }
-            items={ items }
-            lineHeight={ 60 }
-            onCanvasClick={ onCanvasClick }
-            onItemClick={ onItemClick }>
-            <TimelineHeaders>
-              <SidebarHeader>
-                { ({ getRootProps }) => {
-                  return (
-                    <div
-                      { ...getRootProps() }
-                      className="side-header">
-                      { t("rooms.nav-title") }
-                    </div>
-                  )
-                } }
-              </SidebarHeader>
-              <DateHeader unit="primaryHeader" />
-              <DateHeader
-                className="days"
-                unit="day" />
-            </TimelineHeaders>
-            <CursorMarker>
-              {
-                ({ styles, date }) => {
-                  return (
-                    <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
-                      <div className="rt-marker__label">
-                        <div className="rt-marker__content">
-                          { moment(date).format("DD MMM HH:mm") }
+        <Spin
+          spinning={ false }
+          size="large">
+          <div id="app-timeline">
+            <Timeline
+              canChangeGroup={ true }
+              canMove={ true }
+              canResize={ false }
+              defaultTimeEnd={ moment().add(12, "day") }
+              defaultTimeStart={ moment().add(-12, "day") }
+              groupRenderer={ ({ group }) => {
+                return (
+                  <Title level={ 5 }>{ group.title }</Title>
+                )
+              } }
+              groups={ timelineGroups() }
+              itemRenderer={ props => <ReservationItem { ...props } /> }
+              items={ items }
+              itemTouchSendsClick={ true }
+              lineHeight={ 60 }
+              onItemDoubleClick={ openUpdateReservationModal }
+              onCanvasDoubleClick={ openNewReservationModal }
+              onItemDeselect={ () => TimelineData.selectDeselectItem(items) }
+              onItemMove={ onItemMove }
+              onItemSelect={ (itemId: number) => setItems(TimelineData.selectDeselectItem(items, itemId)) }>
+              <TimelineHeaders>
+                <SidebarHeader>
+                  { ({ getRootProps }) => {
+                    return (
+                      <div
+                        { ...getRootProps() }
+                        className="side-header">
+                        { t("rooms.nav-title") }
+                      </div>
+                    )
+                  } }
+                </SidebarHeader>
+                <DateHeader unit="primaryHeader" />
+                <DateHeader
+                  className="days"
+                  unit="day" />
+              </TimelineHeaders>
+              <CursorMarker>
+                {
+                  ({ styles, date }) => {
+                    return (
+                      <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
+                        <div className="rt-marker__label">
+                          <div className="rt-marker__content">
+                            { moment(date).format("DD MMM HH:mm") }
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
+                    )
+                  }
                 }
-              }
-            </CursorMarker>
-          </Timeline>
-          <Space align="end" className="app-footer">
-            <Text disabled>&reg;{ t("company-name") }</Text>
-          </Space>
-        </div>
+              </CursorMarker>
+            </Timeline>
+            <Space align="end" className="app-footer">
+              <Text disabled>&reg;{ t("company-name") }</Text>
+            </Space>
+          </div>
+        </Spin>
       </Skeleton>
       <ReservationModal
         close={ () => {

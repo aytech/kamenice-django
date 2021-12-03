@@ -4,7 +4,7 @@ interface Props {
   colors: string[]
   getDefaultColor: () => string
   getRandomColor: () => string
-  getReservationColor: (reservationType: ReservationTypeKey) => string
+  getReservationColor: (reservationType?: ReservationTypeKey) => string
 }
 
 export const Colors: Props = {
@@ -26,7 +26,7 @@ export const Colors: Props = {
   getRandomColor: () => {
     return Colors.colors[ Math.floor(Math.random() * Colors.colors.length) ]
   },
-  getReservationColor: (reservationType: ReservationTypeKey): string => {
+  getReservationColor: (reservationType?: ReservationTypeKey): string => {
     switch (reservationType) {
       case "NONBINDING":
         return "rgb(254, 223, 3)"
@@ -34,6 +34,8 @@ export const Colors: Props = {
         return "rgb(0, 133, 182)"
       case "INHABITED":
         return "rgb(254, 127, 45)"
+      case "SELECTED":
+        return "rgb(235, 47, 150)" // magenta
       case "BINDING":
       default: return "rgb(0, 212, 157)"
     }
