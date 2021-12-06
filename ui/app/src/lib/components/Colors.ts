@@ -1,27 +1,33 @@
 import { ReservationTypeKey } from "../Types"
 
 interface Props {
-  colors: string[]
+  colors: any
   getDefaultColor: () => string
   getRandomColor: () => string
   getReservationColor: (reservationType?: ReservationTypeKey) => string
+  getResizeHandlerColor: (reservationType?: ReservationTypeKey) => string
 }
 
 export const Colors: Props = {
-  colors: [
-    "#f5222d", // red
-    "#fa541c", // volcano
-    "#fa8c16", // orange
-    "#faad14", // gold
-    "#fadb14", // yellow
-    "#a0d911", // lime
-    "#52c41a", // green
-    "#13c2c2", // cyan
-    "#1890ff", // blue
-    "#2f54eb", // geekblue
-    "#722ed1", // purple
-    "#eb2f96", // magenta
-  ],
+  colors: {
+    blue: "#1890ff",
+    cyan: "#13c2c2",
+    darkcyan: "#0e9494",
+    darkpink: "#8c0e53",
+    geekblue: "#2f54eb",
+    gold: "#faad14",
+    green: "#52c41a",
+    lime: "#a0d911",
+    magenta: "#eb2f96",
+    orange: "#fa8c16",
+    purple: "#722ed1",
+    red: "#f5222d",
+    strongblue: "#0069cb",
+    strongorange: "#d87205",
+    strongyellow: "#d6bb06",
+    volcano: "#fa541c",
+    yellow: "#fadb14"
+  },
   getDefaultColor: () => '#cccccc',
   getRandomColor: () => {
     return Colors.colors[ Math.floor(Math.random() * Colors.colors.length) ]
@@ -29,15 +35,21 @@ export const Colors: Props = {
   getReservationColor: (reservationType?: ReservationTypeKey): string => {
     switch (reservationType) {
       case "NONBINDING":
-        return "rgb(254, 223, 3)"
+        return Colors.colors.yellow
       case "ACCOMMODATED":
-        return "rgb(0, 133, 182)"
+        return Colors.colors.blue
       case "INHABITED":
-        return "rgb(254, 127, 45)"
+        return Colors.colors.orange
       case "SELECTED":
-        return "rgb(235, 47, 150)" // magenta
+        return Colors.colors.magenta
       case "BINDING":
-      default: return "rgb(0, 212, 157)"
+      default: return Colors.colors.cyan
     }
+  },
+  getResizeHandlerColor: (reservationType?: ReservationTypeKey): string => {
+    if (reservationType === "SELECTED") {
+      return Colors.colors.darkpink
+    }
+    return "transparent"
   }
 }
