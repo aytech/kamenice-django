@@ -105,3 +105,8 @@ export interface SuitesWithReservations {
   reservationTypes: (SuitesWithReservations_reservationTypes | null)[] | null;
   timelineGroups: SuitesWithReservations_timelineGroups | null;
 }
+
+export interface SuitesWithReservationsVariables {
+  startDate: string;
+  endDate: string;
+}

@@ -8,7 +8,7 @@ import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
@@ -27,11 +27,15 @@ export const Reservations = () => {
   const { t } = useTranslation()
   const { open: openReservation } = useParams()
 
+  const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ selectedItem, setSelectedItem ] = useState<string>()
+  const [ visibleTimeStart ] = useState<Moment>(moment().add(-12, "day"))
+  const [ visibleTimeEnd ] = useState<Moment>(moment().add(12, "day"))
 
-  const { loading: initialLoading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+  const [ getReservations, { loading: dataLoading, data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+    onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
   const [ dragReservation, { loading: dragLoading } ] = useMutation<DragReservation, DragReservationVariables>(DRAG_RESERVATION, {
@@ -106,6 +110,15 @@ export const Reservations = () => {
     TimelineData.selectDeselectItem(items)
   }
 
+  const onTimelineBoundsChange = (canvasTimeStart: number, canvasTimeEnd: number) => {
+    getReservations({
+      variables: {
+        startDate: moment(canvasTimeStart).format(dateFormat),
+        endDate: moment(canvasTimeEnd).format(dateFormat)
+      }
+    })
+  }
+
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
@@ -146,6 +159,15 @@ export const Reservations = () => {
   }, [ data, openReservation, selectedItem ])
 
   useEffect(() => {
+    getReservations({
+      variables: {
+        startDate: visibleTimeStart.format(dateFormat),
+        endDate: visibleTimeEnd.format(dateFormat)
+      }
+    })
+  }, [ getReservations, visibleTimeEnd, visibleTimeStart ])
+
+  useEffect(() => {
     pageTitle(t("home-title"))
     selectedPage("reservation")
   }, [ t ])
@@ -157,15 +179,15 @@ export const Reservations = () => {
         loading={ initialLoading }
         paragraph={ { rows: 5 } }>
         <Spin
-          spinning={ dragLoading }
+          spinning={ dragLoading || dataLoading }
           size="large">
           <div id="app-timeline">
             <Timeline
               canChangeGroup={ true }
               canMove={ true }
               canResize={ false }
-              defaultTimeEnd={ moment().add(12, "day") }
-              defaultTimeStart={ moment().add(-12, "day") }
+              defaultTimeEnd={ visibleTimeEnd }
+              defaultTimeStart={ visibleTimeStart }
               groupRenderer={ ({ group }) => {
                 return (
                   <Title level={ 5 }>{ group.title }</Title>
@@ -180,7 +202,8 @@ export const Reservations = () => {
               onCanvasDoubleClick={ openNewReservationModal }
               onItemDeselect={ onItemDeselect }
               onItemMove={ onItemMove }
-              onItemSelect={ onItemSelect }>
+              onItemSelect={ onItemSelect }
+              onBoundsChange={ onTimelineBoundsChange }>
               <TimelineHeaders>
                 <SidebarHeader>
                   { ({ getRootProps }) => {

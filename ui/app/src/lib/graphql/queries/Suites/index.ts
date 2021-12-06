@@ -22,7 +22,7 @@ export const SUITES = gql`
 `
 
 export const SUITES_WITH_RESERVATIONS = gql`
-  query SuitesWithReservations {
+  query SuitesWithReservations($startDate: String!, $endDate: String!) {
     guests {
       id
       name
@@ -40,7 +40,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
       priceBase
       title
     }
-    reservations {
+    reservations(startDate: $startDate, endDate: $endDate) {
       expired
       fromDate
       guest {
