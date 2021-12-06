@@ -7,7 +7,7 @@ import { SuitesWithReservations_reservations } from "../../lib/graphql/queries/S
 interface ITimelineData {
   getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>) => IReservation
-  getTimelineReservationItem: (reservation: SuitesWithReservations_reservations) => TimelineItem<CustomItemFields, Moment>
+  getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, selected?: string) => TimelineItem<CustomItemFields, Moment>
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: number) => TimelineItem<CustomItemFields, Moment>[]
 }
 
@@ -45,7 +45,7 @@ export const TimelineData: ITimelineData = {
       type: timelineItem.type
     }
   },
-  getTimelineReservationItem: (reservation: SuitesWithReservations_reservations) => {
+  getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, selected?: string) => {
     return {
       color: Colors.getReservationColor(reservation.type),
       end_time: moment(reservation.toDate),
@@ -56,7 +56,9 @@ export const TimelineData: ITimelineData = {
       itemProps: {
         className: 'reservation-item',
         style: {
-          background: Colors.getReservationColor(reservation.type),
+          background: selected === reservation.id
+            ? Colors.getReservationColor("SELECTED")
+            : Colors.getReservationColor(reservation.type),
           border: "none"
         }
       },

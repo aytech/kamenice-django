@@ -8,7 +8,7 @@ import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
-import { ApolloError, useQuery } from "@apollo/client"
+import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
@@ -18,6 +18,8 @@ import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { dateFormat } from "../../lib/Constants"
+import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
+import { DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -27,8 +29,12 @@ export const Reservations = () => {
 
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
+  const [ selectedItem, setSelectedItem ] = useState<string>()
 
   const { loading: initialLoading, data, refetch } = useQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
+  const [ dragReservation, { loading: dragLoading } ] = useMutation<DragReservation, DragReservationVariables>(DRAG_RESERVATION, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
@@ -86,12 +92,18 @@ export const Reservations = () => {
           toDate: newEndDate.format(dateFormat)
         }
       }
-      console.log(variables)
-      // updateReservation({ variables })
-      //   .then((value: FetchResult<UpdateReservation>) => {
-      //     console.log(value.data?.updateReservation?.reservation)
-      //   })
+      dragReservation({ variables })
     }
+  }
+
+  const onItemSelect = (itemId: number) => {
+    setSelectedItem(String(itemId))
+    setItems(TimelineData.selectDeselectItem(items, itemId))
+  }
+
+  const onItemDeselect = () => {
+    setSelectedItem(undefined)
+    TimelineData.selectDeselectItem(items)
   }
 
   useEffect(() => {
@@ -109,7 +121,7 @@ export const Reservations = () => {
 
     data?.reservations?.forEach(reservation => {
       if (reservation !== null) {
-        reservationList.push(TimelineData.getTimelineReservationItem(reservation))
+        reservationList.push(TimelineData.getTimelineReservationItem(reservation, selectedItem))
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
         updateSelectedReservation(reservation)
@@ -131,7 +143,7 @@ export const Reservations = () => {
     reservationTypeOptions(reservationOptionTypes)
     reservationMealOptions(reservationOptionMeals)
 
-  }, [ data, openReservation ])
+  }, [ data, openReservation, selectedItem ])
 
   useEffect(() => {
     pageTitle(t("home-title"))
@@ -145,7 +157,7 @@ export const Reservations = () => {
         loading={ initialLoading }
         paragraph={ { rows: 5 } }>
         <Spin
-          spinning={ false }
+          spinning={ dragLoading }
           size="large">
           <div id="app-timeline">
             <Timeline
@@ -166,9 +178,9 @@ export const Reservations = () => {
               lineHeight={ 60 }
               onItemDoubleClick={ openUpdateReservationModal }
               onCanvasDoubleClick={ openNewReservationModal }
-              onItemDeselect={ () => TimelineData.selectDeselectItem(items) }
+              onItemDeselect={ onItemDeselect }
               onItemMove={ onItemMove }
-              onItemSelect={ (itemId: number) => setItems(TimelineData.selectDeselectItem(items, itemId)) }>
+              onItemSelect={ onItemSelect }>
               <TimelineHeaders>
                 <SidebarHeader>
                   { ({ getRootProps }) => {

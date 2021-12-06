@@ -118,29 +118,32 @@ class ReservationUtility:
 
     @staticmethod
     def get_duplicate(suite_id, instance):
-        return ReservationModel.objects.filter(
-            # Match range that is surrounding the new reservation
-            Q(
-                deleted=False,
-                from_date__lte=instance.from_date,
-                suite_id=suite_id,
-                to_date__gte=instance.to_date
-            )
-            |  # Match range with start date within the range of the new reservation
-            Q(
-                deleted=False,
-                from_date__gt=instance.from_date,
-                suite_id=suite_id,
-                from_date__lt=instance.to_date
-            )
-            |  # Match range with end date within the range of the new reservation
-            Q(
-                deleted=False,
-                to_date__gt=instance.from_date,
-                suite_id=suite_id,
-                to_date__lt=instance.to_date
-            )
+        # Match range with start date within the range of the new reservation
+        inner_query = Q(
+            from_date__gte=instance.from_date,
+            to_date__lte=instance.to_date,
+            suite_id=suite_id,
         )
+        # Match range that is surrounding the new reservation
+        outer_query = Q(
+            from_date__lte=instance.from_date,
+            to_date__gte=instance.to_date,
+            suite_id=suite_id
+        )
+        # Match range with start date within the range of the new reservation
+        start_date_query = Q(
+            from_date__lte=instance.from_date,
+            to_date__gte=instance.from_date,
+            suite_id=suite_id
+        )
+        # Match range with end date within the range of the new reservation
+        end_date_query = Q(
+            from_date__lte=instance.to_date,
+            to_date__gte=instance.to_date,
+            suite_id=suite_id
+        )
+        return ReservationModel.objects.filter(inner_query | outer_query | start_date_query | end_date_query).exclude(
+            deleted=True)
 
 
 class CreateReservation(Mutation):
@@ -288,14 +291,17 @@ class DragReservation(Mutation):
     def mutate(cls, _root, _info, data=None):
         try:
             instance = ReservationModel.objects.get(pk=data.id, deleted=False)
-            suite = SuiteModel.objects.get(pk=data.id, deleted=False)
+            suite = SuiteModel.objects.get(pk=data.suite_id, deleted=False)
             if instance and suite:
                 instance.from_date = data.from_date if data.from_date is not None else instance.from_date
                 instance.to_date = data.to_date if data.to_date is not None else instance.to_date
                 instance.suite = suite
 
                 duplicate = ReservationUtility.get_duplicate(data.suite_id, instance=instance)
-                if duplicate.count() > 0 and str(duplicate.get().id) != data.id:
+                # When dragging, new instance might have overlapping dates
+                if duplicate.count() > 1:
+                    raise Exception(_('The room is already reserved for this period of time'))
+                if duplicate.count() == 1 and str(duplicate.get().id) != data.id:
                     raise Exception(_('The room is already reserved for this period of time'))
 
                 try:
