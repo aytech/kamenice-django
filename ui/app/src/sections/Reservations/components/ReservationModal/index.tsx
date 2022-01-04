@@ -47,6 +47,7 @@ export const ReservationModal = ({
     priceTotal: 0
   })
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
+  const [ reservationConfirmationNote, setReservationConfirmationNote ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
@@ -94,8 +95,10 @@ export const ReservationModal = ({
     onError: networkErrorHandler
   })
   const [ sendConfirmation, { loading: confirmationLoading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
-    onCompleted: () => {
-      message.success(t("reservations.confirmation-sent", { email: reservation?.guest?.email }))
+    onCompleted: (value: SendConfirmation) => {
+      const email = value.sendConfirmation?.reservation?.guest.email
+      message.success(t("reservations.confirmation-sent", { email: (email === undefined || email === null) ? "" : email }))
+      setReservationConfirmationNote("")
       closeModal()
     },
     onError: (reason: ApolloError) => message.error(reason.message)
@@ -157,9 +160,9 @@ export const ReservationModal = ({
     }
   }
 
-  const sendReservationConfirmation = (reservation?: IReservation) => {
+  const sendReservationConfirmation = (reservation?: IReservation, note?: string) => {
     if (reservation !== undefined && reservation.id !== undefined) {
-      sendConfirmation({ variables: { reservationId: String(reservation.id) } })
+      sendConfirmation({ variables: { data: { reservationId: String(reservation.id), note } } })
     }
   }
 
@@ -211,8 +214,10 @@ export const ReservationModal = ({
               xs={ { span: 24 } }>
               <SendConfirmationButton
                 key="confirmation"
+                note={ reservationConfirmationNote }
                 reservation={ reservation }
-                send={ sendReservationConfirmation } />
+                send={ sendReservationConfirmation }
+                setNote={ setReservationConfirmationNote } />
             </Col>
             <Col
               sm={ { offset: 1, span: 4 } }
@@ -245,8 +250,10 @@ export const ReservationModal = ({
           <Confirmation
             cancel={ closeModal }
             message={ reservationConfirmationMessage }
+            note={ reservationConfirmationNote }
             reservation={ reservation }
             send={ sendReservationConfirmation }
+            setNote={ setReservationConfirmationNote }
             visible={ reservationConfirmationVisible } />
           <ExpirationConfirmation
             reservation={ reservation } />

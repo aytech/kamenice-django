@@ -20,6 +20,8 @@ class SettingsQuery(ObjectType):
 
     @classmethod
     def resolve_settings(cls, _root, info):
+        if info.context.user.is_anonymous is True:
+            return None
         try:
             return SettingsModel.objects.get(username=info.context.user.username)
         except ObjectDoesNotExist:

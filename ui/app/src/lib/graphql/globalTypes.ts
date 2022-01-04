@@ -56,6 +56,11 @@ export enum ReservationType {
   NONBINDING = "NONBINDING",
 }
 
+export interface ConfirmationInput {
+  reservationId?: string | null;
+  note?: string | null;
+}
+
 export interface ContactInput {
   message?: string | null;
 }

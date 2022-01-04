@@ -1,5 +1,6 @@
 import { CloseCircleOutlined, NotificationOutlined, SaveOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Tooltip } from "antd";
+import TextArea from "antd/lib/input/TextArea";
 import { useTranslation } from "react-i18next";
 import { guestDrawerOpen, selectedGuest } from "../../../../../../cache";
 import { IReservation } from "../../../../../../lib/Types";
@@ -10,8 +11,10 @@ interface RemoveProps {
 }
 
 interface ConfirmationProps {
+  note?: string,
   reservation?: IReservation
-  send: (reservation: IReservation) => void
+  send: (reservation: IReservation, note?: string) => void
+  setNote: (note: string) => void
 }
 
 interface SubmitProps {
@@ -51,8 +54,10 @@ export const RemoveButton = ({
 }
 
 export const SendConfirmationButton = ({
+  note,
   reservation,
-  send
+  send,
+  setNote
 }: ConfirmationProps) => {
 
   const { t } = useTranslation()
@@ -64,8 +69,19 @@ export const SendConfirmationButton = ({
     <Popconfirm
       cancelText={ t("no") }
       okText={ t("yes") }
-      onConfirm={ () => send(reservation) }
-      title={ t("reservations.send-confirmation-confirm", { email: reservation.guest?.email }) }>
+      onConfirm={ () => send(reservation, note) }
+      title={ (
+        <>
+          <p>
+            { t("reservations.send-confirmation-confirm", { email: reservation.guest?.email }) }
+          </p>
+          <TextArea
+            rows={ 3 }
+            placeholder={ t("reservations.email-additional-info") }
+            onChange={ (event) => { setNote(event.target.value) } }
+            value={ note } />
+        </>
+      ) }>
       <Tooltip
         placement="top"
         title={ t("reservations.send-confirmation-tooltip") }>

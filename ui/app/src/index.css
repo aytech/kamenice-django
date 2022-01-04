@@ -53,6 +53,14 @@ h4.ant-typography.drawer-title {
   text-align: center;
 }
 
+.centered {
+  justify-content: center;
+}
+
+.fill-width {
+  width: 100%;
+}
+
 .low-case {
   text-transform: lowercase;
 }

@@ -106,9 +106,12 @@ export const DRAG_RESERVATION = gql`
 `
 
 export const SEND_CONFIRMATION = gql`
-  mutation SendConfirmation($reservationId: ID!) {
-    sendConfirmation(reservationId: $reservationId) {
+  mutation SendConfirmation($data: ConfirmationInput!) {
+    sendConfirmation(data: $data) {
       reservation {
+        guest {
+          email
+        }
         id
       }
     }

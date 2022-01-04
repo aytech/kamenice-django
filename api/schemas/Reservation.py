@@ -258,11 +258,12 @@ class UpdateReservation(Mutation):
                 for roommate_id in instance.roommates.all():
                     instance.roommates.remove(roommate_id)
 
-                try:
-                    for roommate_id in data.roommate_ids:
-                        instance.roommates.add(GuestModel.objects.get(pk=roommate_id))
-                except ObjectDoesNotExist as ex:
-                    logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
+                if data.roommate_ids is not None:
+                    try:
+                        for roommate_id in data.roommate_ids:
+                            instance.roommates.add(GuestModel.objects.get(pk=roommate_id))
+                    except ObjectDoesNotExist as ex:
+                        logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
 
                 try:
                     instance.full_clean()
@@ -339,15 +340,20 @@ class DeleteReservation(Mutation):
             return DeleteReservation(reservation=None)
 
 
+class ConfirmationInput(InputObjectType):
+    reservation_id = ID()
+    note = String()
+
+
 class SendConfirmationEmail(Mutation):
     class Arguments:
-        reservation_id = ID()
+        data = ConfirmationInput(required=True)
 
     reservation = Field(Reservation)
 
     @classmethod
     @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
-    def mutate(cls, _root, _info, reservation_id):
+    def mutate(cls, _root, _info, data):
         try:
             env = os.environ['DJANGO_SETTINGS_MODULE']
 
@@ -356,7 +362,7 @@ class SendConfirmationEmail(Mutation):
             else:
                 from kamenice_django.settings import production as settings
 
-            instance = ReservationModel.objects.get(pk=reservation_id, deleted=False)
+            instance = ReservationModel.objects.get(pk=data.reservation_id, deleted=False)
 
             message = Mail(
                 from_email=settings.FROM_EMAIL_ADDRESS,
@@ -365,6 +371,7 @@ class SendConfirmationEmail(Mutation):
                 'from': DateHelper.get_formatted_date(instance.from_date),
                 'guests': 1 + instance.roommates.count(),
                 'meal': instance.read_meal(instance.meal),
+                'note': data.note,
                 'price': str(instance.price_total),
                 'to': DateHelper.get_formatted_date(instance.to_date),
                 'type': instance.read_type(instance.type),
