@@ -254,15 +254,15 @@ export const SuiteDrawer = ({
             <Form.List name="discounts">
               { (fields, { add, remove }) => (
                 <>
-                  { fields.map(({ key, name, fieldKey, ...restField }) => (
+                  { fields.map((field) => (
                     <Space
                       align="baseline"
                       className="discounts-list"
-                      key={ key }>
+                      key={ field.key }>
                       <Form.Item
-                        { ...restField }
-                        fieldKey={ [ fieldKey, 'type' ] }
-                        name={ [ name, "type" ] }
+                        { ...field }
+                        fieldKey={ [ field.key, 'type' ] }
+                        name={ [ field.name, "type" ] }
                         rules={ [
                           FormHelper.discountValidator(
                             t("rooms.error-duplicate-discount"),
@@ -275,9 +275,9 @@ export const SuiteDrawer = ({
                       </Form.Item>
                       <Form.Item
                         hasFeedback
-                        { ...restField }
-                        fieldKey={ [ fieldKey, 'value' ] }
-                        name={ [ name, "value" ] }
+                        { ...field }
+                        fieldKey={ [ field.key, 'value' ] }
+                        name={ [ field.name, "value" ] }
                         required
                         rules={ [
                           FormHelper.requiredRule(t("forms.field-required")),
@@ -287,7 +287,7 @@ export const SuiteDrawer = ({
                       </Form.Item>
                       <MinusCircleOutlined onClick={ () => {
                         updateAddDiscountTooltip(fields.length - 1) // length is not updated immediately
-                        remove(name)
+                        remove(field.name)
                         form.validateFields()
                       } } />
                     </Space>

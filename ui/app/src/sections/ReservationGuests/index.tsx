@@ -15,7 +15,7 @@ import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Su
 
 export const ReservationGuests = () => {
 
-  let { hash }: { hash: string | undefined } = useParams()
+  let { hash } = useParams()
 
   const { t } = useTranslation()
 

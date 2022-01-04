@@ -231,16 +231,16 @@ export const ReservationForm = ({
         <Form.List name="roommates">
           { (fields, { add, remove }) => (
             <>
-              { fields.map(({ key, name, fieldKey, ...restField }) => (
+              { fields.map((field) => (
                 <Space
                   align="baseline"
                   className="roommate-list"
-                  key={ key }>
+                  key={ field.key }>
                   <Form.Item
                     hasFeedback
-                    { ...restField }
-                    fieldKey={ [ fieldKey, 'first' ] }
-                    name={ [ name, "id" ] }
+                    { ...field }
+                    fieldKey={ [ field.key, 'first' ] }
+                    name={ [ field.name, "id" ] }
                     rules={ roommateValidator }>
                     <Select
                       className="select-roommate"
@@ -249,7 +249,7 @@ export const ReservationForm = ({
                       showSearch />
                   </Form.Item>
                   <MinusCircleOutlined onClick={ () => {
-                    remove(name)
+                    remove(field.name)
                     updateRoomCapacity(fields.length - 1) // fields length seems not updated immediately
                     form.validateFields()
                   } } />
