@@ -139,7 +139,7 @@ export const ReservationModal = ({
       priceTotal: priceInfo.priceTotal,
       purpose: formData.purpose,
       roommateIds: roommates,
-      suiteId: reservation !== undefined ? +reservation.suite.id : null,
+      suiteId: formData.suite,
       toDate: to.format(dateFormat),
       type: formData.type
     }

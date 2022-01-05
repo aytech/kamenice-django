@@ -13,7 +13,7 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, timelineGroups } from "../../cache"
+import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
@@ -69,14 +69,14 @@ export const Reservations = () => {
 
   // Click on item on the timeline opens modal with existing reservation for editing
   // Note: item is selected on first click, second click registers as click event
-  const openUpdateReservationModal = (itemId: number) => {
-    const timelineItem = items.find(item => item.id === itemId)
+  const openUpdateReservationModal = (itemId: number, copy: boolean = false) => {
+    const timelineItem = items.find(item => Number(item.id) === itemId)
     if (timelineItem !== undefined) {
       const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
         selectedSuite(suite)
       }
-      setSelectedReservation(TimelineData.getReservationForUpdate(timelineItem))
+      setSelectedReservation(TimelineData.getReservationForUpdate(timelineItem, copy))
       reservationModalOpen(true)
     }
   }
@@ -119,17 +119,27 @@ export const Reservations = () => {
     })
   }
 
+  const onCopy = (itemId: number) => openUpdateReservationModal(itemId, true)
+
+  const onUpdate = (itemId: number) => openUpdateReservationModal(itemId)
+
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
     const suiteList: TimelineGroup<CustomGroupFields>[] = []
+    const suiteOptionValues: OptionsType[] = []
     const reservationOptionMeals: OptionsType[] = []
     const reservationOptionTypes: OptionsType[] = []
 
     data?.suites?.forEach(suite => {
       if (suite !== null) {
         suiteList.push(suite)
+        suiteOptionValues.push({
+          label: suite.title,
+          value: suite.id
+        })
       }
     })
+    suiteOptions(suiteOptionValues)
     timelineGroups(suiteList)
 
     data?.reservations?.forEach(reservation => {
@@ -194,11 +204,15 @@ export const Reservations = () => {
                 )
               } }
               groups={ timelineGroups() }
-              itemRenderer={ props => <ReservationItem { ...props } /> }
+              itemRenderer={ props =>
+                <ReservationItem
+                  { ...props }
+                  onCopy={ onCopy }
+                  onUpdate={ onUpdate } />
+              }
               items={ items }
               itemTouchSendsClick={ true }
               lineHeight={ 60 }
-              onItemDoubleClick={ openUpdateReservationModal }
               onCanvasDoubleClick={ openNewReservationModal }
               onItemDeselect={ onItemDeselect }
               onItemMove={ onItemMove }

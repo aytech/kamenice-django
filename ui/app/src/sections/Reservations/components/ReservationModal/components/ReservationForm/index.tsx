@@ -5,7 +5,7 @@ import { Store } from "antd/lib/form/interface"
 import moment, { Moment } from "moment"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { appSettings, reservationMealOptions, reservationTypeOptions, selectedSuite } from "../../../../../../cache"
+import { appSettings, reservationMealOptions, reservationTypeOptions, selectedSuite, suiteOptions } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
@@ -71,6 +71,7 @@ export const ReservationForm = ({
     priceTotal: NumberHelper.formatCurrency(reservation.priceTotal),
     purpose: reservation.purpose,
     roommates: reservation.roommates,
+    suite: reservation.suite.id,
     type: reservation.type
   } : { type: "NONBINDING" }
 
@@ -275,6 +276,16 @@ export const ReservationForm = ({
             </>
           ) }
         </Form.List>
+      </Form.Item>
+      <Form.Item
+        hasFeedback
+        label={ t("rooms.single") }
+        name="suite"
+        required
+        rules={ [ FormHelper.requiredRule(t("reservations.choose-suite")) ] }>
+        <Select
+          id="select-suite"
+          options={ suiteOptions() } />
       </Form.Item>
       <Form.Item
         hasFeedback

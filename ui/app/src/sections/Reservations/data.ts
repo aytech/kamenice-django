@@ -6,7 +6,7 @@ import { SuitesWithReservations_reservations } from "../../lib/graphql/queries/S
 
 interface ITimelineData {
   getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => IReservation
-  getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>) => IReservation
+  getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy: boolean) => IReservation
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, selected?: string) => TimelineItem<CustomItemFields, Moment>
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: number) => TimelineItem<CustomItemFields, Moment>[]
 }
@@ -25,12 +25,12 @@ export const TimelineData: ITimelineData = {
       type: "NONBINDING"
     }
   },
-  getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>) => {
+  getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy: boolean = false) => {
     return {
       expired: timelineItem.expired !== null ? moment(timelineItem.expired) : null,
       fromDate: moment(timelineItem.start_time),
       guest: timelineItem.guest,
-      id: timelineItem.id,
+      id: copy === true ? undefined : timelineItem.id,
       meal: timelineItem.meal,
       notes: timelineItem.notes,
       payingGuest: timelineItem.payingGuest,

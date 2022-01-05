@@ -5,6 +5,7 @@
     "sk": "Slovenské"
   },
   "company-name": "Mlýn Kamenice",
+  "copy": "Kopírovat",
   "currency": "Kč",
   "edit": "Upravit",
   "email": "E-Mail",
@@ -97,6 +98,7 @@
     "add-roommate": "Přidat hosta",
     "calculate-prices": "Vypočítat cenu",
     "choose-type": "Vyberte typ rezervace",
+    "choose-suite": "Vyberte místnost",
     "confirmation-sent": "Potvrzení odesláno na adresu {{ email }}",
     "created": "Rezervace byla vytvořena!",
     "created-info": "Rezervace je vytvořena, odeslat potvrzovací e-mail na adresu {{ email }}?",
@@ -154,6 +156,7 @@
     "page-title": "Správa místnosti",
     "price-base": "Základní cena",
     "search": "Hledat místnost",
+    "single": "Místnost",
     "suites": "Apartmá",
     "updated": "Místnost byla aktualizována"
   },
@@ -192,6 +195,7 @@
     "room-capacity-full": "Místnost je plná",
     "paying-guest": "Pokud není vybráno, hlavní host je platící host"
   },
+  "update": "Aktualizovat",
   "woman": "Žena",
   "yes": "Ano"
 }

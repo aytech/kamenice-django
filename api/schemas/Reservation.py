@@ -241,6 +241,13 @@ class UpdateReservation(Mutation):
                 instance.purpose = data.purpose if data.purpose is not None else instance.purpose
                 instance.type = data.type if data.type is not None else instance.type
 
+                if data.suite_id is not None and data.suite_id != instance.suite.id:
+                    try:
+                        suite = SuiteModel.objects.get(pk=data.suite_id, deleted=False)
+                        instance.suite = suite
+                    except ObjectDoesNotExist:
+                        logging.getLogger('kamenice').error('Failed to change suite to {}'.format(data.suite_id))
+
                 try:
                     instance.guest = GuestModel.objects.get(pk=data.guest_id)
                 except ObjectDoesNotExist:
