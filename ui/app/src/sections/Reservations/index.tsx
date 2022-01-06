@@ -27,12 +27,13 @@ export const Reservations = () => {
   const { t } = useTranslation()
   const { open: openReservation } = useParams()
 
+  const [ canvasUpdateTimeout, setCanvasUpdateTimeout ] = useState<number>()
   const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
+  const [ initialTimeEnd ] = useState<Moment>(moment().add(12, "day"))
+  const [ initialTimeStart ] = useState<Moment>(moment().add(-12, "day"))
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ selectedItem, setSelectedItem ] = useState<string>()
-  const [ visibleTimeStart ] = useState<Moment>(moment().add(-12, "day"))
-  const [ visibleTimeEnd ] = useState<Moment>(moment().add(12, "day"))
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
   const [ getReservations, { loading: dataLoading, data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => setInitialLoading(false),
@@ -111,12 +112,15 @@ export const Reservations = () => {
   }
 
   const onTimelineBoundsChange = (canvasTimeStart: number, canvasTimeEnd: number) => {
-    getReservations({
-      variables: {
-        startDate: moment(canvasTimeStart).format(dateFormat),
-        endDate: moment(canvasTimeEnd).format(dateFormat)
-      }
-    })
+    clearTimeout(canvasUpdateTimeout)
+    setCanvasUpdateTimeout(window.setTimeout(() => {
+      getReservations({
+        variables: {
+          startDate: moment(canvasTimeStart).format(dateFormat),
+          endDate: moment(canvasTimeEnd).format(dateFormat)
+        }
+      })
+    }, 700))
   }
 
   const onCopy = (itemId: number) => openUpdateReservationModal(itemId, true)
@@ -171,11 +175,11 @@ export const Reservations = () => {
   useEffect(() => {
     getReservations({
       variables: {
-        startDate: visibleTimeStart.format(dateFormat),
-        endDate: visibleTimeEnd.format(dateFormat)
+        startDate: initialTimeStart.format(dateFormat),
+        endDate: initialTimeEnd.format(dateFormat)
       }
     })
-  }, [ getReservations, visibleTimeEnd, visibleTimeStart ])
+  }, [ getReservations, initialTimeEnd, initialTimeStart ])
 
   useEffect(() => {
     pageTitle(t("home-title"))
@@ -196,8 +200,8 @@ export const Reservations = () => {
               canChangeGroup={ true }
               canMove={ true }
               canResize={ false }
-              defaultTimeEnd={ visibleTimeEnd }
-              defaultTimeStart={ visibleTimeStart }
+              defaultTimeEnd={ initialTimeEnd }
+              defaultTimeStart={ initialTimeStart }
               groupRenderer={ ({ group }) => {
                 return (
                   <Title level={ 5 }>{ group.title }</Title>
