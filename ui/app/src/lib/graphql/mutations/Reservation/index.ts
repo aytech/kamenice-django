@@ -5,6 +5,9 @@ export const CREATE_RESERVATION = gql`
     createReservation(data: $data) {
       reservation {
         expired
+        extraSuites {
+          id
+        }
         fromDate
         guest {
           email
@@ -18,10 +21,16 @@ export const CREATE_RESERVATION = gql`
         payingGuest {
           id
         }
-        priceAccommodation
-        priceMeal
-        priceMunicipality
-        priceTotal
+        priceSet {
+          accommodation
+          meal
+          municipality
+          suite {
+            id
+            priceBase
+          }
+          total
+        }
         purpose
         roommates {
           age
@@ -54,6 +63,9 @@ export const UPDATE_RESERVATION = gql`
     updateReservation(data: $data) {
       reservation {
         expired
+        extraSuites {
+          id
+        }
         fromDate
         guest {
           email
@@ -67,10 +79,16 @@ export const UPDATE_RESERVATION = gql`
         payingGuest {
           id
         }
-        priceAccommodation
-        priceMeal
-        priceMunicipality
-        priceTotal
+        priceSet {
+          accommodation
+          meal
+          municipality
+          suite {
+            id
+            priceBase
+          }
+          total
+        }
         purpose
         roommates {
           age

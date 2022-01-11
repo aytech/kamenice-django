@@ -4,7 +4,7 @@ import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
-export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED" | "SELECTED"
+export type ReservationTypeKey = "BINDING" | "NONBINDING" | "ACCOMMODATED" | "INHABITED" | "INQUIRY" | "SELECTED"
 export type MenuItemKey = "reservation" | "guests" | "suites" | "user"
 
 export type ReservationMeal = "BREAKFAST" | "HALFBOARD" | "NOMEAL"
@@ -69,6 +69,7 @@ export interface Suite {
   number?: number | null
   numberBeds?: number | null
   numberBedsExtra?: number | null
+  priceBase?: string | null
   title?: string
 }
 
@@ -76,18 +77,27 @@ export interface Roommate extends Guest {
   age: string | null
 }
 
+export interface ReservationPrice {
+  accommodation: string | null,
+  meal: string | null,
+  municipality: string | null,
+  suite: {
+    id: number | string,
+    priceBase?: string | null
+  },
+  total: string | null
+}
+
 export interface IReservation {
   expired?: Moment | null
+  extraSuites: { id: string }[]
   fromDate: Moment
   guest?: Guest
   meal?: ReservationMeal
   id?: number | string
   notes?: string | null
   payingGuest?: { id: string } | null
-  priceAccommodation: number | null
-  priceMeal: number | null
-  priceMunicipality: number | null
-  priceTotal: number | null
+  price?: ReservationPrice
   purpose?: string | null
   roommates?: { id: string }[]
   suite: Suite
@@ -129,22 +139,24 @@ export interface OptionsType {
 }
 
 export interface CustomGroupFields {
+  id: number | string
   number: number | null
+  priceBase: string
   title: string
 }
 
 export interface CustomItemFields {
   color?: string
   expired?: Moment | null
+  extraSuites: { id: string }[]
   guest: Guest
+  id: string
   meal: ReservationMeal
   notes: string | null
   payingGuest?: { id: string } | null
-  priceAccommodation: number | null
-  priceMeal: number | null
-  priceMunicipality: number | null
-  priceTotal: number | null
+  price: ReservationPrice
   purpose: string | null
+  reservationId: string
   roommates?: { id: string }[]
   suite: Suite
   type?: ReservationTypeKey

@@ -6,8 +6,9 @@ from api.schemas.DiscountSuite import DiscountSuiteQuery, CreateDiscount, Update
 from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest, \
     DeleteReservationGuest, CreateReservationGuest
 from api.schemas.GuestsStatement import GuestsStatementQuery, DeleteDriveFile
-from api.schemas.Reservation import ReservationQuery, CreateReservation, DeleteReservation, UpdateReservation, \
+from api.schemas.Reservation import CreateReservation, DeleteReservation, UpdateReservation, \
     SendConfirmationEmail, CalculateReservationPriceQuery, DragReservation
+from api.schemas.ReservationQuery import ReservationQuery
 from api.schemas.Settings import SettingsQuery, UpdateSettings
 from api.schemas.Suite import SuitesQuery, CreateSuite, UpdateSuite, DeleteSuite
 from api.schemas.Authentication import ObtainJSONWebToken

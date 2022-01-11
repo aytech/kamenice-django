@@ -27,14 +27,14 @@ export const RoomActions = ({
           onConfirm={ () => {
             deleteSuite(suite.id)
           } }
-          title={ t("forms.delete-confirm") }>
+          title={ t("tooltips.delete-confirm") }>
           <Button
             danger
             style={ {
               float: "left"
             } }
             type="primary">
-            { t("forms.delete") }
+            { t("delete") }
           </Button>
         </Popconfirm>
       }

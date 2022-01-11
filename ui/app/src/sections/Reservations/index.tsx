@@ -10,7 +10,7 @@ import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
-import { SuitesWithReservations, SuitesWithReservations_reservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
+import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
@@ -19,7 +19,8 @@ import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { dateFormat } from "../../lib/Constants"
 import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
-import { DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
+import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -35,31 +36,29 @@ export const Reservations = () => {
   const [ selectedItem, setSelectedItem ] = useState<string>()
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
-  const [ getReservations, { loading: dataLoading, data, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
+  const [ getReservations, { loading: dataLoading, data: reservationsData, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
   const [ dragReservation, { loading: dragLoading } ] = useMutation<DragReservation, DragReservationVariables>(DRAG_RESERVATION, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-
-  const updateSelectedReservation = (reservation?: SuitesWithReservations_reservations) => {
-    if (reservation !== undefined) {
-      setSelectedReservation({
-        ...reservation,
-        expired: reservation.expired !== null ? moment(reservation.expired) : null,
-        fromDate: moment(reservation.fromDate),
-        toDate: moment(reservation.toDate)
-      })
-    }
-  }
+  const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
+    onCompleted: () => {
+      setSelectedReservation(undefined)
+      reservationModalOpen(false)
+      message.success(t("reservations.deleted"))
+      refetch()
+    },
+    onError: (reason: ApolloError) => message.error(reason.message)
+  })
 
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
   const openNewReservationModal = (groupId: number, time: number) => {
     const selectedGroup = timelineGroups().find(group => group.id === groupId)
     if (selectedGroup !== undefined) {
-      const suite = data?.suites?.find(suite => suite?.id === selectedGroup.id)
+      const suite = reservationsData?.suites?.find(suite => suite?.id === selectedGroup.id)
       if (suite !== null) {
         selectedSuite(suite)
       }
@@ -70,10 +69,10 @@ export const Reservations = () => {
 
   // Click on item on the timeline opens modal with existing reservation for editing
   // Note: item is selected on first click, second click registers as click event
-  const openUpdateReservationModal = (itemId: number, copy: boolean = false) => {
-    const timelineItem = items.find(item => Number(item.id) === itemId)
+  const openUpdateReservationModal = (itemId: string, copy: boolean = false) => {
+    const timelineItem = items.find(item => item.id === itemId)
     if (timelineItem !== undefined) {
-      const suite = data?.suites?.find(suite => suite?.id === timelineItem.suite.id)
+      const suite = reservationsData?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
         selectedSuite(suite)
       }
@@ -82,7 +81,7 @@ export const Reservations = () => {
     }
   }
 
-  const onItemMove = (itemId: number, dragTime: number, newGroupOrder: number) => {
+  const onItemMove = (itemId: string, dragTime: number, newGroupOrder: number) => {
     const newSuite = timelineGroups()[ newGroupOrder ]
     const timelineItem = items.find(item => item.id === itemId)
     if (newSuite !== undefined && timelineItem !== undefined) {
@@ -101,7 +100,7 @@ export const Reservations = () => {
     }
   }
 
-  const onItemSelect = (itemId: number) => {
+  const onItemSelect = (itemId: string) => {
     setSelectedItem(String(itemId))
     setItems(TimelineData.selectDeselectItem(items, itemId))
   }
@@ -123,9 +122,11 @@ export const Reservations = () => {
     }, 700))
   }
 
-  const onCopy = (itemId: number) => openUpdateReservationModal(itemId, true)
+  const onCopy = (itemId: string) => openUpdateReservationModal(itemId, true)
 
-  const onUpdate = (itemId: number) => openUpdateReservationModal(itemId)
+  const onDelete = (reservationId: string) => deleteReservation({ variables: { reservationId } })
+
+  const onUpdate = (itemId: string) => openUpdateReservationModal(itemId)
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
@@ -134,7 +135,7 @@ export const Reservations = () => {
     const reservationOptionMeals: OptionsType[] = []
     const reservationOptionTypes: OptionsType[] = []
 
-    data?.suites?.forEach(suite => {
+    reservationsData?.suites?.forEach(suite => {
       if (suite !== null) {
         suiteList.push(suite)
         suiteOptionValues.push({
@@ -146,21 +147,24 @@ export const Reservations = () => {
     suiteOptions(suiteOptionValues)
     timelineGroups(suiteList)
 
-    data?.reservations?.forEach(reservation => {
+    reservationsData?.reservations?.forEach(reservation => {
       if (reservation !== null) {
-        reservationList.push(TimelineData.getTimelineReservationItem(reservation, selectedItem))
+        reservationList.push(TimelineData.getTimelineReservationItem(reservation, reservation.suite.id, selectedItem))
+        reservation.extraSuites.forEach(extra => {
+          reservationList.push(TimelineData.getTimelineReservationItem(reservation, extra.id, selectedItem))
+        })
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
-        updateSelectedReservation(reservation)
+        setSelectedReservation(TimelineData.getAppReservation(reservation, reservation.priceSet))
         reservationModalOpen(true)
       }
     })
-    data?.reservationTypes?.forEach(option => {
+    reservationsData?.reservationTypes?.forEach(option => {
       if (option !== null) {
         reservationOptionTypes.push(option)
       }
     })
-    data?.reservationMeals?.forEach(option => {
+    reservationsData?.reservationMeals?.forEach(option => {
       if (option !== null) {
         reservationOptionMeals.push(option)
       }
@@ -170,7 +174,7 @@ export const Reservations = () => {
     reservationTypeOptions(reservationOptionTypes)
     reservationMealOptions(reservationOptionMeals)
 
-  }, [ data, openReservation, selectedItem ])
+  }, [ reservationsData, openReservation, selectedItem ])
 
   useEffect(() => {
     getReservations({
@@ -204,7 +208,9 @@ export const Reservations = () => {
               defaultTimeStart={ initialTimeStart }
               groupRenderer={ ({ group }) => {
                 return (
-                  <Title level={ 5 }>{ group.title }</Title>
+                  <Title level={ 5 }>
+                    { group.title }
+                  </Title>
                 )
               } }
               groups={ timelineGroups() }
@@ -212,6 +218,7 @@ export const Reservations = () => {
                 <ReservationItem
                   { ...props }
                   onCopy={ onCopy }
+                  onDelete={ onDelete }
                   onUpdate={ onUpdate } />
               }
               items={ items }
@@ -267,9 +274,15 @@ export const Reservations = () => {
           reservationModalOpen(false)
         } }
         refetch={ (selected?: IReservation) => {
-          updateSelectedReservation(selected as SuitesWithReservations_reservations)
+          if (selected !== undefined) {
+            setSelectedReservation(selected)
+          }
           refetch()
         } }
+        remove={ (reservationId: string) => {
+          deleteReservation({ variables: { reservationId } })
+        } }
+        removing={ deleteLoading }
         reservation={ selectedReservation } />
     </>
   )

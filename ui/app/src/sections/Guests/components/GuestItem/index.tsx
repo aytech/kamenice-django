@@ -56,14 +56,14 @@ export const GuestItem = ({
           cancelText={ t("no") }
           okText={ t("yes") }
           onConfirm={ () => deleteGuest({ variables: { guestId: guest.id } }) }
-          title={ t("forms.delete-confirm") }>
+          title={ t("tooltips.delete-confirm") }>
           <Button
             className="remove-guest"
             danger
             key="delete"
             icon={ <DeleteOutlined /> }
             loading={ deleteLoading }>
-            { t("forms.delete") }
+            { t("delete") }
           </Button>
         </Popconfirm>
       ] }

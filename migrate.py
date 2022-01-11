@@ -8,7 +8,7 @@ def migrate_suites(source, destination, connection):
     for suite in source.fetchall():
         insert_query = '''
                     INSERT INTO api_suite (
-                        id, title, number, number_beds, price_base, created, updated, deleted, number_beds_extra)
+                        id, created, deleted, number, number_beds, number_beds_extra, price_base, title, updated)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
                 '''
         try:
@@ -24,7 +24,7 @@ def migrate_suite_discounts(source, destination, connection):
     source.execute(suites_discounts_select)
     for suite_discount in source.fetchall():
         insert_query = '''
-                        INSERT INTO api_discount_suite (id, created, deleted, type, value, updated, suite_id)
+                        INSERT INTO api_discount_suite (id, created, deleted, value, updated, suite_id, type)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     '''
         try:
@@ -41,9 +41,9 @@ def migrate_guests(source, destination, connection):
     for guest in source.fetchall():
         insert_query = '''
             INSERT INTO api_guest (
-                id, address_municipality, address_psc, address_street, citizenship, email, gender, identity, name, 
-                phone_number, surname, visa_number, created, updated, deleted, age)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                id, address_municipality, address_psc, address_street, age, citizenship, color, created, deleted, 
+                email, gender, identity, name, phone_number, surname, updated, visa_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
         try:
             destination.execute(insert_query, guest)
@@ -63,9 +63,13 @@ def migrate_reservations(source, destination, connection):
                 price_municipality, price_total, purpose, to_date, type, updated, guest_id, paying_guest_id, suite_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
-        destination.execute(insert_query, reservation)
-        connection.commit()
-        print('Reservation {} created'.format(reservation[5]))
+
+        try:
+            destination.execute(insert_query, reservation)
+            connection.commit()
+            print('Reservation {} created'.format(reservation[5]))
+        except Error as e:
+            print('Cannot insert reservations, reason: {}'.format(e))
 
 
 def migrate_reservation_roommates(source, destination, connection):
@@ -76,9 +80,13 @@ def migrate_reservation_roommates(source, destination, connection):
             INSERT INTO api_reservation_roommates (id, reservation_id, guest_id)
             VALUES (?, ?, ?)
         '''
-        destination.execute(insert_query, roommate)
-        connection.commit()
-        print('Roommate {} created'.format(roommate[0]))
+
+        try:
+            destination.execute(insert_query, roommate)
+            connection.commit()
+            print('Roommate {} created'.format(roommate[0]))
+        except Error as e:
+            print('Cannot insert reservation roommates, reason: {}'.format(e))
 
 
 def migrate_settings(source, destination, connection):
@@ -87,13 +95,17 @@ def migrate_settings(source, destination, connection):
     for settings in source.fetchall():
         insert_query = '''
             INSERT INTO api_settings (
-                id, created, deleted, municipality_fee, price_breakfast, updated, user_avatar, user_color, user_name, 
-                username, price_halfboard)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                id, created, deleted, municipality_fee, price_breakfast, price_halfboard, updated, user_avatar, 
+                user_color, user_name, username, price_breakfast_child, price_halfboard_child)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
-        destination.execute(insert_query, settings)
-        connection.commit()
-        print('Settings {} created'.format(settings[9]))
+
+        try:
+            destination.execute(insert_query, settings)
+            connection.commit()
+            print('Settings {} created'.format(settings[9]))
+        except Error as e:
+            print('Cannot insert settings, reason: {}'.format(e))
 
 
 def migrate_auth_user(source, destination, connection):
@@ -106,9 +118,13 @@ def migrate_auth_user(source, destination, connection):
                     date_joined, first_name)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
-        destination.execute(insert_query, user)
-        connection.commit()
-        print('User {} created'.format(user[4]))
+
+        try:
+            destination.execute(insert_query, user)
+            connection.commit()
+            print('User {} created'.format(user[4]))
+        except Error as e:
+            print('Cannot insert auth user, reason: {}'.format(e))
 
 
 source_db_name = 'db_source.sqlite3'  # replace with command line argument

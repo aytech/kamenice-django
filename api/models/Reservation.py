@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from api.constants import RESERVATION_TYPE_NONBINDING, RESERVATION_TYPE_INHABITED, RESERVATION_TYPE_ACCOMMODATED, \
-    RESERVATION_TYPE_BINDING, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_NOMEAL, MEAL_CHOICE_HALFBOARD
+    RESERVATION_TYPE_BINDING, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_NOMEAL, MEAL_CHOICE_HALFBOARD, RESERVATION_TYPE_INQUIRY
 from api.models.BaseModel import BaseModel
 from api.models.Guest import Guest
 from api.models.Suite import Suite
@@ -23,6 +23,7 @@ class Reservation(BaseModel):
         (RESERVATION_TYPE_ACCOMMODATED, _('Currently accommodated')),
         (RESERVATION_TYPE_BINDING, _('Binding reservation')),
         (RESERVATION_TYPE_INHABITED, _('Occupied term')),
+        (RESERVATION_TYPE_INQUIRY, _('Inquiry')),
         (RESERVATION_TYPE_NONBINDING, _('Non-binding reservation')),
     ]
     MEAL_CHOICES = [
@@ -35,13 +36,17 @@ class Reservation(BaseModel):
     expired = models.DateTimeField(blank=True, null=True, error_messages={
         'invalid': _('Enter valid date for the expiration'),
     })
+    extra_suites = models.ManyToManyField(
+        Suite,
+        related_name='+'
+    )
     from_date = models.DateTimeField(blank=False, null=False, error_messages={
         'invalid': _('Enter valid date for the reservation start date'),
         'null': _('Enter valid date for the reservation start date'),
     })
     guest = models.ForeignKey(
         Guest,
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
     )
     hash = models.CharField(blank=True, null=True, default=generate_reservation_hash, max_length=10)
     meal = models.CharField(blank=False, max_length=50, null=False, error_messages={
@@ -56,18 +61,6 @@ class Reservation(BaseModel):
         on_delete=models.DO_NOTHING,
         related_name='paying_guest'
     )
-    price_accommodation = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Price for accommodation is required field')
-    })
-    price_meal = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Price for meal is required field')
-    })
-    price_municipality = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Municipality fee is required field')
-    })
-    price_total = models.DecimalField(blank=False, decimal_places=2, max_digits=10, null=False, error_messages={
-        'null': _('Total price is required field')
-    })
     purpose = models.CharField(blank=True, max_length=100, null=True)
     roommates = models.ManyToManyField(
         Guest,
@@ -75,7 +68,7 @@ class Reservation(BaseModel):
     )
     suite = models.ForeignKey(
         Suite,
-        on_delete=models.CASCADE
+        on_delete=models.DO_NOTHING
     )
     to_date = models.DateTimeField(blank=False, null=False, error_messages={
         'invalid': _('Enter valid date for the reservation end date'),

@@ -7,6 +7,7 @@
   "company-name": "Mlýn Kamenice",
   "copy": "Kopírovat",
   "currency": "Kč",
+  "delete": "Odstranit",
   "edit": "Upravit",
   "email": "E-Mail",
   "enums": {
@@ -32,8 +33,6 @@
     "citizenship": "Občanství",
     "close-dirty": "Zavřít formulář? Data ve formuláři budou ztracena",
     "create": "Vytvořit",
-    "delete": "Odstranit",
-    "delete-confirm": "Opravdu odstranit?",
     "enter-message": "Zadejte text zprávy",
     "enter-number": "Zadejte číslo",
     "enter-text": "Zadejte text",
@@ -53,6 +52,7 @@
     "reset": "Reset",
     "save": "Uložit",
     "street": "Ulice",
+    "suite-selected": "Místnost je již vybrána",
     "update": "Upravit",
     "user-name": "Uživatelské jméno",
     "visa-number": "Číslo viza"
@@ -96,6 +96,7 @@
   "phone-number": "Telefonní číslo",
   "reservations": {
     "add-roommate": "Přidat hosta",
+    "add-suite": "Přidat místnost",
     "calculate-prices": "Vypočítat cenu",
     "choose-type": "Vyberte typ rezervace",
     "choose-suite": "Vyberte místnost",
@@ -128,6 +129,7 @@
     "send-cancel-info": "Neposílat potvrzení a zavřít vyskakovací okno",
     "send-confirmation-confirm": "Odeslat potvrzovací e-mail na adresu {{ email }}?",
     "send-confirmation-tooltip": "Odeslat potvrzovací e-mail",
+    "send-inquiry-response": "Odeslat odpověď na poptávku na adresu {{ email }}?",
     "send-ok-info": "Odeslat potvrzení a zavřít vyskakovací okno",
     "sending-message": "Posílám zprávu",
     "show-info": "Ukázat další informace",
@@ -140,6 +142,7 @@
     "ACCOMMODATED": "Aktuálně Ubytování",
     "BINDING": "Závazná Rezervace",
     "INHABITED": "Obydlený Termín",
+    "INQUIRY": "Poptávka",
     "NONBINDING": "Nezávazná Rezervace"
   },
   "rooms": {
@@ -190,10 +193,15 @@
   "tooltips": {
     "add-discount-suite": "Přidat slevu pro místnost",
     "add-roommate": "Přidat dalšího hosta",
+    "delete-confirm": "Opravdu odstranit?",
+    "delete-reservation-confirm-title": "Odstranit rezervaci?",
     "discounts-full": "Všechny slevy již byly vybrány",
     "room-beds": "Počet lůžek bez přistýlek",
     "room-capacity-full": "Místnost je plná",
-    "paying-guest": "Pokud není vybráno, hlavní host je platící host"
+    "paying-guest": "Pokud není vybráno, hlavní host je platící host",
+    "suite-extend-reservation": "Blokovat další místnost pro rezervaci",
+    "suite-extend-reservation-full": "Další místnosti nejsou k dispozici",
+    "suite-not-extendable": "Více místnosti lze zadat pouze u poptávek"
   },
   "update": "Aktualizovat",
   "woman": "Žena",

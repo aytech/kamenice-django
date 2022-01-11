@@ -1,11 +1,10 @@
-import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined, MinusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
+import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons"
 import { useLazyQuery } from "@apollo/client"
-import { Button, DatePicker, Form, FormInstance, Input, Select, Space, Spin, Tooltip, Typography } from "antd"
+import { Button, DatePicker, Form, FormInstance, Input, Select, Spin, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
-import moment, { Moment } from "moment"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { appSettings, reservationMealOptions, reservationTypeOptions, selectedSuite, suiteOptions } from "../../../../../../cache"
+import { reservationMealOptions, reservationTypeOptions, roommateOptions } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormat } from "../../../../../../lib/Constants"
@@ -13,10 +12,13 @@ import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Gue
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
 import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
 import { IReservation, OptionsType, PriceInfo, ReservationTypeKey } from "../../../../../../lib/Types"
+import { ReservationFormSuite } from "./components/ReservationFormSuite"
+import { ReservationRoommates } from "./components/ReservationRoommates"
 import "./styles.css"
 
 interface Props {
   form: FormInstance
+  getReservationDays: () => number
   guestsData?: Guests
   reservation?: IReservation
   setPriceInfo: (info: PriceInfo) => void
@@ -24,6 +26,7 @@ interface Props {
 
 export const ReservationForm = ({
   form,
+  getReservationDays,
   guestsData,
   reservation,
   setPriceInfo
@@ -32,10 +35,9 @@ export const ReservationForm = ({
   const { t } = useTranslation()
 
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
-  const [ addRoommateTooltip, setAddRoommateTooltip ] = useState<string>(t("tooltips.add-roommate"))
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
-  const [ roommateOptions, setRoommateOptions ] = useState<OptionsType[]>([])
+  const [ selecterReservationType, setSelectedReservationType ] = useState<ReservationTypeKey>("INQUIRY")
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
   const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
@@ -65,15 +67,16 @@ export const ReservationForm = ({
     meal: reservation.meal,
     notes: reservation.notes,
     paying: reservation.payingGuest === undefined || reservation.payingGuest === null ? null : reservation.payingGuest.id,
-    priceAccommodation: NumberHelper.formatCurrency(reservation.priceAccommodation),
-    priceMeal: NumberHelper.formatCurrency(reservation.priceMeal),
-    priceMunicipality: NumberHelper.formatCurrency(reservation.priceMunicipality),
-    priceTotal: NumberHelper.formatCurrency(reservation.priceTotal),
+    priceAccommodation: NumberHelper.formatCurrency(reservation.price?.accommodation),
+    priceMeal: NumberHelper.formatCurrency(reservation.price?.meal),
+    priceMunicipality: NumberHelper.formatCurrency(reservation.price?.municipality),
+    priceTotal: NumberHelper.formatCurrency(reservation.price?.total),
     purpose: reservation.purpose,
     roommates: reservation.roommates,
     suite: reservation.suite.id,
+    suites: reservation.extraSuites,
     type: reservation.type
-  } : { type: "NONBINDING" }
+  } : { type: selecterReservationType }
 
   const formLayout = {
     labelCol: {
@@ -84,45 +87,10 @@ export const ReservationForm = ({
     }
   }
 
-  const roommateValidator = [
-    {
-      message: t("forms.guest-selected"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        const duplicates: Array<{ id: number }> = form.getFieldValue("roommates").filter((id: { id: number } | undefined) => {
-          return id !== undefined && id.id === value
-        })
-        if (duplicates === undefined || duplicates.length <= 1) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, duplicate value"))
-      }
-    },
-    {
-      message: t("forms.guest-duplicate"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        if (form.getFieldValue("guest") !== value) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, equals to guest"))
-      }
-    }
-  ]
-
-  const getReservationDuration = (): number => {
-    const formDates: Array<Moment> = form.getFieldValue("dates")
-    if (formDates !== null) {
-      const startDate = moment(formDates[ 0 ])
-      const endDate = moment(formDates[ 1 ])
-      return Math.ceil(moment.duration(endDate.diff(startDate)).asDays())
-    }
-    // @todo: replace with default constant 
-    return 1
-  }
-
-  const getGuestsIds = (): Array<number> => {
+  const getFormGuests = (): Array<number> => {
     const guest = form.getFieldValue("guest")
-    const roommates = form.getFieldValue("roommates")
-      .map((roommate: any) => Number(roommate.id))
+    const roommates: number[] = []
+    form.getFieldValue("roommates")?.forEach((roommate: any) => roommates.push(Number(roommate.id)))
     return [ Number(guest), ...roommates ]
   }
 
@@ -137,16 +105,8 @@ export const ReservationForm = ({
   ) : null
 
   const selectGuest = (guestId: number) => {
-    setRoommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
+    roommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
   }
-
-  const updateRoomCapacity = useCallback((roommatesLength: number) => {
-    if (suiteCapacity <= roommatesLength) {
-      setAddRoommateTooltip(t("tooltips.room-capacity-full"))
-    } else {
-      setAddRoommateTooltip(t("tooltips.add-roommate"))
-    }
-  }, [ suiteCapacity, t ])
 
   const onPriceChange = () => {
     const priceAccommodation: number = NumberHelper.decodeCurrency(form.getFieldValue("priceAccommodation"))
@@ -168,13 +128,13 @@ export const ReservationForm = ({
     guestsData?.guests?.forEach((guest: Guests_guests | null) => {
       if (guest !== null) {
         options.push({
-          label: `${ guest.name } ${ guest.surname }`,
+          label: `${ guest.surname } ${ guest.name }`,
           value: guest.id
         })
       }
     })
     setGuestOptions(options)
-    setRoommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
+    roommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
     // Define room capacity
     const beds = reservation?.suite.numberBeds
     const bedsExtra = reservation?.suite.numberBedsExtra
@@ -185,13 +145,7 @@ export const ReservationForm = ({
       }
       setSuiteCapacity(capacity - 1) // -1 as main guest occupies one bed
     }
-    // When opening existing reservation, update
-    // tooltip for adding guests, if necessary
-    if (reservation?.roommates?.length !== undefined) {
-      updateRoomCapacity(reservation.roommates.length)
-    }
-  }, [ guestsData, reservation, updateRoomCapacity ])
-
+  }, [ guestsData, reservation ])
 
   return (
     <Form
@@ -223,70 +177,12 @@ export const ReservationForm = ({
           options={ guestOptions }
           showSearch />
       </Form.Item>
-      <Form.Item
-        wrapperCol={ {
-          lg: { offset: 8, span: 16 },
-          md: { offset: 8, span: 16 },
-          sm: { offset: 8, span: 16 }
-        } }>
-        <Form.List name="roommates">
-          { (fields, { add, remove }) => (
-            <>
-              { fields.map((field) => (
-                <Space
-                  align="baseline"
-                  className="roommate-list"
-                  key={ field.key }>
-                  <Form.Item
-                    hasFeedback
-                    { ...field }
-                    fieldKey={ [ field.key, 'first' ] }
-                    name={ [ field.name, "id" ] }
-                    rules={ roommateValidator }>
-                    <Select
-                      className="select-roommate"
-                      filterOption={ FormHelper.searchFilter }
-                      options={ roommateOptions }
-                      showSearch />
-                  </Form.Item>
-                  <MinusCircleOutlined onClick={ () => {
-                    remove(field.name)
-                    updateRoomCapacity(fields.length - 1) // fields length seems not updated immediately
-                    form.validateFields()
-                  } } />
-                </Space>
-              )) }
-              <Tooltip title={ addRoommateTooltip }>
-                <Button
-                  disabled={
-                    fields.length >= roommateOptions.length
-                    || fields.length >= suiteCapacity
-                  }
-                  id="add-roommate"
-                  type="dashed"
-                  onClick={ () => {
-                    add()
-                    updateRoomCapacity(fields.length + 1) // fields length seems not updated immediately
-                  } }
-                  block
-                  icon={ <UsergroupAddOutlined /> }>
-                  { t("reservations.add-roommate") }
-                </Button>
-              </Tooltip>
-            </>
-          ) }
-        </Form.List>
-      </Form.Item>
-      <Form.Item
-        hasFeedback
-        label={ t("rooms.single") }
-        name="suite"
-        required
-        rules={ [ FormHelper.requiredRule(t("reservations.choose-suite")) ] }>
-        <Select
-          id="select-suite"
-          options={ suiteOptions() } />
-      </Form.Item>
+      <ReservationRoommates
+        form={ form }
+        suiteCapacity={ suiteCapacity } />
+      <ReservationFormSuite
+        form={ form }
+        selectedType={ selecterReservationType } />
       <Form.Item
         hasFeedback
         label={ t("reservations.type") }
@@ -295,6 +191,7 @@ export const ReservationForm = ({
         rules={ [ FormHelper.requiredRule(t("reservations.choose-type")) ] }>
         <Select
           id="select-reservation-type"
+          onChange={ setSelectedReservationType }
           options={ reservationTypeOptions() } />
       </Form.Item>
       <Form.Item
@@ -352,7 +249,7 @@ export const ReservationForm = ({
           label={ t("reservations.price-room") }>
           <Typography.Text>
             <strong>
-              { NumberHelper.formatCurrency(selectedSuite()?.priceBase) } { t("currency") }
+              { NumberHelper.formatCurrency(reservation?.price?.suite.priceBase) } { t("currency") }
             </strong>
           </Typography.Text>
         </Form.Item>
@@ -402,16 +299,14 @@ export const ReservationForm = ({
             block
             icon={ <CalculatorOutlined /> }
             onClick={ () => {
-              const selectedSuiteId = selectedSuite()?.id
-              if (selectedSuiteId !== undefined) {
+              if (reservation?.suite !== undefined) {
                 calculatePrices({
                   variables: {
                     data: {
-                      guests: getGuestsIds(),
+                      guests: getFormGuests(),
                       meal: form.getFieldValue('meal'),
-                      numberDays: getReservationDuration(),
-                      settingsId: Number(appSettings()?.id),
-                      suiteId: Number(selectedSuiteId)
+                      numberDays: getReservationDays(),
+                      suiteId: Number(reservation.price?.suite.id)
                     }
                   }
                 })

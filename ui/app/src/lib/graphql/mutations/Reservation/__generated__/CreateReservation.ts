@@ -9,6 +9,11 @@ import { ReservationInput, ReservationMeal, GuestAge, ReservationType } from "./
 // GraphQL mutation operation: CreateReservation
 // ====================================================
 
+export interface CreateReservation_createReservation_reservation_extraSuites {
+  __typename: "Suite";
+  id: string;
+}
+
 export interface CreateReservation_createReservation_reservation_guest {
   __typename: "Guest";
   email: string | null;
@@ -20,6 +25,21 @@ export interface CreateReservation_createReservation_reservation_guest {
 export interface CreateReservation_createReservation_reservation_payingGuest {
   __typename: "Guest";
   id: string;
+}
+
+export interface CreateReservation_createReservation_reservation_priceSet_suite {
+  __typename: "Suite";
+  id: string;
+  priceBase: any;
+}
+
+export interface CreateReservation_createReservation_reservation_priceSet {
+  __typename: "Price";
+  accommodation: any;
+  meal: any;
+  municipality: any;
+  suite: CreateReservation_createReservation_reservation_priceSet_suite;
+  total: any;
 }
 
 export interface CreateReservation_createReservation_reservation_roommates {
@@ -38,16 +58,14 @@ export interface CreateReservation_createReservation_reservation_suite {
 export interface CreateReservation_createReservation_reservation {
   __typename: "Reservation";
   expired: any | null;
+  extraSuites: CreateReservation_createReservation_reservation_extraSuites[];
   fromDate: any;
   guest: CreateReservation_createReservation_reservation_guest;
   id: string;
   meal: ReservationMeal;
   notes: string | null;
   payingGuest: CreateReservation_createReservation_reservation_payingGuest | null;
-  priceAccommodation: any;
-  priceMeal: any;
-  priceMunicipality: any;
-  priceTotal: any;
+  priceSet: CreateReservation_createReservation_reservation_priceSet[];
   purpose: string | null;
   roommates: CreateReservation_createReservation_reservation_roommates[];
   suite: CreateReservation_createReservation_reservation_suite;

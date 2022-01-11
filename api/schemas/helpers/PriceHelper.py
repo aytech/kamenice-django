@@ -3,15 +3,13 @@ from math import floor
 from api.constants import DISCOUNT_CHOICE_EXTRA_BED, AGE_CHOICE_ADULT, AGE_CHOICE_CHILD, DISCOUNT_CHOICE_THREE_NIGHTS, \
     DISCOUNT_CHOICE_CHILD, MEAL_CHOICE_BREAKFAST, MEAL_CHOICE_HALFBOARD, AGE_CHOICE_YOUNG, \
     DISCOUNT_CHOICE_THIRD_FOURTH_BED, DISCOUNT_CHOICE_FIFTH_MORE_BED
-from api.models.Guest import Guest
-from api.models.Settings import Settings
-from api.models.Suite import Suite
+from api.schemas.Price import PriceOutput
 
 
 class PriceHelper:
     GUESTS_BASE_NUMBER = 2
 
-    def __init__(self, data):
+    def __init__(self, data, guests, suite, settings, discounts):
         # model data
         self.accommodation = 0
         self.meal = 0
@@ -21,12 +19,12 @@ class PriceHelper:
         self.days = data.number_days
         self.meal_option = data.meal
 
-        self.guests = Guest.objects.filter(pk__in=data.guests)
-        self.suite = Suite.objects.get(pk=data.suite_id)
-        self.settings = Settings.objects.get(pk=data.settings_id)
-        self.discounts = self.suite.discount_suite_set.all()
+        self.guests = guests
+        self.suite = suite
+        self.settings = settings
+        self.discounts = discounts
 
-    def calculate(self, model):
+    def calculate(self):
         # Order is important, first calculate base price
         self.calculate_accommodation()
         # Calculate price for three or more nights, if applicable.
@@ -47,7 +45,7 @@ class PriceHelper:
         # Final step
         self.calculate_total()
 
-        return model(
+        return PriceOutput(
             accommodation=self.accommodation,
             meal=self.meal,
             municipality=self.municipality,

@@ -57,13 +57,13 @@ export const Roommates = ({
         cancelText={ t("no") }
         okText={ t("yes") }
         onConfirm={ () => deleteGuest({ variables: { data: { id: guest.id, hash } } }) }
-        title={ t("forms.delete-confirm") }>
+        title={ t("tooltips.delete-confirm") }>
         <Button
           danger
           key="delete"
           icon={ <DeleteOutlined /> }
           loading={ deleteLoading }>
-          { t("forms.delete") }
+          { t("delete") }
         </Button>
       </Popconfirm>
     ]

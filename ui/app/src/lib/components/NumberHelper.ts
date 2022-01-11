@@ -1,12 +1,12 @@
 interface INumberHelper {
-  formatCurrency: (amount: number | null) => string | null
+  formatCurrency: (amount?: number | string | null) => string | null | undefined
   decodeCurrency: (amount: string) => number
 }
 
 export const NumberHelper: INumberHelper = {
-  formatCurrency: function (amount: number | null): string | null {
-    if (amount !== null) {
-      return Intl.NumberFormat("en-US", { style: "decimal", minimumFractionDigits: 2 }).format(amount)
+  formatCurrency: function (amount?: number | string | null): string | null | undefined {
+    if (amount !== undefined && amount !== null) {
+      return Intl.NumberFormat("en-US", { style: "decimal", minimumFractionDigits: 2 }).format(Number(amount))
     }
     return amount
   },

@@ -42,6 +42,9 @@ export const SUITES_WITH_RESERVATIONS = gql`
     }
     reservations(startDate: $startDate, endDate: $endDate) {
       expired
+      extraSuites {
+        id
+      }
       fromDate
       guest {
         email
@@ -55,10 +58,16 @@ export const SUITES_WITH_RESERVATIONS = gql`
       payingGuest {
         id
       }
-      priceAccommodation
-      priceMeal
-      priceMunicipality
-      priceTotal
+      priceSet {
+        accommodation
+        meal
+        municipality
+        suite {
+          id
+          priceBase
+        }
+        total
+      }
       purpose
       roommates {
         age

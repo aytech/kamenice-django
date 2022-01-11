@@ -42,7 +42,7 @@ export const RemoveButton = ({
       title={ `${ t("reservations.remove") }?` }>
       <Tooltip
         placement="top"
-        title={ t("forms.delete") }>
+        title={ t("delete") }>
         <Button
           block
           className="action delete"
@@ -62,10 +62,20 @@ export const SendConfirmationButton = ({
 
   const { t } = useTranslation()
 
+  const tooltip = () => {
+    if (reservation?.type === "INQUIRY") {
+      return t("reservations.send-inquiry-response", { email: reservation.guest?.email })
+    }
+    if (reservation?.type === "NONBINDING") {
+      return t("reservations.send-confirmation-confirm", { email: reservation.guest?.email })
+    }
+  }
+
   return reservation !== undefined
     && reservation.id !== undefined
     && reservation.guest?.email !== undefined
-    && reservation.guest.email !== null ? (
+    && reservation.guest.email !== null
+    && (reservation.type === "NONBINDING" || reservation.type === "INQUIRY") ? (
     <Popconfirm
       cancelText={ t("no") }
       okText={ t("yes") }
@@ -73,7 +83,7 @@ export const SendConfirmationButton = ({
       title={ (
         <>
           <p>
-            { t("reservations.send-confirmation-confirm", { email: reservation.guest?.email }) }
+            { tooltip() }
           </p>
           <TextArea
             rows={ 3 }

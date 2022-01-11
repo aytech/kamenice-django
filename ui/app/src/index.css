@@ -61,6 +61,10 @@ h4.ant-typography.drawer-title {
   width: 100%;
 }
 
+.fill-width>.ant-space-item:first-child {
+  width: 100%;
+}
+
 .low-case {
   text-transform: lowercase;
 }

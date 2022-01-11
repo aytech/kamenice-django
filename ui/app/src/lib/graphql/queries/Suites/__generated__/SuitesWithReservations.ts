@@ -33,6 +33,11 @@ export interface SuitesWithReservations_suites {
   title: string;
 }
 
+export interface SuitesWithReservations_reservations_extraSuites {
+  __typename: "Suite";
+  id: string;
+}
+
 export interface SuitesWithReservations_reservations_guest {
   __typename: "Guest";
   email: string | null;
@@ -44,6 +49,21 @@ export interface SuitesWithReservations_reservations_guest {
 export interface SuitesWithReservations_reservations_payingGuest {
   __typename: "Guest";
   id: string;
+}
+
+export interface SuitesWithReservations_reservations_priceSet_suite {
+  __typename: "Suite";
+  id: string;
+  priceBase: any;
+}
+
+export interface SuitesWithReservations_reservations_priceSet {
+  __typename: "Price";
+  accommodation: any;
+  meal: any;
+  municipality: any;
+  suite: SuitesWithReservations_reservations_priceSet_suite;
+  total: any;
 }
 
 export interface SuitesWithReservations_reservations_roommates {
@@ -62,16 +82,14 @@ export interface SuitesWithReservations_reservations_suite {
 export interface SuitesWithReservations_reservations {
   __typename: "Reservation";
   expired: any | null;
+  extraSuites: SuitesWithReservations_reservations_extraSuites[];
   fromDate: any;
   guest: SuitesWithReservations_reservations_guest;
   id: string;
   meal: ReservationMeal;
   notes: string | null;
   payingGuest: SuitesWithReservations_reservations_payingGuest | null;
-  priceAccommodation: any;
-  priceMeal: any;
-  priceMunicipality: any;
-  priceTotal: any;
+  priceSet: SuitesWithReservations_reservations_priceSet[];
   purpose: string | null;
   roommates: SuitesWithReservations_reservations_roommates[];
   suite: SuitesWithReservations_reservations_suite;

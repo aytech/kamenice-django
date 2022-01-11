@@ -1,4 +1,4 @@
-import { Dropdown, Menu, Popover } from "antd"
+import { Dropdown, Menu, Modal, Popover } from "antd"
 import { Moment } from "moment"
 import { ReactCalendarItemRendererProps, TimelineItem } from "react-calendar-timeline"
 import Text from "antd/lib/typography/Text"
@@ -6,8 +6,9 @@ import { CustomItemFields } from "../../../../lib/Types"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  onCopy: (itemId: number) => void
-  onUpdate: (itemId: number) => void
+  onCopy: (itemId: string) => void
+  onDelete: (reservationId: string) => void
+  onUpdate: (itemId: string) => void
 }
 
 export const ReservationItem = ({
@@ -16,12 +17,22 @@ export const ReservationItem = ({
   getItemProps,
   getResizeProps,
   onCopy,
+  onDelete,
   onUpdate
 }: ReactCalendarItemRendererProps<TimelineItem<CustomItemFields, Moment>> & Props) => {
 
   const { t } = useTranslation()
 
   const { left: leftResizeProps, right: rightResizeProps } = getResizeProps()
+
+  const deleteWarn = (reservationId: string) => {
+    Modal.confirm({
+      title: t("tooltips.delete-reservation-confirm-title"),
+      cancelText: t("no"),
+      okText: t("yes"),
+      onOk: () => onDelete(reservationId)
+    })
+  }
 
   return item.itemProps !== undefined ? (
     <div { ...getItemProps(item.itemProps) }>
@@ -44,13 +55,18 @@ export const ReservationItem = ({
             <Menu>
               <Menu.Item
                 key="copy"
-                onClick={ () => onCopy(Number(item.id)) }>
+                onClick={ () => onCopy(item.id) }>
                 { t("copy") }
               </Menu.Item>
               <Menu.Item
                 key="update"
-                onClick={ () => onUpdate(Number(item.id)) }>
+                onClick={ () => onUpdate(item.id) }>
                 { t("update") }
+              </Menu.Item>
+              <Menu.Item
+                key="delete"
+                onClick={ () => deleteWarn(item.reservationId) }>
+                { t("delete") }
               </Menu.Item>
             </Menu>
           ) }

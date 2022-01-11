@@ -11,9 +11,8 @@ import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { Guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { GUESTS } from "../../../../lib/graphql/queries/Guests"
 import { CreateReservation, CreateReservationVariables, CreateReservation_createReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { CREATE_RESERVATION, DELETE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
+import { CREATE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
 import { UpdateReservation, UpdateReservationVariables, UpdateReservation_updateReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
-import { DeleteReservation, DeleteReservationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { useTranslation } from "react-i18next"
 import moment from "moment"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
@@ -22,16 +21,21 @@ import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/gra
 import { ReservationForm } from "./components/ReservationForm"
 import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
 import { reservationModalOpen } from "../../../../cache"
+import { TimelineData } from "../../data"
 
 interface Props {
   close: () => void
   refetch?: (selected?: IReservation) => void
+  remove: (id: string) => void
+  removing: boolean,
   reservation?: IReservation
 }
 
 export const ReservationModal = ({
   close,
   refetch,
+  remove,
+  removing,
   reservation
 }: Props) => {
 
@@ -58,12 +62,16 @@ export const ReservationModal = ({
     close()
   }
 
-  const actionCallback = (callback: (newReservation: any) => void, newReservation?: any | null) => {
+  const actionCallback = (callback: (newReservation: any) => void, newReservation?: CreateReservation_createReservation_reservation | UpdateReservation_updateReservation_reservation | null) => {
     if (newReservation !== undefined && newReservation !== null) {
       callback(newReservation)
     }
     if (refetch !== undefined) {
-      refetch(newReservation)
+      if (newReservation === undefined || newReservation == null) {
+        refetch()
+      } else {
+        refetch(TimelineData.getAppReservation(newReservation, newReservation?.priceSet))
+      }
     }
   }
 
@@ -74,13 +82,6 @@ export const ReservationModal = ({
         setReservationConfirmationVisible(true)
         message.success(t("reservations.created"))
       }, data.createReservation?.reservation)
-    },
-    onError: networkErrorHandler
-  })
-  const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
-    onCompleted: () => {
-      actionCallback(() => message.success(t("reservations.deleted")))
-      closeModal()
     },
     onError: networkErrorHandler
   })
@@ -107,6 +108,17 @@ export const ReservationModal = ({
     onError: networkErrorHandler
   })
 
+  const getReservationDays = (): number => {
+    const formDates: Array<Moment> = form.getFieldValue("dates")
+    if (formDates !== null) {
+      const startDate = moment(formDates[ 0 ])
+      const endDate = moment(formDates[ 1 ])
+      return Math.ceil(moment.duration(endDate.diff(startDate)).asDays())
+    }
+    // @todo: replace with default constant 
+    return 1
+  }
+
   const getReservationInput = (): ReservationInput => {
     const formData = form.getFieldsValue(true)
     const formDates: Array<Moment> = form.getFieldValue("dates")
@@ -128,10 +140,12 @@ export const ReservationModal = ({
     }
 
     const input: ReservationInput = {
+      extraSuitesIds: formData.suites?.map((suite: { id: string }) => suite.id),
       fromDate: from.format(dateFormat),
       guestId: formData.guest,
       meal: formData.meal,
       notes: formData.notes,
+      numberDays: getReservationDays(),
       payingGuestId: formData.paying,
       priceAccommodation: priceInfo.priceAccommodation,
       priceMeal: priceInfo.priceMeal,
@@ -162,7 +176,11 @@ export const ReservationModal = ({
 
   const sendReservationConfirmation = (reservation?: IReservation, note?: string) => {
     if (reservation !== undefined && reservation.id !== undefined) {
-      sendConfirmation({ variables: { data: { reservationId: String(reservation.id), note } } })
+      sendConfirmation({
+        variables: {
+          data: { note, reservationId: String(reservation.id) }
+        }
+      })
     }
   }
 
@@ -170,6 +188,7 @@ export const ReservationModal = ({
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
     if (visible === true) {
+      setReservationConfirmationVisible(false)
       form.resetFields()
       getGuests()
     }
@@ -203,9 +222,7 @@ export const ReservationModal = ({
               sm={ { span: 4 } }
               xs={ { span: 24 } }>
               <RemoveButton
-                deleteReservation={ (reservationId: string) => {
-                  deleteReservation({ variables: { reservationId } })
-                } }
+                deleteReservation={ remove }
                 key="remove"
                 reservation={ reservation } />
             </Col>
@@ -242,7 +259,7 @@ export const ReservationModal = ({
           spinning={
             confirmationLoading
             || createLoading
-            || deleteLoading
+            || removing
             || guestsLoading
             || updateLoading
           }
@@ -259,6 +276,7 @@ export const ReservationModal = ({
             reservation={ reservation } />
           <ReservationForm
             form={ form }
+            getReservationDays={ getReservationDays }
             guestsData={ guestsData }
             reservation={ reservation }
             setPriceInfo={ setPriceInfo } />

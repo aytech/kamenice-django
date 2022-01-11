@@ -46,14 +46,14 @@ export const SuiteItem = ({
           key="delete"
           okText={ t("yes") }
           onConfirm={ () => deleteSuite({ variables: { suiteId: suite.id } }) }
-          title={ t("forms.delete-confirm") }>
+          title={ t("tooltips.delete-confirm") }>
           <Button
             danger
             className="delete-suite"
             key="delete"
             icon={ <DeleteOutlined /> }
             loading={ deleteLoading }>
-            { t("forms.delete") }
+            { t("delete") }
           </Button>
         </Popconfirm>
       ] }

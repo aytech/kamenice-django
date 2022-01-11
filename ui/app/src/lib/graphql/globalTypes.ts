@@ -53,12 +53,13 @@ export enum ReservationType {
   ACCOMMODATED = "ACCOMMODATED",
   BINDING = "BINDING",
   INHABITED = "INHABITED",
+  INQUIRY = "INQUIRY",
   NONBINDING = "NONBINDING",
 }
 
 export interface ConfirmationInput {
-  reservationId?: string | null;
   note?: string | null;
+  reservationId?: string | null;
 }
 
 export interface ContactInput {
@@ -85,8 +86,7 @@ export interface PriceInput {
   guests: (number | null)[];
   meal?: string | null;
   numberDays: number;
-  settingsId?: number | null;
-  suiteId: number;
+  suiteId?: number | null;
 }
 
 export interface ReservationDragInput {
@@ -115,11 +115,13 @@ export interface ReservationGuestInput {
 
 export interface ReservationInput {
   expired?: string | null;
+  extraSuitesIds?: (number | null)[] | null;
   fromDate?: string | null;
   guestId?: number | null;
   id?: string | null;
   meal?: string | null;
   notes?: string | null;
+  numberDays?: number | null;
   payingGuestId?: number | null;
   priceAccommodation?: any | null;
   priceMeal?: any | null;
