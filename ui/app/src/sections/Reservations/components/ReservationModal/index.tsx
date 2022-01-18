@@ -188,7 +188,6 @@ export const ReservationModal = ({
     // Form instance is created on page load (before modal is open),
     // but the component is rendered only when modal is opened
     if (visible === true) {
-      setReservationConfirmationVisible(false)
       form.resetFields()
       getGuests()
     }
@@ -222,7 +221,10 @@ export const ReservationModal = ({
               sm={ { span: 4 } }
               xs={ { span: 24 } }>
               <RemoveButton
-                deleteReservation={ remove }
+                deleteReservation={ (reservationId: string) => {
+                  setReservationConfirmationVisible(false)
+                  remove(reservationId)
+                } }
                 key="remove"
                 reservation={ reservation } />
             </Col>
