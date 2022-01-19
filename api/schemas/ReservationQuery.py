@@ -1,12 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from graphene import Int, ObjectType, Field, List, String
 from graphql_jwt.decorators import user_passes_test
-from django.utils.translation import gettext_lazy as _
-
-from api.schemas.exceptions.PermissionDenied import PermissionDenied
-from api.schemas.models.Reservation import Reservation, ReservationTypeOption
 
 from api.models.Reservation import Reservation as ReservationModel
+from api.schemas.exceptions.PermissionDenied import PermissionDenied
+from api.schemas.models.Reservation import Reservation, ReservationTypeOption
 
 
 class ReservationQuery(ObjectType):
@@ -34,9 +32,9 @@ class ReservationQuery(ObjectType):
     def resolve_reservations(self, _info, start_date, end_date):
         try:
             return ReservationModel.objects.filter(to_date__gte=start_date).filter(from_date__lte=end_date).exclude(
-                deleted=True)
-        except Exception:
-            raise Exception(_('Reservation not found'))
+                deleted=True).select_related('guest')
+        except ObjectDoesNotExist:
+            return None
 
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
     def resolve_reservation_meals(self, _info):
