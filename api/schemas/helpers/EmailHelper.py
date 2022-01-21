@@ -57,9 +57,9 @@ class EmailHelper:
 
     def meal_description(self):
         if self.reservation.meal == MEAL_CHOICE_HALFBOARD:
-            return str(_('Half board'))
+            return {'adult': str(_('Half board')), 'child': str(_('Half board child'))}
         elif self.reservation.meal == MEAL_CHOICE_BREAKFAST:
-            return str(_('Breakfast'))
+            return {'adult': str(_('Breakfast')), 'child': str(_('Breakfast child'))}
         return None
 
     def meal_price(self):
@@ -97,7 +97,8 @@ class EmailHelper:
             meal_description = self.meal_description()
             meal_price = self.meal_price()
             if meal_description is not None:
-                data['meal_type'] = meal_description
+                data['meal_type'] = meal_description['adult']
+                data['meal_type_child'] = meal_description['child']
             if meal_price is not None:
                 data['price_meal'] = meal_price['adult']
                 data['price_meal_child'] = meal_price['child']

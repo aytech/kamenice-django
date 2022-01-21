@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-17 08:50+0100\n"
+"POT-Creation-Date: 2022-01-21 12:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,7 +127,7 @@ msgstr "Bez Stravy"
 msgid "Breakfast included"
 msgstr "Jen Snídaně"
 
-#: .\api\models\Reservation.py:32 .\api\schemas\helpers\EmailHelper.py:59
+#: .\api\models\Reservation.py:32 .\api\schemas\helpers\EmailHelper.py:60
 msgid "Half board"
 msgstr "Polopenze"
 
@@ -155,9 +155,8 @@ msgstr "Vyberte údaj Typ Rezervace ze seznamu"
 msgid "Base price is required field"
 msgstr "Základní cena je povinný údaj"
 
-#: .\api\schemas\Guest.py:53 .\api\schemas\Reservation.py:64
-#: .\api\schemas\Reservation.py:339 .\api\schemas\Reservation.py:378
-#: .\api\schemas\Reservation.py:421
+#: .\api\schemas\Guest.py:53 .\api\schemas\Reservation.py:205
+#: .\api\schemas\Reservation.py:237 .\api\schemas\Reservation.py:274
 msgid "Reservation not found"
 msgstr "Rezervace nenalezena"
 
@@ -259,28 +258,19 @@ msgstr "Výpis úspěšně vygenerován"
 msgid "Could not generate statement"
 msgstr "Výpis se nepodařilo vygenerovat"
 
-#: .\api\schemas\Reservation.py:170
-msgid "The room is already reserved for this period of time"
-msgstr "Místnost je rezervováná pro tuto dobu"
-
-#: .\api\schemas\Reservation.py:173 .\api\schemas\Reservation.py:178
-#, python-format
-msgid "The room \"%(room)s\" is already reserved for this period of time"
-msgstr "Místnost \"%(room)s\" je rezervováná pro tuto dobu"
-
-#: .\api\schemas\Reservation.py:213 .\api\schemas\Reservation.py:299
+#: .\api\schemas\Reservation.py:70 .\api\schemas\Reservation.py:154
 msgid "Please select guest from the list"
 msgstr "Prosím vyberte hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:219 .\api\schemas\Reservation.py:305
+#: .\api\schemas\Reservation.py:76 .\api\schemas\Reservation.py:160
 msgid "Please select paying guest from the list"
 msgstr "Prosím vyberte platícího hosta ze seznamu"
 
-#: .\api\schemas\Reservation.py:224
+#: .\api\schemas\Reservation.py:81
 msgid "Room not found"
 msgstr "Místnost nebyla nalezena"
 
-#: .\api\schemas\Reservation.py:425
+#: .\api\schemas\Reservation.py:277
 msgid "Could not send confirmation email"
 msgstr "Nepodařilo se odeslat potvrzovací e -mail"
 
@@ -343,9 +333,17 @@ msgstr "Listopad"
 msgid "December"
 msgstr "Prosinec"
 
-#: .\api\schemas\helpers\EmailHelper.py:61
+#: .\api\schemas\helpers\EmailHelper.py:60
+msgid "Half board child"
+msgstr "Dětská polopenze"
+
+#: .\api\schemas\helpers\EmailHelper.py:62
 msgid "Breakfast"
 msgstr "Snídaně"
+
+#: .\api\schemas\helpers\EmailHelper.py:62
+msgid "Breakfast child"
+msgstr "Dětská snídaně"
 
 #: .\api\schemas\helpers\GuestStatementHelper.py:77
 msgid "guests_statement"
@@ -354,3 +352,13 @@ msgstr "vypis_hostu"
 #: .\api\schemas\helpers\GuestStatementHelper.py:102
 msgid "foreigners_statement"
 msgstr "ubytovani_cizincu"
+
+#: .\api\schemas\helpers\ReservationHelper.py:61
+msgid "The room is already reserved for this period of time"
+msgstr "Místnost je rezervováná pro tuto dobu"
+
+#: .\api\schemas\helpers\ReservationHelper.py:64
+#: .\api\schemas\helpers\ReservationHelper.py:69
+#, python-format
+msgid "The room \"%(room)s\" is already reserved for this period of time"
+msgstr "Místnost \"%(room)s\" je rezervováná pro tuto dobu"
