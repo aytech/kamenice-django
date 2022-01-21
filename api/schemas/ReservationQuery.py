@@ -32,7 +32,7 @@ class ReservationQuery(ObjectType):
     def resolve_reservations(self, _info, start_date, end_date):
         try:
             return ReservationModel.objects.filter(to_date__gte=start_date).filter(from_date__lte=end_date).exclude(
-                deleted=True).select_related('guest')
+                deleted=True).select_related('guest').order_by('from_date')
         except ObjectDoesNotExist:
             return None
 

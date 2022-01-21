@@ -7,6 +7,8 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+BCC_EMAILS = [{'address': 'oyapparov@gmail.com', 'name': 'Oleg Yapparov'}]
+
 GRAPHIQL_AVAILABLE = True
 
 GRAPHQL_JWT = {

@@ -151,4 +151,5 @@ AUTHENTICATION_BACKENDS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-FROM_EMAIL_ADDRESS = '"Penzion Mlýn Kamenice" <info@penzionkamenice.cz>'
+FROM_EMAIL_ADDRESS = 'info@penzionkamenice.cz'
+FROM_EMAIL_NAME = 'Penzion Mlýn Kamenice'

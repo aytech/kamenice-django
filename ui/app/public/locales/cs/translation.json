@@ -196,6 +196,8 @@
     "delete-confirm": "Opravdu odstranit?",
     "delete-reservation-confirm-title": "Odstranit rezervaci?",
     "discounts-full": "Všechny slevy již byly vybrány",
+    "no-earlier-items": "Nebyly nalezeny žádné dřívější rezervace",
+    "no-later-items": "Nebyly nalezeny žádné pozdější rezervace",
     "room-beds": "Počet lůžek bez přistýlek",
     "room-capacity-full": "Místnost je plná",
     "paying-guest": "Pokud není vybráno, hlavní host je platící host",

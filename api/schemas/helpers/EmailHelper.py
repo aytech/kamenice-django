@@ -1,15 +1,17 @@
 import base64
 import os
 
-from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileType, FileName, Disposition, ContentId
+from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileType, FileName, Disposition, ContentId, \
+    Personalization, Bcc, To
 
 from api.constants import RESERVATION_TYPE_INQUIRY, RESERVATION_TYPE_NONBINDING, ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, \
     ENVIRON_EMAIL_INQUIRY_TEMPLATE, ENVIRON_EMAIL_API_KEY, MUNICIPALITY_FEE, MEAL_CHOICE_HALFBOARD, \
-    MEAL_PRICE_HALFBOARD, MEAL_PRICE_BREAKFAST, MEAL_CHOICE_BREAKFAST
+    MEAL_PRICE_HALFBOARD, MEAL_PRICE_BREAKFAST, MEAL_CHOICE_BREAKFAST, MEAL_PRICE_CHILD_HALFBOARD, \
+    MEAL_PRICE_CHILD_BREAKFAST
 from api.schemas.helpers.DateHelper import DateHelper
 from django.utils.translation import gettext_lazy as _
 
-from kamenice_django.settings.base import MEDIA_ROOT
+from kamenice_django.settings.base import MEDIA_ROOT, FROM_EMAIL_ADDRESS, FROM_EMAIL_NAME
 
 
 class EmailHelper:
@@ -49,7 +51,7 @@ class EmailHelper:
         for price in self.reservation.price_set.all():
             options.append({
                 'description': '{}.'.format(price.suite.title),
-                'price': str(price.total)
+                'price': '{:,.0f}'.format(price.total).replace(',', '.')
             })
         return options
 
@@ -62,16 +64,20 @@ class EmailHelper:
 
     def meal_price(self):
         if self.reservation.meal == MEAL_CHOICE_HALFBOARD:
-            return MEAL_PRICE_HALFBOARD
+            return {'child': MEAL_PRICE_CHILD_HALFBOARD, 'adult': MEAL_PRICE_HALFBOARD}
         elif self.reservation.meal == MEAL_CHOICE_BREAKFAST:
-            return MEAL_PRICE_BREAKFAST
+            return {'child': MEAL_PRICE_CHILD_BREAKFAST, 'adult': MEAL_PRICE_BREAKFAST}
         return None
 
     def send_mail(self):
         # https://github.com/sendgrid/sendgrid-python/blob/main/use_cases/attachment.md
-        mail = Mail(
-            from_email=self.settings.FROM_EMAIL_ADDRESS,
-            to_emails=','.join([self.reservation.guest.email]))
+        mail = Mail(from_email=(FROM_EMAIL_ADDRESS, FROM_EMAIL_NAME))
+        personalization = Personalization()
+        personalization.add_email(To(self.reservation.guest.email, ''))
+        for bcc_address in self.settings.BCC_EMAILS:
+            if bcc_address['address'] != self.reservation.guest.email:
+                personalization.add_email(Bcc(bcc_address['address'], bcc_address['name']))
+        mail.add_personalization(personalization)
         if self.reservation.type == RESERVATION_TYPE_NONBINDING:
             mail.dynamic_template_data = {
                 'from': DateHelper.get_formatted_date(self.reservation.from_date),
@@ -93,7 +99,8 @@ class EmailHelper:
             if meal_description is not None:
                 data['meal_type'] = meal_description
             if meal_price is not None:
-                data['price_meal'] = meal_price
+                data['price_meal'] = meal_price['adult']
+                data['price_meal_child'] = meal_price['child']
             mail.dynamic_template_data = data
             # Attach terms
             file_path = os.path.join(MEDIA_ROOT, 'smluvni_podminky.pdf')

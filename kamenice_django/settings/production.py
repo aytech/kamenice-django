@@ -10,6 +10,8 @@ ALLOWED_HOSTS = [
     'kamenice.pythonanywhere.com',
 ]
 
+BCC_EMAILS = [{'address': 'info@penzionkamenice.cz', 'name': 'Iva Ambrozova'}]
+
 GRAPHIQL_AVAILABLE = False
 
 GRAPHQL_JWT = {

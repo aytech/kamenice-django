@@ -11,7 +11,7 @@ import { ReservationModal } from "./components/ReservationModal"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { message, Skeleton, Space, Spin } from "antd"
+import { Button, message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
@@ -21,6 +21,7 @@ import { dateFormat } from "../../lib/Constants"
 import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
 import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { CaretLeftOutlined, CaretRightOutlined } from "@ant-design/icons"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -28,13 +29,16 @@ export const Reservations = () => {
   const { t } = useTranslation()
   const { open: openReservation } = useParams()
 
-  const [ canvasUpdateTimeout, setCanvasUpdateTimeout ] = useState<number>()
   const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
-  const [ initialTimeEnd ] = useState<Moment>(moment().add(12, "day"))
-  const [ initialTimeStart ] = useState<Moment>(moment().add(-12, "day"))
+  const [ canvasTimeEnd, setCanvasTimeEnd ] = useState<number>(moment().add(15, "day").valueOf())
+  const [ canvasTimeStart, setCanvasTimeStart ] = useState<number>(moment().subtract(15, "day").valueOf())
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
   const [ selectedItem, setSelectedItem ] = useState<string>()
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
+  const [ lastFrameEndTime ] = useState<number>(moment().add(1, "year").valueOf())
+  const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
+  const [ firstFrameStartTime ] = useState<number>(moment().subtract(1, "year").valueOf())
+  const [ firstFrameEndTime ] = useState<number>(moment(firstFrameStartTime).add(1, "month").valueOf())
 
   const [ getReservations, { loading: dataLoading, data: reservationsData, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => setInitialLoading(false),
@@ -110,23 +114,33 @@ export const Reservations = () => {
     TimelineData.selectDeselectItem(items)
   }
 
-  const onTimelineBoundsChange = (canvasTimeStart: number, canvasTimeEnd: number) => {
-    clearTimeout(canvasUpdateTimeout)
-    setCanvasUpdateTimeout(window.setTimeout(() => {
-      getReservations({
-        variables: {
-          startDate: moment(canvasTimeStart).format(dateFormat),
-          endDate: moment(canvasTimeEnd).format(dateFormat)
-        }
-      })
-    }, 700))
-  }
-
   const onCopy = (itemId: string) => openUpdateReservationModal(itemId, true)
 
   const onDelete = (reservationId: string) => deleteReservation({ variables: { reservationId } })
 
   const onUpdate = (itemId: string) => openUpdateReservationModal(itemId)
+
+  const moveToItem = (stopMessage: string, item?: TimelineItem<CustomItemFields, Moment>) => {
+    if (item !== undefined) {
+      const center = item.start_time.valueOf()
+      const from_time = moment(center).subtract(15, "day")
+      const to_time = moment(center).add(15, "day")
+      setCanvasTimeStart(from_time.valueOf())
+      setCanvasTimeEnd(to_time.valueOf())
+    } else {
+      message.info(stopMessage)
+    }
+  }
+
+  const moveForward = () => moveToItem(
+    t("tooltips.no-later-items"),
+    items.find(item => item.start_time.valueOf() > canvasTimeEnd)
+  )
+
+  const moveBackwards = () => moveToItem(
+    t("tooltips.no-earlier-items"),
+    items.slice().reverse().find(item => item.start_time.valueOf() < canvasTimeStart)
+  )
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
@@ -179,11 +193,11 @@ export const Reservations = () => {
   useEffect(() => {
     getReservations({
       variables: {
-        startDate: initialTimeStart.format(dateFormat),
-        endDate: initialTimeEnd.format(dateFormat)
+        startDate: moment().add(-1, "year").format(dateFormat),
+        endDate: moment().add(1, "year").format(dateFormat)
       }
     })
-  }, [ getReservations, initialTimeEnd, initialTimeStart ])
+  }, [ getReservations ])
 
   useEffect(() => {
     pageTitle(t("home-title"))
@@ -200,12 +214,22 @@ export const Reservations = () => {
           spinning={ dragLoading || dataLoading }
           size="large">
           <div id="app-timeline">
+            <Space align="end" className="app-footer">
+              <Button
+                icon={ <CaretLeftOutlined /> }
+                onClick={ moveBackwards }
+                shape="circle" />
+              <Button
+                icon={ <CaretRightOutlined /> }
+                onClick={ moveForward }
+                shape="circle" />
+            </Space>
             <Timeline
               canChangeGroup={ true }
               canMove={ true }
               canResize={ false }
-              defaultTimeEnd={ initialTimeEnd }
-              defaultTimeStart={ initialTimeStart }
+              defaultTimeEnd={ moment().add(1, "day") }
+              defaultTimeStart={ moment().subtract(1, "day") }
               groupRenderer={ ({ group }) => {
                 return (
                   <Title level={ 5 }>
@@ -228,7 +252,23 @@ export const Reservations = () => {
               onItemDeselect={ onItemDeselect }
               onItemMove={ onItemMove }
               onItemSelect={ onItemSelect }
-              onBoundsChange={ onTimelineBoundsChange }>
+              onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
+                if (visibleTimeEnd > lastFrameEndTime) {
+                  setCanvasTimeEnd(lastFrameEndTime)
+                  setCanvasTimeStart(lastFrameStartTime)
+                  updateScrollCanvas(lastFrameStartTime, lastFrameEndTime)
+                } else if (visibleTimeStart < firstFrameStartTime) {
+                  setCanvasTimeEnd(firstFrameEndTime)
+                  setCanvasTimeStart(firstFrameStartTime)
+                  updateScrollCanvas(firstFrameStartTime, firstFrameEndTime)
+                } else {
+                  setCanvasTimeEnd(visibleTimeEnd)
+                  setCanvasTimeStart(visibleTimeStart)
+                  updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
+                }
+              } }
+              visibleTimeEnd={ canvasTimeEnd }
+              visibleTimeStart={ canvasTimeStart }>
               <TimelineHeaders>
                 <SidebarHeader>
                   { ({ getRootProps }) => {
