@@ -11,7 +11,7 @@ import { ReservationModal } from "./components/ReservationModal"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { Button, message, Skeleton, Space, Spin } from "antd"
+import { Button, Col, Input, message, Row, Skeleton, Space, Spin, Tooltip } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
@@ -91,11 +91,12 @@ export const Reservations = () => {
     if (newSuite !== undefined && timelineItem !== undefined) {
       const reservationDuration: number = moment(timelineItem.end_time).diff(timelineItem.start_time)
       const newStartDate = moment(dragTime).hour(timelineItem.start_time.hour()).minute(timelineItem.start_time.minutes())
-      const newEndDate = moment(dragTime + reservationDuration).hour(timelineItem.end_time.hour()).minute(timelineItem.end_time.minutes())
+      const newEndDate = moment(newStartDate.valueOf() + reservationDuration).hour(timelineItem.end_time.hour()).minute(timelineItem.end_time.minutes())
       const variables: UpdateReservationVariables = {
         data: {
+          extraSuitesIds: timelineItem.extraSuites.map(id => Number(id)),
           fromDate: newStartDate.format(dateFormat),
-          id: String(timelineItem.id),
+          id: String(timelineItem.reservationId),
           suiteId: Number(newSuite.id),
           toDate: newEndDate.format(dateFormat)
         }
@@ -105,7 +106,7 @@ export const Reservations = () => {
   }
 
   const onItemSelect = (itemId: string) => {
-    setSelectedItem(String(itemId))
+    setSelectedItem(itemId)
     setItems(TimelineData.selectDeselectItem(items, itemId))
   }
 
@@ -120,7 +121,7 @@ export const Reservations = () => {
 
   const onUpdate = (itemId: string) => openUpdateReservationModal(itemId)
 
-  const moveToItem = (stopMessage: string, item?: TimelineItem<CustomItemFields, Moment>) => {
+  const moveToItem = (item?: TimelineItem<CustomItemFields, Moment>, stopMessage?: string) => {
     if (item !== undefined) {
       const center = item.start_time.valueOf()
       const from_time = moment(center).subtract(15, "day")
@@ -128,19 +129,35 @@ export const Reservations = () => {
       setCanvasTimeStart(from_time.valueOf())
       setCanvasTimeEnd(to_time.valueOf())
     } else {
-      message.info(stopMessage)
+      if (stopMessage !== undefined) {
+        message.info(stopMessage)
+      }
     }
   }
 
   const moveForward = () => moveToItem(
-    t("tooltips.no-later-items"),
-    items.find(item => item.start_time.valueOf() > canvasTimeEnd)
+    items.find(item => item.start_time.valueOf() > canvasTimeEnd),
+    t("tooltips.no-later-items")
   )
 
   const moveBackwards = () => moveToItem(
-    t("tooltips.no-earlier-items"),
-    items.slice().reverse().find(item => item.start_time.valueOf() < canvasTimeStart)
+    items.slice().reverse().find(item => item.start_time.valueOf() < canvasTimeStart),
+    t("tooltips.no-earlier-items")
   )
+
+  const searchReservation = (value: string) => {
+    if (value.length > 0) {
+      const reservation = items.find(item => {
+        return (item.guest.name.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1
+          || item.guest.surname.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1)
+          && item.id !== selectedItem
+      })
+      if (reservation !== undefined) {
+        onItemSelect(reservation.id)
+        moveToItem(reservation)
+      }
+    }
+  }
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
@@ -214,16 +231,34 @@ export const Reservations = () => {
           spinning={ dragLoading || dataLoading }
           size="large">
           <div id="app-timeline">
-            <Space align="end" className="app-footer">
-              <Button
-                icon={ <CaretLeftOutlined /> }
-                onClick={ moveBackwards }
-                shape="circle" />
-              <Button
-                icon={ <CaretRightOutlined /> }
-                onClick={ moveForward }
-                shape="circle" />
-            </Space>
+            <Row className="timeline-header">
+              <Col lg={ 10 } md={ 12 } sm={ 14 } xs={ 16 } className="flex-container">
+                <Input.Search
+                  allowClear
+                  enterButton
+                  id="search-guest"
+                  onSearch={ searchReservation }
+                  placeholder={ t("placeholders.search-reservation") } />
+              </Col>
+              <Col lg={ 10 } md={ 8 } sm={ 5 } xs={ 2 } />
+              <Col lg={ 4 } md={ 4 } sm={ 5 } xs={ 6 } className="text-right">
+                <Tooltip title={ t("tooltips.move-previous-reservation") }>
+                  <Button
+                    icon={ <CaretLeftOutlined /> }
+                    onClick={ moveBackwards }
+                    shape="circle"
+                    size="large"
+                    style={ { marginRight: "10px" } } />
+                </Tooltip>
+                <Tooltip title={ t("tooltips.move-next-reservation") }>
+                  <Button
+                    icon={ <CaretRightOutlined /> }
+                    onClick={ moveForward }
+                    shape="circle"
+                    size="large" />
+                </Tooltip>
+              </Col>
+            </Row>
             <Timeline
               canChangeGroup={ true }
               canMove={ true }

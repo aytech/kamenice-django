@@ -132,3 +132,7 @@
   white-space: nowrap;
   color: white;
 }
+
+.timeline-header {
+  padding: 12px 24px;
+}

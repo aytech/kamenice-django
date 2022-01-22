@@ -90,6 +90,7 @@ export interface PriceInput {
 }
 
 export interface ReservationDragInput {
+  extraSuitesIds?: (number | null)[] | null;
   fromDate?: string | null;
   id?: string | null;
   suiteId?: number | null;

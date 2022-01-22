@@ -38,6 +38,7 @@ class ReservationInput(InputObjectType):
 
 
 class ReservationDragInput(InputObjectType):
+    extra_suites_ids = List(Int)
     from_date = String()
     id = ID()
     suite_id = Int()

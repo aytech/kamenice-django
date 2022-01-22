@@ -65,10 +65,19 @@ h4.ant-typography.drawer-title {
   width: 100%;
 }
 
+.flex-container {
+  display: flex;
+  align-items: center;
+}
+
 .low-case {
   text-transform: lowercase;
 }
 
 .pagination {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }

@@ -94,6 +94,9 @@
     "statements": "Výpisy"
   },
   "phone-number": "Telefonní číslo",
+  "placeholders": {
+    "search-reservation": "Vyhledat rezervaci podle hosta"
+  },
   "reservations": {
     "add-roommate": "Přidat hosta",
     "add-suite": "Přidat místnost",
@@ -196,6 +199,8 @@
     "delete-confirm": "Opravdu odstranit?",
     "delete-reservation-confirm-title": "Odstranit rezervaci?",
     "discounts-full": "Všechny slevy již byly vybrány",
+    "move-next-reservation": "Přejít na další rezervaci",
+    "move-previous-reservation": "Přejít na předchozí rezervaci",
     "no-earlier-items": "Nebyly nalezeny žádné dřívější rezervace",
     "no-later-items": "Nebyly nalezeny žádné pozdější rezervace",
     "room-beds": "Počet lůžek bez přistýlek",
