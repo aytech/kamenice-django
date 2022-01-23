@@ -93,7 +93,7 @@ export interface ReservationDragInput {
   extraSuitesIds?: (number | null)[] | null;
   fromDate?: string | null;
   id?: string | null;
-  suiteId?: number | null;
+  suiteId?: string | null;
   toDate?: string | null;
 }
 
@@ -124,15 +124,20 @@ export interface ReservationInput {
   notes?: string | null;
   numberDays?: number | null;
   payingGuestId?: number | null;
-  priceAccommodation?: any | null;
-  priceMeal?: any | null;
-  priceMunicipality?: any | null;
-  priceTotal?: any | null;
+  price?: ReservationPrice | null;
   purpose?: string | null;
   roommateIds?: (number | null)[] | null;
-  suiteId?: number | null;
+  suiteId?: string | null;
   toDate?: string | null;
   type?: string | null;
+}
+
+export interface ReservationPrice {
+  accommodation?: string | null;
+  meal?: string | null;
+  municipality?: string | null;
+  suiteId?: string | null;
+  total?: string | null;
 }
 
 export interface SettingsInput {

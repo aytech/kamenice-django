@@ -60,7 +60,7 @@ export const Reservations = () => {
   // Click on timeline outside of any reservation, 
   // opens modal for new reservation
   const openNewReservationModal = (groupId: number, time: number) => {
-    const selectedGroup = timelineGroups().find(group => group.id === groupId)
+    const selectedGroup = timelineGroups().find(group => group.id === String(groupId))
     if (selectedGroup !== undefined) {
       const suite = reservationsData?.suites?.find(suite => suite?.id === selectedGroup.id)
       if (suite !== null) {
@@ -97,7 +97,7 @@ export const Reservations = () => {
           extraSuitesIds: timelineItem.extraSuites.map(id => Number(id)),
           fromDate: newStartDate.format(dateFormat),
           id: String(timelineItem.reservationId),
-          suiteId: Number(newSuite.id),
+          suiteId: newSuite.id,
           toDate: newEndDate.format(dateFormat)
         }
       }
@@ -186,7 +186,7 @@ export const Reservations = () => {
         })
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
-        setSelectedReservation(TimelineData.getAppReservation(reservation, reservation.priceSet))
+        setSelectedReservation(TimelineData.getAppReservation(reservation, reservation.suite, reservation.priceSet))
         reservationModalOpen(true)
       }
     })

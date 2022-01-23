@@ -77,6 +77,7 @@ export const SUITES_WITH_RESERVATIONS = gql`
         id
         numberBeds
         numberBedsExtra
+        priceBase
       }
       toDate
       type

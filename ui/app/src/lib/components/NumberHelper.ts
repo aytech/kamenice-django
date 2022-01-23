@@ -1,6 +1,6 @@
 interface INumberHelper {
   formatCurrency: (amount?: number | string | null) => string | null | undefined
-  decodeCurrency: (amount: string) => number
+  decodeCurrency: (amount?: string | null) => string
 }
 
 export const NumberHelper: INumberHelper = {
@@ -10,7 +10,7 @@ export const NumberHelper: INumberHelper = {
     }
     return amount
   },
-  decodeCurrency: function (amount: string): number {
-    return Number(amount.replaceAll(/[,\s]+/ig, ""))
+  decodeCurrency: function (amount?: string | null): string {
+    return amount === undefined || amount === null ? "" : amount.replaceAll(/[,\s]+/ig, "")
   }
 }

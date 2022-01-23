@@ -9,7 +9,7 @@ import { ReservationTypeKey } from "../../../../../../../../lib/Types"
 
 interface Props {
   form: FormInstance
-  selectedType: ReservationTypeKey
+  selectedType?: ReservationTypeKey
 }
 
 export const ReservationFormSuite = ({

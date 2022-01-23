@@ -16,6 +16,14 @@ class ReservationTypeOption(ObjectType):
     value = String(required=True)
 
 
+class ReservationPrice(InputObjectType):
+    accommodation = String()
+    meal = String()
+    municipality = String()
+    suite_id = String()
+    total = String()
+
+
 class ReservationInput(InputObjectType):
     expired = String()
     extra_suites_ids = List(Int)
@@ -26,13 +34,10 @@ class ReservationInput(InputObjectType):
     notes = String()
     number_days = Int()
     paying_guest_id = Int()
-    price_accommodation = Decimal()
-    price_meal = Decimal()
-    price_municipality = Decimal()
-    price_total = Decimal()
+    price = ReservationPrice()
     purpose = String()
     roommate_ids = List(Int)
-    suite_id = Int()
+    suite_id = String()
     to_date = String()
     type = String()
 
@@ -41,7 +46,7 @@ class ReservationDragInput(InputObjectType):
     extra_suites_ids = List(Int)
     from_date = String()
     id = ID()
-    suite_id = Int()
+    suite_id = String()
     to_date = String()
 
 

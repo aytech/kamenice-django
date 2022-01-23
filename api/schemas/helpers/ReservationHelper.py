@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -9,26 +11,34 @@ from api.models.Reservation import Reservation
 
 class ReservationHelper:
     @staticmethod
-    def add_price_calculation(data, reservation, guests, suite, settings, extra=False):
+    def add_price_calculation(data, reservation, guests, suite, settings, model=None, extra=False):
         price = PriceHelper(data=data, guests=guests, suite=suite, settings=settings,
                             discounts=suite.discount_suite_set.all()).calculate()
+
         if extra:
             accommodation = price.accommodation
             meal = price.meal
             municipality = price.municipality
             total = price.total
         else:
-            accommodation = data.price_accommodation if data.price_accommodation is not None else price.accommodation
-            meal = data.price_meal if data.price_meal is not None else price.meal
-            municipality = data.price_municipality if data.price_municipality is not None else price.municipality
-            total = data.price_total if data.price_total is not None else price.total
-        try:
+            accommodation = data.price.accommodation if data.price.accommodation is not None else price.accommodation
+            meal = data.price.meal if data.price.meal is not None else price.meal
+            municipality = data.price.municipality if data.price.municipality is not None else price.municipality
+            total = data.price.total if data.price.total is not None else price.total
+
+        if model is not None:
+            model.accommodation = accommodation
+            model.meal = meal
+            model.municipality = municipality
+            model.total = total
+        else:
             model = Price(accommodation=accommodation, days=data.number_days, meal=meal, municipality=municipality,
                           reservation=reservation, suite=suite, total=total)
+        try:
             model.full_clean()
             model.save()
-        except ValidationError:
-            pass
+        except ValidationError as e:
+            logging.getLogger('kamenice').error('Failed to add price for suite {}, error: {}'.format(suite.id, e))
 
     @staticmethod
     def check_duplicates(suite_id, extra_suites_ids, from_date, to_date, instance_id=None):

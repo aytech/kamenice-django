@@ -11,7 +11,7 @@ import { dateFormat } from "../../../../../../lib/Constants"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
 import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
-import { IReservation, OptionsType, PriceInfo, ReservationTypeKey } from "../../../../../../lib/Types"
+import { IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
 import { ReservationFormSuite } from "./components/ReservationFormSuite"
 import { ReservationRoommates } from "./components/ReservationRoommates"
 import "./styles.css"
@@ -21,15 +21,13 @@ interface Props {
   getReservationDays: () => number
   guestsData?: Guests
   reservation?: IReservation
-  setPriceInfo: (info: PriceInfo) => void
 }
 
 export const ReservationForm = ({
   form,
   getReservationDays,
   guestsData,
-  reservation,
-  setPriceInfo
+  reservation
 }: Props) => {
 
   const { t } = useTranslation()
@@ -37,19 +35,13 @@ export const ReservationForm = ({
   const [ additionalInfoVisible, setAdditionalInfoVisible ] = useState<boolean>(false)
   const [ guestOptions, setGuestOptions ] = useState<OptionsType[]>([])
   const [ pricesVisible, setPricesVisible ] = useState<boolean>(false)
-  const [ selecterReservationType, setSelectedReservationType ] = useState<ReservationTypeKey>("INQUIRY")
+  const [ selectedReservationType, setSelectedReservationType ] = useState<ReservationTypeKey>()
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
   const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
     fetchPolicy: "no-cache",
     onCompleted: (data: CalculateReservationPrice) => {
       if (data.price !== null) {
-        setPriceInfo({
-          priceAccommodation: data.price.accommodation,
-          priceMeal: data.price.meal,
-          priceMunicipality: data.price.municipality,
-          priceTotal: data.price.total
-        })
         form.setFieldsValue({
           priceAccommodation: NumberHelper.formatCurrency(data.price.accommodation),
           priceMeal: NumberHelper.formatCurrency(data.price.meal),
@@ -76,7 +68,7 @@ export const ReservationForm = ({
     suite: reservation.suite.id,
     suites: reservation.extraSuites,
     type: reservation.type
-  } : { type: selecterReservationType }
+  } : { type: selectedReservationType }
 
   const formLayout = {
     labelCol: {
@@ -109,17 +101,16 @@ export const ReservationForm = ({
   }
 
   const onPriceChange = () => {
-    const priceAccommodation: number = NumberHelper.decodeCurrency(form.getFieldValue("priceAccommodation"))
-    const priceMeal: number = NumberHelper.decodeCurrency(form.getFieldValue("priceMeal"))
-    const priceMunicipality: number = NumberHelper.decodeCurrency(form.getFieldValue("priceMunicipality"))
-    const priceTotal = priceAccommodation + priceMeal + priceMunicipality
-    setPriceInfo({
-      priceAccommodation: priceAccommodation,
-      priceMeal: priceMeal,
-      priceMunicipality: priceMunicipality,
-      priceTotal: priceTotal
+    const accommodation: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceAccommodation")))
+    const meal: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceMeal")))
+    const municipality: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceMunicipality")))
+    const priceTotal = NumberHelper.formatCurrency(accommodation + meal + municipality)
+    form.setFieldsValue({
+      priceAccommodation: NumberHelper.formatCurrency(accommodation),
+      priceMeal: NumberHelper.formatCurrency(meal),
+      priceMunicipality: NumberHelper.formatCurrency(municipality),
+      priceTotal
     })
-    form.setFieldsValue({ priceTotal: NumberHelper.formatCurrency(priceTotal) })
   }
 
   useEffect(() => {
@@ -145,7 +136,9 @@ export const ReservationForm = ({
       }
       setSuiteCapacity(capacity - 1) // -1 as main guest occupies one bed
     }
-  }, [ guestsData, reservation ])
+    setSelectedReservationType(reservation?.type)
+    form.resetFields()
+  }, [ form, guestsData, reservation ])
 
   return (
     <Form
@@ -165,12 +158,10 @@ export const ReservationForm = ({
         label={ t("guests.main") }
         name="guest"
         required
-        rules={ [
-          {
-            message: t("forms.choose-guest"),
-            required: true
-          }
-        ] }>
+        rules={ [ {
+          message: t("forms.choose-guest"),
+          required: true
+        } ] }>
         <Select
           filterOption={ FormHelper.searchFilter }
           onChange={ selectGuest }
@@ -182,7 +173,7 @@ export const ReservationForm = ({
         suiteCapacity={ suiteCapacity } />
       <ReservationFormSuite
         form={ form }
-        selectedType={ selecterReservationType } />
+        selectedType={ selectedReservationType } />
       <Form.Item
         hasFeedback
         label={ t("reservations.type") }

@@ -7,6 +7,7 @@ from graphql_jwt.decorators import user_passes_test
 
 from api.constants import RESERVATION_TYPE_INQUIRY
 from api.models.Guest import Guest as GuestModel
+from api.models.Price import Price as PriceModel
 from api.models.Reservation import Reservation as ReservationModel
 from api.models.Settings import Settings as SettingsModel
 from api.models.Suite import Suite as SuiteModel
@@ -164,8 +165,6 @@ class UpdateReservation(Mutation):
                 # Roommates, extra suites and prices are recreated from scratch
                 for roommate_id in instance.roommates.all():
                     instance.roommates.remove(roommate_id)
-                for price in instance.price_set.all():
-                    price.delete()
                 for suite_id in instance.extra_suites.all():
                     instance.extra_suites.remove(suite_id)
 
@@ -178,23 +177,37 @@ class UpdateReservation(Mutation):
                     except ObjectDoesNotExist as ex:
                         logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
 
-                if instance.type == RESERVATION_TYPE_INQUIRY:
-                    try:
-                        for extra_suite_id in data.extra_suites_ids:
-                            extra_suite = SuiteModel.objects.get(pk=extra_suite_id, deleted=False)
-                            instance.extra_suites.add(extra_suite)
-                            ReservationHelper.add_price_calculation(data=data, reservation=instance, guests=all_guests,
-                                                                    suite=extra_suite, settings=settings, extra=True)
-                    except ObjectDoesNotExist as ex:
-                        logging.getLogger('kamenice').error('Failed to add extra suite {}'.format(ex))
-
                 try:
                     instance.full_clean()
                 except ValidationError as errors:
                     raise Exception(errors.messages[0])
 
-                ReservationHelper.add_price_calculation(data=data, reservation=instance, guests=all_guests,
-                                                        suite=instance.suite, settings=settings)
+                if instance.type == RESERVATION_TYPE_INQUIRY:
+                    try:
+                        for extra_suite_id in data.extra_suites_ids:
+                            extra_suite = SuiteModel.objects.get(pk=extra_suite_id, deleted=False)
+                            instance.extra_suites.add(extra_suite)
+                    except ObjectDoesNotExist as ex:
+                        logging.getLogger('kamenice').error('Failed to add extra suite {}'.format(ex))
+                # Modifying extra reservation
+                if data.suite_id != data.price.suite_id:
+                    try:
+                        price_suite = SuiteModel.objects.get(pk=data.price.suite_id, deleted=False)
+                        price_model = PriceModel.objects.get(reservation_id=instance.id, suite_id=price_suite.id)
+                        ReservationHelper.add_price_calculation(data=data, reservation=instance, guests=all_guests,
+                                                                suite=price_suite, settings=settings, model=price_model)
+                    except ObjectDoesNotExist:
+                        logging.getLogger('kamenice').error(
+                            'Failed to add price for suite {}'.format(data.price.suite_id))
+                else:
+                    try:
+                        price_model = PriceModel.objects.get(reservation_id=instance.id, suite_id=instance.suite.id)
+                        ReservationHelper.add_price_calculation(data=data, reservation=instance, guests=all_guests,
+                                                                suite=instance.suite, settings=settings,
+                                                                model=price_model)
+                    except ObjectDoesNotExist:
+                        logging.getLogger('kamenice').error(
+                            'Failed to add price for suite {}'.format(data.suite_id))
 
                 instance.save()
 

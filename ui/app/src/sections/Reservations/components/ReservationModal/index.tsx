@@ -4,7 +4,7 @@ import { Moment } from "moment"
 import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/client"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
-import { IReservation, PriceInfo } from "../../../../lib/Types"
+import { IReservation } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
@@ -22,6 +22,7 @@ import { ReservationForm } from "./components/ReservationForm"
 import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
 import { reservationModalOpen } from "../../../../cache"
 import { TimelineData } from "../../data"
+import { NumberHelper } from "../../../../lib/components/NumberHelper"
 
 interface Props {
   close: () => void
@@ -44,12 +45,6 @@ export const ReservationModal = ({
   const visible = useReactiveVar(reservationModalOpen)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
-  const [ priceInfo, setPriceInfo ] = useState<PriceInfo>({
-    priceAccommodation: 0,
-    priceMeal: 0,
-    priceMunicipality: 0,
-    priceTotal: 0
-  })
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationNote, setReservationConfirmationNote ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
@@ -70,7 +65,7 @@ export const ReservationModal = ({
       if (newReservation === undefined || newReservation == null) {
         refetch()
       } else {
-        refetch(TimelineData.getAppReservation(newReservation, newReservation?.priceSet))
+        refetch(TimelineData.getAppReservation(newReservation, reservation!!.price!!.suite, newReservation?.priceSet))
       }
     }
   }
@@ -147,10 +142,13 @@ export const ReservationModal = ({
       notes: formData.notes,
       numberDays: getReservationDays(),
       payingGuestId: formData.paying,
-      priceAccommodation: priceInfo.priceAccommodation,
-      priceMeal: priceInfo.priceMeal,
-      priceMunicipality: priceInfo.priceMunicipality,
-      priceTotal: priceInfo.priceTotal,
+      price: {
+        accommodation: NumberHelper.decodeCurrency(formData.priceAccommodation),
+        meal: NumberHelper.decodeCurrency(formData.priceMeal),
+        municipality: NumberHelper.decodeCurrency(formData.priceMunicipality),
+        suiteId: NumberHelper.decodeCurrency(reservation?.price?.suite.id),
+        total: NumberHelper.decodeCurrency(formData.priceTotal)
+      },
       purpose: formData.purpose,
       roommateIds: roommates,
       suiteId: formData.suite,
@@ -280,8 +278,7 @@ export const ReservationModal = ({
             form={ form }
             getReservationDays={ getReservationDays }
             guestsData={ guestsData }
-            reservation={ reservation }
-            setPriceInfo={ setPriceInfo } />
+            reservation={ reservation } />
         </Spin>
       </Modal>
       <GuestDrawer refetch={ refetchGuests } />

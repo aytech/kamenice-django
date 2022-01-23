@@ -1,11 +1,11 @@
 import { TimelineGroup, TimelineItem } from "react-calendar-timeline"
-import { CustomGroupFields, CustomItemFields, IReservation, ReservationPrice } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, ReservationPrice, Suite } from "../../lib/Types"
 import moment, { Moment } from "moment"
 import { Colors } from "../../lib/components/Colors"
 import { SuitesWithReservations_reservations, SuitesWithReservations_reservations_priceSet } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface ITimelineData {
-  getAppReservation: (reservation: IReservation, prices: ReservationPrice[]) => IReservation
+  getAppReservation: (reservation: IReservation, suite: Suite, prices: ReservationPrice[]) => IReservation
   getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy?: boolean) => IReservation
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
@@ -13,8 +13,8 @@ interface ITimelineData {
 }
 
 export const TimelineData: ITimelineData = {
-  getAppReservation: (reservation: IReservation, prices: ReservationPrice[]) => {
-    const price = prices.find(price => price.suite.id === reservation.suite.id)
+  getAppReservation: (reservation: IReservation, suite: Suite, prices: ReservationPrice[]) => {
+    const price = prices.find(price => price.suite.id === suite.id)
     return {
       ...reservation,
       expired: reservation.expired !== null ? moment(reservation.expired) : null,
@@ -87,12 +87,12 @@ export const TimelineData: ITimelineData = {
       meal: reservation.meal,
       notes: reservation.notes,
       payingGuest: reservation.payingGuest,
-      price: {
-        accommodation: price?.accommodation,
-        meal: price?.meal,
-        municipality: price?.municipality,
-        suite: price === undefined ? reservation.suite : price.suite,
-        total: price?.total
+      price: price !== undefined ? price : {
+        accommodation: "0",
+        meal: "0",
+        municipality: "0",
+        suite: reservation.suite,
+        total: "0"
       },
       purpose: reservation.purpose,
       reservationId: reservation.id,

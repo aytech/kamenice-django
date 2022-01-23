@@ -65,7 +65,7 @@ export interface GuestOption {
 }
 
 export interface Suite {
-  id: number | string
+  id: string
   number?: number | null
   numberBeds?: number | null
   numberBedsExtra?: number | null
@@ -82,7 +82,7 @@ export interface ReservationPrice {
   meal: string | null,
   municipality: string | null,
   suite: {
-    id: number | string,
+    id: string,
     priceBase?: string | null
   },
   total: string | null
@@ -139,7 +139,7 @@ export interface OptionsType {
 }
 
 export interface CustomGroupFields {
-  id: number | string
+  id: string
   number: number | null
   priceBase: string
   title: string
@@ -189,10 +189,10 @@ export interface User {
 }
 
 export interface PriceInfo {
-  priceAccommodation: number
-  priceMeal: number
-  priceMunicipality?: number
-  priceTotal?: number
+  accommodation?: string | null
+  meal?: string | null
+  municipality?: string | null
+  total?: string | null
 }
 
 export interface ReservationInputExtended {

@@ -77,6 +77,7 @@ export interface SuitesWithReservations_reservations_suite {
   id: string;
   numberBeds: number;
   numberBedsExtra: number;
+  priceBase: any;
 }
 
 export interface SuitesWithReservations_reservations {
