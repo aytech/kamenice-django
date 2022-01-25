@@ -5,6 +5,7 @@ from graphql_jwt.decorators import user_passes_test
 
 from api.models.Settings import Settings as SettingsModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
+from api.schemas.helpers.FormHelper import FormHelper
 
 
 class Settings(DjangoObjectType):
@@ -30,11 +31,11 @@ class SettingsQuery(ObjectType):
 
 class SettingsInput(InputObjectType):
     id = ID()
-    municipality_fee = Decimal()
-    price_breakfast = Decimal()
-    price_breakfast_child = Decimal()
-    price_halfboard = Decimal()
-    price_halfboard_child = Decimal()
+    municipality_fee = String()
+    price_breakfast = String()
+    price_breakfast_child = String()
+    price_halfboard = String()
+    price_halfboard_child = String()
     user_avatar = String()
     user_color = String()
     user_name = String()
@@ -52,19 +53,14 @@ class UpdateSettings(Mutation):
         try:
             instance = SettingsModel.objects.get(pk=data.id)
             if instance:
-                instance.municipality_fee = data.municipality_fee if data.municipality_fee is not None else \
-                    instance.municipality_fee
-                instance.price_breakfast = data.price_breakfast if data.price_breakfast is not None else \
-                    instance.price_breakfast
-                instance.price_breakfast_child = data.price_breakfast_child if data.price_breakfast_child is not None \
-                    else instance.price_breakfast_child
-                instance.price_halfboard = data.price_halfboard if data.price_halfboard is not None else \
-                    instance.price_halfboard
-                instance.price_halfboard_child = data.price_halfboard_child if data.price_halfboard_child is not None \
-                    else instance.price_halfboard
-                instance.user_avatar = data.user_avatar if data.user_avatar is not None else instance.user_avatar
-                instance.user_color = data.user_color if data.user_color is not None else instance.user_color
-                instance.user_name = data.user_name if data.user_name is not None else instance.user_name
+                instance.municipality_fee = FormHelper.get_value(data.municipality_fee, 0.00)
+                instance.price_breakfast = FormHelper.get_value(data.price_breakfast, 0.00)
+                instance.price_breakfast_child = FormHelper.get_value(data.price_breakfast_child, 0.00)
+                instance.price_halfboard = FormHelper.get_value(data.price_halfboard, 0.00)
+                instance.price_halfboard_child = FormHelper.get_value(data.price_halfboard_child, 0.00)
+                instance.user_avatar = FormHelper.get_value(data.user_avatar, instance.user_avatar)
+                instance.user_color = FormHelper.get_value(data.user_color, instance.user_color)
+                instance.user_name = FormHelper.get_value(data.user_name, instance.user_name)
 
                 try:
                     instance.full_clean()

@@ -277,10 +277,11 @@ class SendConfirmationEmail(Mutation):
 
     @classmethod
     @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
-    def mutate(cls, _root, _info, data):
+    def mutate(cls, _root, info, data):
         try:
             instance = ReservationModel.objects.get(pk=data.reservation_id, deleted=False)
-            handler = EmailHelper(instance, data)
+            settings = SettingsModel.objects.get(username=info.context.user)
+            handler = EmailHelper(reservation=instance, data=data, settings=settings)
             handler.send_mail()
             return SendConfirmationEmail(reservation=instance)
         except ObjectDoesNotExist:
