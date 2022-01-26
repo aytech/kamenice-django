@@ -186,7 +186,7 @@ export const Reservations = () => {
         })
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
-        setSelectedReservation(TimelineData.getAppReservation(reservation, reservation.suite, reservation.priceSet))
+        setSelectedReservation(TimelineData.getAppReservation(reservation, reservation.priceSet, reservation.suite.id))
         reservationModalOpen(true)
       }
     })

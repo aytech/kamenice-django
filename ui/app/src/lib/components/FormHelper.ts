@@ -1,6 +1,18 @@
 import { Rule } from "antd/lib/form"
 import { Discount, IGuestForm, OptionsType } from "../Types"
+import { NumberHelper } from "./NumberHelper"
 
+interface PriceInput {
+  accommodation: string
+  meal: string
+  municipality: string
+}
+interface PriceModel {
+  priceAccommodation?: string
+  priceMeal?: string
+  priceMunicipality?: string
+  priceTotal?: string
+}
 interface IFormHelper {
   discountValidator: (
     message: string,
@@ -14,7 +26,9 @@ interface IFormHelper {
   requiredRule: (message: string) => Rule
   searchFilter: (input?: any, option?: any) => boolean
   trim: (value: string | undefined) => string | undefined
+  updatePrice: (price: PriceInput, excludeField: string) => PriceModel
 }
+
 export const FormHelper: IFormHelper = {
   discountValidator: (
     message: string,
@@ -85,5 +99,25 @@ export const FormHelper: IFormHelper = {
   },
   trim: (value: string | undefined): string | undefined => {
     return value === undefined ? value : value.trim()
+  },
+  updatePrice: (price: PriceInput, excludeField: string): PriceModel => {
+    const model: PriceModel = {}
+    const accommodation: number = Number(NumberHelper.decodeCurrency(price.accommodation))
+    const meal: number = Number(NumberHelper.decodeCurrency(price.meal))
+    const municipality: number = Number(NumberHelper.decodeCurrency(price.municipality))
+    const total = NumberHelper.formatCurrency(accommodation + meal + municipality)
+    if (excludeField !== "priceAccommodation") {
+      model.priceAccommodation = NumberHelper.formatCurrency(accommodation)
+    }
+    if (excludeField !== "priceMeal") {
+      model.priceMeal = NumberHelper.formatCurrency(meal)
+    }
+    if (excludeField !== "priceMunicipality" && municipality !== null) {
+      model.priceMunicipality = NumberHelper.formatCurrency(municipality)
+    }
+    if (excludeField !== "priceTotal" && total !== null) {
+      model.priceTotal = total
+    }
+    return model
   }
 }

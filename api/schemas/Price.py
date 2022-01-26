@@ -19,6 +19,7 @@ class PriceInput(InputObjectType):
 
 class PriceOutput(ObjectType):
     accommodation = String(required=True)
+    days = Int(required=True)
     meal = String(required=True)
     municipality = String(required=True)
     total = String(required=True)

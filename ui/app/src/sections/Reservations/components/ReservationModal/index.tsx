@@ -48,6 +48,7 @@ export const ReservationModal = ({
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationNote, setReservationConfirmationNote ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
+  const [ reservationPriceSuiteId, setReservationPriceSuiteId ] = useState<string>()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
@@ -65,7 +66,7 @@ export const ReservationModal = ({
       if (newReservation === undefined || newReservation == null) {
         refetch()
       } else {
-        refetch(TimelineData.getAppReservation(newReservation, reservation!!.price!!.suite, newReservation?.priceSet))
+        refetch(TimelineData.getAppReservation(newReservation, newReservation?.priceSet, reservationPriceSuiteId))
       }
     }
   }
@@ -166,8 +167,10 @@ export const ReservationModal = ({
   const submitForm = (): void => {
     const variables: ReservationInput = getReservationInput()
     if (reservation !== undefined && reservation.id !== undefined) {
+      setReservationPriceSuiteId(reservation.price?.suite.id)
       updateReservation({ variables: { data: { id: String(reservation.id), ...variables } } })
     } else {
+      setReservationPriceSuiteId(form.getFieldValue("suite"))
       createReservation({ variables: { data: { ...variables } } })
     }
   }

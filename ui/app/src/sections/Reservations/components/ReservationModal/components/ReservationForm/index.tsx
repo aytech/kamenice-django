@@ -2,7 +2,7 @@ import { CalculatorOutlined, EyeInvisibleOutlined, EyeOutlined } from "@ant-desi
 import { useLazyQuery } from "@apollo/client"
 import { Button, DatePicker, Form, FormInstance, Input, Select, Spin, Typography } from "antd"
 import { Store } from "antd/lib/form/interface"
-import { useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { reservationMealOptions, reservationTypeOptions, roommateOptions } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
@@ -100,17 +100,12 @@ export const ReservationForm = ({
     roommateOptions(guestOptions.filter(option => option.value !== String(guestId)))
   }
 
-  const onPriceChange = () => {
-    const accommodation: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceAccommodation")))
-    const meal: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceMeal")))
-    const municipality: number = Number(NumberHelper.decodeCurrency(form.getFieldValue("priceMunicipality")))
-    const priceTotal = NumberHelper.formatCurrency(accommodation + meal + municipality)
-    form.setFieldsValue({
-      priceAccommodation: NumberHelper.formatCurrency(accommodation),
-      priceMeal: NumberHelper.formatCurrency(meal),
-      priceMunicipality: NumberHelper.formatCurrency(municipality),
-      priceTotal
-    })
+  const onPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    form.setFieldsValue(FormHelper.updatePrice({
+      accommodation: form.getFieldValue("priceAccommodation"),
+      meal: form.getFieldValue("priceMeal"),
+      municipality: form.getFieldValue("priceMunicipality")
+    }, event.target.id))
   }
 
   useEffect(() => {

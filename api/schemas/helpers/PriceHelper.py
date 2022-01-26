@@ -9,15 +9,15 @@ from api.schemas.Price import PriceOutput
 class PriceHelper:
     GUESTS_BASE_NUMBER = 2
 
-    def __init__(self, data, guests, suite, settings, discounts):
+    def __init__(self, days, meal_option, guests, settings, suite, discounts):
         # model data
         self.accommodation = 0
         self.meal = 0
         self.municipality = 0
         self.total = 0
 
-        self.days = data.number_days
-        self.meal_option = data.meal
+        self.days = days
+        self.meal_option = meal_option
 
         self.guests = guests
         self.suite = suite
@@ -47,6 +47,7 @@ class PriceHelper:
 
         return PriceOutput(
             accommodation=self.accommodation,
+            days=self.days,
             meal=self.meal,
             municipality=self.municipality,
             total=self.total

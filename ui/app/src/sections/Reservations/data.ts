@@ -1,11 +1,11 @@
 import { TimelineGroup, TimelineItem } from "react-calendar-timeline"
-import { CustomGroupFields, CustomItemFields, IReservation, ReservationPrice, Suite } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, ReservationPrice } from "../../lib/Types"
 import moment, { Moment } from "moment"
 import { Colors } from "../../lib/components/Colors"
 import { SuitesWithReservations_reservations, SuitesWithReservations_reservations_priceSet } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface ITimelineData {
-  getAppReservation: (reservation: IReservation, suite: Suite, prices: ReservationPrice[]) => IReservation
+  getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => IReservation
   getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy?: boolean) => IReservation
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
@@ -13,8 +13,8 @@ interface ITimelineData {
 }
 
 export const TimelineData: ITimelineData = {
-  getAppReservation: (reservation: IReservation, suite: Suite, prices: ReservationPrice[]) => {
-    const price = prices.find(price => price.suite.id === suite.id)
+  getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => {
+    const price = prices.find(price => price.suite.id === priceSuiteId)
     return {
       ...reservation,
       expired: reservation.expired !== null ? moment(reservation.expired) : null,
