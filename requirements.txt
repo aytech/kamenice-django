@@ -1,5 +1,7 @@
 Django==3.2.4
-graphene~=2.1.8
+django-graphql-jwt==0.3.4
+graphene~=2.1.9
+graphene-django==2.15.0
 sendgrid==6.8.1
 pytest~=6.2.5
 selenium~=4.0.0
