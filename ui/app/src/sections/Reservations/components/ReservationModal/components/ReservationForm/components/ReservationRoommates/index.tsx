@@ -1,10 +1,12 @@
 import { MinusCircleOutlined, UsergroupAddOutlined } from "@ant-design/icons"
 import { useReactiveVar } from "@apollo/client"
-import { Button, Form, FormInstance, Select, Space, Tooltip } from "antd"
+import { Button, DatePicker, Form, FormInstance, Select, Space, Tooltip } from "antd"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Moment } from "moment"
 import { roommateOptions } from "../../../../../../../../cache"
 import { FormHelper } from "../../../../../../../../lib/components/FormHelper"
+import { Validators } from "../../../../../../../../lib/components/Validators"
 
 interface Props {
   form: FormInstance
@@ -20,30 +22,6 @@ export const ReservationRoommates = ({
   const options = useReactiveVar(roommateOptions)
 
   const [ addTooltip, setAddTooltip ] = useState<string>(t("tooltips.add-roommate"))
-
-  const roommateValidator = [
-    {
-      message: t("forms.guest-selected"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        const duplicates: Array<{ id: number }> = form.getFieldValue("roommates").filter((id: { id: number } | undefined) => {
-          return id !== undefined && id.id === value
-        })
-        if (duplicates === undefined || duplicates.length <= 1) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, duplicate value"))
-      }
-    },
-    {
-      message: t("forms.guest-duplicate"),
-      validator: (_rule: any, value: number): Promise<void | Error> => {
-        if (form.getFieldValue("guest") !== value) {
-          return Promise.resolve()
-        }
-        return Promise.reject(new Error("Fail roommate validation, equals to guest"))
-      }
-    }
-  ]
 
   const updateAddTooltip = useCallback((roommatesLength: number) => {
     if (suiteCapacity <= roommatesLength) {
@@ -80,12 +58,35 @@ export const ReservationRoommates = ({
                   { ...field }
                   fieldKey={ [ field.key, 'first' ] }
                   name={ [ field.name, "id" ] }
-                  rules={ roommateValidator }>
+                  rules={ Validators.getRoommateValidators(
+                    [ t("forms.guest-selected"), ("forms.guest-duplicate") ],
+                    form.getFieldValue("roommates"),
+                    form.getFieldValue("guest")
+                  ) }>
                   <Select
                     className="select-roommate"
                     filterOption={ FormHelper.searchFilter }
                     options={ options }
                     showSearch />
+                </Form.Item>
+                <Form.Item
+                  { ...field }
+                  name={ [ field.name, "fromDate" ] }>
+                  <DatePicker
+                    disabledDate={ (currentDate: Moment) => {
+                      const dates = form.getFieldValue("dates")
+                      // Disable all days if reservation dates not set
+                      if (dates === undefined || dates.length < 2) {
+                        return true
+                      }
+                      // Cannot be before the reservation start date
+                      if (currentDate.valueOf() < dates[ 0 ].valueOf()
+                        || currentDate.valueOf() > dates[ 1 ].valueOf()) {
+                        return true
+                      }
+                      return false
+                    } }
+                    placeholder={ t("from") } />
                 </Form.Item>
                 <MinusCircleOutlined onClick={ () => {
                   remove(field.name)

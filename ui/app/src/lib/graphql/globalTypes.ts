@@ -126,7 +126,7 @@ export interface ReservationInput {
   payingGuestId?: number | null;
   price?: ReservationPrice | null;
   purpose?: string | null;
-  roommateIds?: (number | null)[] | null;
+  roommates?: (ReservationRoommate | null)[] | null;
   suiteId?: string | null;
   toDate?: string | null;
   type?: string | null;
@@ -140,13 +140,19 @@ export interface ReservationPrice {
   total?: string | null;
 }
 
+export interface ReservationRoommate {
+  id: string;
+  fromDate?: string | null;
+  toDate?: string | null;
+}
+
 export interface SettingsInput {
   id?: string | null;
-  municipalityFee?: any | null;
-  priceBreakfast?: any | null;
-  priceBreakfastChild?: any | null;
-  priceHalfboard?: any | null;
-  priceHalfboardChild?: any | null;
+  municipalityFee?: string | null;
+  priceBreakfast?: string | null;
+  priceBreakfastChild?: string | null;
+  priceHalfboard?: string | null;
+  priceHalfboardChild?: string | null;
   userAvatar?: string | null;
   userColor?: string | null;
   userName?: string | null;
