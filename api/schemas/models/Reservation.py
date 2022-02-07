@@ -1,4 +1,4 @@
-from graphene import ObjectType, String, InputObjectType, List, Int, ID, Decimal
+from graphene import ObjectType, String, InputObjectType, List, Int, ID
 from graphene_django import DjangoObjectType
 from api.models.Reservation import Reservation as ReservationModel
 
@@ -8,7 +8,7 @@ class Reservation(DjangoObjectType):
         model = ReservationModel
         fields = (
             'expired', 'extra_suites', 'from_date', 'guest', 'id', 'meal', 'notes', 'paying_guest', 'price_set',
-            'purpose', 'roommates', 'suite', 'to_date', 'type')
+            'purpose', 'roommate_set', 'suite', 'to_date', 'type')
 
 
 class ReservationTypeOption(ObjectType):
@@ -24,6 +24,12 @@ class ReservationPrice(InputObjectType):
     total = String()
 
 
+class ReservationRoommate(InputObjectType):
+    id = String(required=True)
+    from_date = String()
+    to_date = String()
+
+
 class ReservationInput(InputObjectType):
     expired = String()
     extra_suites_ids = List(Int)
@@ -36,7 +42,7 @@ class ReservationInput(InputObjectType):
     paying_guest_id = Int()
     price = ReservationPrice()
     purpose = String()
-    roommate_ids = List(Int)
+    roommates = List(ReservationRoommate)
     suite_id = String()
     to_date = String()
     type = String()

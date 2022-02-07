@@ -69,9 +69,13 @@ export const SUITES_WITH_RESERVATIONS = gql`
         total
       }
       purpose
-      roommates {
-        age
-        id
+      roommateSet {
+        entity {
+          id
+          name
+          surname
+        }
+        fromDate
       }
       suite {
         id

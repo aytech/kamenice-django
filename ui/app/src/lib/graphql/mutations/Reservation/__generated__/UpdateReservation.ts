@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ReservationInput, ReservationMeal, GuestAge, ReservationType } from "./../../../globalTypes";
+import { ReservationInput, ReservationMeal, ReservationType } from "./../../../globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UpdateReservation
@@ -42,10 +42,17 @@ export interface UpdateReservation_updateReservation_reservation_priceSet {
   total: any;
 }
 
-export interface UpdateReservation_updateReservation_reservation_roommates {
+export interface UpdateReservation_updateReservation_reservation_roommateSet_entity {
   __typename: "Guest";
-  age: GuestAge | null;
   id: string;
+  name: string;
+  surname: string;
+}
+
+export interface UpdateReservation_updateReservation_reservation_roommateSet {
+  __typename: "Roommate";
+  entity: UpdateReservation_updateReservation_reservation_roommateSet_entity;
+  fromDate: any;
 }
 
 export interface UpdateReservation_updateReservation_reservation_suite {
@@ -67,7 +74,7 @@ export interface UpdateReservation_updateReservation_reservation {
   payingGuest: UpdateReservation_updateReservation_reservation_payingGuest | null;
   priceSet: UpdateReservation_updateReservation_reservation_priceSet[];
   purpose: string | null;
-  roommates: UpdateReservation_updateReservation_reservation_roommates[];
+  roommateSet: UpdateReservation_updateReservation_reservation_roommateSet[];
   suite: UpdateReservation_updateReservation_reservation_suite;
   toDate: any;
   type: ReservationType;
