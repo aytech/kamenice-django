@@ -27,6 +27,9 @@ export const TimelineData: ITimelineData = {
         suite: reservation.suite,
         total: "0"
       } : price,
+      roommates: reservation.roommateSet?.map(roommate => {
+        return { ...roommate.entity, fromDate: moment(roommate.fromDate) }
+      }),
       toDate: moment(reservation.toDate)
     }
   },
@@ -96,7 +99,9 @@ export const TimelineData: ITimelineData = {
       },
       purpose: reservation.purpose,
       reservationId: reservation.id,
-      roommates: reservation.roommates,
+      roommates: reservation.roommateSet.map(roommate => {
+        return { ...roommate.entity, fromDate: moment(roommate.fromDate) }
+      }),
       start_time: moment(reservation.fromDate),
       suite: reservation.suite,
       title: `${ reservation.guest.name } ${ reservation.guest.surname }`,

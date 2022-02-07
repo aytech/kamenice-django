@@ -3,6 +3,8 @@ from graphene import Int, ObjectType, Field, List, String
 from graphql_jwt.decorators import user_passes_test
 
 from api.models.Reservation import Reservation as ReservationModel
+from api.models.Roommate import Roommate as RoommateModel
+from api.schemas.Roommate import Roommate
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.models.Reservation import Reservation, ReservationTypeOption
 
@@ -12,6 +14,7 @@ class ReservationQuery(ObjectType):
     reservations = List(Reservation, start_date=String(), end_date=String())
     reservation_meals = List(ReservationTypeOption)
     reservation_types = List(ReservationTypeOption)
+    roommate = Field(Roommate, roommate_id=Int())
     suite_reservations = List(Reservation, suite_id=Int())
 
     @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
@@ -25,6 +28,13 @@ class ReservationQuery(ObjectType):
     def resolve_reservation(self, _query, _info, reservation_id):
         try:
             return ReservationModel.objects.get(pk=reservation_id, deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @user_passes_test(lambda user: user.has_perm('api.view_reservation'), exc=PermissionDenied)
+    def resolve_roommate(self, _info, roommate_id):
+        try:
+            return RoommateModel.objects.get(pk=roommate_id)
         except ObjectDoesNotExist:
             return None
 

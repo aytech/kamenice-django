@@ -32,9 +32,13 @@ export const CREATE_RESERVATION = gql`
           total
         }
         purpose
-        roommates {
-          age
-          id
+        roommateSet {
+          entity {
+            id
+            name
+            surname
+          }
+          fromDate
         }
         suite {
           id
@@ -90,9 +94,13 @@ export const UPDATE_RESERVATION = gql`
           total
         }
         purpose
-        roommates {
-          age
-          id
+        roommateSet {
+          entity {
+            id
+            name
+            surname
+          }
+          fromDate
         }
         suite {
           id

@@ -99,7 +99,8 @@ export interface IReservation {
   payingGuest?: { id: string } | null
   price?: ReservationPrice
   purpose?: string | null
-  roommates?: { id: string }[]
+  roommates?: { id: string, fromDate: Moment }[]
+  roommateSet?: { entity: { id: string, name: string, surname: string }, fromDate: string }[]
   suite: Suite
   toDate: Moment
   type?: ReservationTypeKey
@@ -157,7 +158,12 @@ export interface CustomItemFields {
   price: ReservationPrice
   purpose: string | null
   reservationId: string
-  roommates?: { id: string }[]
+  roommates?: {
+    id: string,
+    name: string,
+    surname: string,
+    fromDate: Moment
+  }[]
   suite: Suite
   type?: ReservationTypeKey
 }

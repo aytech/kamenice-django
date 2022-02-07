@@ -121,7 +121,7 @@ export const ReservationModal = ({
     const expired: Moment = form.getFieldValue("expired")
     let from: Moment
     let to: Moment
-    let roommates = []
+    let roommates: { id: string, fromDate: string, toDate: string }[] = []
 
     if (formDates === null) {
       from = moment()
@@ -132,7 +132,13 @@ export const ReservationModal = ({
     }
 
     if (formData.roommates !== undefined) {
-      roommates = formData.roommates.map((roommate: { id: string }) => roommate.id)
+      roommates = formData.roommates.map((roommateData: { id: string, fromDate: Moment }) => {
+        const roommate = { id: roommateData.id, fromDate: '', toDate: '' }
+        if (roommateData.fromDate !== undefined) {
+          roommate.fromDate = roommateData.fromDate.hour(15).minute(0).format(dateFormat)
+        }
+        return roommate
+      })
     }
 
     const input: ReservationInput = {
@@ -151,7 +157,7 @@ export const ReservationModal = ({
         total: NumberHelper.decodeCurrency(formData.priceTotal)
       },
       purpose: formData.purpose,
-      roommateIds: roommates,
+      roommates: roommates,
       suiteId: formData.suite,
       toDate: to.format(dateFormat),
       type: formData.type
