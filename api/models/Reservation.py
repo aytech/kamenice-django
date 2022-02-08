@@ -62,10 +62,6 @@ class Reservation(BaseModel):
         related_name='paying_guest'
     )
     purpose = models.CharField(blank=True, max_length=100, null=True)
-    roommates = models.ManyToManyField(
-        Guest,
-        related_name='+',
-    )
     suite = models.ForeignKey(
         Suite,
         on_delete=models.DO_NOTHING
