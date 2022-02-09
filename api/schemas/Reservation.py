@@ -9,12 +9,10 @@ from api.constants import RESERVATION_TYPE_INQUIRY
 from api.models.Guest import Guest as GuestModel
 from api.models.Price import Price as PriceModel
 from api.models.Reservation import Reservation as ReservationModel
-from api.models.Roommate import Roommate
 from api.models.Settings import Settings as SettingsModel
 from api.models.Suite import Suite as SuiteModel
 from api.schemas.Price import PriceOutput, PriceInput
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
-from api.schemas.exceptions.Unauthorized import Unauthorized
 from api.schemas.helpers.EmailHelper import EmailHelper
 from api.schemas.helpers.FormHelper import FormHelper
 from api.schemas.helpers.PriceHelper import PriceHelper
@@ -45,7 +43,6 @@ class CreateReservation(Mutation):
     reservation = Field(Reservation)
 
     @classmethod
-    @user_passes_test(lambda user: user.is_authenticated, exc=Unauthorized)
     @user_passes_test(lambda user: user.has_perm('api.add_reservation'), exc=PermissionDenied)
     def mutate(cls, _root, info, data=None):
         # Validate guest to an existing user
@@ -84,14 +81,9 @@ class CreateReservation(Mutation):
         reservation_model.save()
         # Collect all guests for price calculation
         all_guests = [guest_model]
-        try:
-            for roommate_id in data.roommate_ids:
-                roommate = GuestModel.objects.get(pk=roommate_id)
-                reservation_model.roommates.add(roommate)
-                all_guests.append(roommate)
-        except ObjectDoesNotExist as ex:
-            logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
-        # Calculate prices
+
+        ReservationHelper.update_reservation_roommates(reservation_model, data.roommates)
+
         try:
             settings_model = SettingsModel.objects.get(username=info.context.user)
             price_helper = PriceHelper(days=data.number_days, meal_option=data.meal, guests=all_guests,
@@ -168,7 +160,7 @@ class UpdateReservation(Mutation):
         for suite_id in reservation_model.extra_suites.all():
             reservation_model.extra_suites.remove(suite_id)
 
-        cls.update_reservation_roommates(reservation_model, data.roommates)
+        ReservationHelper.update_reservation_roommates(reservation_model, data.roommates)
 
         if data.extra_suites_ids is not None:
             try:
@@ -201,36 +193,6 @@ class UpdateReservation(Mutation):
         ReservationHelper.add_price_calculation(price_helper, price_model, price_data=data.price)
 
         return UpdateReservation(reservation=reservation_model)
-
-    @classmethod
-    def update_reservation_roommates(cls, reservation, roommates=None):
-        if roommates is not None:
-            try:
-                for roommate in roommates:
-                    entity_model = GuestModel.objects.get(pk=roommate.id)
-                    roommate_model = cls.get_roommate(reservation=reservation, guest=entity_model)
-                    from_date = FormHelper.get_attribute_value(roommate, 'from_date')
-                    to_date = FormHelper.get_attribute_value(roommate, 'to_date')
-                    if roommate_model is None:
-                        Roommate(
-                            entity=entity_model,
-                            from_date=from_date if from_date is not None else reservation.from_date,
-                            reservation=reservation,
-                            to_date=to_date if to_date is not None else reservation.to_date
-                        ).save()
-                    else:
-                        roommate_model.from_date = from_date if from_date is not None else reservation.from_date
-                        roommate_model.to_date = to_date if to_date is not None else reservation.to_date
-                        roommate_model.save()
-            except ObjectDoesNotExist as ex:
-                logging.getLogger('kamenice').error('Failed to add roommate {}'.format(ex))
-
-    @staticmethod
-    def get_roommate(reservation, guest):
-        try:
-            return Roommate.objects.get(reservation=reservation, entity=guest)
-        except ObjectDoesNotExist:
-            return None
 
 
 class DragReservation(Mutation):
