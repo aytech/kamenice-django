@@ -22,6 +22,7 @@ export const Colors: Props = {
     orange: "#fa8c16",
     purple: "#722ed1",
     red: "#f5222d",
+    silver: "#bdc3c7",
     strongblue: "#0069cb",
     strongorange: "#d87205",
     strongyellow: "#d6bb06",
@@ -40,6 +41,8 @@ export const Colors: Props = {
         return Colors.colors.blue
       case "INHABITED":
         return Colors.colors.orange
+      case "INQUIRY":
+        return Colors.colors.silver
       case "SELECTED":
         return Colors.colors.magenta
       case "BINDING":
