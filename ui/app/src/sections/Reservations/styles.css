@@ -1,5 +1,6 @@
 #app-timeline {
   background-color: #fff;
+  min-width: 600px;
 }
 
 #chart {
@@ -135,4 +136,12 @@
 
 .timeline-header {
   padding: 12px 24px;
+}
+
+.flex-container button {
+  margin-right: 10px;
+}
+
+.flex-container button.last {
+  margin-right: 0;
 }

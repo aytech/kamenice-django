@@ -48,7 +48,6 @@ export const ReservationModal = ({
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
   const [ reservationConfirmationNote, setReservationConfirmationNote ] = useState<string>()
   const [ reservationConfirmationVisible, setReservationConfirmationVisible ] = useState<boolean>(false)
-  const [ reservationPriceSuiteId, setReservationPriceSuiteId ] = useState<string>()
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
@@ -66,7 +65,7 @@ export const ReservationModal = ({
       if (newReservation === undefined || newReservation == null) {
         refetch()
       } else {
-        refetch(TimelineData.getAppReservation(newReservation, newReservation?.priceSet, reservationPriceSuiteId))
+        refetch(TimelineData.getAppReservation(newReservation, newReservation?.priceSet, newReservation.suite.id))
       }
     }
   }
@@ -153,7 +152,7 @@ export const ReservationModal = ({
         accommodation: NumberHelper.decodeCurrency(formData.priceAccommodation),
         meal: NumberHelper.decodeCurrency(formData.priceMeal),
         municipality: NumberHelper.decodeCurrency(formData.priceMunicipality),
-        suiteId: NumberHelper.decodeCurrency(reservation?.price?.suite.id),
+        suiteId: NumberHelper.decodeCurrency(reservation?.price?.suite?.id),
         total: NumberHelper.decodeCurrency(formData.priceTotal)
       },
       purpose: formData.purpose,
@@ -173,10 +172,8 @@ export const ReservationModal = ({
   const submitForm = (): void => {
     const variables: ReservationInput = getReservationInput()
     if (reservation !== undefined && reservation.id !== undefined) {
-      setReservationPriceSuiteId(reservation.price?.suite.id)
       updateReservation({ variables: { data: { id: String(reservation.id), ...variables } } })
     } else {
-      setReservationPriceSuiteId(form.getFieldValue("suite"))
       createReservation({ variables: { data: { ...variables } } })
     }
   }

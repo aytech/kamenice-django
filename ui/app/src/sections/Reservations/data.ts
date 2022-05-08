@@ -1,20 +1,21 @@
-import { TimelineGroup, TimelineItem } from "react-calendar-timeline"
-import { CustomGroupFields, CustomItemFields, IReservation, ReservationPrice } from "../../lib/Types"
+import { TimelineItem } from "react-calendar-timeline"
+import { CustomItemFields, IReservation, ReservationPrice } from "../../lib/Types"
 import moment, { Moment } from "moment"
 import { Colors } from "../../lib/components/Colors"
 import { SuitesWithReservations_reservations, SuitesWithReservations_reservations_priceSet } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 
 interface ITimelineData {
   getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => IReservation
-  getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => IReservation
+  getReservationForCreate: () => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy?: boolean) => IReservation
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
+  getTimelineReservationItemId: (groupItemId: string) => string
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => TimelineItem<CustomItemFields, Moment>[]
 }
 
 export const TimelineData: ITimelineData = {
   getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => {
-    const price = prices.find(price => price.suite.id === priceSuiteId)
+    const price = prices.find(price => price.suite?.id === priceSuiteId)
     return {
       ...reservation,
       expired: reservation.expired !== null ? moment(reservation.expired) : null,
@@ -33,20 +34,18 @@ export const TimelineData: ITimelineData = {
       toDate: moment(reservation.toDate)
     }
   },
-  getReservationForCreate: (timelineGroup: TimelineGroup<CustomGroupFields>, time: number) => {
+  getReservationForCreate: () => {
     return {
       extraSuites: [],
-      fromDate: moment(time).hour(15).minute(0),
+      fromDate: moment().hour(15).minute(0),
       meal: "NOMEAL",
-      suite: { ...timelineGroup },
       price: {
         accommodation: "0",
         meal: "0",
         municipality: "0",
-        suite: { id: timelineGroup.id, priceBase: timelineGroup.priceBase },
         total: "0"
       },
-      toDate: moment(time).add(1, "day").hour(10).minute(0),
+      toDate: moment().add(1, "day").hour(10).minute(0),
       type: "INQUIRY"
     }
   },
@@ -107,6 +106,9 @@ export const TimelineData: ITimelineData = {
       title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
       type: reservation.type
     }
+  },
+  getTimelineReservationItemId: (groupItemId: string) => {
+    return groupItemId.substring(groupItemId.indexOf("-") + 1)
   },
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => {
     const updatedItems: TimelineItem<CustomItemFields, Moment>[] = []

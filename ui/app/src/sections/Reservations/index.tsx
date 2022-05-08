@@ -8,10 +8,11 @@ import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
 import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
+import { TimelineHeader } from "./components/TimelineHeader"
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
-import { Button, Col, Input, message, Row, Skeleton, Space, Spin, Tooltip } from "antd"
+import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
 import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
@@ -21,7 +22,6 @@ import { dateFormat } from "../../lib/Constants"
 import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
 import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { CaretLeftOutlined, CaretRightOutlined } from "@ant-design/icons"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -49,6 +49,7 @@ export const Reservations = () => {
   })
   const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
     onCompleted: () => {
+      setSelectedItem(undefined)
       setSelectedReservation(undefined)
       reservationModalOpen(false)
       message.success(t("reservations.deleted"))
@@ -57,24 +58,15 @@ export const Reservations = () => {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
-  // Click on timeline outside of any reservation, 
-  // opens modal for new reservation
-  const openNewReservationModal = (groupId: number, time: number) => {
-    const selectedGroup = timelineGroups().find(group => group.id === String(groupId))
-    if (selectedGroup !== undefined) {
-      const suite = reservationsData?.suites?.find(suite => suite?.id === selectedGroup.id)
-      if (suite !== null) {
-        selectedSuite(suite)
-      }
-      setSelectedReservation(TimelineData.getReservationForCreate(selectedGroup, time))
-      reservationModalOpen(true)
-    }
+  const openNewReservationModal = () => {
+    setSelectedReservation(TimelineData.getReservationForCreate())
+    reservationModalOpen(true)
   }
 
   // Click on item on the timeline opens modal with existing reservation for editing
   // Note: item is selected on first click, second click registers as click event
-  const openUpdateReservationModal = (itemId: string, copy: boolean = false) => {
-    const timelineItem = items.find(item => item.id === itemId)
+  const openUpdateReservationModal = (copy: boolean = false) => {
+    const timelineItem = items.find(item => item.id === selectedItem)
     if (timelineItem !== undefined) {
       const suite = reservationsData?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
@@ -115,11 +107,15 @@ export const Reservations = () => {
     TimelineData.selectDeselectItem(items)
   }
 
-  const onCopy = (itemId: string) => openUpdateReservationModal(itemId, true)
+  const onCopy = () => openUpdateReservationModal(true)
 
-  const onDelete = (reservationId: string) => deleteReservation({ variables: { reservationId } })
+  const onDelete = () => {
+    if (selectedItem !== undefined) {
+      deleteReservation({ variables: { reservationId: TimelineData.getTimelineReservationItemId(selectedItem) } })
+    }
+  }
 
-  const onUpdate = (itemId: string) => openUpdateReservationModal(itemId)
+  const onUpdate = () => openUpdateReservationModal()
 
   const moveToItem = (item?: TimelineItem<CustomItemFields, Moment>, stopMessage?: string) => {
     if (item !== undefined) {
@@ -228,37 +224,18 @@ export const Reservations = () => {
         loading={ initialLoading }
         paragraph={ { rows: 5 } }>
         <Spin
-          spinning={ dragLoading || dataLoading }
+          spinning={ dragLoading || dataLoading || deleteLoading }
           size="large">
           <div id="app-timeline">
-            <Row className="timeline-header">
-              <Col lg={ 10 } md={ 12 } sm={ 14 } xs={ 16 } className="flex-container">
-                <Input.Search
-                  allowClear
-                  enterButton
-                  id="search-guest"
-                  onSearch={ searchReservation }
-                  placeholder={ t("placeholders.search-reservation") } />
-              </Col>
-              <Col lg={ 10 } md={ 8 } sm={ 5 } xs={ 2 } />
-              <Col lg={ 4 } md={ 4 } sm={ 5 } xs={ 6 } className="text-right">
-                <Tooltip title={ t("tooltips.move-previous-reservation") }>
-                  <Button
-                    icon={ <CaretLeftOutlined /> }
-                    onClick={ moveBackwards }
-                    shape="circle"
-                    size="large"
-                    style={ { marginRight: "10px" } } />
-                </Tooltip>
-                <Tooltip title={ t("tooltips.move-next-reservation") }>
-                  <Button
-                    icon={ <CaretRightOutlined /> }
-                    onClick={ moveForward }
-                    shape="circle"
-                    size="large" />
-                </Tooltip>
-              </Col>
-            </Row>
+            <TimelineHeader
+              moveBackwards={ moveBackwards }
+              moveForward={ moveForward }
+              onAdd={ openNewReservationModal }
+              onCopy={ onCopy }
+              onDelete={ onDelete }
+              onUpdate={ onUpdate }
+              searchReservation={ searchReservation }
+              selectedItemId={ selectedItem } />
             <Timeline
               canChangeGroup={ true }
               canMove={ true }
@@ -274,19 +251,17 @@ export const Reservations = () => {
               } }
               groups={ timelineGroups() }
               itemRenderer={ props =>
-                <ReservationItem
-                  { ...props }
-                  onCopy={ onCopy }
-                  onDelete={ onDelete }
-                  onUpdate={ onUpdate } />
+                <ReservationItem { ...props } />
               }
               items={ items }
               itemTouchSendsClick={ true }
               lineHeight={ 60 }
-              onCanvasDoubleClick={ openNewReservationModal }
+              onItemClick={ onItemSelect }
               onItemDeselect={ onItemDeselect }
+              onCanvasClick={ onItemDeselect }
               onItemMove={ onItemMove }
               onItemSelect={ onItemSelect }
+              // onCanvasClick={ openNewReservationModal }
               onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
                 if (visibleTimeEnd > lastFrameEndTime) {
                   setCanvasTimeEnd(lastFrameEndTime)

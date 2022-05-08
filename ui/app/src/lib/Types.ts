@@ -81,7 +81,7 @@ export interface ReservationPrice {
   accommodation: string | null,
   meal: string | null,
   municipality: string | null,
-  suite: {
+  suite?: {
     id: string,
     priceBase?: string | null
   },
@@ -101,7 +101,7 @@ export interface IReservation {
   purpose?: string | null
   roommates?: { id: string, fromDate: Moment }[]
   roommateSet?: { entity: { id: string, name: string, surname: string }, fromDate: string }[]
-  suite: Suite
+  suite?: Suite
   toDate: Moment
   type?: ReservationTypeKey
 }

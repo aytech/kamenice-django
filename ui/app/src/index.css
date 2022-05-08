@@ -70,6 +70,14 @@ h4.ant-typography.drawer-title {
   align-items: center;
 }
 
+.flex-container.centered {
+  justify-content: center;
+}
+
+.flex-container.end {
+  justify-content: flex-end;
+}
+
 .low-case {
   text-transform: lowercase;
 }

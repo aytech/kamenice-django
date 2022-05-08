@@ -65,7 +65,7 @@ export const ReservationForm = ({
     priceTotal: NumberHelper.formatCurrency(reservation.price?.total),
     purpose: reservation.purpose,
     roommates: reservation.roommates,
-    suite: reservation.suite.id,
+    suite: reservation.suite?.id,
     suites: reservation.extraSuites,
     type: reservation.type
   } : { type: selectedReservationType }
@@ -122,8 +122,8 @@ export const ReservationForm = ({
     setGuestOptions(options)
     roommateOptions(options.filter(option => option.value !== reservation?.guest?.id))
     // Define room capacity
-    const beds = reservation?.suite.numberBeds
-    const bedsExtra = reservation?.suite.numberBedsExtra
+    const beds = reservation?.suite?.numberBeds
+    const bedsExtra = reservation?.suite?.numberBedsExtra
     if (beds !== undefined && beds !== null) {
       let capacity: number = beds
       if (bedsExtra !== undefined && bedsExtra !== null) {
@@ -235,7 +235,7 @@ export const ReservationForm = ({
           label={ t("reservations.price-room") }>
           <Typography.Text>
             <strong>
-              { NumberHelper.formatCurrency(reservation?.price?.suite.priceBase) } { t("currency") }
+              { NumberHelper.formatCurrency(reservation?.price?.suite?.priceBase) } { t("currency") }
             </strong>
           </Typography.Text>
         </Form.Item>
@@ -292,7 +292,7 @@ export const ReservationForm = ({
                       guests: getFormGuests(),
                       meal: form.getFieldValue('meal'),
                       numberDays: getReservationDays(),
-                      suiteId: Number(reservation.price?.suite.id)
+                      suiteId: Number(reservation.price?.suite?.id)
                     }
                   }
                 })
