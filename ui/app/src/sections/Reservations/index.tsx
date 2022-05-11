@@ -131,15 +131,17 @@ export const Reservations = () => {
     }
   }
 
-  const moveForward = () => moveToItem(
-    items.find(item => item.start_time.valueOf() > canvasTimeEnd),
-    t("tooltips.no-later-items")
-  )
+  const moveForward = () => {
+    const range: number = canvasTimeEnd - canvasTimeStart
+    setCanvasTimeEnd(moment(canvasTimeEnd + range).valueOf())
+    setCanvasTimeStart(moment(canvasTimeStart + range).valueOf())
+  }
 
-  const moveBackwards = () => moveToItem(
-    items.slice().reverse().find(item => item.start_time.valueOf() < canvasTimeStart),
-    t("tooltips.no-earlier-items")
-  )
+  const moveBackwards = () => {
+    const range: number = canvasTimeEnd - canvasTimeStart
+    setCanvasTimeStart(moment(canvasTimeStart - range).valueOf())
+    setCanvasTimeEnd(moment(canvasTimeEnd - range).valueOf())
+  }
 
   const searchReservation = (value: string) => {
     if (value.length > 0) {
@@ -261,7 +263,6 @@ export const Reservations = () => {
               onCanvasClick={ onItemDeselect }
               onItemMove={ onItemMove }
               onItemSelect={ onItemSelect }
-              // onCanvasClick={ openNewReservationModal }
               onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
                 if (visibleTimeEnd > lastFrameEndTime) {
                   setCanvasTimeEnd(lastFrameEndTime)
