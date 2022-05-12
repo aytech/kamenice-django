@@ -242,8 +242,6 @@ export const Reservations = () => {
               canChangeGroup={ true }
               canMove={ true }
               canResize={ false }
-              defaultTimeEnd={ moment().add(1, "day") }
-              defaultTimeStart={ moment().subtract(1, "day") }
               groupRenderer={ ({ group }) => {
                 return (
                   <Title level={ 5 }>
