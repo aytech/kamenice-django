@@ -117,19 +117,12 @@ export interface SuitesWithReservations_reservationTypes {
   value: string;
 }
 
-export interface SuitesWithReservations_timelineGroups {
-  __typename: "TimelimeGroup";
-  number: string;
-  title: string;
-}
-
 export interface SuitesWithReservations {
   guests: (SuitesWithReservations_guests | null)[] | null;
   suites: (SuitesWithReservations_suites | null)[] | null;
   reservations: (SuitesWithReservations_reservations | null)[] | null;
   reservationMeals: (SuitesWithReservations_reservationMeals | null)[] | null;
   reservationTypes: (SuitesWithReservations_reservationTypes | null)[] | null;
-  timelineGroups: SuitesWithReservations_timelineGroups | null;
 }
 
 export interface SuitesWithReservationsVariables {

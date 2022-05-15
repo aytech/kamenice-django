@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom'
+import {createRoot} from "react-dom/client"
 import { BrowserRouter as Router } from "react-router-dom"
 import './index.css'
 import { getCookie } from "./lib/Cookie"
@@ -90,7 +90,7 @@ apolloClient = new ApolloClient({
   ]),
 })
 
-ReactDOM.render(
+createRoot(document.getElementById('root')!).render(
   <Suspense fallback={ <Splash /> }>
     <ApolloProvider client={ apolloClient }>
       <ConfigProvider locale={ csCZ }>
@@ -99,6 +99,5 @@ ReactDOM.render(
         </Router>
       </ConfigProvider>
     </ApolloProvider>
-  </Suspense>,
-  document.getElementById('root')
-);
+  </Suspense>
+)

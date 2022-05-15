@@ -14,7 +14,7 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, timelineGroups } from "../../cache"
+import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions } from "../../cache"
 import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
@@ -39,6 +39,7 @@ export const Reservations = () => {
   const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
   const [ firstFrameStartTime ] = useState<number>(moment().subtract(1, "year").valueOf())
   const [ firstFrameEndTime ] = useState<number>(moment(firstFrameStartTime).add(1, "month").valueOf())
+  const [ timelineGroups, setTimelineGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
 
   const [ getReservations, { loading: dataLoading, data: reservationsData, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => setInitialLoading(false),
@@ -78,7 +79,7 @@ export const Reservations = () => {
   }
 
   const onItemMove = (itemId: string, dragTime: number, newGroupOrder: number) => {
-    const newSuite = timelineGroups()[ newGroupOrder ]
+    const newSuite = timelineGroups[ newGroupOrder ]
     const timelineItem = items.find(item => item.id === itemId)
     if (newSuite !== undefined && timelineItem !== undefined) {
       const reservationDuration: number = moment(timelineItem.end_time).diff(timelineItem.start_time)
@@ -174,7 +175,7 @@ export const Reservations = () => {
       }
     })
     suiteOptions(suiteOptionValues)
-    timelineGroups(suiteList)
+    setTimelineGroups(suiteList)
 
     reservationsData?.reservations?.forEach(reservation => {
       if (reservation !== null) {
@@ -202,7 +203,6 @@ export const Reservations = () => {
     setItems(reservationList)
     reservationTypeOptions(reservationOptionTypes)
     reservationMealOptions(reservationOptionMeals)
-
   }, [ reservationsData, openReservation, selectedItem ])
 
   useEffect(() => {
@@ -238,79 +238,81 @@ export const Reservations = () => {
               onUpdate={ onUpdate }
               searchReservation={ searchReservation }
               selectedItemId={ selectedItem } />
-            <Timeline
-              canChangeGroup={ true }
-              canMove={ true }
-              canResize={ false }
-              groupRenderer={ ({ group }) => {
-                return (
-                  <Title level={ 5 }>
-                    { group.title }
-                  </Title>
-                )
-              } }
-              groups={ timelineGroups() }
-              itemRenderer={ props =>
-                <ReservationItem { ...props } />
-              }
-              items={ items }
-              itemTouchSendsClick={ true }
-              lineHeight={ 60 }
-              onItemClick={ onItemSelect }
-              onItemDeselect={ onItemDeselect }
-              onCanvasClick={ onItemDeselect }
-              onItemMove={ onItemMove }
-              onItemSelect={ onItemSelect }
-              onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
-                if (visibleTimeEnd > lastFrameEndTime) {
-                  setCanvasTimeEnd(lastFrameEndTime)
-                  setCanvasTimeStart(lastFrameStartTime)
-                  updateScrollCanvas(lastFrameStartTime, lastFrameEndTime)
-                } else if (visibleTimeStart < firstFrameStartTime) {
-                  setCanvasTimeEnd(firstFrameEndTime)
-                  setCanvasTimeStart(firstFrameStartTime)
-                  updateScrollCanvas(firstFrameStartTime, firstFrameEndTime)
-                } else {
-                  setCanvasTimeEnd(visibleTimeEnd)
-                  setCanvasTimeStart(visibleTimeStart)
-                  updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
+            { timelineGroups.length > 0 &&
+              <Timeline
+                canChangeGroup={ true }
+                canMove={ true }
+                canResize={ false }
+                groupRenderer={ ({ group }) => {
+                  return (
+                    <Title level={ 5 }>
+                      { group.title }
+                    </Title>
+                  )
+                } }
+                groups={ timelineGroups }
+                itemRenderer={ props =>
+                  <ReservationItem { ...props } />
                 }
-              } }
-              visibleTimeEnd={ canvasTimeEnd }
-              visibleTimeStart={ canvasTimeStart }>
-              <TimelineHeaders>
-                <SidebarHeader>
-                  { ({ getRootProps }) => {
-                    return (
-                      <div
-                        { ...getRootProps() }
-                        className="side-header">
-                        { t("rooms.nav-title") }
-                      </div>
-                    )
-                  } }
-                </SidebarHeader>
-                <DateHeader unit="primaryHeader" />
-                <DateHeader
-                  className="days"
-                  unit="day" />
-              </TimelineHeaders>
-              <CursorMarker>
-                {
-                  ({ styles, date }) => {
-                    return (
-                      <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
-                        <div className="rt-marker__label">
-                          <div className="rt-marker__content">
-                            { moment(date).format("DD MMM HH:mm") }
+                items={ items }
+                itemTouchSendsClick={ true }
+                lineHeight={ 60 }
+                onItemClick={ onItemSelect }
+                onItemDeselect={ onItemDeselect }
+                onCanvasClick={ onItemDeselect }
+                onItemMove={ onItemMove }
+                onItemSelect={ onItemSelect }
+                onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
+                  if (visibleTimeEnd > lastFrameEndTime) {
+                    setCanvasTimeEnd(lastFrameEndTime)
+                    setCanvasTimeStart(lastFrameStartTime)
+                    updateScrollCanvas(lastFrameStartTime, lastFrameEndTime)
+                  } else if (visibleTimeStart < firstFrameStartTime) {
+                    setCanvasTimeEnd(firstFrameEndTime)
+                    setCanvasTimeStart(firstFrameStartTime)
+                    updateScrollCanvas(firstFrameStartTime, firstFrameEndTime)
+                  } else {
+                    setCanvasTimeEnd(visibleTimeEnd)
+                    setCanvasTimeStart(visibleTimeStart)
+                    updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
+                  }
+                } }
+                visibleTimeEnd={ canvasTimeEnd }
+                visibleTimeStart={ canvasTimeStart }>
+                <TimelineHeaders>
+                  <SidebarHeader>
+                    { ({ getRootProps }) => {
+                      return (
+                        <div
+                          { ...getRootProps() }
+                          className="side-header">
+                          { t("rooms.nav-title") }
+                        </div>
+                      )
+                    } }
+                  </SidebarHeader>
+                  <DateHeader unit="primaryHeader" />
+                  <DateHeader
+                    className="days"
+                    unit="day" />
+                </TimelineHeaders>
+                <CursorMarker>
+                  {
+                    ({ styles, date }) => {
+                      return (
+                        <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
+                          <div className="rt-marker__label">
+                            <div className="rt-marker__content">
+                              { moment(date).format("DD MMM HH:mm") }
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
+                      )
+                    }
                   }
-                }
-              </CursorMarker>
-            </Timeline>
+                </CursorMarker>
+              </Timeline>
+            }
             <Space align="end" className="app-footer">
               <Text disabled>&reg;{ t("company-name") }</Text>
             </Space>

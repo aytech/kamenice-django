@@ -94,9 +94,5 @@ export const SUITES_WITH_RESERVATIONS = gql`
       label
       value
     }
-    timelineGroups @client {
-      number
-      title
-    }
   }
 `
