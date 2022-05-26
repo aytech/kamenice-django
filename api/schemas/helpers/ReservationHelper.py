@@ -73,7 +73,7 @@ class ReservationHelper:
         for reservation in result.all():
             if reservation.id == instance_id:
                 continue
-            if reservation.suite.id == suite_id:
+            if reservation.suite.id == int(suite_id):
                 raise Exception(_('The room is already reserved for this period of time'))
             if extra_suites_ids is not None and reservation.suite.id in extra_suites_ids:
                 raise Exception(
