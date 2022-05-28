@@ -49,44 +49,74 @@ export const MenuItems = () => {
   return settings !== null ? (
     <>
       <Menu
-        mode="horizontal"
         className="navigation-items"
-        selectedKeys={ [ activePage ] }>
-        <Menu.Item key="reservation" icon={ <BookOutlined /> }>
-          <Link to={ uris.reservations }>{ t("reservations.name") }</Link>
-        </Menu.Item>
-        <Menu.Item key="guests" icon={ <IdcardOutlined /> }>
-          <Link to={ paths.guests }>{ t("guests.name-pl") }</Link>
-        </Menu.Item>
-        <Menu.Item key="suites" icon={ <HomeOutlined /> }>
-          <Link to={ paths.suites }>{ t("rooms.nav-title") }</Link>
-        </Menu.Item>
-      </Menu >
+        items={ [
+          {
+            key: "reservation",
+            icon: <BookOutlined />,
+            label: (
+              <Link to={ uris.reservations }>
+                { t("reservations.name") }
+              </Link>
+            )
+          },
+          {
+            key: "guests",
+            icon: <IdcardOutlined />,
+            label: (
+              <Link to={ paths.guests }>
+                { t("guests.name-pl") }
+              </Link>
+            )
+          },
+          {
+            key: "suites",
+            icon: <HomeOutlined />,
+            label: (
+              <Link to={ paths.suites }>
+                { t("rooms.nav-title") }
+              </Link>
+            )
+          }
+        ] }
+        mode="horizontal"
+        selectedKeys={ [ activePage ] } />
       <Menu
         className="user"
+        items={ [
+          {
+            children: [
+              {
+                key: "settings",
+                icon: <SettingOutlined />,
+                label: (
+                  <Link to={ uris.settings }>
+                    { t("pages.settings") }
+                  </Link>
+                )
+              },
+              {
+                key: "reports",
+                icon: <FilePdfOutlined />,
+                label: (
+                  <Link to={ uris.statements }>
+                    { t("pages.statements") }
+                  </Link>
+                )
+              },
+              {
+                key: "logout",
+                icon: <LogoutOutlined />,
+                label: t("logout"),
+                onClick: logout
+              }
+            ],
+            key: "user",
+            label: userAvatar()
+          }
+        ] }
         mode="horizontal"
-        selectedKeys={ [ activePage ] }>
-        <Menu.SubMenu
-          key="user"
-          title={ userAvatar() }>
-          <Menu.Item
-            key="settings"
-            icon={ <SettingOutlined /> }>
-            <Link to={ uris.settings }>{ t("pages.settings") }</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="reports"
-            icon={ <FilePdfOutlined /> }>
-            <Link to={ uris.statements }>{ t("pages.statements") }</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="logout"
-            icon={ <LogoutOutlined /> }
-            onClick={ logout }>
-            { t("logout") }
-          </Menu.Item>
-        </Menu.SubMenu>
-      </Menu>
+        selectedKeys={ [ activePage ] } />
     </>
   ) : null
 }
