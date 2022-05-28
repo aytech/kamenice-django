@@ -14,7 +14,7 @@ import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions } from "../../cache"
+import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, suites } from "../../cache"
 import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
@@ -22,6 +22,7 @@ import { dateFormat } from "../../lib/Constants"
 import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
 import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
+import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -160,14 +161,16 @@ export const Reservations = () => {
 
   useEffect(() => {
     const reservationList: TimelineItem<CustomItemFields, Moment>[] = []
-    const suiteList: TimelineGroup<CustomGroupFields>[] = []
+    const suiteTimelineGroup: TimelineGroup<CustomGroupFields>[] = []
     const suiteOptionValues: OptionsType[] = []
+    const suitesList: Suites_suites[] = []
     const reservationOptionMeals: OptionsType[] = []
     const reservationOptionTypes: OptionsType[] = []
 
     reservationsData?.suites?.forEach(suite => {
       if (suite !== null) {
-        suiteList.push(suite)
+        suitesList.push(suite)
+        suiteTimelineGroup.push(suite)
         suiteOptionValues.push({
           label: suite.title,
           value: suite.id
@@ -175,7 +178,8 @@ export const Reservations = () => {
       }
     })
     suiteOptions(suiteOptionValues)
-    setTimelineGroups(suiteList)
+    suites(suitesList)
+    setTimelineGroups(suiteTimelineGroup)
 
     reservationsData?.reservations?.forEach(reservation => {
       if (reservation !== null) {

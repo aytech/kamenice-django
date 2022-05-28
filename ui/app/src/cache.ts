@@ -16,6 +16,7 @@ export const selectedGuest = makeVar<Guests_guests | null>(null)
 export const selectedPage = makeVar<MenuItemKey>("user")
 export const selectedSuite = makeVar<Suites_suites | null>(null)
 export const suiteOptions = makeVar<OptionsType[]>([])
+export const suites = makeVar<Suites_suites[]>([])
 export const userColor = makeVar<string>("#ccc")
 export const userName = makeVar<string>("")
 
@@ -90,6 +91,9 @@ export const cache = new InMemoryCache({
       fields: {
         selectedSuite: {
           read: () => selectedSuite()
+        },
+        suites: {
+          read: () => suites()
         }
       }
     }

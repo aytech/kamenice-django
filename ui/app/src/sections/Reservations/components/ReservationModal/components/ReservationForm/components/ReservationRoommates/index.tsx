@@ -55,8 +55,6 @@ export const ReservationRoommates = ({
                 key={ field.key }>
                 <Form.Item
                   hasFeedback
-                  { ...field }
-                  fieldKey={ [ field.key, 'first' ] }
                   name={ [ field.name, "id" ] }
                   rules={ Validators.getRoommateValidators(
                     [ t("forms.guest-selected"), ("forms.guest-duplicate") ],
@@ -70,7 +68,6 @@ export const ReservationRoommates = ({
                     showSearch />
                 </Form.Item>
                 <Form.Item
-                  { ...field }
                   name={ [ field.name, "fromDate" ] }>
                   <DatePicker
                     disabledDate={ (currentDate: Moment) => {

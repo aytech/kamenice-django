@@ -3,22 +3,26 @@ import { useReactiveVar } from "@apollo/client"
 import { Button, Form, FormInstance, Select, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { suiteOptions } from "../../../../../../../../cache"
+import { suiteOptions, suites } from "../../../../../../../../cache"
 import { FormHelper } from "../../../../../../../../lib/components/FormHelper"
+import { Suites_suites } from "../../../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { ReservationTypeKey } from "../../../../../../../../lib/Types"
 
 interface Props {
   form: FormInstance
   selectedType?: ReservationTypeKey
+  setSuiteCapacity: (capacity: number) => void
 }
 
 export const ReservationFormSuite = ({
   form,
-  selectedType
+  selectedType,
+  setSuiteCapacity
 }: Props) => {
 
   const { t } = useTranslation()
   const options = useReactiveVar(suiteOptions)
+  const suitesList = useReactiveVar(suites)
 
   const [ addExtraSuiteTooltip, setAddExtraSuiteTooltip ] = useState<string>(t("tooltips.suite-extend-reservation"))
 
@@ -54,6 +58,13 @@ export const ReservationFormSuite = ({
     }
   }
 
+  const updateSuiteCapacity = (suiteId: number) => {
+    const suite = suitesList.find((suite: Suites_suites) => +suite.id === +suiteId)
+    if (suite !== undefined) {
+      setSuiteCapacity(suite.numberBeds + suite.numberBedsExtra)
+    }
+  }
+
   useEffect(() => {
     if (selectedType !== "INQUIRY") {
       setAddExtraSuiteTooltip(t("tooltips.suite-not-extendable"))
@@ -70,6 +81,7 @@ export const ReservationFormSuite = ({
         rules={ [ FormHelper.requiredRule(t("reservations.choose-suite")) ] }>
         <Select
           id="select-suite"
+          onSelect={ updateSuiteCapacity }
           options={ suiteOptions() } />
       </Form.Item>
       <Form.Item

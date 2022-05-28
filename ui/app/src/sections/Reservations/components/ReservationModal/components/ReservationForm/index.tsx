@@ -168,7 +168,8 @@ export const ReservationForm = ({
         suiteCapacity={ suiteCapacity } />
       <ReservationFormSuite
         form={ form }
-        selectedType={ selectedReservationType } />
+        selectedType={ selectedReservationType }
+        setSuiteCapacity={ setSuiteCapacity } />
       <Form.Item
         hasFeedback
         label={ t("reservations.type") }
