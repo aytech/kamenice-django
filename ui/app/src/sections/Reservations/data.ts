@@ -8,9 +8,10 @@ interface ITimelineData {
   getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => IReservation
   getReservationForCreate: () => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy?: boolean) => IReservation
+  getTimelineReservationGroupId: (itemId: string) => string
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
-  getTimelineReservationItemId: (groupItemId: string) => string
-  selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => TimelineItem<CustomItemFields, Moment>[]
+  getTimelineReservationItemId: (itemId: string) => string
+  selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => { items: TimelineItem<CustomItemFields, Moment>[], item: TimelineItem<CustomItemFields, Moment> | null }
 }
 
 export const TimelineData: ITimelineData = {
@@ -67,6 +68,9 @@ export const TimelineData: ITimelineData = {
       type: timelineItem.type
     }
   },
+  getTimelineReservationGroupId: (itemId: string) => {
+    return itemId.substring(0, itemId.indexOf("-"))
+  },
   getTimelineReservationItem: (reservation: SuitesWithReservations_reservations, groupId: string, selected?: string) => {
     const price = reservation.priceSet.find((set: SuitesWithReservations_reservations_priceSet) => set.suite.id === groupId)
     return {
@@ -112,6 +116,7 @@ export const TimelineData: ITimelineData = {
   },
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => {
     const updatedItems: TimelineItem<CustomItemFields, Moment>[] = []
+    let selectedItem: TimelineItem<CustomItemFields, Moment> | null = null
     items.forEach(item => {
       const updatedItem = item
       updatedItem.itemProps = {
@@ -123,8 +128,11 @@ export const TimelineData: ITimelineData = {
             : Colors.getReservationColor(item.type)
         }
       }
+      if (updatedItem.id === itemId) {
+        selectedItem = updatedItem
+      }
       updatedItems.push(updatedItem)
     })
-    return updatedItems
+    return { items: updatedItems, item: selectedItem }
   }
 }

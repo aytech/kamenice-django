@@ -34,7 +34,7 @@ export const Reservations = () => {
   const [ canvasTimeEnd, setCanvasTimeEnd ] = useState<number>(moment().add(15, "day").valueOf())
   const [ canvasTimeStart, setCanvasTimeStart ] = useState<number>(moment().subtract(15, "day").valueOf())
   const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ selectedItem, setSelectedItem ] = useState<string>()
+  const [ selectedItem, setSelectedItem ] = useState<TimelineItem<CustomItemFields, Moment>>()
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ lastFrameEndTime ] = useState<number>(moment().add(1, "year").valueOf())
   const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
@@ -68,7 +68,7 @@ export const Reservations = () => {
   // Click on item on the timeline opens modal with existing reservation for editing
   // Note: item is selected on first click, second click registers as click event
   const openUpdateReservationModal = (copy: boolean = false) => {
-    const timelineItem = items.find(item => item.id === selectedItem)
+    const timelineItem = items.find(item => item.id === selectedItem?.id)
     if (timelineItem !== undefined) {
       const suite = reservationsData?.suites?.find(suite => suite?.id === timelineItem.suite.id)
       if (suite !== null) {
@@ -100,8 +100,11 @@ export const Reservations = () => {
   }
 
   const onItemSelect = (itemId: string) => {
-    setSelectedItem(itemId)
-    setItems(TimelineData.selectDeselectItem(items, itemId))
+    const data = TimelineData.selectDeselectItem(items, itemId)
+    if (data.item !== null) {
+      setSelectedItem(data.item)
+    }
+    setItems(data.items)
   }
 
   const onItemDeselect = () => {
@@ -113,7 +116,11 @@ export const Reservations = () => {
 
   const onDelete = () => {
     if (selectedItem !== undefined) {
-      deleteReservation({ variables: { reservationId: TimelineData.getTimelineReservationItemId(selectedItem) } })
+      deleteReservation({
+        variables: {
+          reservationId: selectedItem.id
+        }
+      })
     }
   }
 
@@ -146,17 +153,37 @@ export const Reservations = () => {
   }
 
   const searchReservation = (value: string) => {
-    if (value.length > 0) {
-      const reservation = items.find(item => {
-        return (item.guest.name.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1
-          || item.guest.surname.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1)
-          && item.id !== selectedItem
-      })
-      if (reservation !== undefined) {
-        onItemSelect(reservation.id)
-        moveToItem(reservation)
-      }
+    if (value.length === 0) {
+      return
     }
+
+    const lowerValue = value.toLocaleLowerCase()
+    const isItemMatched = (item: TimelineItem<CustomItemFields, Moment>) => {
+      return (item.guest.name.toLocaleLowerCase().indexOf(lowerValue) !== -1
+        || item.guest.surname.toLocaleLowerCase().indexOf(lowerValue) !== -1)
+    }
+    const foundItems = items.filter(isItemMatched)
+      .sort((a, b) => a.start_time.valueOf() - b.start_time.valueOf())
+
+    if (foundItems.length === 0) {
+      return
+    }
+
+    let matchedItem: TimelineItem<CustomItemFields, Moment>
+    // If some reservation is already selected
+    if (selectedItem !== undefined) {
+      // Check if the selected item is one of the search results
+      const foundSelectedIndex = foundItems.findIndex(item => item.id === selectedItem.id)
+      if (foundSelectedIndex !== -1 && foundSelectedIndex < (foundItems.length - 1)) {
+        matchedItem = foundItems[ foundSelectedIndex + 1 ]
+      } else { // this means we're at the end of the search result
+        matchedItem = foundItems[ 0 ]
+      }
+    } else { // if not, just move to the first match
+      matchedItem = foundItems[ 0 ]
+    }
+    onItemSelect(matchedItem.id)
+    moveToItem(matchedItem)
   }
 
   useEffect(() => {
@@ -183,9 +210,9 @@ export const Reservations = () => {
 
     reservationsData?.reservations?.forEach(reservation => {
       if (reservation !== null) {
-        reservationList.push(TimelineData.getTimelineReservationItem(reservation, reservation.suite.id, selectedItem))
+        reservationList.push(TimelineData.getTimelineReservationItem(reservation, reservation.suite.id, selectedItem?.id))
         reservation.extraSuites.forEach(extra => {
-          reservationList.push(TimelineData.getTimelineReservationItem(reservation, extra.id, selectedItem))
+          reservationList.push(TimelineData.getTimelineReservationItem(reservation, extra.id, selectedItem?.id))
         })
       }
       if (openReservation !== undefined && reservation?.id === openReservation) {
@@ -241,7 +268,7 @@ export const Reservations = () => {
               onDelete={ onDelete }
               onUpdate={ onUpdate }
               searchReservation={ searchReservation }
-              selectedItemId={ selectedItem } />
+              selectedItemId={ selectedItem?.id } />
             { timelineGroups.length > 0 &&
               <Timeline
                 canChangeGroup={ true }
