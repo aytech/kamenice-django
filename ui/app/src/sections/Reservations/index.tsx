@@ -30,16 +30,16 @@ export const Reservations = () => {
   const { t } = useTranslation()
   const { open: openReservation } = useParams()
 
-  const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
   const [ canvasTimeEnd, setCanvasTimeEnd ] = useState<number>(moment().add(15, "day").valueOf())
   const [ canvasTimeStart, setCanvasTimeStart ] = useState<number>(moment().subtract(15, "day").valueOf())
-  const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ selectedItem, setSelectedItem ] = useState<TimelineItem<CustomItemFields, Moment>>()
-  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
-  const [ lastFrameEndTime ] = useState<number>(moment().add(1, "year").valueOf())
-  const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
   const [ firstFrameStartTime ] = useState<number>(moment().subtract(1, "year").valueOf())
   const [ firstFrameEndTime ] = useState<number>(moment(firstFrameStartTime).add(1, "month").valueOf())
+  const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
+  const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
+  const [ lastFrameEndTime ] = useState<number>(moment().add(1, "year").valueOf())
+  const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
+  const [ selectedItem, setSelectedItem ] = useState<TimelineItem<CustomItemFields, Moment>>()
+  const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
   const [ timelineGroups, setTimelineGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
 
   const [ getReservations, { loading: dataLoading, data: reservationsData, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
