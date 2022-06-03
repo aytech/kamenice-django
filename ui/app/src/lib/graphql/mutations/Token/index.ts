@@ -8,6 +8,8 @@ export const TOKEN_AUTH = gql`
       refreshToken
       token
       settings {
+        defaultArrivalTime
+        defaultDepartureTime
         id
         municipalityFee
         priceBreakfast

@@ -1,10 +1,13 @@
 from django.db import models
 
 from api.models.BaseModel import BaseModel
+from api.constants import DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME
 
 
 class Settings(BaseModel):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    default_arrival_time = models.TimeField(null=False, default=DEFAULT_ARRIVAL_TIME)
+    default_departure_time = models.TimeField(null=False, default=DEFAULT_DEPARTURE_TIME)
     deleted = models.BooleanField(default=False)
     municipality_fee = models.DecimalField(blank=True, decimal_places=2, default='0.00', max_digits=6, null=True)
     price_breakfast = models.DecimalField(blank=True, decimal_places=2, default='0.00', max_digits=6, null=True)

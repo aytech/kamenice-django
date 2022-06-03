@@ -11,6 +11,8 @@ import { SettingsInput } from "./../../../globalTypes";
 
 export interface UpdateSettings_updateSettings_settings {
   __typename: "Settings";
+  defaultArrivalTime: any;
+  defaultDepartureTime: any;
   id: string;
   municipalityFee: any | null;
   priceBreakfastChild: any | null;

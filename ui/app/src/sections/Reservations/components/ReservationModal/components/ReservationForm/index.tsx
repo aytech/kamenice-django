@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 import { reservationMealOptions, reservationTypeOptions, roommateOptions } from "../../../../../../cache"
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
-import { dateFormat } from "../../../../../../lib/Constants"
+import { dateFormat, dateFormatShort } from "../../../../../../lib/Constants"
 import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
 import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
@@ -145,7 +145,7 @@ export const ReservationForm = ({
         name="dates"
         required>
         <DatePicker.RangePicker
-          format={ dateFormat }
+          format={ dateFormatShort }
           showTime />
       </Form.Item>
       <Form.Item

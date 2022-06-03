@@ -1,20 +1,25 @@
 import { SaveOutlined, UserOutlined } from "@ant-design/icons"
 import { ApolloError, useMutation, useReactiveVar } from "@apollo/client"
-import { Avatar, Button, Col, Form, Input, message, Row, Spin } from "antd"
+import { Avatar, Button, Col, Form, Input, message, Row, Spin, TimePicker } from "antd"
 import Text from "antd/lib/typography/Text"
 import { Store } from "antd/lib/form/interface"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { appSettings, pageTitle, selectedPage, userColor, userName } from "../../cache"
 import { UPDATE_SETTINGS } from "../../lib/graphql/mutations/Settings"
 import { UpdateSettings, UpdateSettingsVariables } from "../../lib/graphql/mutations/Settings/__generated__/UpdateSettings"
 import "./styles.css"
+import moment from "moment"
+import { defaultArrivalHour, defaultDepartureHour } from "../../lib/Constants"
 
 export const Settings = () => {
 
   const { t } = useTranslation()
   const [ form ] = Form.useForm()
   const settings = useReactiveVar(appSettings)
+
+  const [ defaultArrivalTime, setDefaultArrivalTime ] = useState<string>()
+  const [ defaultDepartureTime, setDefaultDepartureTime ] = useState<string>()
 
   const [ updateSettings, { loading: updateLoading } ] = useMutation<UpdateSettings, UpdateSettingsVariables>(UPDATE_SETTINGS, {
     onCompleted: (value: UpdateSettings) => {
@@ -31,12 +36,14 @@ export const Settings = () => {
   })
 
   const initialValues: Store = {
-    userName: settings?.userName,
+    defaultArrivalTime: moment(settings?.defaultArrivalTime, "HH:mm"),
+    defaultDepartureTime: moment(settings?.defaultDepartureTime, "HH:mm"),
     municipalityFee: settings?.municipalityFee,
     priceBreakfast: settings?.priceBreakfast,
     priceBreakfastChild: settings?.priceBreakfastChild,
     priceHalfboard: settings?.priceHalfboard,
-    priceHalfboardChild: settings?.priceHalfboardChild
+    priceHalfboardChild: settings?.priceHalfboardChild,
+    userName: settings?.userName,
   }
 
   const submitForm = () => {
@@ -44,7 +51,16 @@ export const Settings = () => {
       .then(() => {
         if (settings?.id !== undefined) {
           const variables = form.getFieldsValue(true)
-          updateSettings({ variables: { data: { id: settings?.id, ...variables } } })
+          updateSettings({
+            variables: {
+              data: {
+                ...variables,
+                defaultArrivalTime,
+                defaultDepartureTime,
+                id: settings?.id
+              }
+            }
+          })
         }
       })
       .catch(() => {
@@ -122,6 +138,28 @@ export const Settings = () => {
                 name="priceHalfboardChild">
                 <Input addonBefore={ t("currency") } type="number" />
               </Form.Item>
+              <Row>
+                <Col lg={ 7 } md={ 7 } sm={ 8 } xs={ 10 }>
+                  <Form.Item
+                    label={ t("settings.default-arrival-time") }
+                    name="defaultArrivalTime">
+                    <TimePicker
+                      defaultOpenValue={ moment(`${ defaultArrivalHour }:00`, 'HH:mm') }
+                      format="HH:mm"
+                      onChange={ (_, timeString) => setDefaultArrivalTime(timeString) } />
+                  </Form.Item>
+                </Col>
+                <Col lg={ 7 } md={ 7 } sm={ 8 } xs={ 10 }>
+                  <Form.Item
+                    label={ t("settings.default-departure-time") }
+                    name="defaultDepartureTime">
+                    <TimePicker
+                      defaultOpenValue={ moment(`${ defaultDepartureHour }:00`, 'HH:mm') }
+                      format="HH:mm"
+                      onChange={ (_, timeString) => setDefaultDepartureTime(timeString) } />
+                  </Form.Item>
+                </Col>
+              </Row>
               <Form.Item>
                 <Button
                   block

@@ -9,6 +9,8 @@
 
 export interface Settings_settings {
   __typename: "Settings";
+  defaultArrivalTime: any;
+  defaultDepartureTime: any;
   id: string;
   municipalityFee: any | null;
   priceBreakfast: any | null;

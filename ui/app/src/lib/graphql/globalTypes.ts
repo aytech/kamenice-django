@@ -147,6 +147,8 @@ export interface ReservationRoommate {
 }
 
 export interface SettingsInput {
+  defaultArrivalTime?: string | null;
+  defaultDepartureTime?: string | null;
   id?: string | null;
   municipalityFee?: string | null;
   priceBreakfast?: string | null;

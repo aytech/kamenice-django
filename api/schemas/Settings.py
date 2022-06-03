@@ -6,14 +6,16 @@ from graphql_jwt.decorators import user_passes_test
 from api.models.Settings import Settings as SettingsModel
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 from api.schemas.helpers.FormHelper import FormHelper
+from api.constants import DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME
 
 
 class Settings(DjangoObjectType):
     class Meta:
         model = SettingsModel
         fields = (
-            'id', 'municipality_fee', 'price_breakfast', 'price_breakfast_child',
-            'price_halfboard', 'price_halfboard_child', 'user_avatar', 'user_color', 'user_name',)
+            'default_arrival_time', 'default_departure_time', 'id', 'municipality_fee', 'price_breakfast',
+            'price_breakfast_child', 'price_halfboard', 'price_halfboard_child', 'user_avatar', 'user_color',
+            'user_name',)
 
 
 class SettingsQuery(ObjectType):
@@ -30,6 +32,8 @@ class SettingsQuery(ObjectType):
 
 
 class SettingsInput(InputObjectType):
+    default_arrival_time = String()
+    default_departure_time = String()
     id = ID()
     municipality_fee = String()
     price_breakfast = String()
@@ -53,6 +57,9 @@ class UpdateSettings(Mutation):
         try:
             instance = SettingsModel.objects.get(pk=data.id)
             if instance:
+                instance.default_arrival_time = FormHelper.get_value(data.default_arrival_time, DEFAULT_ARRIVAL_TIME)
+                instance.default_departure_time = FormHelper.get_value(data.default_departure_time,
+                                                                       DEFAULT_DEPARTURE_TIME)
                 instance.municipality_fee = FormHelper.get_value(data.municipality_fee, 0.00)
                 instance.price_breakfast = FormHelper.get_value(data.price_breakfast, 0.00)
                 instance.price_breakfast_child = FormHelper.get_value(data.price_breakfast_child, 0.00)

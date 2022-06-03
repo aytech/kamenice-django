@@ -20,7 +20,7 @@ import { Confirmation } from "./components/Confirmation"
 import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 import { ReservationForm } from "./components/ReservationForm"
 import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
-import { reservationModalOpen } from "../../../../cache"
+import { appSettings, reservationModalOpen } from "../../../../cache"
 import { TimelineData } from "../../data"
 import { NumberHelper } from "../../../../lib/components/NumberHelper"
 
@@ -43,6 +43,7 @@ export const ReservationModal = ({
   const { t } = useTranslation()
   const [ form ] = Form.useForm()
   const visible = useReactiveVar(reservationModalOpen)
+  const settings = useReactiveVar(appSettings)
 
   const [ deleteConfirmVisible, setDeleteConfirmVisible ] = useState<boolean>(false)
   const [ reservationConfirmationMessage, setReservationConfirmationMessage ] = useState<string>()
@@ -127,7 +128,13 @@ export const ReservationModal = ({
       to = moment()
     } else {
       from = formDates[ 0 ]
+        .hours(settings?.defaultArrivalTime.substring(0, 2))
+        .minutes(settings?.defaultArrivalTime.substring(3, 5))
+        .seconds(0)
       to = formDates[ 1 ]
+        .hours(settings?.defaultDepartureTime.substring(0, 2))
+        .minutes(settings?.defaultArrivalTime.substring(3, 5))
+        .seconds(0)
     }
 
     if (formData.roommates !== undefined) {
