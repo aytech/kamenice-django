@@ -118,7 +118,7 @@ export const Reservations = () => {
     if (selectedItem !== undefined) {
       deleteReservation({
         variables: {
-          reservationId: selectedItem.id
+          reservationId: TimelineData.getTimelineReservationItemId(selectedItem.id)
         }
       })
     }
