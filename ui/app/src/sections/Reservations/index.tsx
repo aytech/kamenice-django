@@ -1,20 +1,18 @@
 import Text from "antd/lib/typography/Text"
-import Title from "antd/lib/typography/Title"
-import Timeline, { CursorMarker, DateHeader, SidebarHeader, TimelineGroup, TimelineHeaders, TimelineItem } from "react-calendar-timeline"
+import { TimelineGroup, TimelineItem } from "react-calendar-timeline"
 import { useEffect, useState } from "react"
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
 import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
-import { ReservationItem } from "./components/ReservationItem"
 import { ReservationModal } from "./components/ReservationModal"
 import { TimelineHeader } from "./components/TimelineHeader"
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client"
+import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/client"
 import { SUITES_WITH_RESERVATIONS } from "../../lib/graphql/queries/Suites"
 import { SuitesWithReservations } from "../../lib/graphql/queries/Suites/__generated__/SuitesWithReservations"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
-import { pageTitle, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, suites } from "../../cache"
+import { canvasTimeEnd, canvasTimeStart, pageTitle, reservationItems, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, suites, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
 import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
@@ -23,24 +21,20 @@ import { DragReservation, DragReservationVariables } from "../../lib/graphql/mut
 import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { TimelineCalendar } from "./components/TimelineCalendar"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
 
   const { t } = useTranslation()
+
   const { open: openReservation } = useParams()
 
-  const [ canvasTimeEnd, setCanvasTimeEnd ] = useState<number>(moment().add(15, "day").valueOf())
-  const [ canvasTimeStart, setCanvasTimeStart ] = useState<number>(moment().subtract(15, "day").valueOf())
-  const [ firstFrameStartTime ] = useState<number>(moment().subtract(1, "year").valueOf())
-  const [ firstFrameEndTime ] = useState<number>(moment(firstFrameStartTime).add(1, "month").valueOf())
+  const items = useReactiveVar(reservationItems)
+
   const [ initialLoading, setInitialLoading ] = useState<boolean>(true)
-  const [ items, setItems ] = useState<TimelineItem<CustomItemFields, Moment>[]>([])
-  const [ lastFrameEndTime ] = useState<number>(moment().add(1, "year").valueOf())
-  const [ lastFrameStartTime ] = useState<number>(moment(lastFrameEndTime).subtract(1, "month").valueOf())
   const [ selectedItem, setSelectedItem ] = useState<TimelineItem<CustomItemFields, Moment>>()
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
-  const [ timelineGroups, setTimelineGroups ] = useState<TimelineGroup<CustomGroupFields>[]>([])
 
   const [ getReservations, { loading: dataLoading, data: reservationsData, refetch } ] = useLazyQuery<SuitesWithReservations>(SUITES_WITH_RESERVATIONS, {
     onCompleted: () => setInitialLoading(false),
@@ -80,7 +74,7 @@ export const Reservations = () => {
   }
 
   const onItemMove = (itemId: string, dragTime: number, newGroupOrder: number) => {
-    const newSuite = timelineGroups[ newGroupOrder ]
+    const newSuite = timelineGroups()[ newGroupOrder ]
     const timelineItem = items.find(item => item.id === itemId)
     if (newSuite !== undefined && timelineItem !== undefined) {
       const reservationDuration: number = moment(timelineItem.end_time).diff(timelineItem.start_time)
@@ -104,7 +98,7 @@ export const Reservations = () => {
     if (data.item !== null) {
       setSelectedItem(data.item)
     }
-    setItems(data.items)
+    reservationItems(data.items)
   }
 
   const onItemDeselect = () => {
@@ -131,25 +125,13 @@ export const Reservations = () => {
       const center = item.start_time.valueOf()
       const from_time = moment(center).subtract(15, "day")
       const to_time = moment(center).add(15, "day")
-      setCanvasTimeStart(from_time.valueOf())
-      setCanvasTimeEnd(to_time.valueOf())
+      canvasTimeStart(from_time.valueOf())
+      canvasTimeEnd(to_time.valueOf())
     } else {
       if (stopMessage !== undefined) {
         message.info(stopMessage)
       }
     }
-  }
-
-  const moveForward = () => {
-    const range: number = canvasTimeEnd - canvasTimeStart
-    setCanvasTimeEnd(moment(canvasTimeEnd + range).valueOf())
-    setCanvasTimeStart(moment(canvasTimeStart + range).valueOf())
-  }
-
-  const moveBackwards = () => {
-    const range: number = canvasTimeEnd - canvasTimeStart
-    setCanvasTimeStart(moment(canvasTimeStart - range).valueOf())
-    setCanvasTimeEnd(moment(canvasTimeEnd - range).valueOf())
   }
 
   const searchReservation = (value: string) => {
@@ -206,7 +188,7 @@ export const Reservations = () => {
     })
     suiteOptions(suiteOptionValues)
     suites(suitesList)
-    setTimelineGroups(suiteTimelineGroup)
+    timelineGroups(suiteTimelineGroup)
 
     reservationsData?.reservations?.forEach(reservation => {
       if (reservation !== null) {
@@ -231,7 +213,7 @@ export const Reservations = () => {
       }
     })
 
-    setItems(reservationList)
+    reservationItems(reservationList)
     reservationTypeOptions(reservationOptionTypes)
     reservationMealOptions(reservationOptionMeals)
   }, [ reservationsData, openReservation, selectedItem ])
@@ -261,89 +243,16 @@ export const Reservations = () => {
           size="large">
           <div id="app-timeline">
             <TimelineHeader
-              moveBackwards={ moveBackwards }
-              moveForward={ moveForward }
               onAdd={ openNewReservationModal }
               onCopy={ onCopy }
               onDelete={ onDelete }
               onUpdate={ onUpdate }
               searchReservation={ searchReservation }
               selectedItemId={ selectedItem?.id } />
-            { timelineGroups.length > 0 &&
-              <Timeline
-                canChangeGroup={ true }
-                canMove={ true }
-                canResize={ false }
-                groupRenderer={ ({ group }) => {
-                  return (
-                    <Title level={ 5 }>
-                      { group.title }
-                    </Title>
-                  )
-                } }
-                groups={ timelineGroups }
-                itemRenderer={ props =>
-                  <ReservationItem { ...props } />
-                }
-                items={ items }
-                itemTouchSendsClick={ true }
-                lineHeight={ 60 }
-                onItemClick={ onItemSelect }
-                onItemDeselect={ onItemDeselect }
-                onCanvasClick={ onItemDeselect }
-                onItemMove={ onItemMove }
-                onItemSelect={ onItemSelect }
-                onTimeChange={ (visibleTimeStart: number, visibleTimeEnd: number, updateScrollCanvas: (start: number, end: number) => void) => {
-                  if (visibleTimeEnd > lastFrameEndTime) {
-                    setCanvasTimeEnd(lastFrameEndTime)
-                    setCanvasTimeStart(lastFrameStartTime)
-                    updateScrollCanvas(lastFrameStartTime, lastFrameEndTime)
-                  } else if (visibleTimeStart < firstFrameStartTime) {
-                    setCanvasTimeEnd(firstFrameEndTime)
-                    setCanvasTimeStart(firstFrameStartTime)
-                    updateScrollCanvas(firstFrameStartTime, firstFrameEndTime)
-                  } else {
-                    setCanvasTimeEnd(visibleTimeEnd)
-                    setCanvasTimeStart(visibleTimeStart)
-                    updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
-                  }
-                } }
-                visibleTimeEnd={ canvasTimeEnd }
-                visibleTimeStart={ canvasTimeStart }>
-                <TimelineHeaders>
-                  <SidebarHeader>
-                    { ({ getRootProps }) => {
-                      return (
-                        <div
-                          { ...getRootProps() }
-                          className="side-header">
-                          { t("rooms.nav-title") }
-                        </div>
-                      )
-                    } }
-                  </SidebarHeader>
-                  <DateHeader unit="primaryHeader" />
-                  <DateHeader
-                    className="days"
-                    unit="day" />
-                </TimelineHeaders>
-                <CursorMarker>
-                  {
-                    ({ styles, date }) => {
-                      return (
-                        <div style={ { ...styles, backgroundColor: "rgba(136, 136, 136, 0.5)", color: "#888" } }>
-                          <div className="rt-marker__label">
-                            <div className="rt-marker__content">
-                              { moment(date).format("DD MMM HH:mm") }
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    }
-                  }
-                </CursorMarker>
-              </Timeline>
-            }
+            <TimelineCalendar
+              onItemDeselect={ onItemDeselect }
+              onItemMove={ onItemMove }
+              onItemSelect={ onItemSelect } />
             <Space align="end" className="app-footer">
               <Text disabled>&reg;{ t("company-name") }</Text>
             </Space>

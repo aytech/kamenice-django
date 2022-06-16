@@ -1,11 +1,12 @@
 import { CaretLeftOutlined, CaretRightOutlined, CopyOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons"
+import { useReactiveVar } from "@apollo/client"
 import { Affix, Button, Col, Input, Modal, Row, Tooltip } from "antd"
+import moment from "moment"
 import { useTranslation } from "react-i18next"
+import { canvasTimeEnd, canvasTimeStart } from "../../../../cache"
 import "./styles.css"
 
 interface Props {
-  moveBackwards: () => void
-  moveForward: () => void
   onAdd: () => void
   onCopy: () => void
   onDelete: () => void
@@ -16,8 +17,6 @@ interface Props {
 
 export const TimelineHeader = ({
   searchReservation,
-  moveBackwards,
-  moveForward,
   onAdd,
   onCopy,
   onDelete,
@@ -27,6 +26,9 @@ export const TimelineHeader = ({
 
   const { t } = useTranslation()
 
+  const visibleTimeEnd = useReactiveVar(canvasTimeEnd)
+  const visibleTimeStart = useReactiveVar(canvasTimeStart)
+
   const deleteReservation = () => {
     Modal.confirm({
       title: t("tooltips.delete-reservation-confirm-title"),
@@ -34,6 +36,18 @@ export const TimelineHeader = ({
       okText: t("yes"),
       onOk: () => onDelete()
     })
+  }
+
+  const moveForward = () => {
+    const range: number = visibleTimeEnd - visibleTimeStart
+    canvasTimeEnd(moment(visibleTimeEnd + range).valueOf())
+    canvasTimeStart(moment(visibleTimeStart + range).valueOf())
+  }
+
+  const moveBackwards = () => {
+    const range: number = visibleTimeEnd - visibleTimeStart
+    canvasTimeEnd(moment(visibleTimeEnd - range).valueOf())
+    canvasTimeStart(moment(visibleTimeStart - range).valueOf())
   }
 
   const ButtonCopy = selectedItemId !== undefined ? (
