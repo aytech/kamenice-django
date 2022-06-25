@@ -13,6 +13,7 @@ interface Props {
   onUpdate: () => void
   searchReservation: (value: string) => void
   selectedItemId: string | undefined
+  updateReservations: (from: number, to: number) => void
 }
 
 export const TimelineHeader = ({
@@ -21,7 +22,8 @@ export const TimelineHeader = ({
   onCopy,
   onDelete,
   onUpdate,
-  selectedItemId
+  selectedItemId,
+  updateReservations
 }: Props) => {
 
   const { t } = useTranslation()
@@ -40,14 +42,20 @@ export const TimelineHeader = ({
 
   const moveForward = () => {
     const range: number = visibleTimeEnd - visibleTimeStart
-    canvasTimeEnd(moment(visibleTimeEnd + range).valueOf())
-    canvasTimeStart(moment(visibleTimeStart + range).valueOf())
+    const from = moment(visibleTimeStart + range).valueOf()
+    const to = moment(visibleTimeEnd + range).valueOf()
+    canvasTimeEnd(to)
+    canvasTimeStart(from)
+    updateReservations(from, to)
   }
 
   const moveBackwards = () => {
     const range: number = visibleTimeEnd - visibleTimeStart
-    canvasTimeEnd(moment(visibleTimeEnd - range).valueOf())
-    canvasTimeStart(moment(visibleTimeStart - range).valueOf())
+    const from = moment(visibleTimeStart - range).valueOf()
+    const to = moment(visibleTimeEnd - range).valueOf()
+    canvasTimeEnd(to)
+    canvasTimeStart(from)
+    updateReservations(from, to)
   }
 
   const ButtonCopy = selectedItemId !== undefined ? (

@@ -11,11 +11,13 @@ interface Props {
   onItemDeselect: () => void
   onItemMove: (itemId: string, dragTime: number, newGroupOrder: number) => void
   onItemSelect: (itemId: string) => void
+  updateReservations: (from: number, to: number) => void
 }
 export const TimelineCalendar = ({
   onItemDeselect,
   onItemMove,
-  onItemSelect
+  onItemSelect,
+  updateReservations
 }: Props) => {
 
   const { t } = useTranslation()
@@ -68,6 +70,7 @@ export const TimelineCalendar = ({
           canvasTimeStart(visibleTimeStart)
           updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
         }
+        updateReservations(visibleTimeStart, visibleTimeEnd)
       } }
       visibleTimeEnd={ visibleTimeEnd }
       visibleTimeStart={ visibleTimeStart }>

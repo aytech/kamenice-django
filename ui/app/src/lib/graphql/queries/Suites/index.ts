@@ -21,8 +21,8 @@ export const SUITES = gql`
   }
 `
 
-export const SUITES_WITH_RESERVATIONS = gql`
-  query SuitesWithReservations($startDate: String!, $endDate: String!) {
+export const RESERVATIONS_META = gql`
+  query ReservationsMeta {
     guests {
       id
       name
@@ -39,52 +39,6 @@ export const SUITES_WITH_RESERVATIONS = gql`
       numberBedsExtra
       priceBase
       title
-    }
-    reservations(startDate: $startDate, endDate: $endDate) {
-      expired
-      extraSuites {
-        id
-      }
-      fromDate
-      guest {
-        email
-        id
-        name
-        surname
-      }
-      id
-      meal
-      notes
-      payingGuest {
-        id
-      }
-      priceSet {
-        accommodation
-        meal
-        municipality
-        suite {
-          id
-          priceBase
-        }
-        total
-      }
-      purpose
-      roommateSet {
-        entity {
-          id
-          name
-          surname
-        }
-        fromDate
-      }
-      suite {
-        id
-        numberBeds
-        numberBedsExtra
-        priceBase
-      }
-      toDate
-      type
     }
     reservationMeals {
       label
