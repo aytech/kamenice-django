@@ -1,4 +1,5 @@
 import { Moment } from "moment"
+import { Guest } from "./graphql/graphql"
 import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
 import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
 
@@ -51,13 +52,6 @@ export interface IGuestData {
   visaNumber?: string
 }
 
-export interface Guest {
-  email: string | null
-  id?: number | string
-  name: string
-  surname: string
-}
-
 export interface GuestOption {
   id: string
   name: string
@@ -71,10 +65,6 @@ export interface Suite {
   numberBedsExtra?: number | null
   priceBase?: string | null
   title?: string
-}
-
-export interface Roommate extends Guest {
-  age: string | null
 }
 
 export interface ReservationPrice {
@@ -98,6 +88,7 @@ export interface IReservation {
   notes?: string | null
   payingGuest?: { id: string } | null
   price?: ReservationPrice
+  priceSet?: Array<ReservationPrice>,
   purpose?: string | null
   roommates?: { id: string, fromDate: Moment }[]
   roommateSet?: { entity: { id: string, name: string, surname: string }, fromDate: string }[]
@@ -150,21 +141,21 @@ export interface CustomItemFields {
   color?: string
   expired?: Moment | null
   extraSuites: { id: string }[]
-  guest: Guest
+  guest?: Guest
   id: string
-  meal: ReservationMeal
-  notes: string | null
+  meal?: ReservationMeal
+  notes?: string | null
   payingGuest?: { id: string } | null
   price: ReservationPrice
-  purpose: string | null
-  reservationId: string
+  purpose?: string | null
+  reservationId?: string | number
   roommates?: {
     id: string,
     name: string,
     surname: string,
     fromDate: Moment
   }[]
-  suite: Suite
+  suite?: Suite
   type?: ReservationTypeKey
 }
 

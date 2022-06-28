@@ -2,14 +2,13 @@ import { TimelineItem } from "react-calendar-timeline"
 import { CustomItemFields, IReservation, ReservationPrice } from "../../lib/Types"
 import moment, { Moment } from "moment"
 import { Colors } from "../../lib/components/Colors"
-import { Reservations_reservations, Reservations_reservations_priceSet } from "../../lib/graphql/queries/Reservation/__generated__/Reservations"
 
 interface ITimelineData {
   getAppReservation: (reservation: IReservation, prices: ReservationPrice[], priceSuiteId?: string) => IReservation
   getReservationForCreate: () => IReservation
   getReservationForUpdate: (timelineItem: TimelineItem<CustomItemFields, Moment>, copy?: boolean) => IReservation
   getTimelineReservationGroupId: (itemId: string) => string
-  getTimelineReservationItem: (reservation: Reservations_reservations, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
+  getTimelineReservationItem: (reservation: IReservation, groupId: string, selected?: string) => TimelineItem<CustomItemFields, Moment>
   getTimelineReservationItemId: (itemId: string) => string
   selectDeselectItem: (items: TimelineItem<CustomItemFields, Moment>[], itemId?: string) => { items: TimelineItem<CustomItemFields, Moment>[], item: TimelineItem<CustomItemFields, Moment> | null }
 }
@@ -71,8 +70,8 @@ export const TimelineData: ITimelineData = {
   getTimelineReservationGroupId: (itemId: string) => {
     return itemId.substring(0, itemId.indexOf("-"))
   },
-  getTimelineReservationItem: (reservation: Reservations_reservations, groupId: string, selected?: string) => {
-    const price = reservation.priceSet.find((set: Reservations_reservations_priceSet) => set.suite.id === groupId)
+  getTimelineReservationItem: (reservation: IReservation, groupId: string, selected?: string) => {
+    const price = reservation.priceSet?.find((price: ReservationPrice) => price.suite?.id === groupId)
     return {
       color: Colors.getReservationColor(reservation.type),
       end_time: moment(reservation.toDate),
@@ -102,12 +101,12 @@ export const TimelineData: ITimelineData = {
       },
       purpose: reservation.purpose,
       reservationId: reservation.id,
-      roommates: reservation.roommateSet.map(roommate => {
+      roommates: reservation.roommateSet?.map(roommate => {
         return { ...roommate.entity, fromDate: moment(roommate.fromDate) }
       }),
       start_time: moment(reservation.fromDate),
       suite: reservation.suite,
-      title: `${ reservation.guest.name } ${ reservation.guest.surname }`,
+      title: `${ reservation.guest?.name } ${ reservation.guest?.surname }`,
       type: reservation.type
     }
   },

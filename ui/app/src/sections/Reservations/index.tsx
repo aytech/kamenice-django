@@ -22,8 +22,7 @@ import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql
 import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { TimelineCalendar } from "./components/TimelineCalendar"
 import { ReservationsMeta } from "../../lib/graphql/queries/Suites/__generated__/ReservationsMeta"
-import { Reservations as ReservationsData } from "../../lib/graphql/queries/Reservation/__generated__/Reservations"
-import { RESERVATIONS } from "../../lib/graphql/queries/Reservation"
+import { ReservationsDocument, ReservationsQuery } from "../../lib/graphql/graphql"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -43,7 +42,7 @@ export const Reservations = () => {
     onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ getReservations, { loading: reservationsLoading, data: reservationsData, refetch } ] = useLazyQuery<ReservationsData>(RESERVATIONS, {
+  const [ getReservations, { loading: reservationsLoading, data: reservationsData, refetch } ] = useLazyQuery<ReservationsQuery>(ReservationsDocument, {
     onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
@@ -71,7 +70,7 @@ export const Reservations = () => {
   const openUpdateReservationModal = (copy: boolean = false) => {
     const timelineItem = items.find(item => item.id === selectedItem?.id)
     if (timelineItem !== undefined) {
-      const suite = reservationsMeta?.suites?.find(suite => suite?.id === timelineItem.suite.id)
+      const suite = reservationsMeta?.suites?.find(suite => suite?.id === timelineItem.suite?.id)
       if (suite !== null) {
         selectedSuite(suite)
       }
@@ -148,7 +147,7 @@ export const Reservations = () => {
 
     const lowerValue = value.toLocaleLowerCase()
     const isItemMatched = (item: TimelineItem<CustomItemFields, Moment>) => {
-      return (item.guest.name.toLocaleLowerCase().indexOf(lowerValue) !== -1
+      return (item.guest?.name.toLocaleLowerCase().indexOf(lowerValue) !== -1
         || item.guest.surname.toLocaleLowerCase().indexOf(lowerValue) !== -1)
     }
     const foundItems = items.filter(isItemMatched)
