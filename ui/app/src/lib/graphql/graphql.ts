@@ -709,6 +709,11 @@ export type ReservationsQueryVariables = Exact<{
 
 export type ReservationsQuery = { __typename?: 'Query', reservations?: Array<{ __typename?: 'Reservation', expired?: any | null, fromDate: any, id: string, meal: ReservationMeal, notes?: string | null, purpose?: string | null, toDate: any, type: ReservationType, extraSuites: Array<{ __typename?: 'Suite', id: string }>, guest: { __typename?: 'Guest', email?: string | null, id: string, name: string, surname: string }, payingGuest?: { __typename?: 'Guest', id: string } | null, priceSet: Array<{ __typename?: 'Price', accommodation: any, meal: any, municipality: any, total: any, suite: { __typename?: 'Suite', id: string, priceBase: any } }>, roommateSet: Array<{ __typename?: 'Roommate', fromDate: any, entity: { __typename?: 'Guest', id: string, name: string, surname: string } }>, suite: { __typename?: 'Suite', id: string, numberBeds: number, numberBedsExtra: number, priceBase: any } } | null> | null };
 
+export type ReservationsMetaQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReservationsMetaQuery = { __typename?: 'Query', guests?: Array<{ __typename?: 'Guest', id: string, name: string, surname: string } | null> | null, suites?: Array<{ __typename?: 'Suite', id: string, number?: number | null, numberBeds: number, numberBedsExtra: number, priceBase: any, title: string, discountSuiteSet: Array<{ __typename?: 'DiscountSuite', type: DiscountSuiteType, value: number }> } | null> | null, reservationMeals?: Array<{ __typename?: 'ReservationTypeOption', label: string, value: string } | null> | null, reservationTypes?: Array<{ __typename?: 'ReservationTypeOption', label: string, value: string } | null> | null };
+
 
 export const ReservationsDocument = gql`
     query reservations($startDate: String!, $endDate: String!) {
@@ -789,3 +794,59 @@ export function useReservationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type ReservationsQueryHookResult = ReturnType<typeof useReservationsQuery>;
 export type ReservationsLazyQueryHookResult = ReturnType<typeof useReservationsLazyQuery>;
 export type ReservationsQueryResult = Apollo.QueryResult<ReservationsQuery, ReservationsQueryVariables>;
+export const ReservationsMetaDocument = gql`
+    query reservationsMeta {
+  guests {
+    id
+    name
+    surname
+  }
+  suites {
+    discountSuiteSet {
+      type
+      value
+    }
+    id
+    number
+    numberBeds
+    numberBedsExtra
+    priceBase
+    title
+  }
+  reservationMeals {
+    label
+    value
+  }
+  reservationTypes {
+    label
+    value
+  }
+}
+    `;
+
+/**
+ * __useReservationsMetaQuery__
+ *
+ * To run a query within a React component, call `useReservationsMetaQuery` and pass it any options that fit your needs.
+ * When your component renders, `useReservationsMetaQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useReservationsMetaQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useReservationsMetaQuery(baseOptions?: Apollo.QueryHookOptions<ReservationsMetaQuery, ReservationsMetaQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ReservationsMetaQuery, ReservationsMetaQueryVariables>(ReservationsMetaDocument, options);
+      }
+export function useReservationsMetaLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ReservationsMetaQuery, ReservationsMetaQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ReservationsMetaQuery, ReservationsMetaQueryVariables>(ReservationsMetaDocument, options);
+        }
+export type ReservationsMetaQueryHookResult = ReturnType<typeof useReservationsMetaQuery>;
+export type ReservationsMetaLazyQueryHookResult = ReturnType<typeof useReservationsMetaLazyQuery>;
+export type ReservationsMetaQueryResult = Apollo.QueryResult<ReservationsMetaQuery, ReservationsMetaQueryVariables>;

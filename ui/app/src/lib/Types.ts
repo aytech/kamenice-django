@@ -61,8 +61,8 @@ export interface GuestOption {
 export interface Suite {
   id: string
   number?: number | null
-  numberBeds?: number | null
-  numberBedsExtra?: number | null
+  numberBeds: number
+  numberBedsExtra: number
   priceBase?: string | null
   title?: string
 }
@@ -132,7 +132,7 @@ export interface OptionsType {
 
 export interface CustomGroupFields {
   id: string
-  number: number | null
+  number?: number | null
   priceBase: string
   title: string
 }

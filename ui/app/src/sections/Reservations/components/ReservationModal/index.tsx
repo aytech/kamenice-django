@@ -58,7 +58,8 @@ export const ReservationModal = ({
     close()
   }
 
-  const actionCallback = (callback: (newReservation: any) => void, newReservation?: CreateReservation_createReservation_reservation | UpdateReservation_updateReservation_reservation | null) => {
+  // @todo: replace any type with specific types 
+  const actionCallback = (callback: (newReservation: any) => void, newReservation?: any | null) => {
     if (newReservation !== undefined && newReservation !== null) {
       callback(newReservation)
     }

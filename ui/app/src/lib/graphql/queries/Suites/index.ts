@@ -20,33 +20,3 @@ export const SUITES = gql`
     }
   }
 `
-
-export const RESERVATIONS_META = gql`
-  query ReservationsMeta {
-    guests {
-      id
-      name
-      surname
-    }
-    suites {
-      discountSuiteSet {
-        type
-        value
-      }
-      id
-      number
-      numberBeds
-      numberBedsExtra
-      priceBase
-      title
-    }
-    reservationMeals {
-      label
-      value
-    }
-    reservationTypes {
-      label
-      value
-    }
-  }
-`

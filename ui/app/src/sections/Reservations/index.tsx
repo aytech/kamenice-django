@@ -4,11 +4,10 @@ import { MutableRefObject, useCallback, useEffect, useRef, useState } from "reac
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, OptionsType } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, OptionsType, Suite } from "../../lib/Types"
 import { ReservationModal } from "./components/ReservationModal"
 import { TimelineHeader } from "./components/TimelineHeader"
 import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/client"
-import { RESERVATIONS_META } from "../../lib/graphql/queries/Suites"
 import { message, Skeleton, Space, Spin } from "antd"
 import { useTranslation } from "react-i18next"
 import { canvasTimeEnd, canvasTimeStart, pageTitle, reservationItems, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, suites, timelineGroups } from "../../cache"
@@ -19,10 +18,8 @@ import { dateFormat } from "../../lib/Constants"
 import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
 import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
 import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
-import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
 import { TimelineCalendar } from "./components/TimelineCalendar"
-import { ReservationsMeta } from "../../lib/graphql/queries/Suites/__generated__/ReservationsMeta"
-import { ReservationsDocument, ReservationsQuery } from "../../lib/graphql/graphql"
+import { ReservationsDocument, ReservationsMetaDocument, ReservationsMetaQuery, ReservationsQuery } from "../../lib/graphql/graphql"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -38,7 +35,7 @@ export const Reservations = () => {
   const [ selectedItem, setSelectedItem ] = useState<TimelineItem<CustomItemFields, Moment>>()
   const [ selectedReservation, setSelectedReservation ] = useState<IReservation>()
 
-  const [ getReservationsMeta, { loading: reservationsMetaLoading, data: reservationsMeta } ] = useLazyQuery<ReservationsMeta>(RESERVATIONS_META, {
+  const [ getReservationsMeta, { loading: reservationsMetaLoading, data: reservationsMeta } ] = useLazyQuery<ReservationsMetaQuery>(ReservationsMetaDocument, {
     onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
@@ -192,7 +189,7 @@ export const Reservations = () => {
 
     const suiteTimelineGroup: TimelineGroup<CustomGroupFields>[] = []
     const suiteOptionValues: OptionsType[] = []
-    const suitesList: Suites_suites[] = []
+    const suitesList: Suite[] = []
     const reservationOptionMeals: OptionsType[] = []
     const reservationOptionTypes: OptionsType[] = []
 
