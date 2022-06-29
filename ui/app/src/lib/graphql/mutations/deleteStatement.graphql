@@ -1,0 +1,7 @@
+mutation deleteStatement($fileId: String!) {
+  deleteDriveFile(fileId: $fileId) {
+    file {
+      name
+    }
+  }
+}

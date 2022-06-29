@@ -1,0 +1,7 @@
+mutation deleteSuite($suiteId: ID!) {
+  deleteSuite(suiteId: $suiteId) {
+    suite {
+      id
+    }
+  }
+}

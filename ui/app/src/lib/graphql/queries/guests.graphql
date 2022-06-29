@@ -1,0 +1,18 @@
+query guests {
+  guests {
+    age
+    addressMunicipality
+    addressPsc
+    addressStreet
+    citizenship
+    color
+    email
+    gender
+    identity
+    id
+    name
+    phoneNumber
+    surname
+    visaNumber
+  }
+}

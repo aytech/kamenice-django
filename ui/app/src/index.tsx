@@ -10,12 +10,12 @@ import { App } from './sections/App'
 import { ConfigProvider } from 'antd'
 import csCZ from "antd/lib/locale/cs_CZ"
 import { csrfTokenName, errorMessages, paths, refreshTokenName, tokenName } from './lib/Constants'
-import { RefreshToken, RefreshToken_refreshToken } from './lib/graphql/mutations/Token/__generated__/RefreshToken'
-import { TOKEN_REFRESH } from './lib/graphql/mutations/Token'
 import "./i18n"
 import { Suspense } from 'react'
 import { Splash } from './sections/Splash'
 import { cache } from './cache'
+import { RefreshTokenDocument, RefreshTokenMutation } from "./lib/graphql/graphql"
+import { IToken } from "./lib/Types"
 
 moment.locale("cs")
 
@@ -40,12 +40,12 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 const refreshToken = () => {
   return apolloClient
     .mutate({
-      mutation: TOKEN_REFRESH,
+      mutation: RefreshTokenDocument,
       variables: {
         refreshToken: localStorage.getItem(refreshTokenName)
       }
     })
-    .then((value: FetchResult<RefreshToken>) => {
+    .then((value: FetchResult<RefreshTokenMutation>) => {
       return value.data?.refreshToken
     })
 }
@@ -61,7 +61,7 @@ const errorLink = onError(
                 .catch((reason: ApolloError) => console.error(reason))
             )
               .flatMap(authToken => {
-                const token = authToken as RefreshToken_refreshToken
+                const token = authToken as IToken
                 localStorage.setItem(tokenName, token.token)
                 localStorage.setItem(refreshTokenName, token.refreshToken)
                 return forward(operation)

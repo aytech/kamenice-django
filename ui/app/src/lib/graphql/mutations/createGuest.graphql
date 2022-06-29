@@ -1,0 +1,19 @@
+mutation createGuest($data: GuestInput!) {
+  createGuest(data: $data) {
+    guest {
+      addressMunicipality
+      addressPsc
+      addressStreet
+      age
+      citizenship
+      email
+      gender
+      identity
+      id
+      name
+      phoneNumber
+      surname
+      visaNumber
+    }
+  }
+}

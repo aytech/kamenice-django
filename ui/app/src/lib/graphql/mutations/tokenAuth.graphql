@@ -1,0 +1,21 @@
+mutation tokenAuth($username: String!, $password: String!) {
+  tokenAuth(username: $username, password: $password) {
+    payload
+    refreshExpiresIn
+    refreshToken
+    token
+    settings {
+      defaultArrivalTime
+      defaultDepartureTime
+      id
+      municipalityFee
+      priceBreakfast
+      priceBreakfastChild
+      priceHalfboard
+      priceHalfboardChild
+      userAvatar
+      userColor
+      userName
+    }
+  }
+}

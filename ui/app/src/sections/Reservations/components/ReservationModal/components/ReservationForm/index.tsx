@@ -8,10 +8,8 @@ import { reservationMealOptions, reservationTypeOptions, roommateOptions } from 
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormatShort } from "../../../../../../lib/Constants"
-import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
-import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
-import { IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
+import { CalculateReservationPriceDocument, CalculateReservationPriceQuery, CalculateReservationPriceQueryVariables, GuestsQuery } from "../../../../../../lib/graphql/graphql"
+import { IGuest, IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
 import { ReservationFormSuite } from "./components/ReservationFormSuite"
 import { ReservationRoommates } from "./components/ReservationRoommates"
 import "./styles.css"
@@ -19,7 +17,7 @@ import "./styles.css"
 interface Props {
   form: FormInstance
   getReservationDays: () => number
-  guestsData?: Guests
+  guestsData?: GuestsQuery
   reservation?: IReservation
 }
 
@@ -38,15 +36,15 @@ export const ReservationForm = ({
   const [ selectedReservationType, setSelectedReservationType ] = useState<ReservationTypeKey>()
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
-  const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
+  const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPriceQuery, CalculateReservationPriceQueryVariables>(CalculateReservationPriceDocument, {
     fetchPolicy: "no-cache",
-    onCompleted: (data: CalculateReservationPrice) => {
+    onCompleted: (data: CalculateReservationPriceQuery) => {
       if (data.price !== null) {
         form.setFieldsValue({
-          priceAccommodation: NumberHelper.formatCurrency(data.price.accommodation),
-          priceMeal: NumberHelper.formatCurrency(data.price.meal),
-          priceMunicipality: NumberHelper.formatCurrency(data.price.municipality),
-          priceTotal: NumberHelper.formatCurrency(data.price.total)
+          priceAccommodation: NumberHelper.formatCurrency(data.price?.accommodation),
+          priceMeal: NumberHelper.formatCurrency(data.price?.meal),
+          priceMunicipality: NumberHelper.formatCurrency(data.price?.municipality),
+          priceTotal: NumberHelper.formatCurrency(data.price?.total)
         })
       }
     }
@@ -111,7 +109,7 @@ export const ReservationForm = ({
   useEffect(() => {
     // Define guest and roommate options
     const options: OptionsType[] = []
-    guestsData?.guests?.forEach((guest: Guests_guests | null) => {
+    guestsData?.guests?.forEach((guest: IGuest | null) => {
       if (guest !== null) {
         options.push({
           label: `${ guest.surname } ${ guest.name }`,

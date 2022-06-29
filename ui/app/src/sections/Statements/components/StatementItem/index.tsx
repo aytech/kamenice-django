@@ -4,13 +4,12 @@ import { Avatar, Button, List, message, Popconfirm, Tooltip } from "antd"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { DELETE_STATEMENT } from "../../../../lib/graphql/mutations/Statements"
-import { DeleteStatement, DeleteStatementVariables } from "../../../../lib/graphql/mutations/Statements/__generated__/DeleteStatement"
-import { Statements_guestsReportFiles } from "../../../../lib/graphql/queries/Statements/__generated__/Statements"
+import { DeleteStatementDocument, DeleteStatementMutation, DeleteStatementMutationVariables } from "../../../../lib/graphql/graphql"
+import { IGuestReportFile } from "../../../../lib/Types"
 
 interface Props {
   refetchStatements: () => void
-  statement: Statements_guestsReportFiles
+  statement: IGuestReportFile
 }
 
 export const StatementItem = ({
@@ -20,10 +19,10 @@ export const StatementItem = ({
 
   const { t } = useTranslation()
 
-  const [ deleteFile, { loading: deleteLoading } ] = useMutation<DeleteStatement, DeleteStatementVariables>(DELETE_STATEMENT, {
-    onCompleted: (value: DeleteStatement) => {
-      if (value.deleteDriveFile !== null && value.deleteDriveFile.file !== null) {
-        message.success(t("statements.delete-success", { name: value.deleteDriveFile.file.name }))
+  const [ deleteFile, { loading: deleteLoading } ] = useMutation<DeleteStatementMutation, DeleteStatementMutationVariables>(DeleteStatementDocument, {
+    onCompleted: (value: DeleteStatementMutation) => {
+      if (value.deleteDriveFile !== null && value.deleteDriveFile?.file !== null) {
+        message.success(t("statements.delete-success", { name: value.deleteDriveFile?.file?.name }))
         refetchStatements()
       }
     },

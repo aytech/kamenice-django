@@ -1,0 +1,14 @@
+mutation dragReservation($data: ReservationDragInput!) {
+  dragReservation(data: $data) {
+    reservation {
+      fromDate
+      id
+      suite {
+        id
+        number
+        title
+      }
+      toDate
+    }
+  }
+}

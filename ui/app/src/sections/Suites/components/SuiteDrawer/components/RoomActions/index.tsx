@@ -1,12 +1,12 @@
 import { WarningOutlined } from "@ant-design/icons"
 import { Button, Popconfirm } from "antd"
 import { useTranslation } from "react-i18next"
-import { Suites_suites } from "../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
+import { ISuite } from "../../../../../../lib/Types"
 
 interface Props {
   deleteSuite: (suiteId: string) => void
   submitForm: () => void
-  suite?: Suites_suites
+  suite?: ISuite
 }
 
 export const RoomActions = ({

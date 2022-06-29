@@ -1,0 +1,10 @@
+query statements {
+  guestsReportFiles {
+    created
+    driveId
+    id
+    name
+    pathDocx
+    pathPdf
+  }
+}

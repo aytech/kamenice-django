@@ -11,24 +11,22 @@ import { ReservationGuests } from "../ReservationGuests"
 import { PageTitle } from "./components/PageTitle"
 import { Settings } from "../Settings"
 import { useQuery } from "@apollo/client"
-import { APP } from "../../lib/graphql/queries/App"
-import { Settings as SettingsData } from "../../lib/graphql/queries/Settings/__generated__/Settings"
 import { useEffect } from "react"
 import './styles.css'
 import { appSettings, userColor, userName } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
-import { SETTINGS } from "../../lib/graphql/queries/Settings"
 import { Statements } from "../Statements"
+import { SettingsDocument, SettingsQuery, useAppQuery } from "../../lib/graphql/graphql"
 
 export const App = () => {
 
-  useQuery(APP)
+  useAppQuery()
 
   const location = useLocation()
   const navigate = useNavigate()
 
-  const { loading: settingsLoading, data: settingsData, refetch: settingsRefetch } = useQuery<SettingsData>(SETTINGS, {
-    onCompleted: (value: SettingsData) => {
+  const { loading: settingsLoading, data: settingsData, refetch: settingsRefetch } = useQuery<SettingsQuery>(SettingsDocument, {
+    onCompleted: (value: SettingsQuery) => {
       if (value?.settings === null) {
         navigate(`/login?next=${ UrlHelper.getReferrer() }`)
       } else {
@@ -56,12 +54,12 @@ export const App = () => {
     if (settingsData !== undefined && settingsData?.settings !== null) {
       appSettings(settingsData.settings)
 
-      if (settingsData.settings.userColor !== null) {
-        userColor(settingsData.settings.userColor)
+      if (settingsData.settings?.userColor !== null) {
+        userColor(settingsData.settings?.userColor)
       }
 
-      if (settingsData.settings.userName !== null) {
-        userName(settingsData.settings.userName)
+      if (settingsData.settings?.userName !== null) {
+        userName(settingsData.settings?.userName)
       }
     }
   }, [ settingsData ])

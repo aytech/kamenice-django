@@ -3,12 +3,12 @@ import { Avatar, Button, List } from "antd"
 import Text from "antd/lib/typography/Text"
 import { useTranslation } from "react-i18next"
 import { Colors } from "../../../../lib/components/Colors"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { IGuest } from "../../../../lib/Types"
 
 interface Props {
-  guest?: Guests_guests | null
+  guest?: IGuest | null
   loading: boolean
-  openDrawer: (guest: Guests_guests) => void
+  openDrawer: (guest: IGuest) => void
 }
 
 export const Guest = ({
@@ -19,7 +19,7 @@ export const Guest = ({
 
   const { t } = useTranslation()
 
-  const headerActions = (guest: Guests_guests) => {
+  const headerActions = (guest: IGuest) => {
     if (loading === true) {
       return []
     }
@@ -46,7 +46,7 @@ export const Guest = ({
       }
       header={ <h2>{ t("guests.main") }</h2> }
       itemLayout="horizontal"
-      renderItem={ (guest: Guests_guests) => (
+      renderItem={ (guest: IGuest) => (
         <List.Item
           key={ guest.id }
           actions={ headerActions(guest) }>

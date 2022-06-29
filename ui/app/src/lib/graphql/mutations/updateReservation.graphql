@@ -1,0 +1,49 @@
+mutation updateReservation($data: ReservationInput!) {
+  updateReservation(data: $data) {
+    reservation {
+      expired
+      extraSuites {
+        id
+      }
+      fromDate
+      guest {
+        email
+        id
+        name
+        surname
+      }
+      id
+      meal
+      notes
+      payingGuest {
+        id
+      }
+      priceSet {
+        accommodation
+        meal
+        municipality
+        suite {
+          id
+          priceBase
+        }
+        total
+      }
+      purpose
+      roommateSet {
+        entity {
+          id
+          name
+          surname
+        }
+        fromDate
+      }
+      suite {
+        id
+        number
+        title
+      }
+      toDate
+      type
+    }
+  }
+}

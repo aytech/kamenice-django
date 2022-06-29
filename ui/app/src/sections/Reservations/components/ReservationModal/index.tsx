@@ -5,24 +5,19 @@ import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation } from "../../../../lib/Types"
-import { ReservationInput } from "../../../../lib/graphql/globalTypes"
+import { ReservationInput } from "../../../../lib/graphql/graphql"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
-import { Guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../../../lib/graphql/queries/Guests"
-import { CreateReservation, CreateReservationVariables, CreateReservation_createReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/CreateReservation"
-import { CREATE_RESERVATION, SEND_CONFIRMATION, UPDATE_RESERVATION } from "../../../../lib/graphql/mutations/Reservation"
-import { UpdateReservation, UpdateReservationVariables, UpdateReservation_updateReservation_reservation } from "../../../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { useTranslation } from "react-i18next"
 import moment from "moment"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
 import { Confirmation } from "./components/Confirmation"
-import { SendConfirmation, SendConfirmationVariables } from "../../../../lib/graphql/mutations/Reservation/__generated__/SendConfirmation"
 import { ReservationForm } from "./components/ReservationForm"
 import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
 import { appSettings, reservationModalOpen } from "../../../../cache"
 import { TimelineData } from "../../data"
 import { NumberHelper } from "../../../../lib/components/NumberHelper"
+import { CreateReservationDocument, CreateReservationMutation, CreateReservationMutationVariables, GuestsDocument, GuestsQuery, SendConfirmationDocument, SendConfirmationMutation, SendConfirmationMutationVariables, UpdateReservationDocument, UpdateReservationMutation, UpdateReservationMutationVariables } from "../../../../lib/graphql/graphql"
 
 interface Props {
   close: () => void
@@ -58,7 +53,8 @@ export const ReservationModal = ({
     close()
   }
 
-  const actionCallback = (callback: (newReservation: any) => void, newReservation?: CreateReservation_createReservation_reservation | UpdateReservation_updateReservation_reservation | null) => {
+  // @todo: replace any type with specific types 
+  const actionCallback = (callback: (newReservation: any) => void, newReservation?: any | null) => {
     if (newReservation !== undefined && newReservation !== null) {
       callback(newReservation)
     }
@@ -71,28 +67,28 @@ export const ReservationModal = ({
     }
   }
 
-  const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservation, CreateReservationVariables>(CREATE_RESERVATION, {
-    onCompleted: (data: CreateReservation) => {
-      actionCallback((newReservation: CreateReservation_createReservation_reservation) => {
-        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest.email }))
+  const [ createReservation, { loading: createLoading } ] = useMutation<CreateReservationMutation, CreateReservationMutationVariables>(CreateReservationDocument, {
+    onCompleted: (data: CreateReservationMutation) => {
+      actionCallback((newReservation: IReservation) => {
+        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest?.email }))
         setReservationConfirmationVisible(true)
         message.success(t("reservations.created"))
       }, data.createReservation?.reservation)
     },
     onError: networkErrorHandler
   })
-  const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservation, UpdateReservationVariables>(UPDATE_RESERVATION, {
-    onCompleted: (data: UpdateReservation) => {
-      actionCallback((newReservation: UpdateReservation_updateReservation_reservation) => {
-        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest.email }))
+  const [ updateReservation, { loading: updateLoading } ] = useMutation<UpdateReservationMutation, UpdateReservationMutationVariables>(UpdateReservationDocument, {
+    onCompleted: (data: UpdateReservationMutation) => {
+      actionCallback((newReservation: IReservation) => {
+        setReservationConfirmationMessage(t("reservations.updated-info", { email: newReservation.guest?.email }))
         setReservationConfirmationVisible(true)
         message.success(t("reservations.updated"))
       }, data.updateReservation?.reservation)
     },
     onError: networkErrorHandler
   })
-  const [ sendConfirmation, { loading: confirmationLoading } ] = useMutation<SendConfirmation, SendConfirmationVariables>(SEND_CONFIRMATION, {
-    onCompleted: (value: SendConfirmation) => {
+  const [ sendConfirmation, { loading: confirmationLoading } ] = useMutation<SendConfirmationMutation, SendConfirmationMutationVariables>(SendConfirmationDocument, {
+    onCompleted: (value: SendConfirmationMutation) => {
       const email = value.sendConfirmation?.reservation?.guest.email
       message.success(t("reservations.confirmation-sent", { email: (email === undefined || email === null) ? "" : email }))
       setReservationConfirmationNote("")
@@ -100,7 +96,7 @@ export const ReservationModal = ({
     },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ getGuests, { loading: guestsLoading, data: guestsData, refetch: refetchGuests } ] = useLazyQuery<Guests>(GUESTS, {
+  const [ getGuests, { loading: guestsLoading, data: guestsData, refetch: refetchGuests } ] = useLazyQuery<GuestsQuery>(GuestsDocument, {
     onError: networkErrorHandler
   })
 

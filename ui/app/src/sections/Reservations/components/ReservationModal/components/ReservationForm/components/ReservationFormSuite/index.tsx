@@ -5,8 +5,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { suiteOptions, suites } from "../../../../../../../../cache"
 import { FormHelper } from "../../../../../../../../lib/components/FormHelper"
-import { Suites_suites } from "../../../../../../../../lib/graphql/queries/Suites/__generated__/Suites"
-import { ReservationTypeKey } from "../../../../../../../../lib/Types"
+import { ReservationTypeKey, ISuite } from "../../../../../../../../lib/Types"
 
 interface Props {
   form: FormInstance
@@ -59,7 +58,7 @@ export const ReservationFormSuite = ({
   }
 
   const updateSuiteCapacity = (suiteId: number) => {
-    const suite = suitesList.find((suite: Suites_suites) => +suite.id === +suiteId)
+    const suite = suitesList.find((suite: ISuite) => +suite.id === +suiteId)
     if (suite !== undefined) {
       setSuiteCapacity(suite.numberBeds + suite.numberBedsExtra)
     }

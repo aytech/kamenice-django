@@ -1,0 +1,16 @@
+mutation createSuite($data: SuiteInput!) {
+  createSuite(data: $data) {
+    suite {
+      discountSuiteSet {
+        type
+        value
+      }
+      id
+      number
+      numberBeds
+      numberBedsExtra
+      priceBase
+      title
+    }
+  }
+}

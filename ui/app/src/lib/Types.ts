@@ -1,6 +1,5 @@
 import { Moment } from "moment"
-import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
-import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
+import { DiscountSuiteType, Guest, GuestAge } from "./graphql/graphql"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
@@ -19,6 +18,23 @@ interface Address {
 interface Citizenship {
   new?: string
   selected?: string
+}
+
+export interface IGuest {
+  addressMunicipality?: string | null,
+  addressPsc?: number | null,
+  addressStreet?: string | null,
+  age?: GuestAge | null,
+  citizenship?: string | null,
+  color?: string | null,
+  email?: string | null,
+  gender?: GuestGender | null,
+  id: string,
+  identity?: string | null,
+  name: string,
+  phoneNumber?: string | null,
+  surname: string,
+  visaNumber?: string | null
 }
 
 export interface IGuestForm {
@@ -51,11 +67,21 @@ export interface IGuestData {
   visaNumber?: string
 }
 
-export interface Guest {
-  email: string | null
-  id?: number | string
-  name: string
-  surname: string
+export interface IGuestReportFile {
+  created: any,
+  driveId: string,
+  id: string,
+  name: string,
+  pathDocx?: string | null,
+  pathPdf?: string | null
+}
+
+export interface IToken {
+  payload: any,
+  refreshExpiresIn: number,
+  refreshToken: string,
+  settings?: ISettings,
+  token: string
 }
 
 export interface GuestOption {
@@ -64,17 +90,28 @@ export interface GuestOption {
   surname: string
 }
 
-export interface Suite {
-  id: string
-  number?: number | null
-  numberBeds?: number | null
-  numberBedsExtra?: number | null
-  priceBase?: string | null
-  title?: string
+export interface ISettings {
+  defaultArrivalTime: any,
+  defaultDepartureTime: any,
+  id: string,
+  municipalityFee?: any | null,
+  priceBreakfast?: any | null,
+  priceBreakfastChild?: any | null,
+  priceHalfboard?: any | null,
+  priceHalfboardChild?: any | null,
+  userAvatar?: string | null,
+  userColor?: string | null,
+  userName?: string | null
 }
 
-export interface Roommate extends Guest {
-  age: string | null
+export interface ISuite {
+  discountSuiteSet?: Array<{ type: DiscountSuiteType, value: number }>,
+  id: string
+  number?: number | null
+  numberBeds: number
+  numberBedsExtra: number
+  priceBase?: string | null
+  title?: string
 }
 
 export interface ReservationPrice {
@@ -98,10 +135,11 @@ export interface IReservation {
   notes?: string | null
   payingGuest?: { id: string } | null
   price?: ReservationPrice
+  priceSet?: Array<ReservationPrice>,
   purpose?: string | null
   roommates?: { id: string, fromDate: Moment }[]
   roommateSet?: { entity: { id: string, name: string, surname: string }, fromDate: string }[]
-  suite?: Suite
+  suite?: ISuite
   toDate: Moment
   type?: ReservationTypeKey
 }
@@ -141,7 +179,7 @@ export interface OptionsType {
 
 export interface CustomGroupFields {
   id: string
-  number: number | null
+  number?: number | null
   priceBase: string
   title: string
 }
@@ -150,30 +188,30 @@ export interface CustomItemFields {
   color?: string
   expired?: Moment | null
   extraSuites: { id: string }[]
-  guest: Guest
+  guest?: Guest
   id: string
-  meal: ReservationMeal
-  notes: string | null
+  meal?: ReservationMeal
+  notes?: string | null
   payingGuest?: { id: string } | null
   price: ReservationPrice
-  purpose: string | null
-  reservationId: string
+  purpose?: string | null
+  reservationId?: string | number
   roommates?: {
     id: string,
     name: string,
     surname: string,
     fromDate: Moment
   }[]
-  suite: Suite
+  suite?: ISuite
   type?: ReservationTypeKey
 }
 
-export enum GuestAge {
-  ADULT = "ADULT",
-  CHILD = "CHILD",
-  INFANT = "INFANT",
-  YOUNG = "YOUNG",
-}
+// export enum GuestAge {
+//   ADULT = "ADULT",
+//   CHILD = "CHILD",
+//   INFANT = "INFANT",
+//   YOUNG = "YOUNG",
+// }
 
 export enum GuestGender {
   F = "F",
@@ -202,7 +240,7 @@ export interface PriceInfo {
 }
 
 export interface ReservationInputExtended {
-  guest?: Guests_guests
-  roommates?: Guests_guests[]
-  suite?: Suites_suites
+  guest?: Guest
+  roommates?: Guest[]
+  suite?: ISuite
 }
