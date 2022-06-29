@@ -20,14 +20,12 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "schema": "npx apollo client:download-schema --endpoint=http://localhost:8000/api schema.json",
-    "generate": "npx apollo client:codegen --localSchemaFile=schema.json,local-schema.graphql --includes=src/**/*.ts --globalTypesFile=./src/lib/graphql/globalTypes.ts --target=typescript",
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "generate": "graphql-codegen --config codegen.yml",
     "init": "graphql-codegen init",
-    "generate-schema": "graphql-codegen --config codegen.yml"
+    "start": "react-scripts start",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [

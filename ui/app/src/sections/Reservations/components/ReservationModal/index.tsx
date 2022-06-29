@@ -5,7 +5,7 @@ import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { IReservation } from "../../../../lib/Types"
-import { ReservationInput } from "../../../../lib/graphql/globalTypes"
+import { ReservationInput } from "../../../../lib/graphql/graphql"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
 import { useTranslation } from "react-i18next"
