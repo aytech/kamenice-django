@@ -1,0 +1,10 @@
+mutation sendConfirmation($data: ConfirmationInput!) {
+  sendConfirmation(data: $data) {
+    reservation {
+      guest {
+        email
+      }
+      id
+    }
+  }
+}

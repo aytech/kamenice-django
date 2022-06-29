@@ -701,6 +701,41 @@ export type Verify = {
   payload: Scalars['GenericScalar'];
 };
 
+export type CreateReservationMutationVariables = Exact<{
+  data: ReservationInput;
+}>;
+
+
+export type CreateReservationMutation = { __typename?: 'Mutation', createReservation?: { __typename?: 'CreateReservation', reservation?: { __typename?: 'Reservation', expired?: any | null, fromDate: any, id: string, meal: ReservationMeal, notes?: string | null, purpose?: string | null, toDate: any, type: ReservationType, extraSuites: Array<{ __typename?: 'Suite', id: string }>, guest: { __typename?: 'Guest', email?: string | null, id: string, name: string, surname: string }, payingGuest?: { __typename?: 'Guest', id: string } | null, priceSet: Array<{ __typename?: 'Price', accommodation: any, meal: any, municipality: any, total: any, suite: { __typename?: 'Suite', id: string, priceBase: any } }>, roommateSet: Array<{ __typename?: 'Roommate', fromDate: any, entity: { __typename?: 'Guest', id: string, name: string, surname: string } }>, suite: { __typename?: 'Suite', id: string, number?: number | null, title: string } } | null } | null };
+
+export type DeleteReservationMutationVariables = Exact<{
+  reservationId: Scalars['ID'];
+}>;
+
+
+export type DeleteReservationMutation = { __typename?: 'Mutation', deleteReservation?: { __typename?: 'DeleteReservation', reservation?: { __typename?: 'Reservation', id: string } | null } | null };
+
+export type DragReservationMutationVariables = Exact<{
+  data: ReservationDragInput;
+}>;
+
+
+export type DragReservationMutation = { __typename?: 'Mutation', dragReservation?: { __typename?: 'DragReservation', reservation?: { __typename?: 'Reservation', fromDate: any, id: string, toDate: any, suite: { __typename?: 'Suite', id: string, number?: number | null, title: string } } | null } | null };
+
+export type SendConfirmationMutationVariables = Exact<{
+  data: ConfirmationInput;
+}>;
+
+
+export type SendConfirmationMutation = { __typename?: 'Mutation', sendConfirmation?: { __typename?: 'SendConfirmationEmail', reservation?: { __typename?: 'Reservation', id: string, guest: { __typename?: 'Guest', email?: string | null } } | null } | null };
+
+export type UpdateReservationMutationVariables = Exact<{
+  data: ReservationInput;
+}>;
+
+
+export type UpdateReservationMutation = { __typename?: 'Mutation', updateReservation?: { __typename?: 'UpdateReservation', reservation?: { __typename?: 'Reservation', expired?: any | null, fromDate: any, id: string, meal: ReservationMeal, notes?: string | null, purpose?: string | null, toDate: any, type: ReservationType, extraSuites: Array<{ __typename?: 'Suite', id: string }>, guest: { __typename?: 'Guest', email?: string | null, id: string, name: string, surname: string }, payingGuest?: { __typename?: 'Guest', id: string } | null, priceSet: Array<{ __typename?: 'Price', accommodation: any, meal: any, municipality: any, total: any, suite: { __typename?: 'Suite', id: string, priceBase: any } }>, roommateSet: Array<{ __typename?: 'Roommate', fromDate: any, entity: { __typename?: 'Guest', id: string, name: string, surname: string } }>, suite: { __typename?: 'Suite', id: string, number?: number | null, title: string } } | null } | null };
+
 export type ReservationsQueryVariables = Exact<{
   startDate: Scalars['String'];
   endDate: Scalars['String'];
@@ -715,6 +750,275 @@ export type ReservationsMetaQueryVariables = Exact<{ [key: string]: never; }>;
 export type ReservationsMetaQuery = { __typename?: 'Query', guests?: Array<{ __typename?: 'Guest', id: string, name: string, surname: string } | null> | null, suites?: Array<{ __typename?: 'Suite', id: string, number?: number | null, numberBeds: number, numberBedsExtra: number, priceBase: any, title: string, discountSuiteSet: Array<{ __typename?: 'DiscountSuite', type: DiscountSuiteType, value: number }> } | null> | null, reservationMeals?: Array<{ __typename?: 'ReservationTypeOption', label: string, value: string } | null> | null, reservationTypes?: Array<{ __typename?: 'ReservationTypeOption', label: string, value: string } | null> | null };
 
 
+export const CreateReservationDocument = gql`
+    mutation createReservation($data: ReservationInput!) {
+  createReservation(data: $data) {
+    reservation {
+      expired
+      extraSuites {
+        id
+      }
+      fromDate
+      guest {
+        email
+        id
+        name
+        surname
+      }
+      id
+      meal
+      notes
+      payingGuest {
+        id
+      }
+      priceSet {
+        accommodation
+        meal
+        municipality
+        suite {
+          id
+          priceBase
+        }
+        total
+      }
+      purpose
+      roommateSet {
+        entity {
+          id
+          name
+          surname
+        }
+        fromDate
+      }
+      suite {
+        id
+        number
+        title
+      }
+      toDate
+      type
+    }
+  }
+}
+    `;
+export type CreateReservationMutationFn = Apollo.MutationFunction<CreateReservationMutation, CreateReservationMutationVariables>;
+
+/**
+ * __useCreateReservationMutation__
+ *
+ * To run a mutation, you first call `useCreateReservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createReservationMutation, { data, loading, error }] = useCreateReservationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateReservationMutation(baseOptions?: Apollo.MutationHookOptions<CreateReservationMutation, CreateReservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateReservationMutation, CreateReservationMutationVariables>(CreateReservationDocument, options);
+      }
+export type CreateReservationMutationHookResult = ReturnType<typeof useCreateReservationMutation>;
+export type CreateReservationMutationResult = Apollo.MutationResult<CreateReservationMutation>;
+export type CreateReservationMutationOptions = Apollo.BaseMutationOptions<CreateReservationMutation, CreateReservationMutationVariables>;
+export const DeleteReservationDocument = gql`
+    mutation deleteReservation($reservationId: ID!) {
+  deleteReservation(reservationId: $reservationId) {
+    reservation {
+      id
+    }
+  }
+}
+    `;
+export type DeleteReservationMutationFn = Apollo.MutationFunction<DeleteReservationMutation, DeleteReservationMutationVariables>;
+
+/**
+ * __useDeleteReservationMutation__
+ *
+ * To run a mutation, you first call `useDeleteReservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteReservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteReservationMutation, { data, loading, error }] = useDeleteReservationMutation({
+ *   variables: {
+ *      reservationId: // value for 'reservationId'
+ *   },
+ * });
+ */
+export function useDeleteReservationMutation(baseOptions?: Apollo.MutationHookOptions<DeleteReservationMutation, DeleteReservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteReservationMutation, DeleteReservationMutationVariables>(DeleteReservationDocument, options);
+      }
+export type DeleteReservationMutationHookResult = ReturnType<typeof useDeleteReservationMutation>;
+export type DeleteReservationMutationResult = Apollo.MutationResult<DeleteReservationMutation>;
+export type DeleteReservationMutationOptions = Apollo.BaseMutationOptions<DeleteReservationMutation, DeleteReservationMutationVariables>;
+export const DragReservationDocument = gql`
+    mutation dragReservation($data: ReservationDragInput!) {
+  dragReservation(data: $data) {
+    reservation {
+      fromDate
+      id
+      suite {
+        id
+        number
+        title
+      }
+      toDate
+    }
+  }
+}
+    `;
+export type DragReservationMutationFn = Apollo.MutationFunction<DragReservationMutation, DragReservationMutationVariables>;
+
+/**
+ * __useDragReservationMutation__
+ *
+ * To run a mutation, you first call `useDragReservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDragReservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [dragReservationMutation, { data, loading, error }] = useDragReservationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useDragReservationMutation(baseOptions?: Apollo.MutationHookOptions<DragReservationMutation, DragReservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DragReservationMutation, DragReservationMutationVariables>(DragReservationDocument, options);
+      }
+export type DragReservationMutationHookResult = ReturnType<typeof useDragReservationMutation>;
+export type DragReservationMutationResult = Apollo.MutationResult<DragReservationMutation>;
+export type DragReservationMutationOptions = Apollo.BaseMutationOptions<DragReservationMutation, DragReservationMutationVariables>;
+export const SendConfirmationDocument = gql`
+    mutation sendConfirmation($data: ConfirmationInput!) {
+  sendConfirmation(data: $data) {
+    reservation {
+      guest {
+        email
+      }
+      id
+    }
+  }
+}
+    `;
+export type SendConfirmationMutationFn = Apollo.MutationFunction<SendConfirmationMutation, SendConfirmationMutationVariables>;
+
+/**
+ * __useSendConfirmationMutation__
+ *
+ * To run a mutation, you first call `useSendConfirmationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendConfirmationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendConfirmationMutation, { data, loading, error }] = useSendConfirmationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useSendConfirmationMutation(baseOptions?: Apollo.MutationHookOptions<SendConfirmationMutation, SendConfirmationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendConfirmationMutation, SendConfirmationMutationVariables>(SendConfirmationDocument, options);
+      }
+export type SendConfirmationMutationHookResult = ReturnType<typeof useSendConfirmationMutation>;
+export type SendConfirmationMutationResult = Apollo.MutationResult<SendConfirmationMutation>;
+export type SendConfirmationMutationOptions = Apollo.BaseMutationOptions<SendConfirmationMutation, SendConfirmationMutationVariables>;
+export const UpdateReservationDocument = gql`
+    mutation updateReservation($data: ReservationInput!) {
+  updateReservation(data: $data) {
+    reservation {
+      expired
+      extraSuites {
+        id
+      }
+      fromDate
+      guest {
+        email
+        id
+        name
+        surname
+      }
+      id
+      meal
+      notes
+      payingGuest {
+        id
+      }
+      priceSet {
+        accommodation
+        meal
+        municipality
+        suite {
+          id
+          priceBase
+        }
+        total
+      }
+      purpose
+      roommateSet {
+        entity {
+          id
+          name
+          surname
+        }
+        fromDate
+      }
+      suite {
+        id
+        number
+        title
+      }
+      toDate
+      type
+    }
+  }
+}
+    `;
+export type UpdateReservationMutationFn = Apollo.MutationFunction<UpdateReservationMutation, UpdateReservationMutationVariables>;
+
+/**
+ * __useUpdateReservationMutation__
+ *
+ * To run a mutation, you first call `useUpdateReservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateReservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateReservationMutation, { data, loading, error }] = useUpdateReservationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateReservationMutation(baseOptions?: Apollo.MutationHookOptions<UpdateReservationMutation, UpdateReservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateReservationMutation, UpdateReservationMutationVariables>(UpdateReservationDocument, options);
+      }
+export type UpdateReservationMutationHookResult = ReturnType<typeof useUpdateReservationMutation>;
+export type UpdateReservationMutationResult = Apollo.MutationResult<UpdateReservationMutation>;
+export type UpdateReservationMutationOptions = Apollo.BaseMutationOptions<UpdateReservationMutation, UpdateReservationMutationVariables>;
 export const ReservationsDocument = gql`
     query reservations($startDate: String!, $endDate: String!) {
   reservations(startDate: $startDate, endDate: $endDate) {

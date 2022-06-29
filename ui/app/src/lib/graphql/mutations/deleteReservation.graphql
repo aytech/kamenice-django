@@ -1,0 +1,7 @@
+mutation deleteReservation($reservationId: ID!) {
+  deleteReservation(reservationId: $reservationId) {
+    reservation {
+      id
+    }
+  }
+}

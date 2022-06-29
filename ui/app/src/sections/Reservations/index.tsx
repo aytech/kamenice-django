@@ -13,13 +13,9 @@ import { useTranslation } from "react-i18next"
 import { canvasTimeEnd, canvasTimeStart, pageTitle, reservationItems, reservationMealOptions, reservationModalOpen, reservationTypeOptions, selectedPage, selectedSuite, suiteOptions, suites, timelineGroups } from "../../cache"
 import { useParams } from "react-router-dom"
 import { TimelineData } from "./data"
-import { UpdateReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/UpdateReservation"
 import { dateFormat } from "../../lib/Constants"
-import { DragReservation, DragReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DragReservation"
-import { DELETE_RESERVATION, DRAG_RESERVATION } from "../../lib/graphql/mutations/Reservation"
-import { DeleteReservation, DeleteReservationVariables } from "../../lib/graphql/mutations/Reservation/__generated__/DeleteReservation"
 import { TimelineCalendar } from "./components/TimelineCalendar"
-import { ReservationsDocument, ReservationsMetaDocument, ReservationsMetaQuery, ReservationsQuery } from "../../lib/graphql/graphql"
+import { DeleteReservationDocument, DeleteReservationMutation, DeleteReservationMutationVariables, DragReservationDocument, DragReservationMutation, DragReservationMutationVariables, ReservationsDocument, ReservationsMetaDocument, ReservationsMetaQuery, ReservationsQuery, UpdateReservationMutationVariables } from "../../lib/graphql/graphql"
 
 // https://github.com/namespace-ee/react-calendar-timeline
 export const Reservations = () => {
@@ -43,10 +39,10 @@ export const Reservations = () => {
     onCompleted: () => setInitialLoading(false),
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ dragReservation, { loading: dragLoading } ] = useMutation<DragReservation, DragReservationVariables>(DRAG_RESERVATION, {
+  const [ dragReservation, { loading: dragLoading } ] = useMutation<DragReservationMutation, DragReservationMutationVariables>(DragReservationDocument, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservation, DeleteReservationVariables>(DELETE_RESERVATION, {
+  const [ deleteReservation, { loading: deleteLoading } ] = useMutation<DeleteReservationMutation, DeleteReservationMutationVariables>(DeleteReservationDocument, {
     onCompleted: () => {
       setSelectedItem(undefined)
       setSelectedReservation(undefined)
@@ -83,7 +79,7 @@ export const Reservations = () => {
       const reservationDuration: number = moment(timelineItem.end_time).diff(timelineItem.start_time)
       const newStartDate = moment(dragTime).hour(timelineItem.start_time.hour()).minute(timelineItem.start_time.minutes())
       const newEndDate = moment(newStartDate.valueOf() + reservationDuration).hour(timelineItem.end_time.hour()).minute(timelineItem.end_time.minutes())
-      const variables: UpdateReservationVariables = {
+      const variables: UpdateReservationMutationVariables = {
         data: {
           extraSuitesIds: timelineItem.extraSuites.map(id => Number(id)),
           fromDate: newStartDate.format(dateFormat),
