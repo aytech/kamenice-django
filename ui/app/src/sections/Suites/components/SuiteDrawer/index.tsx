@@ -2,22 +2,19 @@ import { useCallback, useEffect, useState } from "react"
 import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Spin, Tooltip } from "antd"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { BulbOutlined, CloseOutlined, ControlOutlined, MinusCircleOutlined } from "@ant-design/icons"
-import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
 import { Store } from "antd/lib/form/interface"
-import { SuiteForm } from "../../../../lib/Types"
+import { ISuite, SuiteForm } from "../../../../lib/Types"
 import { ApolloError, FetchResult, useMutation } from "@apollo/client"
-import { CreateSuite, CreateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/CreateSuite"
-import { CREATE_SUITE, UPDATE_SUITE } from "../../../../lib/graphql/mutations/Suite"
-import { UpdateSuite, UpdateSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/UpdateSuite"
 import { useTranslation } from "react-i18next"
 import { discountSuiteOptions } from "../../../../cache"
 import "./styles.css"
 import Title from "antd/lib/typography/Title"
+import { CreateSuiteDocument, CreateSuiteMutation, CreateSuiteMutationVariables, UpdateSuiteDocument, UpdateSuiteMutation, UpdateSuiteMutationVariables } from "../../../../lib/graphql/graphql"
 
 interface Props {
   close: () => void
   refetch: () => void
-  suite?: Suites_suites
+  suite?: ISuite
   visible: boolean
 }
 
@@ -32,10 +29,10 @@ export const SuiteDrawer = ({
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
-  const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuite, CreateSuiteVariables>(CREATE_SUITE, {
+  const [ createSuite, { loading: createLoading } ] = useMutation<CreateSuiteMutation, CreateSuiteMutationVariables>(CreateSuiteDocument, {
     onError: networkErrorHandler
   })
-  const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuite, UpdateSuiteVariables>(UPDATE_SUITE, {
+  const [ updateSuite, { loading: updateLoading } ] = useMutation<UpdateSuiteMutation, UpdateSuiteMutationVariables>(UpdateSuiteDocument, {
     onError: networkErrorHandler
   })
 
@@ -83,14 +80,14 @@ export const SuiteDrawer = ({
         }
         if (suite === undefined) {
           createSuite({ variables: { data: { ...variables } } })
-            .then((value: FetchResult<CreateSuite>) => {
+            .then((value: FetchResult<CreateSuiteMutation>) => {
               actionCallback(() => {
                 message.success(t("rooms.created"))
               }, value.data?.createSuite?.suite)
             })
         } else {
           updateSuite({ variables: { data: { id: suite.id, ...variables } } })
-            .then((value: FetchResult<UpdateSuite>) => {
+            .then((value: FetchResult<UpdateSuiteMutation>) => {
               actionCallback(() => {
                 message.success(t("rooms.updated"))
               }, value.data?.updateSuite?.suite)
@@ -127,7 +124,7 @@ export const SuiteDrawer = ({
   }, [ form, visible ])
 
   useEffect(() => {
-    if (suite !== undefined) {
+    if (suite !== undefined && suite.discountSuiteSet !== undefined) {
       updateAddDiscountTooltip(suite.discountSuiteSet.length)
     }
   }, [ suite, updateAddDiscountTooltip ])

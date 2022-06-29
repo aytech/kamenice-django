@@ -3,15 +3,13 @@ import { Spin } from "antd"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import { Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
-import { RESERVATION_GUESTS } from "../../lib/graphql/queries/ReservationGuests"
-import { ReservationGuests as ReservationGuestsData, ReservationGuestsVariables } from "../../lib/graphql/queries/ReservationGuests/__generated__/ReservationGuests"
 import { Error } from "./components/Error"
 import { Guest } from "./components/Guest"
 import { ReservationGuestDrawer } from "./components/Drawer"
 import { Roommates } from "./components/Roommates"
 import { pageTitle, selectedGuest, selectedSuite } from "../../cache"
-import { Suites_suites } from "../../lib/graphql/queries/Suites/__generated__/Suites"
+import { IGuest, ISuite } from "../../lib/Types"
+import { ReservationGuestsDocument, ReservationGuestsQuery, ReservationGuestsQueryVariables } from "../../lib/graphql/graphql"
 
 export const ReservationGuests = () => {
 
@@ -19,11 +17,11 @@ export const ReservationGuests = () => {
 
   const { t } = useTranslation()
 
-  const [ roommates, setRoommates ] = useState<Guests_guests[]>([])
+  const [ roommates, setRoommates ] = useState<IGuest[]>([])
   const [ guestDrawerVisible, setGuestDrawerVisible ] = useState<boolean>(false)
   const [ showError, setShowError ] = useState<boolean>(false)
 
-  const { loading, data, refetch } = useQuery<ReservationGuestsData, ReservationGuestsVariables>(RESERVATION_GUESTS, {
+  const { loading, data, refetch } = useQuery<ReservationGuestsQuery, ReservationGuestsQueryVariables>(ReservationGuestsDocument, {
     variables: { reservationHash: hash === undefined ? "" : hash },
     onCompleted: () => {
       // Set page title only on successful fetch, otherwise error element will be shown
@@ -36,7 +34,7 @@ export const ReservationGuests = () => {
   })
 
   useEffect(() => {
-    const roommateList: Guests_guests[] = []
+    const roommateList: IGuest[] = []
     const suite = data?.reservationGuests?.suite
     data?.reservationGuests?.roommates?.forEach(roommate => {
       if (roommate !== null) {
@@ -45,7 +43,7 @@ export const ReservationGuests = () => {
     })
     setRoommates(roommateList)
     if (suite !== undefined && suite !== null) {
-      selectedSuite(suite as Suites_suites)
+      selectedSuite(suite as ISuite)
     }
   }, [ data ])
 
@@ -56,14 +54,14 @@ export const ReservationGuests = () => {
         <Guest
           guest={ data?.reservationGuests?.guest }
           loading={ loading }
-          openDrawer={ (reservationGuest: Guests_guests) => {
+          openDrawer={ (reservationGuest: IGuest) => {
             selectedGuest(reservationGuest)
             setGuestDrawerVisible(true)
           } } />
         <Roommates
           hash={ hash }
           loading={ loading }
-          openDrawer={ (roommate: Guests_guests | null) => {
+          openDrawer={ (roommate: IGuest | null) => {
             selectedGuest(roommate)
             setGuestDrawerVisible(true)
           } }

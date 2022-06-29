@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react"
 import { Button, Col, Input, List, message, Pagination, Row, Skeleton, Tooltip } from "antd"
-import { GUESTS } from "../../lib/graphql/queries/Guests"
-import { Guests as GuestsData, Guests_guests } from "../../lib/graphql/queries/Guests/__generated__/Guests"
 import { UserAddOutlined } from "@ant-design/icons"
 import { ApolloError, useQuery } from "@apollo/client"
 import { useEffect } from "react"
@@ -12,22 +10,24 @@ import { useTranslation } from "react-i18next"
 import Text from "antd/lib/typography/Text"
 import { guestDrawerOpen, pageTitle, selectedGuest, selectedPage } from "../../cache"
 import { PagerHelper } from "../../lib/components/PagerHelper"
+import { IGuest } from "../../lib/Types"
+import { GuestsDocument, GuestsQuery } from "../../lib/graphql/graphql"
 
 export const Guests = () => {
 
   const { t } = useTranslation()
 
   const [ currentPage, setCurrentPage ] = useState<number>(1)
-  const [ filteredGuests, setFilteredGuests ] = useState<Guests_guests[]>([])
+  const [ filteredGuests, setFilteredGuests ] = useState<IGuest[]>([])
   const [ totalGuests, setTotalGuests ] = useState<number>(0)
-  const [ guests, setGuests ] = useState<Guests_guests[]>([])
+  const [ guests, setGuests ] = useState<IGuest[]>([])
 
-  const { data, loading, refetch } = useQuery<GuestsData>(GUESTS, {
+  const { data, loading, refetch } = useQuery<GuestsQuery>(GuestsDocument, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
   const onPageChange = (page: number) => {
-    PagerHelper.onPageChange(guests, page, (slice: Guests_guests[]) => {
+    PagerHelper.onPageChange(guests, page, (slice: IGuest[]) => {
       setFilteredGuests(slice)
       setCurrentPage(page)
     })
@@ -41,7 +41,7 @@ export const Guests = () => {
       const foundGuests = guests.filter(guest => {
         return guest.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
           || guest.surname.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          || (guest.email !== null && guest.email.toLowerCase().indexOf(value.toLowerCase()) !== -1)
+          || (guest.email !== null && guest.email?.toLowerCase().indexOf(value.toLowerCase()) !== -1)
       })
       setFilteredGuests(foundGuests)
       setTotalGuests(foundGuests.length)
@@ -50,7 +50,7 @@ export const Guests = () => {
   }
 
   const updateGuestList = useCallback((guestsList) => {
-    PagerHelper.getPageSlice(guestsList, currentPage, (data: Guests_guests[], page: number) => {
+    PagerHelper.getPageSlice(guestsList, currentPage, (data: IGuest[], page: number) => {
       if (page > 0) {
         setCurrentPage(page)
       }
@@ -59,9 +59,9 @@ export const Guests = () => {
   }, [ currentPage ])
 
   useEffect(() => {
-    const guestsList: Guests_guests[] = []
+    const guestsList: IGuest[] = []
     if (data !== undefined && data?.guests !== null) {
-      data.guests.forEach((guest: Guests_guests | null) => {
+      data.guests?.forEach((guest: IGuest | null) => {
         if (guest !== null) {
           guestsList.push(guest)
         }
@@ -130,7 +130,7 @@ export const Guests = () => {
             </Row>
           ) }
           itemLayout="horizontal"
-          renderItem={ (guest: Guests_guests) => (
+          renderItem={ (guest: IGuest) => (
             <GuestItem
               guest={ guest }
               refetch={ refetch } />

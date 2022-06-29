@@ -4,7 +4,7 @@ import { MutableRefObject, useCallback, useEffect, useRef, useState } from "reac
 import "react-calendar-timeline/lib/Timeline.css"
 import "./styles.css"
 import moment, { Moment } from "moment"
-import { CustomGroupFields, CustomItemFields, IReservation, OptionsType, Suite } from "../../lib/Types"
+import { CustomGroupFields, CustomItemFields, IReservation, OptionsType, ISuite } from "../../lib/Types"
 import { ReservationModal } from "./components/ReservationModal"
 import { TimelineHeader } from "./components/TimelineHeader"
 import { ApolloError, useLazyQuery, useMutation, useReactiveVar } from "@apollo/client"
@@ -185,7 +185,7 @@ export const Reservations = () => {
 
     const suiteTimelineGroup: TimelineGroup<CustomGroupFields>[] = []
     const suiteOptionValues: OptionsType[] = []
-    const suitesList: Suite[] = []
+    const suitesList: ISuite[] = []
     const reservationOptionMeals: OptionsType[] = []
     const reservationOptionTypes: OptionsType[] = []
 

@@ -7,14 +7,14 @@ import { selectedSuite } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
 import { DELETE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
 import { DeleteReservationGuest, DeleteReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/DeleteReservationGuest"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { IGuest } from "../../../../lib/Types"
 
 interface Props {
   hash?: string,
   loading: boolean
-  openDrawer: (guest: Guests_guests | null) => void
+  openDrawer: (guest: IGuest | null) => void
   refetch?: () => void
-  roommates: Guests_guests[]
+  roommates: IGuest[]
 }
 
 export const Roommates = ({
@@ -40,7 +40,7 @@ export const Roommates = ({
     onError: (reason: ApolloError) => message.error(reason.message)
   })
 
-  const headerActions = (guest: Guests_guests) => {
+  const headerActions = (guest: IGuest) => {
     if (loading === true) {
       return []
     }
@@ -104,7 +104,7 @@ export const Roommates = ({
         </Row>
       ) }
       itemLayout="horizontal"
-      renderItem={ (guest: Guests_guests) => (
+      renderItem={ (guest: IGuest) => (
         <List.Item
           key={ guest.id }
           actions={ headerActions(guest) }>

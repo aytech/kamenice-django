@@ -8,8 +8,6 @@ import { IReservation } from "../../../../lib/Types"
 import { ReservationInput } from "../../../../lib/graphql/globalTypes"
 import { dateFormat, dateFormatShort } from "../../../../lib/Constants"
 import { GuestDrawer } from "../../../Guests/components/GuestDrawer"
-import { Guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
-import { GUESTS } from "../../../../lib/graphql/queries/Guests"
 import { useTranslation } from "react-i18next"
 import moment from "moment"
 import { AddGuestButton, RemoveButton, SendConfirmationButton, SubmitButton } from "./components/FooterActions"
@@ -19,7 +17,7 @@ import { ExpirationConfirmation } from "./components/ExpirationConfirmation"
 import { appSettings, reservationModalOpen } from "../../../../cache"
 import { TimelineData } from "../../data"
 import { NumberHelper } from "../../../../lib/components/NumberHelper"
-import { CreateReservationDocument, CreateReservationMutation, CreateReservationMutationVariables, SendConfirmationDocument, SendConfirmationMutation, SendConfirmationMutationVariables, UpdateReservationDocument, UpdateReservationMutation, UpdateReservationMutationVariables } from "../../../../lib/graphql/graphql"
+import { CreateReservationDocument, CreateReservationMutation, CreateReservationMutationVariables, GuestsDocument, GuestsQuery, SendConfirmationDocument, SendConfirmationMutation, SendConfirmationMutationVariables, UpdateReservationDocument, UpdateReservationMutation, UpdateReservationMutationVariables } from "../../../../lib/graphql/graphql"
 
 interface Props {
   close: () => void
@@ -98,7 +96,7 @@ export const ReservationModal = ({
     },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ getGuests, { loading: guestsLoading, data: guestsData, refetch: refetchGuests } ] = useLazyQuery<Guests>(GUESTS, {
+  const [ getGuests, { loading: guestsLoading, data: guestsData, refetch: refetchGuests } ] = useLazyQuery<GuestsQuery>(GuestsDocument, {
     onError: networkErrorHandler
   })
 

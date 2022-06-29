@@ -8,10 +8,10 @@ import { reservationMealOptions, reservationTypeOptions, roommateOptions } from 
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormatShort } from "../../../../../../lib/Constants"
-import { Guests, Guests_guests } from "../../../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { GuestsQuery } from "../../../../../../lib/graphql/graphql"
 import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
 import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
-import { IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
+import { IGuest, IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
 import { ReservationFormSuite } from "./components/ReservationFormSuite"
 import { ReservationRoommates } from "./components/ReservationRoommates"
 import "./styles.css"
@@ -19,7 +19,7 @@ import "./styles.css"
 interface Props {
   form: FormInstance
   getReservationDays: () => number
-  guestsData?: Guests
+  guestsData?: GuestsQuery
   reservation?: IReservation
 }
 
@@ -111,7 +111,7 @@ export const ReservationForm = ({
   useEffect(() => {
     // Define guest and roommate options
     const options: OptionsType[] = []
-    guestsData?.guests?.forEach((guest: Guests_guests | null) => {
+    guestsData?.guests?.forEach((guest: IGuest | null) => {
       if (guest !== null) {
         options.push({
           label: `${ guest.surname } ${ guest.name }`,

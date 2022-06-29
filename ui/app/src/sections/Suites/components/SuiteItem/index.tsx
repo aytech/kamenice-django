@@ -2,14 +2,13 @@ import { DeleteOutlined, EditOutlined, HomeOutlined } from "@ant-design/icons"
 import { ApolloError, useMutation } from "@apollo/client"
 import { Avatar, Button, List, message, Popconfirm } from "antd"
 import { useTranslation } from "react-i18next"
-import { DELETE_SUITE } from "../../../../lib/graphql/mutations/Suite"
-import { DeleteSuite, DeleteSuiteVariables } from "../../../../lib/graphql/mutations/Suite/__generated__/DeleteSuite"
-import { Suites_suites } from "../../../../lib/graphql/queries/Suites/__generated__/Suites"
+import { DeleteSuiteDocument, DeleteSuiteMutation, DeleteSuiteMutationVariables } from "../../../../lib/graphql/graphql"
+import { ISuite } from "../../../../lib/Types"
 
 interface Props {
-  openSuite: (suite: Suites_suites) => void
+  openSuite: (suite: ISuite) => void
   refetch?: () => void
-  suite: Suites_suites
+  suite: ISuite
 }
 
 export const SuiteItem = ({
@@ -20,7 +19,7 @@ export const SuiteItem = ({
 
   const { t } = useTranslation()
 
-  const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuite, DeleteSuiteVariables>(DELETE_SUITE, {
+  const [ deleteSuite, { loading: deleteLoading } ] = useMutation<DeleteSuiteMutation, DeleteSuiteMutationVariables>(DeleteSuiteDocument, {
     onCompleted: () => {
       message.success(t("rooms.deleted"))
       if (refetch !== undefined) {

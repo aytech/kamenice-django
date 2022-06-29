@@ -1,8 +1,6 @@
-import { gql } from "@apollo/client";
-
-export const SUITES = gql`
-  query Suites {
-    suites {
+mutation updateSuite($data: SuiteInput!) {
+  updateSuite(data: $data) {
+    suite {
       discountSuiteSet {
         type
         value
@@ -14,9 +12,5 @@ export const SUITES = gql`
       priceBase
       title
     }
-    discountSuiteTypes {
-      name
-      value
-    }
   }
-`
+}

@@ -1,0 +1,18 @@
+query suites {
+  suites {
+    discountSuiteSet {
+      type
+      value
+    }
+    id
+    number
+    numberBeds
+    numberBedsExtra
+    priceBase
+    title
+  }
+  discountSuiteTypes {
+    name
+    value
+  }
+}

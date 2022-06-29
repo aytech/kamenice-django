@@ -1,7 +1,5 @@
 import { Moment } from "moment"
-import { Guest } from "./graphql/graphql"
-import { Guests_guests } from "./graphql/queries/Guests/__generated__/Guests"
-import { Suites_suites } from "./graphql/queries/Suites/__generated__/Suites"
+import { DiscountSuiteType, Guest, GuestAge } from "./graphql/graphql"
 
 export type AppReferrer = "/" | "/apartma" | "/guests"
 export type ReservationType = "Závazná Rezervace" | "Nezávazná Rezervace" | "Aktuálně Ubytování" | "Obydlený Termín"
@@ -20,6 +18,23 @@ interface Address {
 interface Citizenship {
   new?: string
   selected?: string
+}
+
+export interface IGuest {
+  addressMunicipality?: string | null,
+  addressPsc?: number | null,
+  addressStreet?: string | null,
+  age?: GuestAge | null,
+  citizenship?: string | null,
+  color?: string | null,
+  email?: string | null,
+  gender?: GuestGender | null,
+  id: string,
+  identity?: string | null,
+  name: string,
+  phoneNumber?: string | null,
+  surname: string,
+  visaNumber?: string | null
 }
 
 export interface IGuestForm {
@@ -58,7 +73,8 @@ export interface GuestOption {
   surname: string
 }
 
-export interface Suite {
+export interface ISuite {
+  discountSuiteSet?: Array<{ type: DiscountSuiteType, value: number }>,
   id: string
   number?: number | null
   numberBeds: number
@@ -92,7 +108,7 @@ export interface IReservation {
   purpose?: string | null
   roommates?: { id: string, fromDate: Moment }[]
   roommateSet?: { entity: { id: string, name: string, surname: string }, fromDate: string }[]
-  suite?: Suite
+  suite?: ISuite
   toDate: Moment
   type?: ReservationTypeKey
 }
@@ -155,16 +171,16 @@ export interface CustomItemFields {
     surname: string,
     fromDate: Moment
   }[]
-  suite?: Suite
+  suite?: ISuite
   type?: ReservationTypeKey
 }
 
-export enum GuestAge {
-  ADULT = "ADULT",
-  CHILD = "CHILD",
-  INFANT = "INFANT",
-  YOUNG = "YOUNG",
-}
+// export enum GuestAge {
+//   ADULT = "ADULT",
+//   CHILD = "CHILD",
+//   INFANT = "INFANT",
+//   YOUNG = "YOUNG",
+// }
 
 export enum GuestGender {
   F = "F",
@@ -193,7 +209,7 @@ export interface PriceInfo {
 }
 
 export interface ReservationInputExtended {
-  guest?: Guests_guests
-  roommates?: Guests_guests[]
-  suite?: Suites_suites
+  guest?: Guest
+  roommates?: Guest[]
+  suite?: ISuite
 }

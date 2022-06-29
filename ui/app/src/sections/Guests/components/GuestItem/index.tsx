@@ -6,10 +6,10 @@ import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
 import { DELETE_GUEST } from "../../../../lib/graphql/mutations/Guest"
 import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
-import { Guests_guests } from "../../../../lib/graphql/queries/Guests/__generated__/Guests"
+import { IGuest } from "../../../../lib/Types"
 
 interface Props {
-  guest: Guests_guests
+  guest: IGuest
   refetch?: () => void
 }
 
