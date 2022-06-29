@@ -1,0 +1,8 @@
+query calculateReservationPrice($data: PriceInput!) {
+  price(data: $data) {
+    accommodation
+    meal
+    municipality
+    total
+  }
+}

@@ -1,0 +1,10 @@
+query generateStatement(
+  $fromDate: String!
+  $toDate: String!
+  $foreigners: Boolean
+) {
+  guestsReport(fromDate: $fromDate, toDate: $toDate, foreigners: $foreigners) {
+    message
+    status
+  }
+}

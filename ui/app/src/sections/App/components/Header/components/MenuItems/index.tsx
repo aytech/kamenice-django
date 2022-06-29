@@ -6,8 +6,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { appSettings, selectedPage, userColor, userName } from "../../../../../../cache"
 import { UrlHelper } from "../../../../../../lib/components/UrlHelper"
 import { paths, refreshTokenName, tokenName, uris } from "../../../../../../lib/Constants"
-import { TOKEN_REVOKE } from "../../../../../../lib/graphql/mutations/Token"
-import { RevokeToken, RevokeTokenVariables } from "../../../../../../lib/graphql/mutations/Token/__generated__/RevokeToken"
+import { RevokeTokenDocument, RevokeTokenMutation, RevokeTokenMutationVariables } from "../../../../../../lib/graphql/graphql"
 import "./styles.css"
 
 export const MenuItems = () => {
@@ -19,7 +18,7 @@ export const MenuItems = () => {
   const name = useReactiveVar(userName)
   const settings = useReactiveVar(appSettings)
 
-  const [ revokeToken ] = useMutation<RevokeToken, RevokeTokenVariables>(TOKEN_REVOKE)
+  const [ revokeToken ] = useMutation<RevokeTokenMutation, RevokeTokenMutationVariables>(RevokeTokenDocument)
 
   const logout = (): void => {
     appSettings(null)

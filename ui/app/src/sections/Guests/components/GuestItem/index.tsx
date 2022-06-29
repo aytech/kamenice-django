@@ -4,8 +4,7 @@ import { Avatar, Button, List, message, Popconfirm } from "antd"
 import { useTranslation } from "react-i18next"
 import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
-import { DELETE_GUEST } from "../../../../lib/graphql/mutations/Guest"
-import { DeleteGuest, DeleteGuestVariables } from "../../../../lib/graphql/mutations/Guest/__generated__/DeleteGuest"
+import { DeleteGuestDocument, DeleteGuestMutation, DeleteGuestMutationVariables } from "../../../../lib/graphql/graphql"
 import { IGuest } from "../../../../lib/Types"
 
 interface Props {
@@ -20,8 +19,8 @@ export const GuestItem = ({
 
   const { t } = useTranslation()
 
-  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteGuest, DeleteGuestVariables>(DELETE_GUEST, {
-    onCompleted: (value: DeleteGuest) => {
+  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteGuestMutation, DeleteGuestMutationVariables>(DeleteGuestDocument, {
+    onCompleted: (value: DeleteGuestMutation) => {
       const deletedGuest = value.deleteGuest?.guest
       if (deletedGuest !== undefined && deletedGuest !== null) {
         message.success(t("guests.deleted", { name: deletedGuest.name, surname: deletedGuest.surname }))

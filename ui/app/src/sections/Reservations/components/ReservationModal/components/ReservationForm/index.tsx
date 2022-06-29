@@ -8,9 +8,7 @@ import { reservationMealOptions, reservationTypeOptions, roommateOptions } from 
 import { FormHelper } from "../../../../../../lib/components/FormHelper"
 import { NumberHelper } from "../../../../../../lib/components/NumberHelper"
 import { dateFormatShort } from "../../../../../../lib/Constants"
-import { GuestsQuery } from "../../../../../../lib/graphql/graphql"
-import { CALCULATE_PRICE } from "../../../../../../lib/graphql/queries/Reservation"
-import { CalculateReservationPrice, CalculateReservationPriceVariables } from "../../../../../../lib/graphql/queries/Reservation/__generated__/CalculateReservationPrice"
+import { CalculateReservationPriceDocument, CalculateReservationPriceQuery, CalculateReservationPriceQueryVariables, GuestsQuery } from "../../../../../../lib/graphql/graphql"
 import { IGuest, IReservation, OptionsType, ReservationTypeKey } from "../../../../../../lib/Types"
 import { ReservationFormSuite } from "./components/ReservationFormSuite"
 import { ReservationRoommates } from "./components/ReservationRoommates"
@@ -38,15 +36,15 @@ export const ReservationForm = ({
   const [ selectedReservationType, setSelectedReservationType ] = useState<ReservationTypeKey>()
   const [ suiteCapacity, setSuiteCapacity ] = useState<number>(0)
 
-  const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPrice, CalculateReservationPriceVariables>(CALCULATE_PRICE, {
+  const [ calculatePrices, { loading: calculatePriceLoading } ] = useLazyQuery<CalculateReservationPriceQuery, CalculateReservationPriceQueryVariables>(CalculateReservationPriceDocument, {
     fetchPolicy: "no-cache",
-    onCompleted: (data: CalculateReservationPrice) => {
+    onCompleted: (data: CalculateReservationPriceQuery) => {
       if (data.price !== null) {
         form.setFieldsValue({
-          priceAccommodation: NumberHelper.formatCurrency(data.price.accommodation),
-          priceMeal: NumberHelper.formatCurrency(data.price.meal),
-          priceMunicipality: NumberHelper.formatCurrency(data.price.municipality),
-          priceTotal: NumberHelper.formatCurrency(data.price.total)
+          priceAccommodation: NumberHelper.formatCurrency(data.price?.accommodation),
+          priceMeal: NumberHelper.formatCurrency(data.price?.meal),
+          priceMunicipality: NumberHelper.formatCurrency(data.price?.municipality),
+          priceTotal: NumberHelper.formatCurrency(data.price?.total)
         })
       }
     }

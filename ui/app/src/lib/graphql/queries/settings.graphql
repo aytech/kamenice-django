@@ -1,0 +1,15 @@
+query settings {
+  settings {
+    defaultArrivalTime
+    defaultDepartureTime
+    id
+    municipalityFee
+    priceBreakfast
+    priceBreakfastChild
+    priceHalfboard
+    priceHalfboardChild
+    userAvatar
+    userColor
+    userName
+  }
+}

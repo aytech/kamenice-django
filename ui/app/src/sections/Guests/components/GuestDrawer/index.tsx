@@ -3,16 +3,14 @@ import { Button, Drawer, Form, message, Popconfirm, Skeleton } from "antd"
 import { CloseOutlined } from "@ant-design/icons"
 import "./styles.css"
 import { ApolloError, FetchResult, useMutation, useReactiveVar } from "@apollo/client"
-import { CREATE_GUEST, UPDATE_GUEST } from "../../../../lib/graphql/mutations/Guest"
-import { CreateGuest, CreateGuestVariables, CreateGuest_createGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/CreateGuest"
-import { UpdateGuest, UpdateGuestVariables, UpdateGuest_updateGuest_guest } from "../../../../lib/graphql/mutations/Guest/__generated__/UpdateGuest"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { GuestForm } from "../GuestForm"
-import { IGuestForm } from "../../../../lib/Types"
+import { IGuest, IGuestForm } from "../../../../lib/Types"
 import { FormHelper } from "../../../../lib/components/FormHelper"
 import { guestDrawerOpen, selectedGuest } from "../../../../cache"
 import Title from "antd/lib/typography/Title"
+import { CreateGuestDocument, CreateGuestMutation, CreateGuestMutationVariables, UpdateGuestDocument, UpdateGuestMutation, UpdateGuestMutationVariables } from "../../../../lib/graphql/graphql"
 
 interface Props {
   refetch?: () => void
@@ -30,10 +28,10 @@ export const GuestDrawer = ({
 
   const networkErrorHandler = (reason: ApolloError) => message.error(reason.message)
 
-  const [ createGuest, { loading: createLoading } ] = useMutation<CreateGuest, CreateGuestVariables>(CREATE_GUEST, {
+  const [ createGuest, { loading: createLoading } ] = useMutation<CreateGuestMutation, CreateGuestMutationVariables>(CreateGuestDocument, {
     onError: networkErrorHandler
   })
-  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateGuest, UpdateGuestVariables>(UPDATE_GUEST, {
+  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateGuestMutation, UpdateGuestMutationVariables>(UpdateGuestDocument, {
     onError: networkErrorHandler
   })
 
@@ -69,15 +67,15 @@ export const GuestDrawer = ({
         }
         if (guest === undefined || guest === null) {
           createGuest({ variables: { data: { ...variables } } })
-            .then((value: FetchResult<CreateGuest>) => {
-              actionCallback((newGuest: CreateGuest_createGuest_guest) => {
+            .then((value: FetchResult<CreateGuestMutation>) => {
+              actionCallback((newGuest: IGuest) => {
                 message.success(t("guests.added", { name: newGuest.name, surname: newGuest.surname }))
               }, value.data?.createGuest?.guest)
             })
         } else {
           updateGuest({ variables: { data: { id: String(guest.id), ...variables } } })
-            .then((value: FetchResult<UpdateGuest>) => {
-              actionCallback((newGuest: UpdateGuest_updateGuest_guest) => {
+            .then((value: FetchResult<UpdateGuestMutation>) => {
+              actionCallback((newGuest: IGuest) => {
                 message.success(t("guests.updated", { name: newGuest.name, surname: newGuest.surname }))
               }, value.data?.updateGuest?.guest)
             })

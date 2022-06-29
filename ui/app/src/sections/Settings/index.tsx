@@ -6,11 +6,10 @@ import { Store } from "antd/lib/form/interface"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { appSettings, pageTitle, selectedPage, userColor, userName } from "../../cache"
-import { UPDATE_SETTINGS } from "../../lib/graphql/mutations/Settings"
-import { UpdateSettings, UpdateSettingsVariables } from "../../lib/graphql/mutations/Settings/__generated__/UpdateSettings"
 import "./styles.css"
 import moment from "moment"
 import { defaultArrivalHour, defaultDepartureHour } from "../../lib/Constants"
+import { UpdateSettingsDocument, UpdateSettingsMutation, UpdateSettingsMutationVariables } from "../../lib/graphql/graphql"
 
 export const Settings = () => {
 
@@ -21,8 +20,8 @@ export const Settings = () => {
   const [ defaultArrivalTime, setDefaultArrivalTime ] = useState<string>()
   const [ defaultDepartureTime, setDefaultDepartureTime ] = useState<string>()
 
-  const [ updateSettings, { loading: updateLoading } ] = useMutation<UpdateSettings, UpdateSettingsVariables>(UPDATE_SETTINGS, {
-    onCompleted: (value: UpdateSettings) => {
+  const [ updateSettings, { loading: updateLoading } ] = useMutation<UpdateSettingsMutation, UpdateSettingsMutationVariables>(UpdateSettingsDocument, {
+    onCompleted: (value: UpdateSettingsMutation) => {
       message.success(t("settings.updated"))
       appSettings(value.updateSettings?.settings)
       if (value.updateSettings?.settings?.userColor !== null) {

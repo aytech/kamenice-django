@@ -5,8 +5,7 @@ import Text from "antd/lib/typography/Text"
 import { useTranslation } from "react-i18next"
 import { selectedSuite } from "../../../../cache"
 import { Colors } from "../../../../lib/components/Colors"
-import { DELETE_RESERVATON_GUEST } from "../../../../lib/graphql/mutations/ReservationGuest"
-import { DeleteReservationGuest, DeleteReservationGuestVariables } from "../../../../lib/graphql/mutations/ReservationGuest/__generated__/DeleteReservationGuest"
+import { DeleteReservationGuestDocument, DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables } from "../../../../lib/graphql/graphql"
 import { IGuest } from "../../../../lib/Types"
 
 interface Props {
@@ -27,8 +26,8 @@ export const Roommates = ({
 
   const { t } = useTranslation()
 
-  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteReservationGuest, DeleteReservationGuestVariables>(DELETE_RESERVATON_GUEST, {
-    onCompleted: (value: DeleteReservationGuest) => {
+  const [ deleteGuest, { loading: deleteLoading } ] = useMutation<DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables>(DeleteReservationGuestDocument, {
+    onCompleted: (value: DeleteReservationGuestMutation) => {
       const deletedGuest = value.deleteReservationGuest?.guest
       if (deletedGuest !== undefined && deletedGuest !== null) {
         message.success(t("guests.deleted", { name: deletedGuest.name, surname: deletedGuest.surname }))

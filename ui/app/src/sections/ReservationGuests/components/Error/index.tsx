@@ -1,8 +1,7 @@
 import { useMutation } from "@apollo/client"
 import { Button, Form, Input, message, Result, Spin } from "antd"
 import { useTranslation } from "react-i18next"
-import { CONTACT_MESSAGE } from "../../../../lib/graphql/mutations/Contact"
-import { CreateContactMessage, CreateContactMessageVariables } from "../../../../lib/graphql/mutations/Contact/__generated__/CreateContactMessage"
+import { CreateContactMessageDocument, CreateContactMessageMutation, CreateContactMessageMutationVariables } from "../../../../lib/graphql/graphql"
 
 interface Props {
   show: boolean
@@ -14,7 +13,7 @@ export const Error = ({
 
   const { t } = useTranslation()
 
-  const [ createContactMessage, { loading: creatingMessage } ] = useMutation<CreateContactMessage, CreateContactMessageVariables>(CONTACT_MESSAGE)
+  const [ createContactMessage, { loading: creatingMessage } ] = useMutation<CreateContactMessageMutation, CreateContactMessageMutationVariables>(CreateContactMessageDocument)
 
   const [ form ] = Form.useForm()
 

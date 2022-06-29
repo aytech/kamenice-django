@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { pageTitle, appSettings } from "../../cache"
 import { UrlHelper } from "../../lib/components/UrlHelper"
 import { errorMessages, refreshTokenName, tokenName } from "../../lib/Constants"
-import { TOKEN_AUTH } from "../../lib/graphql/mutations/Token"
-import { TokenAuth, TokenAuthVariables } from "../../lib/graphql/mutations/Token/__generated__/TokenAuth"
+import { TokenAuthDocument, TokenAuthMutation, TokenAuthMutationVariables } from "../../lib/graphql/graphql"
 import "./styles.css"
 
 interface Props {
@@ -45,9 +44,9 @@ export const Login = ({
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuth, TokenAuthVariables>(TOKEN_AUTH, {
-    onCompleted: (token: TokenAuth) => {
-      if (token.tokenAuth !== null) {
+  const [ getToken, { loading: loginLoading } ] = useMutation<TokenAuthMutation, TokenAuthMutationVariables>(TokenAuthDocument, {
+    onCompleted: (token: TokenAuthMutation) => {
+      if (token.tokenAuth !== undefined && token.tokenAuth !== null) {
         appSettings(token.tokenAuth.settings)
         localStorage.setItem(tokenName, token.tokenAuth.token)
         localStorage.setItem(refreshTokenName, token.tokenAuth.refreshToken)

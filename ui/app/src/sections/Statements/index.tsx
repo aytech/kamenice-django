@@ -4,13 +4,12 @@ import Text from "antd/lib/typography/Text"
 import { CloseOutlined, FileAddOutlined } from "@ant-design/icons"
 import { useCallback, useEffect, useState } from "react"
 import { ApolloError, useLazyQuery, useQuery } from "@apollo/client"
-import { GENERATE_STATEMENT, STATEMENTS } from "../../lib/graphql/queries/Statements"
-import { Statements as StatementsData, Statements_guestsReportFiles } from "../../lib/graphql/queries/Statements/__generated__/Statements"
 import { PagerHelper } from "../../lib/components/PagerHelper"
 import { StatementItem } from "./components/StatementItem"
-import { GenerateStatement } from "../../lib/graphql/queries/Statements/__generated__/GenerateStatement"
 import "./styles.css"
 import { pageTitle, selectedPage } from "../../cache"
+import { GenerateStatementDocument, GenerateStatementQuery, StatementsDocument, StatementsQuery } from "../../lib/graphql/graphql"
+import { IGuestReportFile } from "../../lib/Types"
 
 export const Statements = () => {
 
@@ -20,16 +19,16 @@ export const Statements = () => {
   const [ statementModalOpen, setStatementModalOpen ] = useState<boolean>(false)
   const [ statementForeignersOnly, setStatementForeignersOnly ] = useState<boolean>(false)
   const [ currentPage, setCurrentPage ] = useState<number>(1)
-  const [ filteredFiles, setFilteredFiles ] = useState<Statements_guestsReportFiles[]>([])
+  const [ filteredFiles, setFilteredFiles ] = useState<Array<IGuestReportFile>>([])
   const [ totalFiles, setTotalFiles ] = useState<number>(0)
-  const [ files, setFiles ] = useState<Statements_guestsReportFiles[]>([])
+  const [ files, setFiles ] = useState<Array<IGuestReportFile>>([])
 
-  const { data, loading, refetch: refetchStatements } = useQuery<StatementsData>(STATEMENTS, {
+  const { data, loading, refetch: refetchStatements } = useQuery<StatementsQuery>(StatementsDocument, {
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ generateStatement, { loading: generateLoading } ] = useLazyQuery<GenerateStatement>(GENERATE_STATEMENT, {
+  const [ generateStatement, { loading: generateLoading } ] = useLazyQuery<GenerateStatementQuery>(GenerateStatementDocument, {
     fetchPolicy: "no-cache",
-    onCompleted: (value: GenerateStatement) => {
+    onCompleted: (value: GenerateStatementQuery) => {
       if (value.guestsReport?.status === true) {
         setStatementModalOpen(false)
         form.resetFields()
@@ -44,7 +43,7 @@ export const Statements = () => {
   })
 
   const onPageChange = (page: number) => {
-    PagerHelper.onPageChange(files, page, (slice: Statements_guestsReportFiles[]) => {
+    PagerHelper.onPageChange(files, page, (slice: Array<IGuestReportFile>) => {
       setFilteredFiles(slice)
       setCurrentPage(page)
     })
@@ -65,16 +64,16 @@ export const Statements = () => {
   }
 
   const updateFileList = useCallback((fileList) => {
-    PagerHelper.getPageSlice(fileList, currentPage, (data: Statements_guestsReportFiles[], page: number) => {
+    PagerHelper.getPageSlice(fileList, currentPage, (data: Array<IGuestReportFile>, page: number) => {
       setCurrentPage(page)
       setFilteredFiles(data)
     })
   }, [ currentPage ])
 
   useEffect(() => {
-    const statements: Statements_guestsReportFiles[] = []
+    const statements: Array<IGuestReportFile> = []
     if (data !== undefined && data.guestsReportFiles !== null) {
-      data.guestsReportFiles.forEach((statement: Statements_guestsReportFiles | null) => {
+      data.guestsReportFiles?.forEach((statement: IGuestReportFile | null) => {
         if (statement !== null) {
           statements.push(statement)
         }
@@ -141,7 +140,7 @@ export const Statements = () => {
             </Row>
           ) }
           itemLayout="horizontal"
-          renderItem={ (statement: Statements_guestsReportFiles) => (
+          renderItem={ (statement: IGuestReportFile) => (
             <StatementItem
               refetchStatements={ refetchStatements }
               statement={ statement } />

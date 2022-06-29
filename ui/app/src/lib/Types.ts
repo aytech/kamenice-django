@@ -67,10 +67,41 @@ export interface IGuestData {
   visaNumber?: string
 }
 
+export interface IGuestReportFile {
+  created: any,
+  driveId: string,
+  id: string,
+  name: string,
+  pathDocx?: string | null,
+  pathPdf?: string | null
+}
+
+export interface IToken {
+  payload: any,
+  refreshExpiresIn: number,
+  refreshToken: string,
+  settings?: ISettings,
+  token: string
+}
+
 export interface GuestOption {
   id: string
   name: string
   surname: string
+}
+
+export interface ISettings {
+  defaultArrivalTime: any,
+  defaultDepartureTime: any,
+  id: string,
+  municipalityFee?: any | null,
+  priceBreakfast?: any | null,
+  priceBreakfastChild?: any | null,
+  priceHalfboard?: any | null,
+  priceHalfboardChild?: any | null,
+  userAvatar?: string | null,
+  userColor?: string | null,
+  userName?: string | null
 }
 
 export interface ISuite {

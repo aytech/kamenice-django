@@ -1,0 +1,8 @@
+mutation deleteReservationGuest($data: ReservationGuestInput!) {
+  deleteReservationGuest(data: $data) {
+    guest {
+      name
+      surname
+    }
+  }
+}

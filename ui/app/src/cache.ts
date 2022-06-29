@@ -1,10 +1,9 @@
 import { InMemoryCache, makeVar } from "@apollo/client"
 import { TimelineGroup, TimelineItem } from "react-calendar-timeline"
-import { TokenAuth_tokenAuth_settings } from "./lib/graphql/mutations/Token/__generated__/TokenAuth"
-import { CustomGroupFields, CustomItemFields, MenuItemKey, OptionsType, ISuite, IGuest } from "./lib/Types"
+import { CustomGroupFields, CustomItemFields, MenuItemKey, OptionsType, ISuite, IGuest, ISettings } from "./lib/Types"
 import moment, { Moment } from "moment"
 
-export const appSettings = makeVar<TokenAuth_tokenAuth_settings | null>(null)
+export const appSettings = makeVar<ISettings | null>(null)
 export const canvasTimeEnd = makeVar<number>(moment().add(15, "day").valueOf())
 export const canvasTimeStart = makeVar<number>(moment().subtract(15, "day").valueOf())
 export const discountSuiteOptions = makeVar<OptionsType[]>([])
