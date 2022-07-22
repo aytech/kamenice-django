@@ -1,5 +1,6 @@
 import logging
 import os
+import traceback
 from datetime import datetime
 
 from django.db.models import Q
@@ -64,13 +65,13 @@ class GuestsStatementQuery(ObjectType):
             else:
                 if reservation.guest.citizenship == CITIZENSHIP_CZ:
                     guests.append(reservation.guest)
-            for roommate in reservation.roommates.filter(deleted=False):
+            for roommate in reservation.roommate_set.all():
                 if foreigners:
                     if roommate.citizenship != CITIZENSHIP_CZ:
-                        guests.append(roommate)
+                        guests.append(roommate.entity)
                 else:
                     if reservation.guest.citizenship == CITIZENSHIP_CZ:
-                        guests.append(roommate)
+                        guests.append(roommate.entity)
             for guest in guests:
                 if foreigners:
                     reservation_guests.append([
@@ -133,6 +134,7 @@ class GuestsStatementQuery(ObjectType):
                 message=_('Statement generated successfully')
             )
         except Exception as e:
+            traceback.print_exc()
             logging.getLogger('kamenice').error('Failed generate guests report {}'.format(e))
             return Report(
                 status=False,

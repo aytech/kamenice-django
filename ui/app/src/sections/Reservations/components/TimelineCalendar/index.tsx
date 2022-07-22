@@ -50,7 +50,7 @@ export const TimelineCalendar = ({
       }
       items={ items }
       itemTouchSendsClick={ true }
-      lineHeight={ 60 }
+      lineHeight={ 40 }
       onItemClick={ onItemSelect }
       onItemDeselect={ onItemDeselect }
       onCanvasClick={ onItemDeselect }
