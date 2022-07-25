@@ -34,6 +34,7 @@ query reservationGuests($reservationHash: String!) {
     }
     suite {
       numberBeds
+      numberBedsExtra
     }
   }
   selectedGuest @client {

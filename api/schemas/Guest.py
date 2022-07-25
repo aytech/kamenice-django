@@ -134,8 +134,8 @@ class CreateReservationRoommate(Mutation):
         try:
             reservation_instance = Reservation.objects.get(hash=data.hash, deleted=False)
 
-            if reservation_instance.suite.number_beds <= (
-                    reservation_instance.roommate_set.count() + 1):  # +1 for main host
+            room_capacity = reservation_instance.suite.number_beds + reservation_instance.suite.number_beds_extra
+            if room_capacity <= (reservation_instance.roommate_set.count() + 1):  # +1 for main host
                 raise Exception(_('Accommodation capacity exceeded'))
 
             guest_instance = GuestModel(

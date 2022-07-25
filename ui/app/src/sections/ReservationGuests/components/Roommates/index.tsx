@@ -73,7 +73,7 @@ export const Roommates = ({
     return suite !== undefined
       && suite !== null
       // total guests = roommates + main guest
-      && suite.numberBeds > (roommates.length + 1) ? (
+      && (suite.numberBeds + suite.numberBedsExtra) > (roommates.length + 1) ? (
       <Tooltip title={ t("guests.add") }>
         <Button
           onClick={ () => openDrawer(null) }>
