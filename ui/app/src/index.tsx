@@ -1,4 +1,4 @@
-import {createRoot} from "react-dom/client"
+import { createRoot } from "react-dom/client"
 import { BrowserRouter as Router } from "react-router-dom"
 import './index.css'
 import { getCookie } from "./lib/Cookie"

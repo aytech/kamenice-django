@@ -7,7 +7,7 @@ from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileType,
 
 from api.constants import RESERVATION_TYPE_INQUIRY, RESERVATION_TYPE_NONBINDING, ENVIRON_EMAIL_CONFIRMATION_TEMPLATE, \
     ENVIRON_EMAIL_INQUIRY_TEMPLATE, ENVIRON_EMAIL_API_KEY, MEAL_CHOICE_HALFBOARD, \
-    MEAL_CHOICE_BREAKFAST
+    MEAL_CHOICE_BREAKFAST, RESERVATION_TYPE_BINDING
 from api.schemas.helpers.DateHelper import DateHelper
 from kamenice_django.settings.base import MEDIA_ROOT, FROM_EMAIL_ADDRESS, FROM_EMAIL_NAME
 
@@ -27,6 +27,8 @@ class EmailHelper:
         if reservation.type == RESERVATION_TYPE_INQUIRY:
             self.template_id = os.environ[ENVIRON_EMAIL_INQUIRY_TEMPLATE]
         elif reservation.type == RESERVATION_TYPE_NONBINDING:
+            self.template_id = os.environ[ENVIRON_EMAIL_CONFIRMATION_TEMPLATE]
+        elif reservation.type == RESERVATION_TYPE_BINDING:
             self.template_id = os.environ[ENVIRON_EMAIL_CONFIRMATION_TEMPLATE]
         self.api_key = os.environ[ENVIRON_EMAIL_API_KEY]
 
@@ -77,13 +79,13 @@ class EmailHelper:
             if bcc_address['address'] != self.reservation.guest.email:
                 personalization.add_email(Bcc(bcc_address['address'], bcc_address['name']))
         mail.add_personalization(personalization)
-        if self.reservation.type == RESERVATION_TYPE_NONBINDING:
+        if self.reservation.type == RESERVATION_TYPE_NONBINDING or self.reservation.type == RESERVATION_TYPE_BINDING:
             mail.dynamic_template_data = {
                 'from': DateHelper.get_formatted_date(self.reservation.from_date),
-                'guests': 1 + self.reservation.roommates.count(),
+                'guests': 1 + self.reservation.roommate_set.count(),
                 'meal': self.reservation.read_meal(self.reservation.meal),
                 'note': self.data.note,
-                'price': str(self.reservation.price_total),
+                'price': str(self.reservation.price_set.get().total),
                 'to': DateHelper.get_formatted_date(self.reservation.to_date),
                 'type': self.reservation.read_type(self.reservation.type),
                 'url': '{}/rezervace/{}/hoste'.format(self.configuration.APP_URL, self.reservation.hash)

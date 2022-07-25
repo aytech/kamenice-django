@@ -6,7 +6,7 @@ import { useEffect } from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { selectedGuest } from "../../../../cache"
-import { CreateReservationGuestDocument, CreateReservationGuestMutation, CreateReservationGuestMutationVariables, UpdateReservationGuestDocument, UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables } from "../../../../lib/graphql/graphql"
+import { CreateReservationRoommateDocument, CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables, UpdateReservationRoommateDocument, UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables } from "../../../../lib/graphql/graphql"
 import { IGuestForm } from "../../../../lib/Types"
 import { GuestForm } from "../../../Guests/components/GuestForm"
 
@@ -30,9 +30,9 @@ export const ReservationGuestDrawer = ({
 
   const [ confirmClose, setConfirmClose ] = useState<boolean>(false)
 
-  const [ createGuest, { loading: createLoading } ] = useMutation<CreateReservationGuestMutation, CreateReservationGuestMutationVariables>(CreateReservationGuestDocument, {
-    onCompleted: (value: CreateReservationGuestMutation) => {
-      const createdGuest = value.createReservationGuest?.guest
+  const [ createGuest, { loading: createLoading } ] = useMutation<CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables>(CreateReservationRoommateDocument, {
+    onCompleted: (value: CreateReservationRoommateMutation) => {
+      const createdGuest = value.createReservationRoommate?.roommate
       if (createdGuest !== undefined && createdGuest !== null) {
         message.success(t("guests.added", { name: createdGuest.name, surname: createdGuest.surname }))
       }
@@ -43,7 +43,7 @@ export const ReservationGuestDrawer = ({
     },
     onError: (reason: ApolloError) => message.error(reason.message)
   })
-  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables>(UpdateReservationGuestDocument)
+  const [ updateGuest, { loading: updateLoading } ] = useMutation<UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables>(UpdateReservationRoommateDocument)
 
   const submitForm = (): void => {
     form.validateFields()
@@ -67,8 +67,8 @@ export const ReservationGuestDrawer = ({
           createGuest({ variables: { data: { hash: reservationHash, ...variables } } })
         } else {
           updateGuest({ variables: { data: { id: String(guest.id), hash: reservationHash, ...variables } } })
-            .then((value: FetchResult<UpdateReservationGuestMutation>) => {
-              const updatedGuest = value.data?.updateReservationGuest?.guest
+            .then((value: FetchResult<UpdateReservationRoommateMutation>) => {
+              const updatedGuest = value.data?.updateReservationRoommate?.roommate
               if (updatedGuest !== undefined && updatedGuest !== null) {
                 message.success(t("guests.updated", { name: updatedGuest.name, surname: updatedGuest.surname }))
               }

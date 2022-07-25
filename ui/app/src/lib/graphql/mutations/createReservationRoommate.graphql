@@ -1,6 +1,6 @@
-mutation createReservationGuest($data: ReservationGuestInput!) {
-  createReservationGuest(data: $data) {
-    guest {
+mutation createReservationRoommate($data: ReservationGuestInput!) {
+  createReservationRoommate(data: $data) {
+    roommate {
       addressMunicipality
       addressPsc
       addressStreet

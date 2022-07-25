@@ -1,5 +1,5 @@
 import { Affix, Layout, Skeleton } from "antd"
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from "react-router-dom"
 import { Header } from "./components/Header"
 import { NotFound } from "../NotFound"
 import { Reservations } from "../Reservations"
@@ -24,9 +24,13 @@ export const App = () => {
 
   const location = useLocation()
   const navigate = useNavigate()
+  const guestReservations = useMatch(paths.reservation_guests)
 
   const { loading: settingsLoading, data: settingsData, refetch: settingsRefetch } = useQuery<SettingsQuery>(SettingsDocument, {
     onCompleted: (value: SettingsQuery) => {
+      if (guestReservations !== null) {
+        return
+      }
       if (value?.settings === null) {
         navigate(`/login?next=${ UrlHelper.getReferrer() }`)
       } else {

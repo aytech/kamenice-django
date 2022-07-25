@@ -3,8 +3,8 @@ import graphql_jwt
 
 from api.schemas.Contact import CreateContactMessage
 from api.schemas.DiscountSuite import DiscountSuiteQuery, CreateDiscount, UpdateDiscount, DeleteDiscount
-from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationGuest, \
-    DeleteReservationGuest, CreateReservationGuest
+from api.schemas.Guest import CreateGuest, DeleteGuest, UpdateGuest, GuestsQuery, UpdateReservationRoommate, \
+    DeleteReservationRoommate, CreateReservationRoommate
 from api.schemas.GuestsStatement import GuestsStatementQuery, DeleteDriveFile
 from api.schemas.Reservation import CreateReservation, DeleteReservation, UpdateReservation, \
     SendConfirmationEmail, CalculateReservationPriceQuery, DragReservation
@@ -37,9 +37,9 @@ class Mutation(graphene.ObjectType):
     delete_guest = DeleteGuest.Field()
     update_guest = UpdateGuest.Field()
 
-    create_reservation_guest = CreateReservationGuest.Field()
-    delete_reservation_guest = DeleteReservationGuest.Field()
-    update_reservation_guest = UpdateReservationGuest.Field()
+    create_reservation_roommate = CreateReservationRoommate.Field()
+    delete_reservation_roommate = DeleteReservationRoommate.Field()
+    update_reservation_roommate = UpdateReservationRoommate.Field()
 
     create_reservation = CreateReservation.Field()
     delete_reservation = DeleteReservation.Field()

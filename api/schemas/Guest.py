@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from graphene import ObjectType, List, Field, InputObjectType, ID, String, Mutation, Int
 from graphene_django import DjangoObjectType
@@ -5,8 +7,10 @@ from graphql_jwt.decorators import user_passes_test
 from django.utils.translation import gettext_lazy as _
 
 from api.models.Guest import Guest as GuestModel
+from api.models.Roommate import Roommate as RoommateModel
 from api.models.Reservation import Reservation
 from api.schemas.Authentication import Color
+from api.schemas.Roommate import Roommate
 from api.schemas.Suite import Suite
 from api.schemas.exceptions.PermissionDenied import PermissionDenied
 
@@ -46,7 +50,7 @@ class GuestsQuery(ObjectType):
             reservation = Reservation.objects.get(hash=reservation_hash, deleted=False)
             return ReservationGuests(
                 guest=reservation.guest,
-                roommates=reservation.roommates.all(),
+                roommates=map(lambda roommate: roommate.entity, reservation.roommate_set.all()),
                 suite=reservation.suite
             )
         except (MultipleObjectsReturned, ObjectDoesNotExist):
@@ -119,21 +123,22 @@ class CreateGuest(Mutation):
         return CreateGuest(guest=instance)
 
 
-class CreateReservationGuest(Mutation):
+class CreateReservationRoommate(Mutation):
     class Arguments:
         data = ReservationGuestInput(required=True)
 
-    guest = Field(Guest)
+    roommate = Field(Guest)
 
     @classmethod
     def mutate(cls, _root, _info, data=None):
         try:
-            reservation = Reservation.objects.get(hash=data.hash, deleted=False)
+            reservation_instance = Reservation.objects.get(hash=data.hash, deleted=False)
 
-            if reservation.suite.number_beds <= (reservation.roommates.count() + 1):  # +1 for main host
+            if reservation_instance.suite.number_beds <= (
+                    reservation_instance.roommate_set.count() + 1):  # +1 for main host
                 raise Exception(_('Accommodation capacity exceeded'))
 
-            instance = GuestModel(
+            guest_instance = GuestModel(
                 age=data.age,
                 address_municipality=data.address_municipality,
                 address_psc=data.address_psc,
@@ -150,14 +155,21 @@ class CreateReservationGuest(Mutation):
             )
 
             try:
-                instance.full_clean()
+                guest_instance.full_clean()
             except ValidationError as errors:
                 raise Exception(errors.messages[0])
 
-            instance.save()
-            reservation.roommates.add(instance)
+            guest_instance.save()
+            roommate_instance = RoommateModel(
+                entity=guest_instance,
+                from_date=reservation_instance.from_date,
+                reservation=reservation_instance,
+                to_date=reservation_instance.to_date
+            )
+            roommate_instance.save()
+            reservation_instance.roommate_set.add(roommate_instance)
 
-            return CreateReservationGuest(guest=instance)
+            return CreateReservationRoommate(roommate=guest_instance)
 
         except ObjectDoesNotExist:
             raise Exception(_('Guest cannot be created'))
@@ -199,11 +211,11 @@ class UpdateGuest(Mutation):
             raise Exception(_('Guest not found'))
 
 
-class UpdateReservationGuest(Mutation):
+class UpdateReservationRoommate(Mutation):
     class Arguments:
         data = ReservationGuestInput(required=True)
 
-    guest = Field(Guest)
+    roommate = Field(Guest)
 
     @staticmethod
     def update_instance(instance, data):
@@ -232,14 +244,15 @@ class UpdateReservationGuest(Mutation):
         try:
             reservation = Reservation.objects.get(hash=data.hash, deleted=False)
             guest = reservation.guest
-            roommates = reservation.roommates.all()
+            roommates = reservation.roommate_set.all()
             if guest.id == int(data.id):
-                return UpdateGuest(guest=UpdateReservationGuest.update_instance(guest, data))
+                return UpdateReservationRoommate(roommate=UpdateReservationRoommate.update_instance(guest, data))
             else:
                 for roommate in roommates:
-                    if roommate.id == int(data.id):
-                        return UpdateGuest(guest=UpdateReservationGuest.update_instance(roommate, data))
-            return UpdateGuest(guest=None)
+                    if roommate.entity.id == int(data.id):
+                        return UpdateReservationRoommate(
+                            roommate=UpdateReservationRoommate.update_instance(roommate.entity, data))
+            return UpdateReservationRoommate(roommate=None)
         except ObjectDoesNotExist:
             raise Exception(_('Guest cannot be updated'))
 
@@ -273,20 +286,18 @@ class DeleteGuest(Mutation):
             return DeleteGuest(guest=None)
 
 
-class DeleteReservationGuest(Mutation):
+class DeleteReservationRoommate(Mutation):
     class Arguments:
         data = ReservationGuestInput(required=True)
 
-    guest = Field(Guest)
+    roommate = Field(Guest)
 
     @classmethod
     def mutate(cls, _root, _info, data=None):
         try:
             reservation = Reservation.objects.get(hash=data.hash, deleted=False)
-            for roommate in reservation.roommates.all():
-                if roommate.id == int(data.id):
-                    reservation.roommates.remove(roommate)
-                    return DeleteReservationGuest(guest=roommate)
-            return DeleteReservationGuest(guest=None)
+            if reservation is not None:
+                reservation.roommate_set.filter(entity_id=data.id).delete()
+            return DeleteReservationRoommate(roommate=None)
         except ObjectDoesNotExist:
             raise Exception(_('Guest cannot be deleted'))

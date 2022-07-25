@@ -78,9 +78,9 @@ export type CreateReservation = {
   reservation?: Maybe<Reservation>;
 };
 
-export type CreateReservationGuest = {
-  __typename?: 'CreateReservationGuest';
-  guest?: Maybe<Guest>;
+export type CreateReservationRoommate = {
+  __typename?: 'CreateReservationRoommate';
+  roommate?: Maybe<Guest>;
 };
 
 export type CreateSuite = {
@@ -108,9 +108,9 @@ export type DeleteReservation = {
   reservation?: Maybe<Reservation>;
 };
 
-export type DeleteReservationGuest = {
-  __typename?: 'DeleteReservationGuest';
-  guest?: Maybe<Guest>;
+export type DeleteReservationRoommate = {
+  __typename?: 'DeleteReservationRoommate';
+  roommate?: Maybe<Guest>;
 };
 
 export type DeleteSuite = {
@@ -236,13 +236,13 @@ export type Mutation = {
   createDiscount?: Maybe<CreateDiscount>;
   createGuest?: Maybe<CreateGuest>;
   createReservation?: Maybe<CreateReservation>;
-  createReservationGuest?: Maybe<CreateReservationGuest>;
+  createReservationRoommate?: Maybe<CreateReservationRoommate>;
   createSuite?: Maybe<CreateSuite>;
   deleteDiscount?: Maybe<DeleteDiscount>;
   deleteDriveFile?: Maybe<DeleteDriveFile>;
   deleteGuest?: Maybe<DeleteGuest>;
   deleteReservation?: Maybe<DeleteReservation>;
-  deleteReservationGuest?: Maybe<DeleteReservationGuest>;
+  deleteReservationRoommate?: Maybe<DeleteReservationRoommate>;
   deleteSuite?: Maybe<DeleteSuite>;
   dragReservation?: Maybe<DragReservation>;
   refreshToken?: Maybe<Refresh>;
@@ -252,7 +252,7 @@ export type Mutation = {
   updateDiscount?: Maybe<UpdateDiscount>;
   updateGuest?: Maybe<UpdateGuest>;
   updateReservation?: Maybe<UpdateReservation>;
-  updateReservationGuest?: Maybe<UpdateReservationGuest>;
+  updateReservationRoommate?: Maybe<UpdateReservationRoommate>;
   updateSettings?: Maybe<UpdateSettings>;
   updateSuite?: Maybe<UpdateSuite>;
   verifyToken?: Maybe<Verify>;
@@ -279,7 +279,7 @@ export type MutationCreateReservationArgs = {
 };
 
 
-export type MutationCreateReservationGuestArgs = {
+export type MutationCreateReservationRoommateArgs = {
   data: ReservationGuestInput;
 };
 
@@ -309,7 +309,7 @@ export type MutationDeleteReservationArgs = {
 };
 
 
-export type MutationDeleteReservationGuestArgs = {
+export type MutationDeleteReservationRoommateArgs = {
   data: ReservationGuestInput;
 };
 
@@ -360,7 +360,7 @@ export type MutationUpdateReservationArgs = {
 };
 
 
-export type MutationUpdateReservationGuestArgs = {
+export type MutationUpdateReservationRoommateArgs = {
   data: ReservationGuestInput;
 };
 
@@ -760,9 +760,9 @@ export type UpdateReservation = {
   reservation?: Maybe<Reservation>;
 };
 
-export type UpdateReservationGuest = {
-  __typename?: 'UpdateReservationGuest';
-  guest?: Maybe<Guest>;
+export type UpdateReservationRoommate = {
+  __typename?: 'UpdateReservationRoommate';
+  roommate?: Maybe<Guest>;
 };
 
 export type UpdateSettings = {
@@ -801,12 +801,12 @@ export type CreateReservationMutationVariables = Exact<{
 
 export type CreateReservationMutation = { __typename?: 'Mutation', createReservation?: { __typename?: 'CreateReservation', reservation?: { __typename?: 'Reservation', expired?: any | null, fromDate: any, id: string, meal: ReservationMeal, notes?: string | null, purpose?: string | null, toDate: any, type: ReservationType, extraSuites: Array<{ __typename?: 'Suite', id: string }>, guest: { __typename?: 'Guest', email?: string | null, id: string, name: string, surname: string }, payingGuest?: { __typename?: 'Guest', id: string } | null, priceSet: Array<{ __typename?: 'Price', accommodation: any, meal: any, municipality: any, total: any, suite: { __typename?: 'Suite', id: string, priceBase: any } }>, roommateSet: Array<{ __typename?: 'Roommate', fromDate: any, entity: { __typename?: 'Guest', id: string, name: string, surname: string } }>, suite: { __typename?: 'Suite', id: string, number?: number | null, title: string } } | null } | null };
 
-export type CreateReservationGuestMutationVariables = Exact<{
+export type CreateReservationRoommateMutationVariables = Exact<{
   data: ReservationGuestInput;
 }>;
 
 
-export type CreateReservationGuestMutation = { __typename?: 'Mutation', createReservationGuest?: { __typename?: 'CreateReservationGuest', guest?: { __typename?: 'Guest', addressMunicipality?: string | null, addressPsc?: number | null, addressStreet?: string | null, age?: GuestAge | null, citizenship?: string | null, email?: string | null, gender?: GuestGender | null, identity?: string | null, id: string, name: string, phoneNumber?: string | null, surname: string, visaNumber?: string | null } | null } | null };
+export type CreateReservationRoommateMutation = { __typename?: 'Mutation', createReservationRoommate?: { __typename?: 'CreateReservationRoommate', roommate?: { __typename?: 'Guest', addressMunicipality?: string | null, addressPsc?: number | null, addressStreet?: string | null, age?: GuestAge | null, citizenship?: string | null, email?: string | null, gender?: GuestGender | null, identity?: string | null, id: string, name: string, phoneNumber?: string | null, surname: string, visaNumber?: string | null } | null } | null };
 
 export type CreateSuiteMutationVariables = Exact<{
   data: SuiteInput;
@@ -829,12 +829,12 @@ export type DeleteReservationMutationVariables = Exact<{
 
 export type DeleteReservationMutation = { __typename?: 'Mutation', deleteReservation?: { __typename?: 'DeleteReservation', reservation?: { __typename?: 'Reservation', id: string } | null } | null };
 
-export type DeleteReservationGuestMutationVariables = Exact<{
+export type DeleteReservationRoommateMutationVariables = Exact<{
   data: ReservationGuestInput;
 }>;
 
 
-export type DeleteReservationGuestMutation = { __typename?: 'Mutation', deleteReservationGuest?: { __typename?: 'DeleteReservationGuest', guest?: { __typename?: 'Guest', name: string, surname: string } | null } | null };
+export type DeleteReservationRoommateMutation = { __typename?: 'Mutation', deleteReservationRoommate?: { __typename?: 'DeleteReservationRoommate', roommate?: { __typename?: 'Guest', name: string, surname: string } | null } | null };
 
 export type DeleteStatementMutationVariables = Exact<{
   fileId: Scalars['String'];
@@ -900,12 +900,12 @@ export type UpdateReservationMutationVariables = Exact<{
 
 export type UpdateReservationMutation = { __typename?: 'Mutation', updateReservation?: { __typename?: 'UpdateReservation', reservation?: { __typename?: 'Reservation', expired?: any | null, fromDate: any, id: string, meal: ReservationMeal, notes?: string | null, purpose?: string | null, toDate: any, type: ReservationType, extraSuites: Array<{ __typename?: 'Suite', id: string }>, guest: { __typename?: 'Guest', email?: string | null, id: string, name: string, surname: string }, payingGuest?: { __typename?: 'Guest', id: string } | null, priceSet: Array<{ __typename?: 'Price', accommodation: any, meal: any, municipality: any, total: any, suite: { __typename?: 'Suite', id: string, priceBase: any } }>, roommateSet: Array<{ __typename?: 'Roommate', fromDate: any, entity: { __typename?: 'Guest', id: string, name: string, surname: string } }>, suite: { __typename?: 'Suite', id: string, number?: number | null, title: string } } | null } | null };
 
-export type UpdateReservationGuestMutationVariables = Exact<{
+export type UpdateReservationRoommateMutationVariables = Exact<{
   data: ReservationGuestInput;
 }>;
 
 
-export type UpdateReservationGuestMutation = { __typename?: 'Mutation', updateReservationGuest?: { __typename?: 'UpdateReservationGuest', guest?: { __typename?: 'Guest', addressMunicipality?: string | null, addressPsc?: number | null, addressStreet?: string | null, age?: GuestAge | null, citizenship?: string | null, email?: string | null, gender?: GuestGender | null, identity?: string | null, id: string, name: string, phoneNumber?: string | null, surname: string, visaNumber?: string | null } | null } | null };
+export type UpdateReservationRoommateMutation = { __typename?: 'Mutation', updateReservationRoommate?: { __typename?: 'UpdateReservationRoommate', roommate?: { __typename?: 'Guest', addressMunicipality?: string | null, addressPsc?: number | null, addressStreet?: string | null, age?: GuestAge | null, citizenship?: string | null, email?: string | null, gender?: GuestGender | null, identity?: string | null, id: string, name: string, phoneNumber?: string | null, surname: string, visaNumber?: string | null } | null } | null };
 
 export type UpdateSettingsMutationVariables = Exact<{
   data: SettingsInput;
@@ -1142,10 +1142,10 @@ export function useCreateReservationMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateReservationMutationHookResult = ReturnType<typeof useCreateReservationMutation>;
 export type CreateReservationMutationResult = Apollo.MutationResult<CreateReservationMutation>;
 export type CreateReservationMutationOptions = Apollo.BaseMutationOptions<CreateReservationMutation, CreateReservationMutationVariables>;
-export const CreateReservationGuestDocument = gql`
-    mutation createReservationGuest($data: ReservationGuestInput!) {
-  createReservationGuest(data: $data) {
-    guest {
+export const CreateReservationRoommateDocument = gql`
+    mutation createReservationRoommate($data: ReservationGuestInput!) {
+  createReservationRoommate(data: $data) {
+    roommate {
       addressMunicipality
       addressPsc
       addressStreet
@@ -1163,32 +1163,32 @@ export const CreateReservationGuestDocument = gql`
   }
 }
     `;
-export type CreateReservationGuestMutationFn = Apollo.MutationFunction<CreateReservationGuestMutation, CreateReservationGuestMutationVariables>;
+export type CreateReservationRoommateMutationFn = Apollo.MutationFunction<CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables>;
 
 /**
- * __useCreateReservationGuestMutation__
+ * __useCreateReservationRoommateMutation__
  *
- * To run a mutation, you first call `useCreateReservationGuestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateReservationGuestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCreateReservationRoommateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReservationRoommateMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createReservationGuestMutation, { data, loading, error }] = useCreateReservationGuestMutation({
+ * const [createReservationRoommateMutation, { data, loading, error }] = useCreateReservationRoommateMutation({
  *   variables: {
  *      data: // value for 'data'
  *   },
  * });
  */
-export function useCreateReservationGuestMutation(baseOptions?: Apollo.MutationHookOptions<CreateReservationGuestMutation, CreateReservationGuestMutationVariables>) {
+export function useCreateReservationRoommateMutation(baseOptions?: Apollo.MutationHookOptions<CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateReservationGuestMutation, CreateReservationGuestMutationVariables>(CreateReservationGuestDocument, options);
+        return Apollo.useMutation<CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables>(CreateReservationRoommateDocument, options);
       }
-export type CreateReservationGuestMutationHookResult = ReturnType<typeof useCreateReservationGuestMutation>;
-export type CreateReservationGuestMutationResult = Apollo.MutationResult<CreateReservationGuestMutation>;
-export type CreateReservationGuestMutationOptions = Apollo.BaseMutationOptions<CreateReservationGuestMutation, CreateReservationGuestMutationVariables>;
+export type CreateReservationRoommateMutationHookResult = ReturnType<typeof useCreateReservationRoommateMutation>;
+export type CreateReservationRoommateMutationResult = Apollo.MutationResult<CreateReservationRoommateMutation>;
+export type CreateReservationRoommateMutationOptions = Apollo.BaseMutationOptions<CreateReservationRoommateMutation, CreateReservationRoommateMutationVariables>;
 export const CreateSuiteDocument = gql`
     mutation createSuite($data: SuiteInput!) {
   createSuite(data: $data) {
@@ -1305,42 +1305,42 @@ export function useDeleteReservationMutation(baseOptions?: Apollo.MutationHookOp
 export type DeleteReservationMutationHookResult = ReturnType<typeof useDeleteReservationMutation>;
 export type DeleteReservationMutationResult = Apollo.MutationResult<DeleteReservationMutation>;
 export type DeleteReservationMutationOptions = Apollo.BaseMutationOptions<DeleteReservationMutation, DeleteReservationMutationVariables>;
-export const DeleteReservationGuestDocument = gql`
-    mutation deleteReservationGuest($data: ReservationGuestInput!) {
-  deleteReservationGuest(data: $data) {
-    guest {
+export const DeleteReservationRoommateDocument = gql`
+    mutation deleteReservationRoommate($data: ReservationGuestInput!) {
+  deleteReservationRoommate(data: $data) {
+    roommate {
       name
       surname
     }
   }
 }
     `;
-export type DeleteReservationGuestMutationFn = Apollo.MutationFunction<DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables>;
+export type DeleteReservationRoommateMutationFn = Apollo.MutationFunction<DeleteReservationRoommateMutation, DeleteReservationRoommateMutationVariables>;
 
 /**
- * __useDeleteReservationGuestMutation__
+ * __useDeleteReservationRoommateMutation__
  *
- * To run a mutation, you first call `useDeleteReservationGuestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteReservationGuestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteReservationRoommateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteReservationRoommateMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteReservationGuestMutation, { data, loading, error }] = useDeleteReservationGuestMutation({
+ * const [deleteReservationRoommateMutation, { data, loading, error }] = useDeleteReservationRoommateMutation({
  *   variables: {
  *      data: // value for 'data'
  *   },
  * });
  */
-export function useDeleteReservationGuestMutation(baseOptions?: Apollo.MutationHookOptions<DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables>) {
+export function useDeleteReservationRoommateMutation(baseOptions?: Apollo.MutationHookOptions<DeleteReservationRoommateMutation, DeleteReservationRoommateMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables>(DeleteReservationGuestDocument, options);
+        return Apollo.useMutation<DeleteReservationRoommateMutation, DeleteReservationRoommateMutationVariables>(DeleteReservationRoommateDocument, options);
       }
-export type DeleteReservationGuestMutationHookResult = ReturnType<typeof useDeleteReservationGuestMutation>;
-export type DeleteReservationGuestMutationResult = Apollo.MutationResult<DeleteReservationGuestMutation>;
-export type DeleteReservationGuestMutationOptions = Apollo.BaseMutationOptions<DeleteReservationGuestMutation, DeleteReservationGuestMutationVariables>;
+export type DeleteReservationRoommateMutationHookResult = ReturnType<typeof useDeleteReservationRoommateMutation>;
+export type DeleteReservationRoommateMutationResult = Apollo.MutationResult<DeleteReservationRoommateMutation>;
+export type DeleteReservationRoommateMutationOptions = Apollo.BaseMutationOptions<DeleteReservationRoommateMutation, DeleteReservationRoommateMutationVariables>;
 export const DeleteStatementDocument = gql`
     mutation deleteStatement($fileId: String!) {
   deleteDriveFile(fileId: $fileId) {
@@ -1734,10 +1734,10 @@ export function useUpdateReservationMutation(baseOptions?: Apollo.MutationHookOp
 export type UpdateReservationMutationHookResult = ReturnType<typeof useUpdateReservationMutation>;
 export type UpdateReservationMutationResult = Apollo.MutationResult<UpdateReservationMutation>;
 export type UpdateReservationMutationOptions = Apollo.BaseMutationOptions<UpdateReservationMutation, UpdateReservationMutationVariables>;
-export const UpdateReservationGuestDocument = gql`
-    mutation updateReservationGuest($data: ReservationGuestInput!) {
-  updateReservationGuest(data: $data) {
-    guest {
+export const UpdateReservationRoommateDocument = gql`
+    mutation updateReservationRoommate($data: ReservationGuestInput!) {
+  updateReservationRoommate(data: $data) {
+    roommate {
       addressMunicipality
       addressPsc
       addressStreet
@@ -1755,32 +1755,32 @@ export const UpdateReservationGuestDocument = gql`
   }
 }
     `;
-export type UpdateReservationGuestMutationFn = Apollo.MutationFunction<UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables>;
+export type UpdateReservationRoommateMutationFn = Apollo.MutationFunction<UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables>;
 
 /**
- * __useUpdateReservationGuestMutation__
+ * __useUpdateReservationRoommateMutation__
  *
- * To run a mutation, you first call `useUpdateReservationGuestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateReservationGuestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateReservationRoommateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateReservationRoommateMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateReservationGuestMutation, { data, loading, error }] = useUpdateReservationGuestMutation({
+ * const [updateReservationRoommateMutation, { data, loading, error }] = useUpdateReservationRoommateMutation({
  *   variables: {
  *      data: // value for 'data'
  *   },
  * });
  */
-export function useUpdateReservationGuestMutation(baseOptions?: Apollo.MutationHookOptions<UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables>) {
+export function useUpdateReservationRoommateMutation(baseOptions?: Apollo.MutationHookOptions<UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables>(UpdateReservationGuestDocument, options);
+        return Apollo.useMutation<UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables>(UpdateReservationRoommateDocument, options);
       }
-export type UpdateReservationGuestMutationHookResult = ReturnType<typeof useUpdateReservationGuestMutation>;
-export type UpdateReservationGuestMutationResult = Apollo.MutationResult<UpdateReservationGuestMutation>;
-export type UpdateReservationGuestMutationOptions = Apollo.BaseMutationOptions<UpdateReservationGuestMutation, UpdateReservationGuestMutationVariables>;
+export type UpdateReservationRoommateMutationHookResult = ReturnType<typeof useUpdateReservationRoommateMutation>;
+export type UpdateReservationRoommateMutationResult = Apollo.MutationResult<UpdateReservationRoommateMutation>;
+export type UpdateReservationRoommateMutationOptions = Apollo.BaseMutationOptions<UpdateReservationRoommateMutation, UpdateReservationRoommateMutationVariables>;
 export const UpdateSettingsDocument = gql`
     mutation updateSettings($data: SettingsInput!) {
   updateSettings(data: $data) {

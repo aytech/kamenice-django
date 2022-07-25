@@ -280,11 +280,11 @@
       },
       {
         "kind": "OBJECT",
-        "name": "CreateReservationGuest",
+        "name": "CreateReservationRoommate",
         "description": null,
         "fields": [
           {
-            "name": "guest",
+            "name": "roommate",
             "description": null,
             "args": [],
             "type": {
@@ -438,11 +438,11 @@
       },
       {
         "kind": "OBJECT",
-        "name": "DeleteReservationGuest",
+        "name": "DeleteReservationRoommate",
         "description": null,
         "fields": [
           {
-            "name": "guest",
+            "name": "roommate",
             "description": null,
             "args": [],
             "type": {
@@ -1443,7 +1443,7 @@
             "deprecationReason": null
           },
           {
-            "name": "createReservationGuest",
+            "name": "createReservationRoommate",
             "description": null,
             "args": [
               {
@@ -1465,7 +1465,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "CreateReservationGuest",
+              "name": "CreateReservationRoommate",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1601,7 +1601,7 @@
             "deprecationReason": null
           },
           {
-            "name": "deleteReservationGuest",
+            "name": "deleteReservationRoommate",
             "description": null,
             "args": [
               {
@@ -1623,7 +1623,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "DeleteReservationGuest",
+              "name": "DeleteReservationRoommate",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1895,7 +1895,7 @@
             "deprecationReason": null
           },
           {
-            "name": "updateReservationGuest",
+            "name": "updateReservationRoommate",
             "description": null,
             "args": [
               {
@@ -1917,7 +1917,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "UpdateReservationGuest",
+              "name": "UpdateReservationRoommate",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5263,11 +5263,11 @@
       },
       {
         "kind": "OBJECT",
-        "name": "UpdateReservationGuest",
+        "name": "UpdateReservationRoommate",
         "description": null,
         "fields": [
           {
-            "name": "guest",
+            "name": "roommate",
             "description": null,
             "args": [],
             "type": {
