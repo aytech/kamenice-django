@@ -91,9 +91,10 @@ class GuestStatementHelper:
         self.docs_service.documents().batchUpdate(documentId=template_copy.get('id'), body={
             'requests': get_column_requests(self.get_document_content(template_copy.get('id')))}).execute()
         # Fix cell borders
-        self.docs_service.documents().batchUpdate(documentId=template_copy.get('id'), body={
-            'requests': get_cell_styles_requests(
-                self.get_document_content(template_copy.get('id')))}).execute()
+        # @TODO: fix styles on page breaks (GDrive API fails)
+        # self.docs_service.documents().batchUpdate(documentId=template_copy.get('id'), body={
+        #     'requests': get_cell_styles_requests(
+        #         self.get_document_content(template_copy.get('id')))}).execute()
 
         self.download_document(template_copy.get('id'), report_document_name)
 

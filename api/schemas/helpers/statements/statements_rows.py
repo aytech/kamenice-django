@@ -8,12 +8,13 @@ def get_row_data_requests(document_content, data):
                 cells = rows[row].get('tableCells')
                 for cell in range(len(cells) - 1, -1, -1):
                     if data[row][cell] is not None:
-                        requests.append({
-                            'insertText': {
-                                'location': {
-                                    'index': cells[cell].get('content')[0].get('startIndex')
-                                },
-                                'text': str(data[row][cell])
-                            }
-                        })
+                        if str(data[row][cell]) != '':
+                            requests.append({
+                                'insertText': {
+                                    'location': {
+                                        'index': cells[cell].get('content')[0].get('startIndex')
+                                    },
+                                    'text': str(data[row][cell])
+                                }
+                            })
     return requests
